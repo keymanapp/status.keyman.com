@@ -1,0 +1,84 @@
+
+<nav class="navbar navbar-dark bg-dark shadow navbar-sm">
+    <div class="container-fluid">
+        <div class="navbar-header">
+          <span class="navbar-brand">{{title}}</span>
+        </div>
+    </div>
+</nav>
+
+<h1></h1>
+
+<div class="container-fluid">
+  <table class="table table-striped">
+    <thead class='thead-dark'>
+      <tr>
+        <th>Platform</th>
+        <th class='tier'>Alpha</th>
+        <th class='tier'>Beta</th>
+        <th class='tier'>Stable</th>
+        <th>Pull Requests</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let platform of platforms | keyvalue">
+        <th><img src="assets/{{platform.key}}.png"> {{platform.value.name}}</th>
+        <td class="tier" id="tier-alpha">
+          <div class="tier-container">
+            <div class="tier-release">
+              <div class="tier-release-version">
+                {{status?.keyman[platform.key].alpha.version}}
+              </div>
+              <div class="tier-release-date">
+                {{releaseDate(platform.key,'alpha')}}
+              </div>
+            </div>
+            <div class="tier-build-state" title="{{statusTip(platform.key,'alpha')}}">
+              <a class="label {{statusClass(platform.key,'alpha')}}" href="{{statusLink(platform.key,'alpha')}}" target="_blank">{{statusText(platform.key,'alpha')}}</a>
+            </div>
+          </div>
+        </td>
+
+        <td class="tier" id="tier-beta">
+          <div class="tier-container">
+            <div class="tier-release">
+              <div class="tier-release-version">
+                {{status?.keyman[platform.key].beta.version}}
+              </div>
+              <div class="tier-release-date">
+                {{releaseDate(platform.key,'beta')}}
+              </div>
+            </div>
+            <div class="tier-build-state" title="{{statusTip(platform.key,'beta')}}">
+              <a class="label {{statusClass(platform.key,'beta')}}" href="{{statusLink(platform.key,'beta')}}" target="_blank">{{statusText(platform.key,'beta')}}</a>
+            </div>
+          </div>
+        </td>
+
+        <td class="tier" id="tier-stable">
+          <div class="tier-container">
+            <div class="tier-release">
+              <div class="tier-release-version">
+                {{status?.keyman[platform.key].stable.version}}
+              </div>
+              <div class="tier-release-date">
+                {{releaseDate(platform.key,'stable')}}
+              </div>
+            </div>
+            <div class="tier-build-state" title="{{statusTip(platform.key,'stable')}}">
+              <a class="label {{statusClass(platform.key,'stable')}}" href="{{statusLink(platform.key,'stable')}}" target="_blank">{{statusText(platform.key,'stable')}}</a>
+            </div>
+          </div>
+        </td>
+
+        <td class="pulls">
+          <span *ngFor="let pull of platform.value.pulls">
+            <a href="{{pull.pull.node.url}}" class="label {{pullClass(pull)}}" title="{{pull.state?.description}}" target="_blank">{{pull.pull.node.number}}</a>
+          </span>
+          </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+</div>

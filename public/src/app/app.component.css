@@ -1,0 +1,70 @@
+
+td .label {
+  padding: 4px;
+  margin: 0 4px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+td .success {
+  color: white;
+  background: rgb(68, 204, 17);
+}
+
+td .failure {
+  color: white;
+  background: rgb(255, 24, 48);
+}
+
+td .missing {
+  color: white;
+  background: rgb(12, 24, 48);
+}
+
+td a.label {
+  color: white;
+}
+
+td.tier {
+  text-align: center;
+}
+
+td, th {
+  vertical-align: middle;
+}
+
+.tier-container {
+  display: inline-block;
+}
+
+.tier-release {
+  float: left;
+}
+
+.tier-release-version {
+  padding: 4px 4px 0;
+  text-align: center;
+  margin: 0 4px;
+  width: 112px;
+}
+
+.tier-release-date {
+  font-size: 10px;
+  text-align: center;
+  color: #909090;
+  width: 120px;
+}
+
+.tier-build-state {
+  float: left;
+  margin-left: 32px;
+  width: 120px;
+}
+
+thead th.tier {
+  text-align: center;
+}
+
+td.gap, th.gap {
+  width: 10%;
+}

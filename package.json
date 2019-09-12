@@ -4,7 +4,7 @@
   "description": "Report on status of Keyman projects",
   "main": "code.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cd public && npm run-script build && cd .. && node code.js"
   },
   "author": "Marc Durdin",
   "license": "MIT",

@@ -41,7 +41,7 @@ function refreshStatus(callback) {
       {
         Authorization: ` Bearer ${teamcity_token}`,
         Accept: 'application/json'
-      },
+      }
     ),
     httpget('downloads.keyman.com', '/api/version/2.0'),
     httppost('api.github.com', '/graphql',

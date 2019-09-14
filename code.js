@@ -1,8 +1,10 @@
 const url = require('url');
 const express = require('express');
 const https = require('https');
+
 const app = express();
 
+const port=process.env['NODE_ENV'] == 'production' ? 80 : 3000;
 const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
 const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
 
@@ -171,7 +173,7 @@ function httppost(hostname, path, headers, data) {
 
 refreshStatus();
 
-app.listen(3000);
+app.listen(port);
 
 function transformTeamCityResponse(data) {
   let t = data;

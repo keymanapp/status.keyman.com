@@ -68,6 +68,8 @@ export class AppComponent {
     this.timer = setInterval(() => {
       this.refreshStatus();
     }, this.TIMER_INTERVAL);
+
+    this.refreshStatus();
   };
 
   refreshStatus() {

@@ -12,7 +12,10 @@ export class AppComponent {
   statusJson: string;
   error: any;
   JSON: any;
+  timer: any;
   title = 'Keyman Status';
+
+  TIMER_INTERVAL = 60000; //msec
 
   platforms = {
     'windows': {
@@ -62,7 +65,13 @@ export class AppComponent {
   constructor(private statusService: StatusService) {
     this.JSON = JSON;
 
-    // Suck in Keyman Status from localhost:3000
+    this.timer = setInterval(() => {
+      this.refreshStatus();
+    }, this.TIMER_INTERVAL);
+  };
+
+  refreshStatus() {
+    // Suck in Keyman Status from code.js (server side)
 
     this.statusService.getStatus()
       .subscribe(
@@ -139,7 +148,7 @@ export class AppComponent {
   }
 
   pullClass(pull) {
-    console.log(pull);
+    //console.log(pull);
     return pull.state ? pull.state.state == 'SUCCESS' ? 'success' : 'failure' : 'missing';
   }
 }

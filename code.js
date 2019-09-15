@@ -114,7 +114,9 @@ function httpget(hostname, path, headers) {
     let chunk = '';
 
     const req = https.request(options, res => {
-      console.log(`statusCode: ${res.statusCode}`);
+      if(statusCode != 200) {
+        console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+      }
 
       res.on('data', d => {
         chunk += d;
@@ -150,7 +152,9 @@ function httppost(hostname, path, headers, data) {
     let chunk = '';
 
     const req = https.request(options, res => {
-      console.log(`statusCode: ${res.statusCode}`);
+      if(statusCode != 200) {
+        console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+      }
 
       res.on('data', d => {
         chunk += d;
@@ -173,6 +177,7 @@ function httppost(hostname, path, headers, data) {
 
 refreshStatus();
 
+console.log(`Starting app listening on ${port}`);
 app.listen(port);
 
 function transformTeamCityResponse(data) {

@@ -114,7 +114,7 @@ function httpget(hostname, path, headers) {
     let chunk = '';
 
     const req = https.request(options, res => {
-      if(statusCode != 200) {
+      if(res.statusCode != 200) {
         console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
       }
 
@@ -152,7 +152,7 @@ function httppost(hostname, path, headers, data) {
     let chunk = '';
 
     const req = https.request(options, res => {
-      if(statusCode != 200) {
+      if(res.statusCode != 200) {
         console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
       }
 

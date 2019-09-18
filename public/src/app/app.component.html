@@ -73,7 +73,7 @@
 
         <td class="pulls">
           <span *ngFor="let pull of platform.value.pulls">
-            <a href="{{pull.pull.node.url}}" class="label {{pullClass(pull)}}" title="{{pull.state?.description}}" target="_blank">{{pull.pull.node.number}}</a>
+            <a href="{{pull.pull.node.url}}" class="label {{pullClass(pull)}}" title="{{pull.pull.node.title}}: {{pull.state?.description}}" target="_blank">{{pull.pull.node.number}}</a>
           </span>
           </td>
       </tr>

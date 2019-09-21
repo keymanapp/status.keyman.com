@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { StatusService } from './status/status.service';
+import { platforms } from './platforms';
+import { sites } from './sites';
 
 @Component({
   selector: 'app-root',
@@ -9,58 +11,16 @@ import { StatusService } from './status/status.service';
 })
 export class AppComponent {
   status: any;
-  statusJson: string;
   error: any;
   JSON: any;
   timer: any;
   title = 'Keyman Status';
 
   TIMER_INTERVAL = 60000; //msec
-
-  platforms = {
-    'windows': {
-      id:'windows',
-      name:'Windows',
-      configs:{"alpha": "Keyman_Build", "beta": "KeymanDesktop_Beta", "stable": "KeymanDesktop_Stable", prs: "KeymanDesktop_TestPullRequests"},
-      context: "Test: Pull Requests (Keyman Desktop and Keyman Developer)"
-    },
-    'ios': {
-      id:'ios',
-      name:'iOS',
-      configs:{"alpha": "Keyman_iOS_Master", "beta": "Keyman_iOS_Beta", "stable": "Keyman_iOS_Stable", prs: "Keyman_iOS_TestPullRequests"},
-      context: "Test:  Pull Requests (Keyman iOS)"
-    },
-    'android': {
-      id:'android',
-      name:'Android',
-      configs:{"alpha": "KeymanAndroid_Build", "beta": "KeymanAndroid_Beta", "stable": "KeymanAndroid_Stable", prs: "KeymanAndroid_TestPullRequests"},
-      context: "Test: Pull Requests (Keyman Android)"
-    },
-    'web': {
-      id:'web',
-      name:'KeymanWeb',
-      configs:{"alpha": "Keymanweb_Build", "beta": "Keymanweb_Beta", "stable": "Keymanweb_Stable", prs: "Keymanweb_TestPullRequests"},
-      context: "Test: Pull Requests (Keymanweb)"
-    },
-    'mac': {
-      id:'mac',
-      name:'macOS',
-      configs:{"alpha": "KeymanMac_Master", "beta": "KeymanMac_Beta", "stable": "KeymanMac_Stable", prs: "Keyman_KeymanMac_PullRequests"},
-      context: "Test: Pull Requests (Keyman Mac)"
-    },
-    'linux': {
-      id:'linux',
-      name:'Linux',
-      configs:{"alpha": "KeymanLinux_Master", "beta": "KeymanLinux_Beta", "stable": "KeymanLinux_Stable", prs: "KeymanLinux_TestPullRequests"},
-      context: "Test: Pull Requests : Beta (Keyman for Linux)"
-    },
-    'developer': {
-      id:'developer',
-      name:'Developer Tools',
-      configs:{"alpha": "Keyman_Build", "beta": "KeymanDesktop_Beta", "stable": "KeymanDesktop_Stable", prs: "KeymanDesktop_TestPullRequests"},
-      context: "Test: Pull Requests (Keyman Desktop and Keyman Developer)"
-    },
-  };
+  platforms = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
+  sites = Object.assign({}, ...sites.map(v => ({[v]: {pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
+  unlabeledPulls = [];
+  labeledPulls = [];
 
   constructor(private statusService: StatusService) {
     this.JSON = JSON;
@@ -79,33 +39,11 @@ export class AppComponent {
       .subscribe(
         (data: Object) => {
           this.status = { ...data };
-          this.statusJson = JSON.stringify(this.status, null, 2);
-          for(let p in this.platforms) {
-            let platform = this.platforms[p];
-            platform.pulls = [];
-            //console.log(this.status.github.data.repository.pullRequests.edges);
-            for(let q in this.status.github.data.repository.pullRequests.edges) {
-              let pull=this.status.github.data.repository.pullRequests.edges[q];
-              //console.log(pull);
-              let labels = pull.node.labels.edges;
-              let contexts = pull.node.commits.edges[0].node.commit.status.contexts;
-              for(let l in labels) {
-                let label = labels[l].node;
-                if(label.name == platform.id) {
-                  let foundContext = null;
-                  for(let r in contexts) {
-                    let context=contexts[r];
-                    //
-                    if(context.context == platform.context) {
-                      foundContext = context;
-                      break;
-                    }
-                  }
-                  platform.pulls.push({pull: pull, state: foundContext});
-                }
-              }
-            }
-          }
+
+          // transform the platform data into our existing platforms
+          this.transformPlatformStatusData();
+          this.transformSiteStatusData();
+          this.extractUnlabeledPulls();
         }, // success path
         error => this.error = error // error path
       );
@@ -151,6 +89,71 @@ export class AppComponent {
 
   pullClass(pull) {
     //console.log(pull);
-    return pull.state ? pull.state.state == 'SUCCESS' ? 'success' : 'failure' : 'missing';
+    if(!pull.state) return 'missing';
+    switch(pull.state.state) {
+      case 'SUCCESS': return 'success';
+      case 'PENDING': return 'pending';
+      default: return 'failure';
+    }
+    //return pull.state ? pull.state.state == 'SUCCESS' ? 'success' : 'failure' : 'missing';
+  }
+
+  transformPlatformStatusData() {
+    this.labeledPulls = [];
+
+    for(let p in this.platforms) {
+      let platform = this.platforms[p];
+      platform.pulls = [];
+      //console.log(this.status.github.data.repository.pullRequests.edges);
+      for(let q in this.status.github.data.repository.pullRequests.edges) {
+        let pull=this.status.github.data.repository.pullRequests.edges[q];
+        //console.log(pull);
+        let labels = pull.node.labels.edges;
+        let contexts = pull.node.commits.edges[0].node.commit.status.contexts;
+        for(let l in labels) {
+          let label = labels[l].node;
+          if(label.name == platform.id) {
+            let foundContext = null;
+            for(let r in contexts) {
+              let context=contexts[r];
+              //
+              if(context.context == platform.context) {
+                foundContext = context;
+                break;
+              }
+            }
+            platform.pulls.push({pull: pull, state: foundContext});
+            this.labeledPulls.push(pull);
+          }
+        }
+      }
+    }
+  }
+
+  transformSiteStatusData() {
+    // Grab the status.github.data.organization.repositories.nodes[].pullRequests
+    for(let s in this.sites) {
+      this.sites[s].pulls = [];
+    }
+
+    this.status.github.data.organization.repositories.nodes.forEach(repo => {
+      if(repo.name == 'keyboards' || repo.name == 'lexical-models') {
+        // report on keyboards and lexical models
+        return;
+      }
+      let site = this.sites[repo.name];
+      if(!site) return; // Not a repo we are interested in!
+      site.pulls = repo.pullRequests.edges.map(v => { return { pull: v.node }});
+    });
+  }
+
+  extractUnlabeledPulls() {
+    this.unlabeledPulls = [];
+    for(let q in this.status.github.data.repository.pullRequests.edges) {
+      let pull = this.status.github.data.repository.pullRequests.edges[q];
+      if(!this.labeledPulls.includes(pull)) {
+        this.unlabeledPulls.push({pull:pull});
+      }
+    }
   }
 }

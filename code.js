@@ -55,8 +55,28 @@ function refreshStatus(callback) {
         Authorization: ` Bearer ${github_token}`,
         Accept: 'application/vnd.github.antiope-preview'
       },
+
+      // Lists all open pull requests in keyman repos
+      // and all open pull requests + status for keymanapp repo
+
       JSON.stringify({query:
       `query {
+        organization(login:"keymanapp") {
+          repositories(first:100) {
+            nodes {
+              name
+              pullRequests(last:50, states:OPEN) {
+                edges {
+                  node {
+                    title
+                    number
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
         repository(owner:"keymanapp", name:"keyman") {
           pullRequests(last:50, states:OPEN) {
             edges {

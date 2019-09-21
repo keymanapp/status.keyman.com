@@ -1,27 +1,29 @@
 
-<nav class="navbar navbar-dark bg-dark shadow navbar-sm">
+<!-- <nav class="navbar navbar-dark bg-dark shadow navbar-sm">
     <div class="container-fluid">
         <div class="navbar-header">
           <span class="navbar-brand">{{title}}</span>
         </div>
     </div>
-</nav>
+</nav> -->
 
-<h1></h1>
+<!-- <h1></h1> -->
 
 <div class="container-fluid">
   <table class="table table-striped">
     <thead class='thead-dark'>
       <tr>
-        <th>Platform</th>
-        <th class='tier'>Alpha</th>
-        <th class='tier'>Beta</th>
-        <th class='tier'>Stable</th>
-        <th>Pull Requests</th>
+        <th id='th-platform'>Platform</th>
+        <th id='th-alpha' class='tier'>Alpha</th>
+        <th id='th-beta' class='tier'>Beta</th>
+        <th id='th-stable' class='tier'>Stable</th>
+        <th id='th-issues'>Issues</th>
+        <th id='th-crashes'>Crashes</th>
+        <th id='th-pulls'>Pull Requests</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let platform of platforms | keyvalue">
+      <tr class='tr-platform' *ngFor="let platform of platforms | keyvalue">
         <th><img src="assets/{{platform.key}}.png"> {{platform.value.name}}</th>
         <td class="tier" id="tier-alpha">
           <div class="tier-container">
@@ -71,11 +73,37 @@
           </div>
         </td>
 
+        <td class="issues"></td>
+        <td class="crashes"></td>
+
         <td class="pulls">
           <span *ngFor="let pull of platform.value.pulls">
             <a href="{{pull.pull.node.url}}" class="label {{pullClass(pull)}}" title="{{pull.pull.node.title}}: {{pull.state?.description}}" target="_blank">{{pull.pull.node.number}}</a>
           </span>
-          </td>
+        </td>
+      </tr>
+      <tr class='tr-platform'>
+        <th>Unlabeled Pull Requests and Issues</th>
+        <td colspan='3'></td>
+        <td class='issues'></td>
+        <td class='crashes'></td>
+        <td class='pulls'>
+          <span *ngFor="let pull of unlabeledPulls">
+            <a href="{{pull.pull.node.url}}" class="label {{pullClass(pull)}}" title="{{pull.pull.node.title}}: {{pull.state?.description}}" target="_blank">{{pull.pull.node.number}}</a>
+          </span>
+        </td>
+      </tr>
+      <tr class='tr-site' *ngFor="let site of sites | keyvalue">
+        <th><a href='https://{{site.key}}'>{{site.key}}</a></th>
+        <td class='nodeping'><!-- todo --></td>
+        <td colspan='2'></td>
+        <td class='issues'></td>
+        <td class='crashes'></td>
+        <td class='pulls'>
+          <span *ngFor="let pull of site.value.pulls">
+            <a href="{{pull.pull.url}}" class="label " title="{{pull.pull.title}}" target="_blank">{{pull.pull.number}}</a>
+          </span>
+        </td>
       </tr>
     </tbody>
   </table>

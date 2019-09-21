@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+
+  // When running in development with ng watch on 4200 and nodemon on 3000, otherwise
+  // assume we are on the same host as the status backend
+  statusUrl: window.location.host == 'localhost:4200' ? '//localhost:3000/status' : '/status'
 };
 
 /*

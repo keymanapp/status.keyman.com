@@ -6,24 +6,34 @@ td .label {
   display: inline-block;
 }
 
-td .success {
+/* Background of pull request and build status */
+
+td .label {
+  background: #c0c0c0;
+  color: black;
+}
+
+td a.label.success {
   color: white;
   background: rgb(68, 204, 17);
 }
 
-td .failure {
+td a.label.failure {
   color: white;
   background: rgb(255, 24, 48);
 }
 
-td .missing {
+td a.label.pending {
+  color: black;
+  background: rgb(240,240,100);
+}
+
+td a.label.missing {
   color: white;
   background: rgb(12, 24, 48);
 }
 
-td a.label {
-  color: white;
-}
+/* Etc */
 
 td.tier {
   text-align: center;

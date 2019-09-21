@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class StatusService {
-  // When running in development, we point the host to the nodemon instance on port 3000
-  // When running in production, we use the same host
-  statusUrl = window.location.host == 'localhost:4200' ? '//localhost:3000/status' : '/status';
+  statusUrl = environment.statusUrl;
 
   constructor(private http: HttpClient) { }
 

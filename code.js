@@ -4,7 +4,9 @@ const https = require('https');
 
 const app = express();
 
-const port=process.env['NODE_ENV'] == 'production' ? 80 : 3000;
+const isProduction = process.env['NODE_ENV'] == 'production';
+
+const port=isProduction ? 80 : 3000;
 const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
 const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
 
@@ -18,10 +20,12 @@ app.use('/', express.static('public/dist/public'));
 
 app.get('/status', (request, response) => {
   let cb = () => {
-    response.writeHead(200, {
-      "Content-Type": "text/html",
-      //"Access-Control-Allow-Origin": "*"
-    });
+    let headers = {"Content-Type": "text/html"};
+    if(!isProduction) {
+      // Allow requests from ng-served host in development
+      headers["Access-Control-Allow-Origin"] = '*';
+    }
+    response.writeHead(200, headers);
     response.write(JSON.stringify({teamCity: teamCityData, keyman: keymanVersionData, github: githubPullsData}));
     response.end();
   };

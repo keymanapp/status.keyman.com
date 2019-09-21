@@ -24,7 +24,9 @@ export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
 ```
 
-Start the Node Server
+## Running the server ##
+
+For a simple run, you can just run on localhost:3000. Start the Node Server:
 
 ```
 node code.js
@@ -37,3 +39,19 @@ Starting app listening on 3000
 ```
 
 Point your browser to `http://localhost:3000` to view the application
+
+## Development server ##
+
+This repo is configured for live build and reload of both the client and server. You'll need two terminals open. In the first, run:
+
+```
+npm run start-server
+```
+
+and in the second, run:
+
+```
+npm run start-client
+```
+
+Point your browser to `http://localhost:4200` to view the live reload version of the application.

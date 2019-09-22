@@ -18,9 +18,15 @@ export class AppComponent {
 
   TIMER_INTERVAL = 60000; //msec
   platforms = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
-  sites = Object.assign({}, ...sites.map(v => ({[v]: {pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
+  sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
   labeledPulls = [];
+
+  // Phase data, grabbing from github's milestones for the keyman repo
+  milestones = {};
+  phase: any = null;
+  phaseEnd = '';
+  phaseStart = '';
 
   constructor(private statusService: StatusService) {
     this.JSON = JSON;
@@ -44,6 +50,7 @@ export class AppComponent {
           this.transformPlatformStatusData();
           this.transformSiteStatusData();
           this.extractUnlabeledPulls();
+          this.extractMilestoneData();
         }, // success path
         error => this.error = error // error path
       );
@@ -130,6 +137,11 @@ export class AppComponent {
     }
   }
 
+  errorClassIfNonZero(v) {
+    if(v !== null && v != 0) return "failure";
+    return "";
+  }
+
   transformSiteStatusData() {
     // Grab the status.github.data.organization.repositories.nodes[].pullRequests
     for(let s in this.sites) {
@@ -144,6 +156,55 @@ export class AppComponent {
       let site = this.sites[repo.name];
       if(!site) return; // Not a repo we are interested in!
       site.pulls = repo.pullRequests.edges.map(v => { return { pull: v.node }});
+    });
+  }
+
+  extractMilestoneData() {
+    // We want the current milestone, plus its start and end date.
+    this.phase = this.status.github.data.repository.milestones.edges.reduce ((a, m) => {
+      if(m.node.dueOn == null) return a;
+      if(a == null || a.node.dueOn == null) return m;
+      if(new Date(a.node.dueOn) < new Date(m.node.dueOn)) return a;
+      return m;
+    });
+    if(this.phase == null) {
+      this.phaseEnd = '?';
+      this.phaseStart = '?';
+    } else {
+      // Assuming a phase is 2 weeks
+      this.phaseEnd = new Date(this.phase.node.dueOn).toDateString();
+      let d = new Date(this.phase.node.dueOn);
+      d.setDate(d.getDate()-11);
+      this.phaseStart = d.toDateString();
+    }
+
+    // For the current milestone, Waiting-external and Future, we want to report. Other milestones, we'll ignore for now.
+    this.milestones = {
+      Future: { title: "Future", count: 0 },
+      Current: { title: this.phase.node.title, count: 0 },
+      Waiting: { title: "Waiting-external", count: 0 },
+      Other: { title: "Other", count: 0 }
+    };
+
+    // For each platform, fill in the milestone counts
+    this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
+      let platform = this.platforms[label.node.name];
+      if(!platform) return;
+      platform.milestones = [
+        { id: 'current', title: this.phase.node.title, count: 0 },
+        { id: 'future', title: "Future", count: 0 },
+        { id: 'waiting', title: "Waiting-external", count: 0 },
+        { id: 'other', title: "Other", count: 0 }
+      ];
+      label.node.openIssues.edges.forEach(issue => {
+        if(!issue.node.milestone) platform.milestones[3].count++;
+        else switch(issue.node.milestone.title) {
+          case this.phase.node.title: platform.milestones[0].count++; break;
+          case "Future": platform.milestones[1].count++; break;
+          case "Waiting-external": platform.milestones[2].count++; break;
+          default: platform.milestones[3].count++; break;
+        }
+      });
     });
   }
 

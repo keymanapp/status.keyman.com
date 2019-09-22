@@ -7,4 +7,5 @@ export const sites = [
   'keymanweb.com',
   's.keyman.com',
   'status.keyman.com', // ooh self referential!
+  'developer.keyman.com'
 ];

@@ -1,5 +1,27 @@
 
-td .label {
+.navbar-phase {
+  background: rgb(240,240,240);
+  border-radius: 3px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 4px 6px;
+  color: #343a40;
+  display: inline-block;
+  margin: 0 8px 0 0;
+}
+
+.navbar-phase a {
+  color: #343a40;
+}
+
+.navbar-phase-dates {
+  padding-left: 8px;
+  font-weight: normal;
+  color: #646464;
+}
+
+.label {
+  font-size: 1rem;
   padding: 4px;
   margin: 0 4px;
   border-radius: 4px;
@@ -8,29 +30,87 @@ td .label {
 
 /* Background of pull request and build status */
 
-td .label {
+.label {
   background: #c0c0c0;
   color: black;
 }
 
-td a.label.success {
+a.label.success {
   color: white;
   background: rgb(68, 204, 17);
 }
 
-td a.label.failure {
+a.label.failure {
   color: white;
   background: rgb(255, 24, 48);
 }
 
-td a.label.pending {
+a.label.pending {
   color: black;
   background: rgb(240,240,100);
 }
 
-td a.label.missing {
+a.label.missing {
   color: white;
   background: rgb(12, 24, 48);
+}
+
+/* Count Boxes */
+
+.countbox {
+  font-size: 0.75rem;
+  display: inline-block; margin: 0 2px;
+}
+
+.countbox-title {
+  padding: 2px;
+  display: inline-block;
+  background: #464646;
+  color: white;
+  border: solid 1px #c0c0c0;
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+}
+
+.countbox-value {
+  padding: 2px 4px;
+  font-weight: bold;
+  display: inline-block;
+  border: solid 1px #c0c0c0;
+  color: black;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
+}
+
+.milestone-current .countbox-title {
+  border-color: rgb(68,204,17);
+  background: rgb(68,204,17);
+}
+
+.milestone-current .countbox-value {
+  border-color: rgb(68,204,17);
+  color: rgb(68,204,17);
+}
+
+.milestone-future .countbox-title,
+.milestone-waiting .countbox-title {
+  background: rgb(204,204,224);
+}
+
+.milestone-future .countbox-value,
+.milestone-waiting .countbox-value {
+  color: rgb(204,204,224);
+}
+
+.milestone-other .countbox-title {
+  background: rgb(255, 24, 48);
+  border-color: rgb(255, 24, 48);
+  color: white;
+}
+
+.milestone-other .countbox-value {
+  border-color: rgb(255, 24, 48);
+  color: rgb(255, 24, 48);
 }
 
 /* Etc */
@@ -51,23 +131,23 @@ td, th {
   float: left;
 }
 
-.tier-release-version {
+.tier-release-date {
   padding: 4px 4px 0;
   text-align: center;
   margin: 0 4px;
   width: 112px;
 }
 
-.tier-release-date {
-  font-size: 10px;
+.tier-release-version {
   text-align: center;
+  font-size: 10px;
   color: #909090;
   width: 120px;
 }
 
 .tier-build-state {
   float: left;
-  margin-left: 32px;
+  margin-left: 8px;
   width: 120px;
 }
 
@@ -77,4 +157,16 @@ thead th.tier {
 
 td.gap, th.gap {
   width: 10%;
+}
+
+#th-sites {
+  vertical-align: bottom;
+  width: 24px;
+  text-align: left;
+  max-width: 24px;
+}
+
+#th-sites span {
+  transform: rotate(-90deg);
+  display: block;
 }

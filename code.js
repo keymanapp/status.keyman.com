@@ -59,36 +59,61 @@ function refreshStatus(callback) {
       // Lists all open pull requests in keyman repos
       // and all open pull requests + status for keymanapp repo
 
-      JSON.stringify({query:
-      `query {
-        organization(login:"keymanapp") {
-          repositories(first:100) {
-            nodes {
-              name
-              pullRequests(last:50, states:OPEN) {
-                edges {
-                  node {
-                    title
-                    number
-                    url
+      JSON.stringify({query: `
+      {
+        repository(owner: "keymanapp", name: "keyman") {
+          issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
+            totalCount
+          }
+          issuesByLabelAndMilestone: labels(first: 10, query: "windows web developer mac ios android linux") {
+            edges {
+              node {
+                name
+                openIssues: issues(first: 100, filterBy: {states: [OPEN]}) {
+                  totalCount
+                  edges {
+                    node {
+                      milestone {
+                        title
+                      }
+                    }
                   }
                 }
               }
             }
           }
-        }
-        repository(owner:"keymanapp", name:"keyman") {
-          pullRequests(last:50, states:OPEN) {
+          milestones(first: 10, orderBy: {direction: ASC, field: DUE_DATE}, states: OPEN) {
+            edges {
+              node {
+                dueOn
+                title
+                openIssues: issues(first: 1, states: OPEN) {
+                  totalCount
+                }
+                closedIssues: issues(first: 1, states: CLOSED) {
+                  totalCount
+                }
+                openPullRequests: pullRequests(first: 1, states: OPEN) {
+                  totalCount
+                }
+                mergedPullRequests: pullRequests(first: 1, states: MERGED) {
+                  totalCount
+                }
+              }
+            }
+          }
+          pullRequests(last: 50, states: OPEN) {
             edges {
               node {
                 title
+                milestone {
+                  title
+                }
                 number
                 url
-
-                commits(last:1){
+                commits(last: 1) {
                   edges {
                     node {
-
                       commit {
                         status {
                           contexts {
@@ -101,7 +126,7 @@ function refreshStatus(callback) {
                     }
                   }
                 }
-                labels(first:25) {
+                labels(first: 25) {
                   edges {
                     node {
                       name
@@ -112,7 +137,24 @@ function refreshStatus(callback) {
             }
           }
         }
-      }`})
+        organization(login: "keymanapp") {
+          repositories(first: 100) {
+            nodes {
+              name
+              pullRequests(last: 50, states: OPEN) {
+                edges {
+                  node {
+                    title
+                    number
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+            `})
     )
   ]).then(data => {
 

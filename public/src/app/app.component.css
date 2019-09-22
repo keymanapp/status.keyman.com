@@ -28,6 +28,14 @@
   display: inline-block;
 }
 
+.label.hide-if-zero {
+  display: none;
+}
+
+.label.hide-if-zero.failure {
+  display: inline-block;
+}
+
 /* Background of pull request and build status */
 
 .label {
@@ -159,14 +167,7 @@ td.gap, th.gap {
   width: 10%;
 }
 
-#th-sites {
-  vertical-align: bottom;
-  width: 24px;
-  text-align: left;
-  max-width: 24px;
-}
-
-#th-sites span {
-  transform: rotate(-90deg);
-  display: block;
+tr.tr-site td, tr.tr-site th {
+  text-align: center;
+  width: 10%;
 }

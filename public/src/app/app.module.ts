@@ -3,10 +3,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { PullRequestComponent } from './pull-request/pull-request.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PullRequestComponent
   ],
   imports: [
     BrowserModule,

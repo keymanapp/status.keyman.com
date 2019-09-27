@@ -155,7 +155,7 @@ export class AppComponent {
       }
       let site = this.sites[repo.name];
       if(!site) return; // Not a repo we are interested in!
-      site.pulls = repo.pullRequests.edges.map(v => { return { pull: v.node }});
+      site.pulls = repo.pullRequests.edges.map(v => { return { pull: v }});
     });
   }
 
@@ -203,6 +203,27 @@ export class AppComponent {
           case "Future": platform.milestones[1].count++; break;
           case "Waiting-external": platform.milestones[2].count++; break;
           default: platform.milestones[3].count++; break;
+        }
+      });
+    });
+
+    // For each site, fill in the milestone counts
+    this.status.github.data.organization.repositories.nodes.forEach(repo => {
+      let site = this.sites[repo.name];
+      if(!site) return;
+      site.milestones = [
+        { id: 'current', title: this.phase.node.title, count: 0 },
+        { id: 'future', title: "Future", count: 0 },
+        { id: 'waiting', title: "Waiting-external", count: 0 },
+        { id: 'other', title: "Other", count: 0 }
+      ];
+      repo.issuesByMilestone.edges.forEach(issue => {
+        if(!issue.node.milestone) site.milestones[3].count++;
+        else switch(issue.node.milestone.title) {
+          case this.phase.node.title: site.milestones[0].count++; break;
+          case "Future": site.milestones[1].count++; break;
+          case "Waiting-external": site.milestones[2].count++; break;
+          default: site.milestones[3].count++; break;
         }
       });
     });

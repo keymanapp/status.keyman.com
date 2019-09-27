@@ -1,0 +1,78 @@
+.label {
+  margin: 0 4px;
+  border-radius: 4px;
+  display: inline-block;
+  background: #c0c0c0;
+}
+
+/* Background of pull request and build status */
+
+.label a.author img {
+  border-radius: 4px 0 0 4px;
+}
+
+.label.success {
+  background: rgb(68, 204, 17);
+}
+
+.label.success a,
+.label.failure a {
+  color: white;
+}
+
+.label.failure {
+  background: rgb(255, 24, 48);
+}
+
+.label.pending {
+  background: rgb(240,240,100);
+}
+
+.label a,
+.label.pending a,
+.label.missing a {
+  color: black;
+}
+
+/* Missing CI status, or Draft PR */
+.label.missing {
+  background: rgb(224,229,233);
+}
+
+/* Pull Request Review Status */
+
+.label.status-approved,
+.label.status-pending,
+.label.status-changes-requested {
+  padding-right: 2px;
+}
+
+.label.status-approved::after {
+  content: '✔️';
+  alt: 'Approved';
+  font-size: 0.5rem;
+  display: inline-block;
+  color: black;
+}
+
+.label.status-pending::after {
+  content:'🟡';
+  alt: 'Pending';
+  font-size: 0.5rem;
+  color: black;
+}
+
+.label.status-changes-requested::after {
+  content:'❌';
+  alt: 'Changes Requested';
+  font-size: 0.5rem;
+  color: black;
+}
+
+
+.label a.pull {
+  padding: 0px 6px;
+  font-size: 0.8rem;
+  display: inline-block;
+  vertical-align: middle;
+}

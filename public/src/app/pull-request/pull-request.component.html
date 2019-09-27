@@ -1,0 +1,6 @@
+<span class="label {{class || pullClass()}} {{pullStatus()}}">
+  <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img src="{{pull.pull.node.author.avatarUrl}}&size=32"></a>
+  <a class="pull" title="{{pull.pull.node.title}}{{pull.state ? ': '+pull.state.description : ''}}" target="_blank" href="{{pull.pull.node.url}}">
+    {{pull.pull.node.number}}
+  </a>
+</span>

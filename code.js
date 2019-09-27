@@ -109,6 +109,17 @@ function refreshStatus(callback) {
                 milestone {
                   title
                 }
+                author {
+                  avatarUrl
+                  login
+                  url
+                }
+                approvedReviews: reviews(first: 10, states: APPROVED) {
+                  totalCount
+                }
+                changesRequestedReviews: reviews(first: 10, states: CHANGES_REQUESTED) {
+                  totalCount
+                }
                 number
                 url
                 commits(last: 1) {
@@ -141,11 +152,35 @@ function refreshStatus(callback) {
           repositories(first: 100) {
             nodes {
               name
+              issuesByMilestone: issues(first: 100, filterBy: {states: [OPEN]}) {
+                totalCount
+                edges {
+                  node {
+                    milestone {
+                      title
+                    }
+                  }
+                }
+              }
               pullRequests(last: 50, states: OPEN) {
                 edges {
                   node {
                     title
                     number
+                    milestone {
+                      title
+                    }
+                    author {
+                      avatarUrl
+                      login
+                      url
+                    }
+                    approvedReviews: reviews(first: 10, states: APPROVED) {
+                      totalCount
+                    }
+                    changesRequestedReviews: reviews(first: 10, states: CHANGES_REQUESTED) {
+                      totalCount
+                    }
                     url
                   }
                 }
@@ -154,7 +189,7 @@ function refreshStatus(callback) {
           }
         }
       }
-            `})
+                  `})
     )
   ]).then(data => {
 

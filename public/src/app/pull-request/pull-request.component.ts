@@ -15,11 +15,12 @@ export class PullRequestComponent implements OnInit {
   }
 
   pullClass() {
-    if(!this.pull.state) return 'missing';
+    let base = this.pull.pull.node.milestone.title == 'Future' ? 'future ' : '';
+    if(!this.pull.state) return base+'missing';
     switch(this.pull.state.state) {
-      case 'SUCCESS': return 'success';
-      case 'PENDING': return 'pending';
-      default: return 'failure';
+      case 'SUCCESS': return base+'success';
+      case 'PENDING': return base+'pending';
+      default: return base+'failure';
     }
   }
 

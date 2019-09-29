@@ -59,6 +59,9 @@ function refreshStatus(callback) {
       // Lists all open pull requests in keyman repos
       // and all open pull requests + status for keymanapp repo
 
+      // Current rate limit cost is 30 points. We have 5000 points/hour.
+      // https://developer.github.com/v4/guides/resource-limitations/
+
       JSON.stringify({query: `
       {
         repository(owner: "keymanapp", name: "keyman") {
@@ -149,7 +152,7 @@ function refreshStatus(callback) {
           }
         }
         organization(login: "keymanapp") {
-          repositories(first: 100) {
+          repositories(first: 30) {
             nodes {
               name
               issuesByMilestone: issues(first: 100, filterBy: {states: [OPEN]}) {

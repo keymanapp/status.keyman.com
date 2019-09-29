@@ -5,19 +5,14 @@
   background: #c0c0c0;
 }
 
-/* Background of pull request and build status */
-
 .label a.author img {
   border-radius: 4px 0 0 4px;
 }
 
+/* Background of pull request and build status */
+
 .label.success {
   background: rgb(68, 204, 17);
-}
-
-.label.success a,
-.label.failure a {
-  color: white;
 }
 
 .label.failure {
@@ -28,15 +23,26 @@
   background: rgb(240,240,100);
 }
 
+.label.missing {
+  /* missing CI, or draft PR */
+  background: rgb(224,229,233);
+}
+
+.label.success a,
+.label.failure a {
+  color: white;
+}
+
 .label a,
 .label.pending a,
 .label.missing a {
   color: black;
 }
 
-/* Missing CI status, or Draft PR */
-.label.missing {
-  background: rgb(224,229,233);
+/* Future PRs */
+
+.future {
+  opacity: 0.3;
 }
 
 /* Pull Request Review Status */

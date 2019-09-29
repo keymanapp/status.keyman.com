@@ -149,7 +149,7 @@ function refreshStatus(callback) {
           }
         }
         organization(login: "keymanapp") {
-          repositories(first: 100) {
+          repositories(first: 30) {
             nodes {
               name
               issuesByMilestone: issues(first: 100, filterBy: {states: [OPEN]}) {

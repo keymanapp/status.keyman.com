@@ -25,11 +25,11 @@ export class PullRequestComponent implements OnInit {
   }
 
   pullStatus() {
-    if(this.pull.pull.node.changesRequestedReviews.totalCount) {
-      return "status-changes-requested";
-    }
-    if(this.pull.pull.node.approvedReviews.totalCount) {
-      return "status-approved";
+    let state: string = this.pull.pull.node.hovercard.contexts.reduce((a, c) => a || (c.__typename == "ReviewStatusHovercardContext" ? c.octicon : null), null);
+    switch(state) {
+      case "comment":         return "status-pending";
+      case "check":           return "status-approved";
+      case "request-changes": return "status-changes-requested";
     }
 
     return "status-pending";

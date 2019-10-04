@@ -117,11 +117,13 @@ function refreshStatus(callback) {
                   login
                   url
                 }
-                approvedReviews: reviews(first: 10, states: APPROVED) {
-                  totalCount
-                }
-                changesRequestedReviews: reviews(first: 10, states: CHANGES_REQUESTED) {
-                  totalCount
+                # Simplest way to get reviewed state is with the hovercard...
+                hovercard(includeNotificationContexts:false) {
+                  contexts {
+                    message
+                    octicon
+                    __typename
+                  }
                 }
                 number
                 url
@@ -178,11 +180,13 @@ function refreshStatus(callback) {
                       login
                       url
                     }
-                    approvedReviews: reviews(first: 10, states: APPROVED) {
-                      totalCount
-                    }
-                    changesRequestedReviews: reviews(first: 10, states: CHANGES_REQUESTED) {
-                      totalCount
+                    # Simplest way to get reviewed state is with the hovercard...
+                    hovercard(includeNotificationContexts:false) {
+                      contexts {
+                        message
+                        octicon
+                        __typename
+                      }
                     }
                     url
                   }

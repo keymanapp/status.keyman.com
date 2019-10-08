@@ -60,20 +60,33 @@ export class AppComponent {
     return this.status ? this.status.teamCity[this.platforms[platform].configs[tier]] : null;
   }
 
+  getRunningStatus(platform, tier) {
+    return this.status ? this.status.teamCityRunning[this.platforms[platform].configs[tier]] : null;
+  }
+
   statusClass(platform, tier) {
-    let b = this.getStatus(platform, tier);
+    let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
+    if(br && br.builds && br.builds.length) {
+      return br.builds[0].status == 'SUCCESS' ? 'pending' : 'failure';
+    }
     if(!b || !b.builds || !b.builds.length) return 'missing';
     return b.builds[0].status == 'SUCCESS' ? 'success' : 'failure';
   }
 
   statusText(platform, tier) {
-    let b = this.getStatus(platform, tier);
+    let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
+    if(br && br.builds && br.builds.length) {
+      return br.builds[0].number;
+    }
     if(!b || !b.builds || !b.builds.length) return 'Unreported';
     return b.builds[0].number;
   }
 
   statusTip(platform, tier) {
-    let b = this.getStatus(platform, tier);
+    let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
+    if(br && br.builds && br.builds.length) {
+      return br.builds[0].statusText;
+    }
     if(!b || !b.builds || !b.builds.length) return '';
     return b.builds[0].statusText;
   }

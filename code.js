@@ -13,6 +13,7 @@ const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
 const REFRESH_INTERVAL = 60000; //msec
 let lastRefreshTime = 0;
 let teamCityData = null;
+let teamCityRunningData = null;
 let keymanVersionData = null;
 let githubPullsData = null;
 
@@ -26,7 +27,7 @@ app.get('/status', (request, response) => {
       headers["Access-Control-Allow-Origin"] = '*';
     }
     response.writeHead(200, headers);
-    response.write(JSON.stringify({teamCity: teamCityData, keyman: keymanVersionData, github: githubPullsData}));
+    response.write(JSON.stringify({teamCity: teamCityData, teamCityRunning: teamCityRunningData, keyman: keymanVersionData, github: githubPullsData}));
     response.end();
   };
 
@@ -42,7 +43,16 @@ function refreshStatus(callback) {
   Promise.all([
     httpget(
       'build.palaso.org',
-      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(running:false,canceled:false),'+
+      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
+        'build(id,number,status,statusText)))',
+      {
+        Authorization: ` Bearer ${teamcity_token}`,
+        Accept: 'application/json'
+      }
+    ),
+    httpget(
+      'build.palaso.org',
+      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(running:true,canceled:false,branch:default:any),'+
         'build(id,number,status,statusText)))',
       {
         Authorization: ` Bearer ${teamcity_token}`,
@@ -201,8 +211,9 @@ function refreshStatus(callback) {
   ]).then(data => {
 
     teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
-    keymanVersionData = JSON.parse(data[1]);//inputKeymanVersionData);
-    githubPullsData = JSON.parse(data[2]);
+    teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
+    keymanVersionData = JSON.parse(data[2]);//inputKeymanVersionData);
+    githubPullsData = JSON.parse(data[3]);
     lastRefreshTime = Date.now();
     if(callback) callback();
   });

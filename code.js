@@ -42,7 +42,7 @@ function refreshStatus(callback) {
   Promise.all([
     httpget(
       'build.palaso.org',
-      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(running:false,canceled:false),'+
+      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
         'build(id,number,status,statusText)))',
       {
         Authorization: ` Bearer ${teamcity_token}`,

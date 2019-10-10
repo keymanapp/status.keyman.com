@@ -41,6 +41,14 @@
   display: inline-block;
 }
 
+.not-in-beta th#th-beta {
+  color: #606060;
+}
+
+.not-in-beta #tier-beta {
+  opacity: 0.25;
+}
+
 /* Background of pull request and build status */
 
 .label {

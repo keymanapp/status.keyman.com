@@ -155,6 +155,11 @@ export class AppComponent {
     return "";
   }
 
+  isBetaRunning() {
+    let e = this.status.github.data.repository.refs.nodes.find(e => e.name == 'beta');
+    return (typeof e != 'undefined');
+  }
+
   transformSiteStatusData() {
     // Grab the status.github.data.organization.repositories.nodes[].pullRequests
     for(let s in this.sites) {

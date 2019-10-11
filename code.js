@@ -75,6 +75,11 @@ function refreshStatus(callback) {
       JSON.stringify({query: `
       {
         repository(owner: "keymanapp", name: "keyman") {
+          refs(first:100, refPrefix: "refs/heads/") {
+            nodes {
+              name
+            }
+          }
           issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
             totalCount
           }

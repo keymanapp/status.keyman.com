@@ -93,7 +93,7 @@
 
         <td class="issues">
           <ng-container *ngFor="let milestone of platform.value.milestones">
-            <a target='_blank' href='https://github.com/keymanapp/keyman/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+label%3A{{platform.key}}+milestone%3A{{milestone.title}}'>
+            <a target='_blank' href='https://github.com/keymanapp/keyman/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+label%3A{{platform.key}}+{{milestone.title=="Other" ? "no:milestone" : "milestone:"+milestone.title}}'>
               <span class='countbox milestone-{{milestone.id}}' *ngIf="milestone.count > 0">
                 <span class='countbox-title'>{{milestone.title}}</span>
                 <span class='countbox-value'>{{milestone.count}}</span>

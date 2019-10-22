@@ -38,8 +38,31 @@ app.get('/status', (request, response) => {
   }
 });
 
+function getSprintStart() {
+  // Get the start of sprint. Messy but probably works okay for now
+  let Current = new Date();
+  Current.setUTCHours(0);
+  Current.setUTCMinutes(0);
+  Current.setUTCSeconds(0);
+  Current.setUTCMilliseconds(0);
+  let diff = Current.getDate() -  Current.getDay();
+  let StartOfWeek = new Date(Current.setDate(diff));
+  //console.log("StartOfWeek: "+StartOfWeek.toDateString());
+  let sec = (StartOfWeek.getTime() - Date.UTC(2019, 9, 6)) / 1000;
+  //console.log(StartOfWeek.getTime());
+  //console.log(Date.UTC(2019, 9, 6));
+  let days = sec / 60 / 60 / 24;
+  //console.log(days % 14);
+  if(days % 14 > 6)
+    StartOfWeek.setDate(StartOfWeek.getDate() - 7);
+
+  return StartOfWeek;
+}
 
 function refreshStatus(callback) {
+
+  let SprintStartDateTime = getSprintStart().toISOString();
+
   Promise.all([
     httpget(
       'build.palaso.org',
@@ -68,13 +91,56 @@ function refreshStatus(callback) {
 
       // Lists all open pull requests in keyman repos
       // and all open pull requests + status for keymanapp repo
+      // Gather the contributions for each recent user
 
-      // Current rate limit cost is 30 points. We have 5000 points/hour.
+      // Current rate limit cost is 31 points. We have 5000 points/hour.
       // https://developer.github.com/v4/guides/resource-limitations/
 
       JSON.stringify({query: `
       {
         repository(owner: "keymanapp", name: "keyman") {
+
+          # Collect contributions
+
+          contributions: assignableUsers(first:100) {
+            nodes {
+              login
+              avatarUrl
+              contributions: contributionsCollection(from: "${SprintStartDateTime}", organizationID: "MDEyOk9yZ2FuaXphdGlvbjEyNDAyOTI2") {
+                pullRequests: pullRequestContributions(first: 100, orderBy: {direction: DESC}) {
+                  nodes {
+                    occurredAt
+                    pullRequest {
+                      number
+                      url
+                      title
+                    }
+                  }
+                }
+                reviews: pullRequestReviewContributions(first: 100, orderBy: {direction: DESC}) {
+                  nodes {
+                    occurredAt
+                    pullRequest {
+                      number
+                      url
+                      title
+                    }
+                  }
+                }
+                issues: issueContributions(first: 100, orderBy: {direction: DESC}) {
+                  nodes {
+                    occurredAt
+                    issue {
+                      number
+                      url
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+
           refs(first:100, refPrefix: "refs/heads/") {
             nodes {
               name

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { StatusService } from './status/status.service';
 import { platforms } from './platforms';
 import { sites } from './sites';
@@ -22,21 +23,32 @@ export class AppComponent {
   unlabeledPulls = [];
   labeledPulls = [];
 
+  sprintDays = [];
+
   // Phase data, grabbing from github's milestones for the keyman repo
   milestones = {};
   phase: any = null;
   phaseEnd = '';
   phaseStart = '';
 
-  constructor(private statusService: StatusService) {
+  showContributions = false;
+
+  constructor(private statusService: StatusService, private route: ActivatedRoute) {
     this.JSON = JSON;
+  };
+
+  ngOnInit() {
+    this.showContributions = this.route.snapshot.queryParamMap.get('c') == '1';
+    this.route.queryParamMap.subscribe(queryParams => {
+      this.showContributions = queryParams.get('c') == '1';
+    })
 
     this.timer = setInterval(() => {
       this.refreshStatus();
     }, this.TIMER_INTERVAL);
 
     this.refreshStatus();
-  };
+  }
 
   refreshStatus() {
     // Suck in Keyman Status from code.js (server side)
@@ -156,7 +168,7 @@ export class AppComponent {
   }
 
   isBetaRunning() {
-    let e = this.status.github.data.repository.refs.nodes.find(e => e.name == 'beta');
+    let e = this.status ? this.status.github.data.repository.refs.nodes.find(e => e.name == 'beta') : undefined;
     return (typeof e != 'undefined');
   }
 
@@ -179,6 +191,8 @@ export class AppComponent {
 
   extractMilestoneData() {
     // We want the current milestone, plus its start and end date.
+    // We find this milestone by looking for the oldest one in the list :)
+    // TODO: use this.status.currentSprint
     this.phase = this.status.github.data.repository.milestones.edges.reduce ((a, m) => {
       if(m.node.dueOn == null) return a;
       if(a == null || a.node.dueOn == null) return m;
@@ -189,11 +203,24 @@ export class AppComponent {
       this.phaseEnd = '?';
       this.phaseStart = '?';
     } else {
-      // Assuming a phase is 2 weeks
+      // Assuming a phase is 2 weeks; we can't really show more than that on screen easily anyway!
       this.phaseEnd = new Date(this.phase.node.dueOn).toDateString();
       let d = new Date(this.phase.node.dueOn);
-      d.setDate(d.getDate()-11);
+      d.setDate(d.getDate()-13);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
       this.phaseStart = d.toDateString();
+
+      let dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      let monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      this.sprintDays = new Array(14);
+      for(let n = 0; n < 14; n++) {
+        let dt = new Date();
+        dt.setDate(d.getDate()+n);
+        this.sprintDays[n] = {
+            date: dt,
+            txt: dayName[dt.getUTCDay()] + ' ' + dt.getUTCDate() + ' ' + monthName[dt.getUTCMonth()],
+            ghdate: dt.toISOString().substr(0,10)
+          };
+      }
     }
 
     // For the current milestone, Waiting-external and Future, we want to report. Other milestones, we'll ignore for now.

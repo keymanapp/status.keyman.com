@@ -54,4 +54,5 @@ and in the second, run:
 npm run start-client
 ```
 
-Point your browser to `http://localhost:4200` to view the live reload version of the application.
+* Point your browser to `http://localhost:4200` to view the live reload version of the application.
+* The query parameter `?c=1` adds a contributions view which is not visible by default.

@@ -21,7 +21,7 @@
             </span>
           </span>
           <span class="navbar-contributions" *ngIf="showContributions">
-            <span class="navbar-contribution" *ngFor="let user of status?.github.data.repository.contributions.nodes">
+            <span class="navbar-contribution" *ngFor="let user of status?.contributions.data.repository.contributions.nodes">
               <span *ngIf="user.contributions.pullRequests.nodes.length + user.contributions.reviews.nodes.length + user.contributions.issues.nodes.length > 0">
                 <img src="{{user.avatarUrl}}&size=40">
                 <span class="navbar-contribution-data">

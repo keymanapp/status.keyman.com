@@ -4,6 +4,10 @@ const https = require('https');
 
 const app = express();
 
+const githubContributions = require('./github-contributions');
+const githubStatus = require('./github-status');
+const currentSprint = require('./current-sprint');
+
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
@@ -16,6 +20,7 @@ let teamCityData = null;
 let teamCityRunningData = null;
 let keymanVersionData = null;
 let githubPullsData = null;
+let githubContributionsData = null;
 
 app.use('/', express.static('public/dist/public'));
 
@@ -27,7 +32,14 @@ app.get('/status', (request, response) => {
       headers["Access-Control-Allow-Origin"] = '*';
     }
     response.writeHead(200, headers);
-    response.write(JSON.stringify({teamCity: teamCityData, teamCityRunning: teamCityRunningData, keyman: keymanVersionData, github: githubPullsData}));
+    response.write(JSON.stringify({
+      teamCity: teamCityData,
+      teamCityRunning: teamCityRunningData,
+      keyman: keymanVersionData,
+      github: githubPullsData,
+      contributions: githubContributionsData,
+      currentSprint: currentSprint.getCurrentSprint(githubPullsData.data)
+    }));
     response.end();
   };
 
@@ -63,6 +75,8 @@ function refreshStatus(callback) {
 
   let SprintStartDateTime = getSprintStart().toISOString();
 
+  const ghStatusQuery = githubStatus.queryString();
+
   Promise.all([
     httpget(
       'build.palaso.org',
@@ -96,197 +110,32 @@ function refreshStatus(callback) {
       // Current rate limit cost is 31 points. We have 5000 points/hour.
       // https://developer.github.com/v4/guides/resource-limitations/
 
-      JSON.stringify({query: `
-      {
-        repository(owner: "keymanapp", name: "keyman") {
-
-          # Collect contributions
-
-          contributions: assignableUsers(first:100) {
-            nodes {
-              login
-              avatarUrl
-              contributions: contributionsCollection(from: "${SprintStartDateTime}", organizationID: "MDEyOk9yZ2FuaXphdGlvbjEyNDAyOTI2") {
-                pullRequests: pullRequestContributions(first: 100, orderBy: {direction: DESC}) {
-                  nodes {
-                    occurredAt
-                    pullRequest {
-                      number
-                      url
-                      title
-                    }
-                  }
-                }
-                reviews: pullRequestReviewContributions(first: 100, orderBy: {direction: DESC}) {
-                  nodes {
-                    occurredAt
-                    pullRequest {
-                      number
-                      url
-                      title
-                    }
-                  }
-                }
-                issues: issueContributions(first: 100, orderBy: {direction: DESC}) {
-                  nodes {
-                    occurredAt
-                    issue {
-                      number
-                      url
-                      title
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          refs(first:100, refPrefix: "refs/heads/") {
-            nodes {
-              name
-            }
-          }
-          issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
-            totalCount
-          }
-          issuesByLabelAndMilestone: labels(first: 10, query: "windows web developer mac ios android linux") {
-            edges {
-              node {
-                name
-                openIssues: issues(first: 100, filterBy: {states: [OPEN]}) {
-                  totalCount
-                  edges {
-                    node {
-                      milestone {
-                        title
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          milestones(first: 10, orderBy: {direction: ASC, field: DUE_DATE}, states: OPEN) {
-            edges {
-              node {
-                dueOn
-                title
-                openIssues: issues(first: 1, states: OPEN) {
-                  totalCount
-                }
-                closedIssues: issues(first: 1, states: CLOSED) {
-                  totalCount
-                }
-                openPullRequests: pullRequests(first: 1, states: OPEN) {
-                  totalCount
-                }
-                mergedPullRequests: pullRequests(first: 1, states: MERGED) {
-                  totalCount
-                }
-              }
-            }
-          }
-          pullRequests(last: 50, states: OPEN) {
-            edges {
-              node {
-                title
-                milestone {
-                  title
-                }
-                author {
-                  avatarUrl
-                  login
-                  url
-                }
-                # Simplest way to get reviewed state is with the hovercard...
-                hovercard(includeNotificationContexts:false) {
-                  contexts {
-                    message
-                    octicon
-                    __typename
-                  }
-                }
-                number
-                url
-                commits(last: 1) {
-                  edges {
-                    node {
-                      commit {
-                        status {
-                          contexts {
-                            description
-                            context
-                            state
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                labels(first: 25) {
-                  edges {
-                    node {
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        organization(login: "keymanapp") {
-          repositories(first: 30) {
-            nodes {
-              name
-              issuesByMilestone: issues(first: 100, filterBy: {states: [OPEN]}) {
-                totalCount
-                edges {
-                  node {
-                    milestone {
-                      title
-                    }
-                  }
-                }
-              }
-              pullRequests(last: 50, states: OPEN) {
-                edges {
-                  node {
-                    title
-                    number
-                    milestone {
-                      title
-                    }
-                    author {
-                      avatarUrl
-                      login
-                      url
-                    }
-                    # Simplest way to get reviewed state is with the hovercard...
-                    hovercard(includeNotificationContexts:false) {
-                      contexts {
-                        message
-                        octicon
-                        __typename
-                      }
-                    }
-                    url
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-                  `})
+      JSON.stringify({query: ghStatusQuery})
     )
   ]).then(data => {
+    // Get the current sprint from the GitHub data
+    // We actually get data from the Saturday before the 'official' sprint start
+    const phase = currentSprint.getCurrentSprint(JSON.parse(data[3]).data);
+    const ghContributionsQuery = githubContributions.queryString(phase ? new Date(phase.start-2).toISOString() : SprintStartDateTime);
 
-    teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
-    teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
-    keymanVersionData = JSON.parse(data[2]);//inputKeymanVersionData);
-    githubPullsData = JSON.parse(data[3]);
-    lastRefreshTime = Date.now();
-    if(callback) callback();
+    httppost('api.github.com', '/graphql',
+      {
+        Authorization: ` Bearer ${github_token}`,
+        Accept: 'application/vnd.github.antiope-preview'
+      },
+
+      // Gather the contributions for each recent user
+
+      JSON.stringify({query: ghContributionsQuery})
+    ).then(contributions => {
+      teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
+      teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
+      keymanVersionData = JSON.parse(data[2]);//inputKeymanVersionData);
+      githubPullsData = JSON.parse(data[3]);
+      githubContributionsData = JSON.parse(contributions);
+      lastRefreshTime = Date.now();
+      if(callback) callback();
+    });
   });
 }
 

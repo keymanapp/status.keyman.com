@@ -211,13 +211,18 @@ tr.tr-site td, tr.tr-site th {
   right: 60px;
 }
 
+.navbar-contribution-data img {
+  width: 48px;
+  height: 48px;
+  border-radius: 5px;
+}
+
 .navbar-contribution:hover .navbar-contribution-data {
   display: block;
 }
 
 .navbar-contribution-data thead th {
   white-space: nowrap;
-  font-size: 0.6em;
   text-align: center;
   vertical-align: middle;
 }

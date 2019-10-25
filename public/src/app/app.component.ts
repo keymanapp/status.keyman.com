@@ -217,7 +217,9 @@ export class AppComponent {
         dt.setDate(d.getDate()+n);
         this.sprintDays[n] = {
             date: dt,
-            txt: dayName[dt.getUTCDay()] + ' ' + dt.getUTCDate() + ' ' + monthName[dt.getUTCMonth()],
+            dayText: dayName[dt.getUTCDay()],
+            monthText: monthName[dt.getUTCMonth()],
+            dateText: dt.getUTCDate().toString(),
             ghdate: dt.toISOString().substr(0,10)
           };
       }

@@ -28,8 +28,12 @@
                   <table class="table table-striped table-bordered">
                     <thead>
                       <tr>
-                        <th style='width:9%'><a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0].ghdate}}&to={{sprintDays[13].ghdate}}' target='_blank'><img src="{{user.avatarUrl}}&size=40"></a></th>
-                        <th style='width:6.5%' *ngFor="let day of sprintDays"><a href='https://github.com/{{user.login}}?tab=overview&from={{day.ghdate}}&to={{day.ghdate}}' target='_blank'>{{day.txt}}</a></th>
+                        <th style='width:9%'>
+                          <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0].ghdate}}&to={{sprintDays[13].ghdate}}' target='_blank'><img src="{{user.avatarUrl}}&size=48"></a>
+                        </th>
+                        <th style='width:6.5%' *ngFor="let day of sprintDays">
+                          <a href='https://github.com/{{user.login}}?tab=overview&from={{day.ghdate}}&to={{day.ghdate}}' target='_blank'>{{day.dayText}}<br>{{day.monthText}} {{day.dateText}}</a>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>

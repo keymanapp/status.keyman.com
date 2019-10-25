@@ -193,9 +193,6 @@ tr.tr-site td, tr.tr-site th {
 }
 
 .navbar-contribution > span > img {
-  border-radius: 3px;
-  width: 40px;
-  height: 40px;
   margin: -8px 4px 0;
 }
 
@@ -209,12 +206,6 @@ tr.tr-site td, tr.tr-site th {
   z-index: 1;
   left: 60px;
   right: 60px;
-}
-
-.navbar-contribution-data img {
-  width: 48px;
-  height: 48px;
-  border-radius: 5px;
 }
 
 .navbar-contribution:hover .navbar-contribution-data {

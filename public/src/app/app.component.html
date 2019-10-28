@@ -185,7 +185,7 @@
           <td class='issues'>
 
             <ng-container *ngFor="let milestone of site.value.milestones">
-              <a target='_blank' href='https://github.com/keymanapp/{{site.key}}/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+milestone%3A{{milestone.title}}'>
+              <a target='_blank' href='https://github.com/keymanapp/{{site.key}}/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+{{milestone.title=="Other" ? "no:milestone" : "milestone:"+milestone.title}}'>
                 <span class='countbox milestone-{{milestone.id}}' *ngIf="milestone.count > 0 && site.key != 'developer.keyman.com'">
                   <span class='countbox-title'>{{milestone.title}}</span>
                   <span class='countbox-value'>{{milestone.count}}</span>

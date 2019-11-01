@@ -25,6 +25,8 @@ export class AppComponent {
 
   sprintDays = [];
 
+  selectedContribution = null;
+
   // Phase data, grabbing from github's milestones for the keyman repo
   milestones = {};
   phase: any = null;
@@ -213,8 +215,7 @@ export class AppComponent {
       let monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       this.sprintDays = new Array(14);
       for(let n = 0; n < 14; n++) {
-        let dt = new Date();
-        dt.setDate(d.getDate()+n);
+        let dt = new Date(d.valueOf()+n*86400*1000);
         this.sprintDays[n] = {
             date: dt,
             dayText: dayName[dt.getUTCDay()],
@@ -291,5 +292,9 @@ export class AppComponent {
         this.unlabeledPulls.push({pull:pull});
       }
     }
+  }
+
+  selectUser(login) {
+    this.selectedContribution = login == this.selectedContribution ? null : login;
   }
 }

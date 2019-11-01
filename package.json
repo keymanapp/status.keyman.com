@@ -6,7 +6,7 @@
   "scripts": {
     "build": "cd public && npm run-script build && cd ..",
     "start-client": "cd public && npm run-script start",
-    "start-server": "nodemon code.js"
+    "start-server": "[ -f ./localenv.sh ] && . ./localenv.sh; nodemon code.js"
   },
   "author": "Marc Durdin",
   "license": "MIT",

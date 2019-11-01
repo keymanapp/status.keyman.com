@@ -208,8 +208,17 @@ tr.tr-site td, tr.tr-site th {
   right: 60px;
 }
 
-.navbar-contribution:hover .navbar-contribution-data {
+.navbar-contribution:hover .navbar-contribution-data,
+.navbar-contribution.fixed .navbar-contribution-data {
   display: block;
+}
+
+.navbar-contribution.fixed .navbar-contribution-data {
+  z-index: 2;
+}
+
+.navbar-contribution.fixed > span > img {
+  border: solid 2px red;
 }
 
 .navbar-contribution-data thead th {

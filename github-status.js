@@ -54,19 +54,32 @@ exports.queryString = function() { return `
           milestone {
             title
           }
+
+          isDraft # requires application/vnd.github.shadow-cat-preview+json
+
           author {
             avatarUrl
             login
             url
           }
+
           # Simplest way to get reviewed state is with the hovercard...
-          hovercard(includeNotificationContexts:false) {
-            contexts {
-              message
-              octicon
-              __typename
+          reviews(last:100) {
+            nodes {
+              author { login }
+              updatedAt
+              state
             }
           }
+
+          #hovercard(includeNotificationContexts:false) {
+          #  contexts {
+          #    message
+          #    octicon
+          #    __typename
+          #  }
+          #}
+
           number
           url
           commits(last: 1) {
@@ -114,6 +127,7 @@ exports.queryString = function() { return `
             node {
               title
               number
+              isDraft # requires application/vnd.github.shadow-cat-preview+json
               milestone {
                 title
               }
@@ -122,14 +136,24 @@ exports.queryString = function() { return `
                 login
                 url
               }
-              # Simplest way to get reviewed state is with the hovercard...
-              hovercard(includeNotificationContexts:false) {
-                contexts {
-                  message
-                  octicon
-                  __typename
+
+              reviews(last:100) {
+                nodes {
+                  author { login }
+                  updatedAt
+                  state
                 }
               }
+
+              # Simplest way to get reviewed state is with the hovercard...
+              #hovercard(includeNotificationContexts:false) {
+              #  contexts {
+              #    message
+              #    octicon
+              #    __typename
+              #  }
+              #}
+
               url
             }
           }

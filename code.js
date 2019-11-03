@@ -100,7 +100,8 @@ function refreshStatus(callback) {
     httppost('api.github.com', '/graphql',
       {
         Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview'
+        Accept: 'application/vnd.github.antiope-preview',
+        Accept: 'application/vnd.github.shadow-cat-preview+json'
       },
 
       // Lists all open pull requests in keyman repos
@@ -121,7 +122,8 @@ function refreshStatus(callback) {
     httppost('api.github.com', '/graphql',
       {
         Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview'
+        Accept: 'application/vnd.github.antiope-preview',
+        Accept: 'application/vnd.github.shadow-cat-preview+json'
       },
 
       // Gather the contributions for each recent user

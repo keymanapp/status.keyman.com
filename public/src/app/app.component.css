@@ -154,10 +154,7 @@ td, th {
 }
 
 .tier-release-date {
-  xpadding: 4px 4px 0;
   text-align: center;
-  xmargin: 0 4px;
-  xwidth: 112px;
 }
 
 .tier-release-version {

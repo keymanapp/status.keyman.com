@@ -35,26 +35,15 @@ export class PullRequestComponent implements OnInit {
     });
 
     Object.entries(authors).forEach(entry => {
-      entry[1].state = entry[1].reviews.reduce((a, c) => c.state == 'APPROVED' || c.state == 'CHANGES_REQUESTED' ? c.state : a, 'PENDING');
+      (entry[1] as any).state = (entry[1] as any).reviews.reduce((a, c) => c.state == 'APPROVED' || c.state == 'CHANGES_REQUESTED' ? c.state : a, 'PENDING');
     });
 
     return Object.entries(authors).reduce(
       (a, c) =>
-        c[1].state == 'CHANGES_REQUESTED' || a == 'status-changes-requested' ? 'status-changes-requested' :
-        c[1].state == 'APPROVED' || a == 'status-approved' ? 'status-approved' : 'status-pending',
+        (c[1] as any).state == 'CHANGES_REQUESTED' || a == 'status-changes-requested' ? 'status-changes-requested' :
+        (c[1] as any).state == 'APPROVED' || a == 'status-approved' ? 'status-approved' : 'status-pending',
       'status-pending' // Initial value
     );
-
-    /*console.log(authors);
-
-    let state: string = this.pull.pull.node.hovercard.contexts.reduce((a, c) => a || (c.__typename == "ReviewStatusHovercardContext" ? c.octicon : null), null);
-    switch(state) {
-      case "comment":         return "status-pending";
-      case "check":           return "status-approved";
-      case "request-changes": return "status-changes-requested";
-    }
-
-    return "status-pending";*/
   }
 
 }

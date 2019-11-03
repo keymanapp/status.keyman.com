@@ -63,7 +63,6 @@ exports.queryString = function() { return `
             url
           }
 
-          # Simplest way to get reviewed state is with the hovercard...
           reviews(last:100) {
             nodes {
               author { login }
@@ -71,14 +70,6 @@ exports.queryString = function() { return `
               state
             }
           }
-
-          #hovercard(includeNotificationContexts:false) {
-          #  contexts {
-          #    message
-          #    octicon
-          #    __typename
-          #  }
-          #}
 
           number
           url
@@ -144,15 +135,6 @@ exports.queryString = function() { return `
                   state
                 }
               }
-
-              # Simplest way to get reviewed state is with the hovercard...
-              #hovercard(includeNotificationContexts:false) {
-              #  contexts {
-              #    message
-              #    octicon
-              #    __typename
-              #  }
-              #}
 
               url
             }

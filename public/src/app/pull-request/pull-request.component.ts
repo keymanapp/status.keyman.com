@@ -25,14 +25,25 @@ export class PullRequestComponent implements OnInit {
   }
 
   pullStatus() {
-    let state: string = this.pull.pull.node.hovercard.contexts.reduce((a, c) => a || (c.__typename == "ReviewStatusHovercardContext" ? c.octicon : null), null);
-    switch(state) {
-      case "comment":         return "status-pending";
-      case "check":           return "status-approved";
-      case "request-changes": return "status-changes-requested";
-    }
+    let authors = {};
 
-    return "status-pending";
+    if(this.pull.pull.node.isDraft) return 'status-draft';
+
+    this.pull.pull.node.reviews.nodes.forEach(review => {
+      if(!authors[review.author.login]) authors[review.author.login] = {reviews:[]};
+      authors[review.author.login].reviews.push(review);
+    });
+
+    Object.entries(authors).forEach(entry => {
+      (entry[1] as any).state = (entry[1] as any).reviews.reduce((a, c) => c.state == 'APPROVED' || c.state == 'CHANGES_REQUESTED' ? c.state : a, 'PENDING');
+    });
+
+    return Object.entries(authors).reduce(
+      (a, c) =>
+        (c[1] as any).state == 'CHANGES_REQUESTED' || a == 'status-changes-requested' ? 'status-changes-requested' :
+        (c[1] as any).state == 'APPROVED' || a == 'status-approved' ? 'status-approved' : 'status-pending',
+      'status-pending' // Initial value
+    );
   }
 
 }

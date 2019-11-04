@@ -3,6 +3,7 @@
   border-radius: 4px;
   display: inline-block;
   background: #c0c0c0;
+  box-shadow: 3px 3px rgba(40,40,40,0.2);
 }
 
 .label a.author img.avatar-32 {
@@ -41,6 +42,10 @@
 
 /* Future PRs */
 
+.label.status-draft {
+  opacity: 0.5;
+}
+
 .future {
   opacity: 0.3;
 }
@@ -56,7 +61,7 @@
 .label.status-approved::after {
   content: '✔️';
   alt: 'Approved';
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   display: inline-block;
   color: black;
 }
@@ -64,17 +69,24 @@
 .label.status-pending::after {
   content:'🟡';
   alt: 'Pending';
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   color: black;
 }
 
 .label.status-changes-requested::after {
   content:'❌';
   alt: 'Changes Requested';
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   color: black;
 }
 
+.label.status-draft::after {
+  content:'🚧';
+  alt: 'In Draft';
+  padding-right: 4px;
+  font-size: 0.75rem;
+  color: black;
+}
 
 .label a.pull {
   padding: 0px 6px;

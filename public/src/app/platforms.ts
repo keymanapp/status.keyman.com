@@ -37,7 +37,7 @@ export const platforms = {
   },
   'developer': {
     id:'developer',
-    name:'Developer Tools',
+    name:'Developer',
     configs:{"alpha": "Keyman_Build", "beta": "KeymanDesktop_Beta", "stable": "KeymanDesktop_Stable", prs: "KeymanDesktop_TestPullRequests"},
     context: "Test: Pull Requests (Keyman Desktop and Keyman Developer)"
   },

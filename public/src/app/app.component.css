@@ -149,14 +149,12 @@ td, th {
 }
 
 .tier-release {
-  float: left;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .tier-release-date {
-  padding: 4px 4px 0;
   text-align: center;
-  margin: 0 4px;
-  width: 112px;
 }
 
 .tier-release-version {
@@ -167,9 +165,15 @@ td, th {
 }
 
 .tier-build-state {
-  float: left;
-  margin-left: 8px;
+  display: inline-block;
+  margin-left: 0px;
+  vertical-align: middle;
   width: 120px;
+}
+
+tbody th,
+td#tier-stable, td#tier-beta, td#tier-alpha {
+  white-space: nowrap;
 }
 
 thead th.tier {

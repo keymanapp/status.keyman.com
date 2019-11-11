@@ -15,7 +15,7 @@ export class PullRequestComponent implements OnInit {
   }
 
   pullClass() {
-    let base = this.pull.pull.node.milestone.title == 'Future' ? 'future ' : '';
+    let base = this.pull.pull.node.milestone ? this.pull.pull.node.milestone.title == 'Future' ? 'future ' : '' : '';
     if(!this.pull.state) return base+'missing';
     switch(this.pull.state.state) {
       case 'SUCCESS': return base+'success';

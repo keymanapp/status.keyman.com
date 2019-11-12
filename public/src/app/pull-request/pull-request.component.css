@@ -63,13 +63,15 @@
   alt: 'Approved';
   font-size: 0.75rem;
   display: inline-block;
+  font-family: "Noto Color Emoji";
   color: black;
 }
 
 .label.status-pending::after {
-  content:'🟡';
+  content:'😶';
   alt: 'Pending';
   font-size: 0.75rem;
+  font-family: "Noto Color Emoji";
   color: black;
 }
 
@@ -77,6 +79,7 @@
   content:'❌';
   alt: 'Changes Requested';
   font-size: 0.75rem;
+  font-family: "Noto Color Emoji";
   color: black;
 }
 
@@ -85,6 +88,7 @@
   alt: 'In Draft';
   padding-right: 4px;
   font-size: 0.75rem;
+  font-family: "Noto Color Emoji";
   color: black;
 }
 

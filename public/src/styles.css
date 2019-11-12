@@ -19,3 +19,8 @@
   height: 48px;
   border-radius: 5px;
 }
+
+@font-face {
+  font-family: "Noto Color Emoji";
+  src: url("assets/NotoColorEmoji.ttf");
+}

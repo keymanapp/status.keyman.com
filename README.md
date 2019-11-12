@@ -24,6 +24,12 @@ export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
 ```
 
+On Windows, you'll also need npm setup to use bash as its shell:
+
+```
+npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"
+```
+
 ## Running the server ##
 
 For a simple run, you can just run on localhost:3000. Start the Node Server:

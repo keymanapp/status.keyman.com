@@ -6,11 +6,13 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { PullRequestComponent } from './pull-request/pull-request.component';
 import { FilterObjectByDatePipe } from './pipes/filter-object-by-date.pipe';
+import { CountBoxComponent } from './count-box/count-box.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PullRequestComponent,
+    CountBoxComponent,
     FilterObjectByDatePipe,
   ],
   imports: [

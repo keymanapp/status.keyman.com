@@ -76,64 +76,6 @@ a.label.missing {
   background: rgb(12, 24, 48);
 }
 
-/* Count Boxes */
-
-.countbox {
-  font-size: 0.75rem;
-  display: inline-block; margin: 0 2px;
-}
-
-.countbox-title {
-  padding: 2px;
-  display: inline-block;
-  background: #464646;
-  color: white;
-  border: solid 1px #c0c0c0;
-  border-right: none;
-  border-radius: 3px 0 0 3px;
-}
-
-.countbox-value {
-  padding: 2px 4px;
-  font-weight: bold;
-  display: inline-block;
-  border: solid 1px #c0c0c0;
-  color: black;
-  border-left: none;
-  border-radius: 0 3px 3px 0;
-}
-
-.milestone-current .countbox-title {
-  border-color: rgb(68,204,17);
-  background: rgb(68,204,17);
-}
-
-.milestone-current .countbox-value {
-  border-color: rgb(68,204,17);
-  color: rgb(68,204,17);
-}
-
-.milestone-future .countbox-title,
-.milestone-waiting .countbox-title {
-  background: rgb(204,204,224);
-}
-
-.milestone-future .countbox-value,
-.milestone-waiting .countbox-value {
-  color: rgb(204,204,224);
-}
-
-.milestone-other .countbox-title {
-  background: rgb(255, 24, 48);
-  border-color: rgb(255, 24, 48);
-  color: white;
-}
-
-.milestone-other .countbox-value {
-  border-color: rgb(255, 24, 48);
-  color: rgb(255, 24, 48);
-}
-
 /* Etc */
 
 td.tier {
@@ -237,4 +179,17 @@ tr.tr-site td, tr.tr-site th {
   border-radius: 3px;
   padding: 2px;
   margin: 2px 4px;
+}
+
+table#sites-and-relatives {
+  border: none !important;
+}
+
+#sites-and-relatives .gap {
+  border: none;
+  background: white;
+  max-width: 0;
+  width: 0;
+  padding: 8px;
+  margin: 0;
 }

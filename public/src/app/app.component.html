@@ -194,12 +194,7 @@
           <td class='issues'>
 
             <ng-container *ngFor="let milestone of site.value.milestones">
-              <ng-container *ngIf="site.key != 'developer.keyman.com'">
-                <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-'+milestone.id"></app-count-box>                
-              </ng-container>
-              <ng-container *ngIf="site.key == 'developer.keyman.com'">
-                <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-future'"></app-count-box>                
-              </ng-container>
+              <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-'+milestone.id"></app-count-box>
             </ng-container>
           </td>
         </ng-container>

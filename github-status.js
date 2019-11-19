@@ -1,5 +1,23 @@
 exports.queryString = function() { return `
 {
+  keyboards: repository(owner: "keymanapp", name: "keyboards") {
+    issues(filterBy: {states: OPEN}) {
+      totalCount
+    }
+    pullRequests(states: OPEN) {
+      totalCount
+    }
+  }
+
+  lexicalModels: repository(owner: "keymanapp", name: "lexical-models") {
+    issues(filterBy: {states: OPEN}) {
+      totalCount
+    }
+    pullRequests(states: OPEN) {
+      totalCount
+    }
+  }
+
   repository(owner: "keymanapp", name: "keyman") {
 
     refs(first:100, refPrefix: "refs/heads/") {

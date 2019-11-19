@@ -1,0 +1,62 @@
+
+/* Count Boxes */
+
+.countbox {
+  font-size: 0.75rem;
+  display: inline-block;
+  margin: 0 2px;
+  white-space: nowrap;
+}
+
+.countbox-title {
+  padding: 2px;
+  display: inline-block;
+  background: #8a4242;
+  color: white;
+  border: solid 1px #3e2d2d;
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+}
+
+.countbox-value {
+  padding: 2px 4px;
+  font-weight: bold;
+  display: inline-block;
+  border: solid 1px #3e2d2d;
+  color: black;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
+}
+
+.milestone-current .countbox-title {
+  border-color: rgb(68,204,17);
+  background: rgb(68,204,17);
+}
+
+.milestone-current .countbox-value {
+  border-color: rgb(68,204,17);
+  color: rgb(68,204,17);
+}
+
+.milestone-future .countbox-title,
+.milestone-waiting .countbox-title {
+  background: rgb(204,204,224);
+  border: solid 1px #c0c0c0;
+}
+
+.milestone-future .countbox-value,
+.milestone-waiting .countbox-value {
+  color: rgb(204,204,224);
+  border: solid 1px #c0c0c0;
+}
+
+.milestone-other .countbox-title {
+  background: rgb(255, 24, 48);
+  border-color: rgb(255, 24, 48);
+  color: white;
+}
+
+.milestone-other .countbox-value {
+  border-color: rgb(255, 24, 48);
+  color: rgb(255, 24, 48);
+}

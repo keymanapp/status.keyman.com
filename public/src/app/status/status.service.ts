@@ -9,7 +9,6 @@ export class StatusService {
   constructor(private http: HttpClient) { }
 
   getStatus(sprint?: string) {
-    console.log(sprint);
     let data = sprint ? 
       this.http.get(this.statusUrl, {params:{sprint:sprint}}) : 
       this.http.get(this.statusUrl);

@@ -211,7 +211,6 @@ export class AppComponent {
       this.phaseEnd = new Date(this.phase.end).toDateString();
       this.phaseStart = new Date(this.phase.start).toDateString();
       
-      //this.phaseEnd = new Date(this.phase.node.dueOn).toDateString();
       let d = new Date(this.phaseStart);
       d.setDate(d.getDate()-1);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
       // TODO: sort out timezones one day ...
@@ -262,7 +261,7 @@ export class AppComponent {
               platform.milestones.push(m);
             }
             m.count++;
-            break; //platform.milestones[3].count++; break;
+            break; 
         }
       });
     });

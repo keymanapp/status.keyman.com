@@ -199,17 +199,9 @@ export class AppComponent {
   extractMilestoneData() {
     // We want the current milestone, plus its start and end date.
     // We find this milestone by looking for the oldest one in the list :)
-    // TODO: use this.status.currentSprint
 
-    //console.log(this.status);
     this.phase = this.status.currentSprint;
 
-    /*this.phase = this.status.github.data.repository.milestones.edges.reduce ((a, m) => {
-      if(m.node.dueOn == null) return a;
-      if(a == null || a.node.dueOn == null) return m;
-      if(new Date(a.node.dueOn) < new Date(m.node.dueOn)) return a;
-      return m;
-    });*/
     if(this.phase == null) {
       this.phaseEnd = '?';
       this.phaseStart = '?';
@@ -222,7 +214,7 @@ export class AppComponent {
       //this.phaseEnd = new Date(this.phase.node.dueOn).toDateString();
       let d = new Date(this.phaseStart);
       d.setDate(d.getDate()-1);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
-      //this.phaseStart = d.toDateString();
+      // TODO: sort out timezones one day ...
 
       let dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       let monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

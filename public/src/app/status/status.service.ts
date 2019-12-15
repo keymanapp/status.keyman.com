@@ -8,8 +8,11 @@ export class StatusService {
 
   constructor(private http: HttpClient) { }
 
-  getStatus() {
-    let data = this.http.get(this.statusUrl);
+  getStatus(sprint?: string) {
+    console.log(sprint);
+    let data = sprint ? 
+      this.http.get(this.statusUrl, {params:{sprint:sprint}}) : 
+      this.http.get(this.statusUrl);
 
     // Keyman version data is already pretty clean.
 

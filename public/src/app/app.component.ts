@@ -44,11 +44,9 @@ export class AppComponent {
   ngOnInit() {
     this.showContributions = this.route.snapshot.queryParamMap.get('c') == '1';
     this.sprintOverride = this.route.snapshot.queryParamMap.get('sprint');
-    console.log('z:'+this.sprintOverride);
     this.route.queryParamMap.subscribe(queryParams => {
       this.showContributions = queryParams.get('c') == '1';
       this.sprintOverride = queryParams.get('sprint');
-      console.log('x:'+this.sprintOverride);
       this.refreshStatus();
     });
 

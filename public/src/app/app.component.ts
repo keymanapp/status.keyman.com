@@ -42,19 +42,21 @@ export class AppComponent {
   };
 
   ngOnInit() {
-    this.showContributions = this.route.snapshot.queryParamMap.get('c') == '1';
-    this.sprintOverride = this.route.snapshot.queryParamMap.get('sprint');
-    this.route.queryParamMap.subscribe(queryParams => {
-      this.showContributions = queryParams.get('c') == '1';
-      this.sprintOverride = queryParams.get('sprint');
-      this.refreshStatus();
-    });
+    this.route.queryParamMap
+      .subscribe(queryParams => {
+        // This runs twice when params are included.
+        // Inelegant workaround based on: https://github.com/angular/angular/issues/12157#issuecomment-396979118.
+        // Note how this uses location.href so it's no longer mockable. Too bad so sad.
+        if(queryParams.keys.length == 0 && location.href.includes('?')) return;
+
+        this.showContributions = queryParams.get('c') == '1';
+        this.sprintOverride = queryParams.get('sprint');
+        this.refreshStatus();
+      });
 
     this.timer = setInterval(() => {
       this.refreshStatus();
     }, this.TIMER_INTERVAL);
-
-    this.refreshStatus();
   }
 
   refreshStatus() {

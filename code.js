@@ -16,16 +16,17 @@ const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
 
 const REFRESH_INTERVAL = 60000; //msec
 let lastRefreshTime = 0;
-let teamCityData = null;
-let teamCityRunningData = null;
-let keymanVersionData = null;
-let githubPullsData = null;
-let githubContributionsData = null;
+
+let cachedData = {};
 
 app.use('/', express.static('public/dist/public'));
 
-app.get('/status', (request, response) => {
-  let cb = () => {
+app.get('/status/', (request, response) => {
+
+  let sprint = request.query.sprint ? request.query.sprint : 'current';
+  let cacheInvalid = cachedData[sprint] ? Date.now()-cachedData[sprint].lastRefreshTime > REFRESH_INTERVAL : true;
+
+  let cb = (data) => {
     let headers = {"Content-Type": "text/html"};
     if(!isProduction) {
       // Allow requests from ng-served host in development
@@ -33,20 +34,20 @@ app.get('/status', (request, response) => {
     }
     response.writeHead(200, headers);
     response.write(JSON.stringify({
-      teamCity: teamCityData,
-      teamCityRunning: teamCityRunningData,
-      keyman: keymanVersionData,
-      github: githubPullsData,
-      contributions: githubContributionsData,
-      currentSprint: currentSprint.getCurrentSprint(githubPullsData.data)
+      teamCity: data.teamCityData,
+      teamCityRunning: data.teamCityRunningData,
+      keyman: data.keymanVersionData,
+      github: data.githubPullsData,
+      contributions: data.githubContributionsData,
+      currentSprint: currentSprint.getCurrentSprint(data.githubPullsData.data)
     }));
     response.end();
   };
 
-  if(teamCityData == null || Date.now()-lastRefreshTime > REFRESH_INTERVAL) {
-    refreshStatus(cb);
+  if(cacheInvalid || !cachedData[sprint] || !cachedData[sprint].lastRefreshTime) {
+    refreshStatus(sprint, cb);
   } else {
-    cb();
+    cb(cachedData[sprint]);
   }
 });
 
@@ -71,11 +72,12 @@ function getSprintStart() {
   return StartOfWeek;
 }
 
-function refreshStatus(callback) {
+function refreshStatus(sprint, callback) {
+  cachedData[sprint] = {lastRefreshTime: 0};
 
   let SprintStartDateTime = getSprintStart().toISOString();
 
-  const ghStatusQuery = githubStatus.queryString();
+  const ghStatusQuery = githubStatus.queryString(sprint);
 
   Promise.all([
     httpget(
@@ -116,7 +118,9 @@ function refreshStatus(callback) {
   ]).then(data => {
     // Get the current sprint from the GitHub data
     // We actually get data from the Saturday before the 'official' sprint start
-    const phase = currentSprint.getCurrentSprint(JSON.parse(data[3]).data);
+
+    let githubPullsData = JSON.parse(data[3]);
+    const phase = currentSprint.getCurrentSprint(githubPullsData.data);
     const ghContributionsQuery = githubContributions.queryString(phase ? new Date(phase.start-2).toISOString() : SprintStartDateTime);
 
     httppost('api.github.com', '/graphql',
@@ -130,13 +134,13 @@ function refreshStatus(callback) {
 
       JSON.stringify({query: ghContributionsQuery})
     ).then(contributions => {
-      teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
-      teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
-      keymanVersionData = JSON.parse(data[2]);//inputKeymanVersionData);
-      githubPullsData = JSON.parse(data[3]);
-      githubContributionsData = JSON.parse(contributions);
-      lastRefreshTime = Date.now();
-      if(callback) callback();
+      cachedData[sprint].teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
+      cachedData[sprint].teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
+      cachedData[sprint].keymanVersionData = JSON.parse(data[2]);//inputKeymanVersionData);
+      cachedData[sprint].githubPullsData = githubPullsData;
+      cachedData[sprint].githubContributionsData = JSON.parse(contributions);
+      cachedData[sprint].lastRefreshTime = Date.now();
+      if(callback) callback(cachedData[sprint]);
     });
   });
 }
@@ -216,7 +220,7 @@ function httppost(hostname, path, headers, data) {
   });
 };
 
-refreshStatus();
+refreshStatus('current');
 
 console.log(`Starting app listening on ${port}`);
 app.listen(port);

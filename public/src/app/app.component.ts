@@ -33,29 +33,36 @@ export class AppComponent {
   phaseEnd = '';
   phaseStart = '';
 
+  // Query parameters
   showContributions = false;
+  sprintOverride = null;
 
   constructor(private statusService: StatusService, private route: ActivatedRoute) {
     this.JSON = JSON;
   };
 
   ngOnInit() {
-    this.showContributions = this.route.snapshot.queryParamMap.get('c') == '1';
-    this.route.queryParamMap.subscribe(queryParams => {
-      this.showContributions = queryParams.get('c') == '1';
-    })
+    this.route.queryParamMap
+      .subscribe(queryParams => {
+        // This runs twice when params are included.
+        // Inelegant workaround based on: https://github.com/angular/angular/issues/12157#issuecomment-396979118.
+        // Note how this uses location.href so it's no longer mockable. Too bad so sad.
+        if(queryParams.keys.length == 0 && location.href.includes('?')) return;
+
+        this.showContributions = queryParams.get('c') == '1';
+        this.sprintOverride = queryParams.get('sprint');
+        this.refreshStatus();
+      });
 
     this.timer = setInterval(() => {
       this.refreshStatus();
     }, this.TIMER_INTERVAL);
-
-    this.refreshStatus();
   }
 
   refreshStatus() {
     // Suck in Keyman Status from code.js (server side)
 
-    this.statusService.getStatus()
+    this.statusService.getStatus(this.sprintOverride)
       .subscribe(
         (data: Object) => {
           this.status = { ...data };
@@ -194,22 +201,21 @@ export class AppComponent {
   extractMilestoneData() {
     // We want the current milestone, plus its start and end date.
     // We find this milestone by looking for the oldest one in the list :)
-    // TODO: use this.status.currentSprint
-    this.phase = this.status.github.data.repository.milestones.edges.reduce ((a, m) => {
-      if(m.node.dueOn == null) return a;
-      if(a == null || a.node.dueOn == null) return m;
-      if(new Date(a.node.dueOn) < new Date(m.node.dueOn)) return a;
-      return m;
-    });
+
+    this.phase = this.status.currentSprint;
+
     if(this.phase == null) {
       this.phaseEnd = '?';
       this.phaseStart = '?';
+      this.phase = {title:'?'};
     } else {
       // Assuming a phase is 2 weeks; we can't really show more than that on screen easily anyway!
-      this.phaseEnd = new Date(this.phase.node.dueOn).toDateString();
-      let d = new Date(this.phase.node.dueOn);
-      d.setDate(d.getDate()-13);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
-      this.phaseStart = d.toDateString();
+      this.phaseEnd = new Date(this.phase.end).toDateString();
+      this.phaseStart = new Date(this.phase.start).toDateString();
+      
+      let d = new Date(this.phaseStart);
+      d.setDate(d.getDate()-1);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
+      // TODO: sort out timezones one day ...
 
       let dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       let monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -229,7 +235,7 @@ export class AppComponent {
     // For the current milestone, Waiting-external and Future, we want to report. Other milestones, we'll ignore for now.
     this.milestones = {
       Future: { title: "Future", count: 0 },
-      Current: { title: this.phase.node.title, count: 0 },
+      Current: { title: this.phase.title, count: 0 },
       Waiting: { title: "Waiting-external", count: 0 },
       Other: { title: "Other", count: 0 }
     };
@@ -239,7 +245,7 @@ export class AppComponent {
       let platform = this.platforms[label.node.name];
       if(!platform) return;
       platform.milestones = [
-        { id: 'current', title: this.phase.node.title, count: 0 },
+        { id: 'current', title: this.phase.title, count: 0 },
         { id: 'future', title: "Future", count: 0 },
         { id: 'waiting', title: "Waiting-external", count: 0 },
         { id: 'other', title: "Other", count: 0 }
@@ -247,7 +253,7 @@ export class AppComponent {
       label.node.openIssues.edges.forEach(issue => {
         if(!issue.node.milestone) platform.milestones[3].count++;
         else switch(issue.node.milestone.title) {
-          case this.phase.node.title: platform.milestones[0].count++; break;
+          case this.phase.title: platform.milestones[0].count++; break;
           case "Future": platform.milestones[1].count++; break;
           case "Waiting-external": platform.milestones[2].count++; break;
           default:
@@ -257,7 +263,7 @@ export class AppComponent {
               platform.milestones.push(m);
             }
             m.count++;
-            break; //platform.milestones[3].count++; break;
+            break; 
         }
       });
     });
@@ -267,7 +273,7 @@ export class AppComponent {
       let site = this.sites[repo.name];
       if(!site) return;
       site.milestones = [
-        { id: 'current', title: this.phase.node.title, count: 0 },
+        { id: 'current', title: this.phase.title, count: 0 },
         { id: 'future', title: "Future", count: 0 },
         { id: 'waiting', title: "Waiting-external", count: 0 },
         { id: 'other', title: "Other", count: 0 }
@@ -275,7 +281,7 @@ export class AppComponent {
       repo.issuesByMilestone.edges.forEach(issue => {
         if(!issue.node.milestone) site.milestones[3].count++;
         else switch(issue.node.milestone.title) {
-          case this.phase.node.title: site.milestones[0].count++; break;
+          case this.phase.title: site.milestones[0].count++; break;
           case "Future": site.milestones[1].count++; break;
           case "Waiting-external": site.milestones[2].count++; break;
           default: site.milestones[3].count++; break;

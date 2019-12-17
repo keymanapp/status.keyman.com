@@ -1,5 +1,30 @@
-exports.queryString = function() { return `
+exports.queryString = function(sprint) { 
+  let search = '';
+  if(sprint != 'current') {
+    // GH search appears to have a bug where it returns issues from another milestone if we don't include 'is:closed'...
+    // we can probably safely assume is:closed because we are always looking at past milestones
+    search = `
+    milestoneDueOn: search(first: 1, type:ISSUE, query:"is:issue is:closed org:keymanapp repo:keyman milestone:${sprint}") {
+      edges {
+        node {
+          ... on Issue {
+            title
+            number
+            milestone {
+              title
+              dueOn
+            }
+          }
+        }
+      }
+    }
+    `;
+  }
+  
+  return `
 {
+  ${search}
+
   keyboards: repository(owner: "keymanapp", name: "keyboards") {
     issues(filterBy: {states: OPEN}) {
       totalCount
@@ -45,6 +70,7 @@ exports.queryString = function() { return `
         }
       }
     }
+
     milestones(first: 10, orderBy: {direction: ASC, field: DUE_DATE}, states: OPEN) {
       edges {
         node {

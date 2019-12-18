@@ -136,7 +136,7 @@ function refreshStatus(sprint, callback) {
     ).then(contributions => {
       cachedData[sprint].teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
       cachedData[sprint].teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
-      cachedData[sprint].keymanVersionData = JSON.parse(data[2]);//inputKeymanVersionData);
+      cachedData[sprint].keymanVersionData = transformKeymanResponse(JSON.parse(data[2]));
       cachedData[sprint].githubPullsData = githubPullsData;
       cachedData[sprint].githubContributionsData = JSON.parse(contributions);
       cachedData[sprint].lastRefreshTime = Date.now();
@@ -234,5 +234,24 @@ function transformTeamCityResponse(data) {
   });
 
   data.buildType = {};
+  return data;
+}
+
+function transformKeymanResponse(data) {
+  Object.keys(data).forEach(platform => {
+    Object.keys(data[platform]).forEach(tier => {
+      const version = data[platform][tier].version;
+      const prefix = `https://downloads.keyman.com/${platform}/${tier}/${version}`;
+      switch(platform) {
+        case 'android':   data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.apk`; break;
+        case 'ios':       data[platform][tier].downloadUrl = `${prefix}/keyman-ios-${version}.ipa`; break;
+        case 'linux':     data[platform][tier].downloadUrl = `${prefix}/`; break;
+        case 'mac':       data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.dmg`; break;
+        case 'web':       data[platform][tier].downloadUrl = `https://keymanweb.com?version=${version}`; break;
+        case 'windows':   data[platform][tier].downloadUrl = `${prefix}/keymandesktop-${version}.exe`; break;
+        case 'developer': data[platform][tier].downloadUrl = `${prefix}/keymandeveloper-${version}.exe`; break;
+      }
+    });
+  });
   return data;
 }

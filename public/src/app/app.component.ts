@@ -85,6 +85,14 @@ export class AppComponent {
     return this.status ? this.status.teamCityRunning[this.platforms[platform].configs[tier]] : null;
   }
 
+  downloadClass(platform, tier) {
+    return this.releaseDate(platform, tier) == '' ?
+      'tier-release-version-error' :
+      this.status.keyman[platform][tier].version == this.statusText(platform, tier) ? 
+        'tier-release-version-equal' : 
+        'tier-release-version-pending';
+  }
+
   statusClass(platform, tier) {
     let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
     if(br && br.builds && br.builds.length) {
@@ -213,8 +221,8 @@ export class AppComponent {
       this.phaseEnd = new Date(this.phase.end).toDateString();
       this.phaseStart = new Date(this.phase.start).toDateString();
       
-      let d = new Date(this.phaseStart);
-      d.setDate(d.getDate()-1);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
+      let d = new Date(this.phase.start);
+      d.setUTCDate(d.getUTCDate()-2);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
       // TODO: sort out timezones one day ...
 
       let dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

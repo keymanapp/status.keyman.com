@@ -106,6 +106,19 @@ td, th {
   width: 120px;
 }
 
+.tier-release-version.tier-release-version-error a {
+  background-color: red;
+  padding: 0 2px;
+  color: white;
+  border-radius: 3px;
+}
+
+.tier-release-version.tier-release-version-pending a {
+  background-color: rgb(240,240,100);
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
 .tier-build-state {
   display: inline-block;
   margin-left: 0px;

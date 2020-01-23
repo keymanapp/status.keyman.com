@@ -97,7 +97,7 @@
               <div class="tier-release-date">
                 {{releaseDate(platform.key,'stable')}}
               </div>
-              <div class="tier-release-version">
+              <div class="tier-release-version {{downloadClass(platform.key,'stable')}}">
                 <a href="{{status?.keyman[platform.key].stable.downloadUrl}}" target="_blank">{{status?.keyman[platform.key].stable.version}}</a>
               </div>
             </div>
@@ -113,7 +113,7 @@
               <div class="tier-release-date">
                 {{releaseDate(platform.key,'beta')}}
               </div>
-              <div class="tier-release-version">
+              <div class="tier-release-version {{downloadClass(platform.key,'beta')}}">
                 <a href="{{status?.keyman[platform.key].beta.downloadUrl}}" target="_blank">{{status?.keyman[platform.key].beta.version}}</a>
               </div>
             </div>
@@ -129,7 +129,7 @@
               <div class="tier-release-date">
                 {{releaseDate(platform.key,'alpha')}}
               </div>
-              <div class="tier-release-version">
+              <div class="tier-release-version {{downloadClass(platform.key,'alpha')}}">
                 <a href="{{status?.keyman[platform.key].alpha.downloadUrl}}" target="_blank">{{status?.keyman[platform.key].alpha.version}}</a>
               </div>
             </div>

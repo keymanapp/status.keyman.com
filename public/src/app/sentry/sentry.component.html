@@ -1,0 +1,6 @@
+<div class="crash-container" *ngIf="platform != 'common'">
+  <span class="label {{sum() == 0 ? 'normal' : 'error'}}">
+    <img class="avatar-22" src="assets/{{platform}}.png">
+    <a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank" title="{{summary()}}">{{sum()}}</a>
+  </span>
+</div>

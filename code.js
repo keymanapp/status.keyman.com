@@ -13,6 +13,7 @@ const isProduction = process.env['NODE_ENV'] == 'production';
 const port=isProduction ? 80 : 3000;
 const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
 const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
+const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
 
 const REFRESH_INTERVAL = 60000; //msec
 let lastRefreshTime = 0;
@@ -39,7 +40,8 @@ app.get('/status/', (request, response) => {
       keyman: data.keymanVersionData,
       github: data.githubPullsData,
       contributions: data.githubContributionsData,
-      currentSprint: currentSprint.getCurrentSprint(data.githubPullsData.data)
+      currentSprint: currentSprint.getCurrentSprint(data.githubPullsData.data),
+      sentry: data.sentry
     }));
     response.end();
   };
@@ -114,7 +116,9 @@ function refreshStatus(sprint, callback) {
       // https://developer.github.com/v4/guides/resource-limitations/
 
       JSON.stringify({query: ghStatusQuery})
-    )
+    ),
+
+
   ]).then(data => {
     // Get the current sprint from the GitHub data
     // We actually get data from the Saturday before the 'official' sprint start
@@ -122,24 +126,41 @@ function refreshStatus(sprint, callback) {
     let githubPullsData = JSON.parse(data[3]);
     const phase = currentSprint.getCurrentSprint(githubPullsData.data);
     const ghContributionsQuery = githubContributions.queryString(phase ? new Date(phase.start-2).toISOString() : SprintStartDateTime);
+    const phaseStartDateInSeconds = new Date(phase.start - 2).valueOf() / 1000;
 
-    httppost('api.github.com', '/graphql',
+    // Build a list of sentry queries per platform
+    let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer'];
+    let sentryQueryPromises = sentryPlatforms.map(platform => httpget('sentry.keyman.com',
+      `/api/0/projects/keyman/keyman-${platform}/stats/?stats=received&since=${phaseStartDateInSeconds}&resolution=1d`,
       {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview',
-        Accept: 'application/vnd.github.shadow-cat-preview+json'
-      },
+        Authorization: ` Bearer ${sentry_token}`,
+        Accept: 'application/json'
+      }
+    ));
 
-      // Gather the contributions for each recent user
+    // Run the queries!
 
-      JSON.stringify({query: ghContributionsQuery})
-    ).then(contributions => {
+    Promise.all([
+      httppost('api.github.com', '/graphql',
+        {
+          Authorization: ` Bearer ${github_token}`,
+          Accept: 'application/vnd.github.antiope-preview',
+          Accept: 'application/vnd.github.shadow-cat-preview+json'
+        },
+        // Gather the contributions for each recent user
+
+        JSON.stringify({query: ghContributionsQuery}),
+      )].concat(sentryQueryPromises)
+    ).then(phaseData => {
+      let contributions = phaseData.shift();
+
       cachedData[sprint].teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
       cachedData[sprint].teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
       cachedData[sprint].keymanVersionData = transformKeymanResponse(JSON.parse(data[2]));
       cachedData[sprint].githubPullsData = githubPullsData;
       cachedData[sprint].githubContributionsData = JSON.parse(contributions);
       cachedData[sprint].lastRefreshTime = Date.now();
+      cachedData[sprint].sentry = sentryPlatforms.reduce((obj,item,index) => { obj[item] = JSON.parse(phaseData[index]); return obj; }, {});
       if(callback) callback(cachedData[sprint]);
     });
   });

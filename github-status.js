@@ -1,4 +1,4 @@
-exports.queryString = function(sprint) { 
+exports.queryString = function(sprint) {
   let search = '';
   if(sprint != 'current') {
     // GH search appears to have a bug where it returns issues from another milestone if we don't include 'is:closed'...
@@ -20,7 +20,7 @@ exports.queryString = function(sprint) {
     }
     `;
   }
-  
+
   return `
 {
   ${search}
@@ -53,7 +53,7 @@ exports.queryString = function(sprint) {
     issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
       totalCount
     }
-    issuesByLabelAndMilestone: labels(first: 10, query: "windows web developer mac ios android linux") {
+    issuesByLabelAndMilestone: labels(first: 10, query: "windows web developer mac ios android linux common") {
       edges {
         node {
           name

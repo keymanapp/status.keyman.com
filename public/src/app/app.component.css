@@ -144,6 +144,14 @@ tr.tr-site td, tr.tr-site th {
   width: 9%;
 }
 
+tr.tr-site app-sentry {
+  margin-left: 8px;
+}
+
+td.sentry-events {
+  text-align: center;
+}
+
 /* Contributions */
 
 .navbar-contribution {

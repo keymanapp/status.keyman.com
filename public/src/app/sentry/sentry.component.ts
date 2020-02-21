@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { siteSentryIds } from '../sites';
 
 @Component({
   selector: 'app-sentry',
@@ -7,6 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class SentryComponent implements OnInit {
   @Input() platform?: string;
+  @Input() site?: string;
   @Input() stats?: any;
 
   constructor() { }
@@ -16,12 +18,21 @@ export class SentryComponent implements OnInit {
 
   projectIndex(): number {
     if(!this.platform) return 0;
-    const map = { android:7, developer:6, ios:8, linux:12, mac:9, web:11, windows:5 };
+    // TODO: consolidate with list in code.js
+    const map = { ...siteSentryIds, ...{
+      android:7,
+      developer:6,
+      ios:8,
+      linux:12,
+      mac:9,
+      web:11,
+      windows:5
+      }
+    };
     return map[this.platform];
   }
 
   sum(): number {
-    if(this.platform == 'web') return 1;
     if(!this.stats || this.platform == 'common') return 0;
     return this.stats.reduce((count, item) => count + item[1], 0);
   }

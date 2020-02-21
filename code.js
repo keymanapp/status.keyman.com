@@ -128,10 +128,13 @@ function refreshStatus(sprint, callback) {
     const ghContributionsQuery = githubContributions.queryString(phase ? new Date(phase.start-2).toISOString() : SprintStartDateTime);
     const phaseStartDateInSeconds = new Date(phase.start - 2).valueOf() / 1000;
 
-    // Build a list of sentry queries per platform
-    let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer'];
+    // Build a list of sentry queries per platform; TODO refactor into shared source
+    let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer',
+      'api.keyman.com', 'developer.keyman.com', 'donate.keyman.com', 'downloads.keyman.com',
+      'help.keyman.com', 'keyman.com', 'keymanweb.com', 's.keyman.com', 'status.keyman.com'
+    ];
     let sentryQueryPromises = sentryPlatforms.map(platform => httpget('sentry.keyman.com',
-      `/api/0/projects/keyman/keyman-${platform}/stats/?stats=received&since=${phaseStartDateInSeconds}&resolution=1d`,
+      `/api/0/projects/keyman/${platform.indexOf('.')<0? "keyman-":""}${platform.replace(/\./g,'-')}/stats/?stats=received&since=${phaseStartDateInSeconds}&resolution=1d`,
       {
         Authorization: ` Bearer ${sentry_token}`,
         Accept: 'application/json'

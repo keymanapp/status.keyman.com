@@ -22,6 +22,7 @@ Before running the node server, you need to have two API tokens set as environme
 ```
 export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
+export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
 ```
 
 On Windows, you'll also need npm setup to use bash as its shell:

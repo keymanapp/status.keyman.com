@@ -162,7 +162,9 @@ export class AppComponent {
         let pull=this.status.github.data.repository.pullRequests.edges[q];
         //console.log(pull);
         let labels = pull.node.labels.edges;
-        let contexts = pull.node.commits.edges[0].node.commit.status.contexts;
+        let status = pull.node.commits.edges[0].node.commit.status;
+        if(!status) continue;
+        let contexts = status.contexts;
         for(let l in labels) {
           let label = labels[l].node;
           if(label.name == platform.id) {

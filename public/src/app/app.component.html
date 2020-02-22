@@ -29,11 +29,11 @@
                     <thead>
                       <tr>
                         <th style='width:9%'>
-                          <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0].ghdate}}&to={{sprintDays[13].ghdate}}' target='_blank'><img class="avatar-48" src="{{user.avatarUrl}}&size=48">
+                          <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0]?.ghdate}}&to={{sprintDays[13]?.ghdate}}' target='_blank'><img class="avatar-48" src="{{user.avatarUrl}}&size=48">
                           {{user.login}}</a>
                         </th>
                         <th style='width:6.5%' *ngFor="let day of sprintDays">
-                          <a href='https://github.com/{{user.login}}?tab=overview&from={{day.ghdate}}&to={{day.ghdate}}' target='_blank'>{{day.dayText}}<br>{{day.monthText}} {{day.dateText}}</a>
+                          <a href='https://github.com/{{user.login}}?tab=overview&from={{day?.ghdate}}&to={{day?.ghdate}}' target='_blank'>{{day.dayText}}<br>{{day.monthText}} {{day.dateText}}</a>
                         </th>
                       </tr>
                     </thead>

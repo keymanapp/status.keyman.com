@@ -125,8 +125,14 @@ function refreshStatus(sprint, callback) {
 
     let githubPullsData = JSON.parse(data[3]);
     const phase = currentSprint.getCurrentSprint(githubPullsData.data);
-    const ghContributionsQuery = githubContributions.queryString(phase ? new Date(phase.start-2).toISOString() : SprintStartDateTime);
-    const phaseStartDateInSeconds = new Date(phase.start - 2).valueOf() / 1000;
+
+    let adjustedStart = new Date(phase.start-2);
+
+    // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
+    if(adjustedStart > new Date()) adjustedStart = new Date()
+
+    const ghContributionsQuery = githubContributions.queryString(phase ? new Date(adjustedStart).toISOString() : SprintStartDateTime);
+    const phaseStartDateInSeconds = new Date(adjustedStart).valueOf() / 1000;
 
     // Build a list of sentry queries per platform; TODO refactor into shared source
     let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer',

@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { PullRequestComponent } from './pull-request/pull-request.component';
 import { FilterObjectByDatePipe } from './pipes/filter-object-by-date.pipe';
 import { CountBoxComponent } from './count-box/count-box.component';
+import { SentryComponent } from './sentry/sentry.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { CountBoxComponent } from './count-box/count-box.component';
     PullRequestComponent,
     CountBoxComponent,
     FilterObjectByDatePipe,
+    SentryComponent,
   ],
   imports: [
     BrowserModule,

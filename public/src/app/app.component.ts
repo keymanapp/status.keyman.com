@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from './status/status.service';
-import { platforms } from './platforms';
+import { platforms, PlatformSpec } from './platforms';
 import { sites } from './sites';
 
 @Component({
@@ -18,7 +18,7 @@ export class AppComponent {
   title = 'Keyman Status';
 
   TIMER_INTERVAL = 60000; //msec
-  platforms = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
+  platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
   sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
   labeledPulls = [];
@@ -77,24 +77,28 @@ export class AppComponent {
       );
   };
 
-  getStatus(platform, tier) {
-    return this.status ? this.status.teamCity[this.platforms[platform].configs[tier]] : null;
+  getPlatform(platformId: string): PlatformSpec {
+    return this.platforms.find(e => e.id == platformId);
   }
 
-  getRunningStatus(platform, tier) {
-    return this.status ? this.status.teamCityRunning[this.platforms[platform].configs[tier]] : null;
+  getStatus(platformId: string, tier: string): any {
+    return this.status ? this.status.teamCity[this.getPlatform(platformId).configs[tier]] : null;
   }
 
-  downloadClass(platform, tier) {
-    return this.releaseDate(platform, tier) == '' ?
+  getRunningStatus(platformId: string, tier: string): any {
+    return this.status ? this.status.teamCityRunning[this.getPlatform(platformId).configs[tier]] : null;
+  }
+
+  downloadClass(platformId: string, tier: string): string {
+    return this.releaseDate(platformId, tier) == '' ?
       'tier-release-version-error' :
-      this.status.keyman[platform][tier].version == this.statusText(platform, tier) ? 
-        'tier-release-version-equal' : 
+      this.status.keyman[platformId][tier].version == this.statusText(platformId, tier) ?
+        'tier-release-version-equal' :
         'tier-release-version-pending';
   }
 
-  statusClass(platform, tier) {
-    let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
+  statusClass(platformId: string, tier: string): string {
+    let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
     if(br && br.builds && br.builds.length) {
       return br.builds[0].status == 'SUCCESS' ? 'pending' : 'failure';
     }
@@ -102,8 +106,8 @@ export class AppComponent {
     return b.builds[0].status == 'SUCCESS' ? 'success' : 'failure';
   }
 
-  statusText(platform, tier) {
-    let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
+  statusText(platformId: string, tier: string): string {
+    let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
     if(br && br.builds && br.builds.length) {
       return br.builds[0].number;
     }
@@ -111,8 +115,8 @@ export class AppComponent {
     return b.builds[0].number;
   }
 
-  statusTip(platform, tier) {
-    let b = this.getStatus(platform, tier), br = this.getRunningStatus(platform, tier);
+  statusTip(platformId: string, tier: string): string {
+    let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
     if(br && br.builds && br.builds.length) {
       return br.builds[0].statusText;
     }
@@ -120,23 +124,23 @@ export class AppComponent {
     return b.builds[0].statusText;
   }
 
-  statusLink(platform, tier) {
-    let b = this.getStatus(platform, tier);
+  statusLink(platformId: string, tier: string): string {
+    let b = this.getStatus(platformId, tier);
     if(!b || !b.builds || !b.builds.length) return '';
 
     return `https://build.palaso.org/viewLog.html?buildId=${b.builds[0].id}&buildTypeId=${b.id}`;
     //return b.builds[0].number;
   }
 
-  releaseDate(platform, tier) {
+  releaseDate(platformId: string, tier: string): string {
     if(!this.status) return '';
-    let files = this.status.keyman[platform][tier].files;
+    let files = this.status.keyman[platformId][tier].files;
     let items = Object.keys(files);
     if(items.length == 0) return '';
     return files[items[0]].date;
   }
 
-  pullClass(pull) {
+  pullClass(pull): string {
     //console.log(pull);
     if(!pull.state) return 'missing';
     switch(pull.state.state) {
@@ -220,7 +224,7 @@ export class AppComponent {
       // Assuming a phase is 2 weeks; we can't really show more than that on screen easily anyway!
       this.phaseEnd = new Date(this.phase.end).toDateString();
       this.phaseStart = new Date(this.phase.start).toDateString();
-      
+
       let d = new Date(this.phase.start);
       d.setUTCDate(d.getUTCDate()-2);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
       // TODO: sort out timezones one day ...
@@ -250,7 +254,7 @@ export class AppComponent {
 
     // For each platform, fill in the milestone counts
     this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
-      let platform = this.platforms[label.node.name];
+      let platform = this.getPlatform(label.node.name);
       if(!platform) return;
       platform.milestones = [
         { id: 'current', title: this.phase.title, count: 0 },
@@ -271,7 +275,7 @@ export class AppComponent {
               platform.milestones.push(m);
             }
             m.count++;
-            break; 
+            break;
         }
       });
     });

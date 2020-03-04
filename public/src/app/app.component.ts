@@ -163,8 +163,7 @@ export class AppComponent {
         //console.log(pull);
         let labels = pull.node.labels.edges;
         let status = pull.node.commits.edges[0].node.commit.status;
-        if(!status) continue;
-        let contexts = status.contexts;
+        let contexts = status ? status.contexts : null;
         for(let l in labels) {
           let label = labels[l].node;
           if(label.name == platform.id) {

@@ -97,33 +97,48 @@ td, th {
 
 .tier-release-date {
   text-align: center;
+  font-size: 12px;
 }
 
-.tier-release-version {
+.tier-release-version a {
+  display: inline-block;
   text-align: center;
-  font-size: 12px;
-  color: #909090;
-  width: 120px;
+  text-decoration: underline;
+  font-size: 19px;
+  font-weight: 200;
+  color: white;
+  background-color: #44cc11;
+  width: 30px;
+  border-radius: 0 4px 4px 0;
+  border-left: 1px solid white;
+  min-height: 32px;
+  max-height: 32px;
+  height: 32px;
 }
 
 .tier-release-version.tier-release-version-error a {
   background-color: red;
-  padding: 0 2px;
   color: white;
-  border-radius: 3px;
 }
 
 .tier-release-version.tier-release-version-pending a {
   background-color: rgb(240,240,100);
-  padding: 0 2px;
-  border-radius: 3px;
+  color: black;
+}
+
+.tier-build-state a.label {
+  margin-right: 0;
+  border-radius: 4px 0 0 4px;
+  min-height: 32px;
+  max-height: 32px;
+  height: 32px;
+  padding-right: 8px;
 }
 
 .tier-build-state {
   display: inline-block;
   margin-left: 0px;
   vertical-align: middle;
-  width: 120px;
 }
 
 tbody th,

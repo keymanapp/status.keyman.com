@@ -297,7 +297,15 @@ export class AppComponent {
           case this.phase.title: site.milestones[0].count++; break;
           case "Future": site.milestones[1].count++; break;
           case "Waiting-external": site.milestones[2].count++; break;
-          default: site.milestones[3].count++; break;
+          default:
+            let m = site.milestones.find(element => {return element.title == issue.node.milestone.title});
+            if(!m) {
+              m = { id: 'future', title: issue.node.milestone.title, count: 0};
+              site.milestones.push(m);
+            }
+            m.count++;
+            break;
+
         }
       });
     });

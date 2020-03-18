@@ -36,3 +36,7 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+.sentry-container {
+  white-space: nowrap;
+}

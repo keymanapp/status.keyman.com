@@ -25,7 +25,7 @@
 }
 
 .label.error a {
-  color: orange;
+  color: white;
 }
 
 .label a {
@@ -35,4 +35,8 @@
   line-height: 0.75rem;
   display: inline-block;
   vertical-align: middle;
+}
+
+.sentry-container {
+  white-space: nowrap;
 }

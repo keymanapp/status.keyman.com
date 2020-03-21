@@ -180,6 +180,14 @@ exports.queryString = function(sprint) {
                 }
               }
 
+              labels(first: 25) {
+                edges {
+                  node {
+                    name
+                  }
+                }
+              }
+
               url
             }
           }

@@ -253,6 +253,15 @@ export class AppComponent {
       Other: { title: "Other", count: 0 }
     };
 
+    let sortMilestones = (a,b) => {
+      const sprintMilestone = /^P(\d+)S(\d+)$/;
+      let a0 = sprintMilestone.exec(a.title), b0 = sprintMilestone.exec(b.title);
+      if(a0 !== null && b0 === null) return -1;
+      if(a0 === null && b0 !== null) return 1;
+      if(a0 === null) return a.title.localeCompare(b.title);
+      return (parseInt(a0[1], 10) - parseInt(b0[1], 10))*100 + (parseInt(a0[2], 10) - parseInt(b0[2], 10));
+    };
+
     // For each platform, fill in the milestone counts
     this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
       let platform = this.getPlatform(label.node.name);
@@ -279,6 +288,8 @@ export class AppComponent {
             break;
         }
       });
+
+      platform.milestones = platform.milestones.sort(sortMilestones);
     });
 
     // For each site, fill in the milestone counts
@@ -308,6 +319,7 @@ export class AppComponent {
 
         }
       });
+      site.milestones = site.milestones.sort(sortMilestones);
     });
   }
 

@@ -29,6 +29,8 @@ export class PullRequestComponent implements OnInit {
 
     if(this.pull.pull.node.isDraft) return 'status-draft';
 
+    if(this.pull.pull.node.labels.edges.find(node => node.node.name == 'work-in-progress') !== undefined) return 'status-draft';
+
     this.pull.pull.node.reviews.nodes.forEach(review => {
       if(!authors[review.author.login]) authors[review.author.login] = {reviews:[]};
       authors[review.author.login].reviews.push(review);

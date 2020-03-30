@@ -1,6 +1,6 @@
 <span class="sentry-container" *ngIf="platform != 'common' && (!site || sum() != 0)">
-  <span class="label {{sum() == 0 ? 'normal' : 'error'}}">
+  <span class="label {{sum() == 0 && !stats?.errorId ? 'normal' : 'error'}}">
     <img class="avatar-22" src="assets/{{platform}}.png" *ngIf="!site">
-    <a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank" title="{{summary()}}">{{sum()}}</a>
+    <a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank" title="{{summary()}}">{{stats?.errorId ? '⚠' : sum()}}</a>
   </span>
 </span>

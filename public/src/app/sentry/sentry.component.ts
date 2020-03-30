@@ -33,12 +33,12 @@ export class SentryComponent implements OnInit {
   }
 
   sum(): number {
-    if(!this.stats || this.platform == 'common') return 0;
+    if(!this.stats || this.stats.errorId || this.platform == 'common') return 0;
     return this.stats.reduce((count, item) => count + item[1], 0);
   }
 
   summary(): string {
-    if(!this.stats || this.platform == 'common') return '';
+    if(!this.stats || this.stats.errorId || this.platform == 'common') return '';
     return this.stats.reduce((res, item) => (res == '' ? '' : res + '\n') + new Date(item[0]*1000).toDateString() + ': '+item[1].toString(), '');
   }
 

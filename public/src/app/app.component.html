@@ -82,7 +82,11 @@
         <th id='th-stable' class='tier'>Stable</th>
         <th id='th-beta' class='tier'>Beta</th>
         <th id='th-alpha' class='tier'>Alpha</th>
-        <th id='th-errors' title='Event summary from Sentry (this sprint only)'>Errors</th>
+        <th id='th-errors' title='Event summary from Sentry (this sprint only)'>Errors
+          <span *ngIf="status?.sentry?.windows?.errorId" title="An error '{{status?.sentry?.windows?.detail}}' has been detected on sentry.keyman.com">
+            <a href="https://sentry.keyman.com/" target="_blank">⚠</a>
+          </span>
+        </th>
         <th id='th-issues'>Issues</th>
         <th id='th-pulls'>Pull Requests</th>
       </tr>

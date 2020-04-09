@@ -98,3 +98,7 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+.cherry-pick {
+  color: rgba(0,0,0,0.5);
+}

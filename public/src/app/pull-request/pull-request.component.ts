@@ -24,6 +24,10 @@ export class PullRequestComponent implements OnInit {
     }
   }
 
+  pullIsCherryPick() {
+    return this.pull.pull.node.labels.edges.reduce( (f, e) => f || e.node.name == 'cherry-pick', false);
+  }
+
   pullStatus() {
     let authors = {};
 

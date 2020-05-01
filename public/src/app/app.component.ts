@@ -266,6 +266,7 @@ export class AppComponent {
     this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
       let platform = this.getPlatform(label.node.name);
       if(!platform) return;
+      platform.totalIssueCount = label.node.openIssues.totalCount;
       platform.milestones = [
         { id: 'current', title: this.phase.title, count: 0 },
         { id: 'future', title: "Future", count: 0 },

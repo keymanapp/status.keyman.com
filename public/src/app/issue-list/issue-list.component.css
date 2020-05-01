@@ -1,0 +1,50 @@
+.issue-list {
+  position: absolute;
+  z-index: 10;
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  padding: 8px;
+  width: max-content;
+  max-width: 720px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 2px 0 2px 0;
+  list-style: none;
+  font-size: 9pt;
+}
+
+.label {
+  display: block;
+  text-indent: -12px;
+  margin-left: 24px;
+}
+
+.issue {
+  padding-left: 2px;
+}
+
+.label a,
+.label a:visited {
+  color: black;
+}
+
+.issue-label {
+  margin-left: 3px;
+  border-radius: 2px;
+  padding: 2px;
+  word-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+}
+
+.author {
+  display: inline-block;
+}

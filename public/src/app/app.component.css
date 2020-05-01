@@ -229,3 +229,21 @@ table#sites-and-relatives {
   padding: 8px;
   margin: 0;
 }
+
+/* Issue List */
+
+.navbar-new-issues {
+  position: relative;
+}
+
+app-issue-list {
+  display: none;
+  position: absolute;
+  left: 4px;
+  bottom: -6px;
+  max-width: 400px;
+  width: auto;
+}
+
+.navbar-new-issues:hover app-issue-list { display: block; }
+

@@ -43,8 +43,29 @@ exports.queryString = function(sprint) {
     }
   }
 
-  repository(owner: "keymanapp", name: "keyman") {
+  unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open -label:windows -label:web -label:developer -label:mac -label:ios -label:android -label:linux -label:common") {
+    issueCount
+    nodes {
+      ... on Issue {
+        author {
+          login
+          avatarUrl
+          url
+        }
+        labels(first:5) {
+          nodes {
+            name
+            color
+          }
+        }
+        title
+        number
+        url
+      }
+    }
+  }
 
+  repository(owner: "keymanapp", name: "keyman") {
     refs(first:100, refPrefix: "refs/heads/") {
       nodes {
         name

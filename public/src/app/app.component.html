@@ -10,7 +10,8 @@
             <span class="navbar-phase-dates">{{phaseStart}} &mdash; {{phaseEnd}}</span>
           </span>
           <span class="navbar-new-issues">
-            <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+no%3Amilestone" class="label hide-if-zero {{errorClassIfNonZero(status?.github.data.repository.issuesWithNoMilestone.totalCount)}}">New issues: {{status?.github.data.repository.issuesWithNoMilestone.totalCount}}</a>
+            <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid+-label%3Aios+-label%3Alinux+-label%3Amac+-label%3Adeveloper+-label%3Aweb+-label%3Awindows+-label%3Acommon" class="label hide-if-zero {{errorClassIfNonZero(status?.github.data.unlabeledIssues.issueCount)}}">New issues: {{status?.github.data.unlabeledIssues.issueCount}}</a>
+            <app-issue-list [issues]="status?.github.data.unlabeledIssues.nodes"></app-issue-list>
           </span>
           <span class="navbar-new-pulls">
             <span *ngFor="let pull of unlabeledPulls">

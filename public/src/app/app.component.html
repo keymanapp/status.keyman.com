@@ -149,6 +149,7 @@
         </td>
 
         <td class="issues">
+          <span *ngIf="platform.value.totalIssueCount > 100" title="Too many issues ({{platform.value.totalIssueCount}}) — values shown are incomplete">⚠</span>
           <ng-container *ngFor="let milestone of platform.value.milestones">
             <app-count-box [repo]="'keyman'" [title]="milestone.title" [count]="milestone.count" [label]="platform.value.id" [class]="'milestone-'+milestone.id"></app-count-box>
           </ng-container>

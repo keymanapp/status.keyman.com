@@ -4,7 +4,8 @@ export interface PlatformSpec {
   configs?: {alpha: string, beta: string, stable: string, prs: string},
   context?: string,
   pulls?: any,
-  milestones?: any
+  milestones?: any,
+  totalIssueCount?: number
 };
 
 export const platforms: PlatformSpec[] = [

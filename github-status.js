@@ -112,7 +112,7 @@ exports.queryString = function(sprint) {
         }
       }
     }
-    pullRequests(last: 50, states: OPEN) {
+    pullRequests(last: 100, states: OPEN) {
       edges {
         node {
           title
@@ -215,6 +215,13 @@ exports.queryString = function(sprint) {
         }
       }
     }
+  }
+
+  rateLimit {
+    limit
+    cost
+    remaining
+    resetAt
   }
 }
 `};

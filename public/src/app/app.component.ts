@@ -166,7 +166,7 @@ export class AppComponent {
         let contexts = status ? status.contexts : null;
         for(let l in labels) {
           let label = labels[l].node;
-          if(label.name == platform.id) {
+          if(label.name == platform.id+'/') {
             let foundContext = null;
             for(let r in contexts) {
               let context=contexts[r];
@@ -264,7 +264,7 @@ export class AppComponent {
 
     // For each platform, fill in the milestone counts
     this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
-      let platform = this.getPlatform(label.node.name);
+      let platform = this.getPlatform(label.node.name.substring(0,label.node.name.length-1));
       if(!platform) return;
       platform.totalIssueCount = label.node.openIssues.totalCount;
       platform.milestones = [

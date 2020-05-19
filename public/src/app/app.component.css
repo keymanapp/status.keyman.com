@@ -76,6 +76,15 @@ a.label.missing {
   background: rgb(12, 24, 48);
 }
 
+/* Issue total */
+
+a.issue-count {
+  font-size: 9pt;
+  color: #808080;
+  margin-right: 8px;
+  text-decoration: none;
+}
+
 /* Etc */
 
 td.tier {

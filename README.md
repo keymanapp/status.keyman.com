@@ -25,7 +25,7 @@ export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
 ```
 
-On Windows, you'll also need to have Git Bash installed in C:\\Program Files\\git\\bin\\bash.exe.
+On Windows, you'll also need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
 
 ## Running the server ##
 

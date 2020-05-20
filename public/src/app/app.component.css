@@ -76,6 +76,41 @@ a.label.missing {
   background: rgb(12, 24, 48);
 }
 
+/* Tier Test Status */
+
+div.tier-test {
+  padding: 4px;
+  display: inline-block;
+  height: 32px;
+  vertical-align: top;
+  margin-left: 10px;
+  border-radius: 12px;
+  width: 26px;
+  font-size: 10pt;
+  text-align: center;
+  padding-top: 5px;
+}
+
+div.tier-test a,
+div.tier-test a:hover {
+  text-decoration: none;
+}
+
+div.tier-test-success {
+  color: white;
+  background-color: rgb(68, 204, 17);
+}
+
+div.tier-test-failure {
+  color: white;
+  background-color: rgb(255, 24, 48);
+}
+
+div.tier-test-pending {
+  color: black;
+  background: rgb(240,240,100);
+}
+
 /* Issue total */
 
 a.issue-count {

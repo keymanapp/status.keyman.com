@@ -337,4 +337,50 @@ export class AppComponent {
   selectUser(login) {
     this.selectedContribution = login == this.selectedContribution ? null : login;
   }
+
+  /* Show test build result (alpha-only until 14.0 release phase) */
+
+  tierTestRunningAndLatestBuild(platformId,tier): {id,number,status,statusText} {
+    const buildNumberRE = "^\\d+\\.\\d+\\.\\d+-"+tier+"-test$";
+    const tcData = this.status.teamCity[this.getPlatform(platformId).configs['test']];
+    const tcRunningData = this.status.teamCityRunning[this.getPlatform(platformId).configs['test']];
+
+    const build = tcRunningData.builds.find(build => build.number.match(buildNumberRE));
+    if(build) {
+      // teamcity returns 'SUCCESS' for a pending build that hasn't yet failed
+      return {
+        id: build.id,
+        number: build.number,
+        status: build.status == 'SUCCESS' ? 'PENDING' : build.status,
+        statusText: build.statusText
+      };
+    }
+
+    return tcData.builds.find(build => build.number.match(buildNumberRE));
+  }
+
+  tierTestClass(platformId,tier) {
+    if(!this.status) return null;
+    const build = this.tierTestRunningAndLatestBuild(platformId,tier);
+    if(build) {
+      switch(build.status) {
+        case 'SUCCESS': return 'tier-test-success';
+        case 'FAILURE': return 'tier-test-failure';
+        default: return 'tier-test-pending';
+      }
+    }
+    return null;
+  }
+
+  tierTestTitle(platformId,tier) {
+    if(!this.status) return null;
+    const build = this.tierTestRunningAndLatestBuild(platformId,tier);
+    return build ? build.number+'('+build.status+'): '+build.statusText : null;
+  }
+
+  tierTestLink(platformId,tier) {
+    if(!this.status) return null;
+    const build = this.tierTestRunningAndLatestBuild(platformId,tier);
+    return build ? `https://build.palaso.org/viewLog.html?buildId=${build.id}` : null;
+  }
 }

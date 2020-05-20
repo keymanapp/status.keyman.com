@@ -6,11 +6,16 @@
   "scripts": {
     "build": "cd public && npm run-script build && cd ..",
     "start-client": "cd public && npm run-script start",
-    "start-server": "[ -f ./localenv.sh ] && . ./localenv.sh; npx nodemon code.js"
+    "start-server": "run-script-os",
+    "start-server:windows": "_start_server.bat",
+    "start-server:default": "./_start_server.sh"
   },
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "run-script-os": "^1.1.1"
   }
 }

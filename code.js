@@ -104,8 +104,7 @@ function refreshStatus(sprint, callback) {
     httppost('api.github.com', '/graphql',
       {
         Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview',
-        Accept: 'application/vnd.github.shadow-cat-preview+json'
+        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
       },
 
       // Lists all open pull requests in keyman repos
@@ -122,6 +121,8 @@ function refreshStatus(sprint, callback) {
   ]).then(data => {
     // Get the current sprint from the GitHub data
     // We actually get data from the Saturday before the 'official' sprint start
+
+    //console.log(data);
 
     let githubPullsData = JSON.parse(data[3]);
     const phase = currentSprint.getCurrentSprint(githubPullsData.data);
@@ -153,8 +154,7 @@ function refreshStatus(sprint, callback) {
       httppost('api.github.com', '/graphql',
         {
           Authorization: ` Bearer ${github_token}`,
-          Accept: 'application/vnd.github.antiope-preview',
-          Accept: 'application/vnd.github.shadow-cat-preview+json'
+          Accept: 'application/vnd.github.antiope-preview, application/vnd.github.shadow-cat-preview+json'
         },
         // Gather the contributions for each recent user
 

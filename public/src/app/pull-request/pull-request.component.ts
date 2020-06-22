@@ -16,6 +16,28 @@ export class PullRequestComponent implements OnInit {
 
   pullClass() {
     let base = this.pull.pull.node.milestone ? this.pull.pull.node.milestone.title == 'Future' ? 'future ' : '' : '';
+    //if(this.pull.pull.node.commits?.nodes[0]?.commit?.checkSuites?.nodes[0]?.status == 'COMPLETED') {
+    //One day, with optional chaining (nearly here)
+    if(this.pull.pull.node.commits && this.pull.pull.node.commits.nodes && this.pull.pull.node.commits.nodes.length && this.pull.pull.node.commits.nodes[0].commit &&
+        this.pull.pull.node.commits.nodes[0].commit.checkSuites &&
+        this.pull.pull.node.commits.nodes[0].commit.checkSuites.nodes.length) {
+      if(this.pull.pull.node.commits.nodes[0].commit.checkSuites.nodes[0].status == 'COMPLETED') {
+        switch(this.pull.pull.node.commits.nodes[0].commit.checkSuites.nodes[0].conclusion) {
+          case 'SUCCESS':   return base+'success';
+          case 'ACTION_REQUIRED':
+          case 'TIMED_OUT':
+          case 'FAILURE':   return base+'failure';
+          case 'CANCELLED':
+          case 'SKIPPED':
+          case 'STALE':
+          case 'NEUTRAL':
+          default: return base+'missing'; // various other states
+        }
+      } else {
+        //IN_PROGRESS, QUEUED, REQUESTED
+        return base+'pending';
+      }
+    }
     if(!this.pull.state) return base+'missing';
     switch(this.pull.state.state) {
       case 'SUCCESS': return base+'success';

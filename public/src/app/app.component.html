@@ -16,9 +16,6 @@
           <span class="navbar-new-pulls">
             <span *ngFor="let pull of unlabeledPulls">
               <app-pull-request [class]="'failure'" [pull]="pull"></app-pull-request>
-              <!--
-                <a href="{{pull.pull.node.url}}" class="label {{pullClass(pull)}}" title="{{pull.pull.node.title}}: {{pull.state?.description}}" target="_blank">{{pull.pull.node.number}}</a>
-              -->
             </span>
           </span>
           <span class="navbar-contributions" *ngIf="showContributions">
@@ -194,7 +191,7 @@
         <td class='crashes'></td>-->
         <td class='pulls'>
           <span *ngFor="let pull of site.value.pulls">
-            <app-pull-request [class]="'missing'" [pull]="pull"></app-pull-request>
+            <app-pull-request [class]="" [pull]="pull"></app-pull-request>
           </span>
         </td>
         </ng-container>

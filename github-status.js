@@ -193,6 +193,19 @@ exports.queryString = function(sprint) {
                 url
               }
 
+              commits(last: 1) {
+                nodes {
+                  commit {
+                    checkSuites(last:1) {
+                      nodes {
+                        conclusion
+                        status
+                      }
+                    }
+                  }
+                }
+              }
+
               reviews(last:100) {
                 nodes {
                   author { login }

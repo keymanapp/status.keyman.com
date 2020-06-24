@@ -140,17 +140,6 @@ export class AppComponent {
     return files[items[0]].date;
   }
 
-  pullClass(pull): string {
-    //console.log(pull);
-    if(!pull.state) return 'missing';
-    switch(pull.state.state) {
-      case 'SUCCESS': return 'success';
-      case 'PENDING': return 'pending';
-      default: return 'failure';
-    }
-    //return pull.state ? pull.state.state == 'SUCCESS' ? 'success' : 'failure' : 'missing';
-  }
-
   transformPlatformStatusData() {
     this.labeledPulls = [];
 

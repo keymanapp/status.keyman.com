@@ -263,7 +263,9 @@ export class AppComponent {
         { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
         { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
-      label.node.openIssues.nodes.forEach(issue => {
+      this.status.issues
+        .filter(issue => issue.repository.name === 'keyman' && issue.labels.nodes.some(l=>l.name === label.node.name))
+        .forEach(issue => {
         let m = null;
         if(!issue.milestone) m = platform.milestones[3];
         else switch(issue.milestone.title) {
@@ -297,7 +299,9 @@ export class AppComponent {
         { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
         { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
-      repo.issuesByMilestone.nodes.forEach(issue => {
+      this.status.issues
+        .filter(issue => issue.repository.name === repo.name)
+        .forEach(issue => {
         let m = null;
         if(!issue.milestone) m = site.milestones[3];
         else switch(issue.milestone.title) {

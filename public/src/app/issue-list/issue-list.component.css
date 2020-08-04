@@ -1,6 +1,4 @@
 .issue-list {
-  position: absolute;
-  z-index: 10;
   background: #fcfffc;
   border: solid 1px #4c4c30;
   border-radius: 0 0 4px 4px;

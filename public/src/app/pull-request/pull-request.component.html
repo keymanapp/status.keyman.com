@@ -1,6 +1,13 @@
+<span class="pull-request">
 <span class="label {{class || pullClass()}} {{pullStatus()}}">
   <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{pull.pull.node.author.avatarUrl}}&size=32"></a>
-  <a class="pull" title="{{pull.pull.node.title}}{{pull.state ? ': '+pull.state.description : ''}}" target="_blank" href="{{pull.pull.node.url}}">
+  <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
     <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>{{pull.pull.node.number}}
   </a>
+</span>
+<div class="pull-request-detail">
+  <span class="branches"><span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span></span>
+  <span class="title">{{pull.pull.node.title}}</span>
+  <span class="status">{{pull.state?.description}}</span>
+</div>
 </span>

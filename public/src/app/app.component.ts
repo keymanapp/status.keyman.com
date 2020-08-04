@@ -17,7 +17,7 @@ export class AppComponent {
   timer: any;
   title = 'Keyman Status';
 
-  TIMER_INTERVAL = 60000 * 60; //msec
+  TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
   sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
@@ -292,26 +292,29 @@ export class AppComponent {
       let site = this.sites[repo.name];
       if(!site) return;
       site.milestones = [
-        { id: 'current', title: this.phase.title, count: 0 },
-        { id: 'future', title: "Future", count: 0 },
-        { id: 'waiting', title: "Waiting-external", count: 0 },
-        { id: 'other', title: "Other", count: 0 }
+        { id: 'current', title: this.phase.title, count: 0, nodes: [] },
+        { id: 'future', title: "Future", count: 0, nodes: [] },
+        { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+        { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
-      repo.issuesByMilestone.edges.forEach(issue => {
-        if(!issue.node.milestone) site.milestones[3].count++;
-        else switch(issue.node.milestone.title) {
-          case this.phase.title: site.milestones[0].count++; break;
-          case "Future": site.milestones[1].count++; break;
-          case "Waiting-external": site.milestones[2].count++; break;
+      repo.issuesByMilestone.nodes.forEach(issue => {
+        let m = null;
+        if(!issue.milestone) m = site.milestones[3];
+        else switch(issue.milestone.title) {
+          case this.phase.title: m = site.milestones[0]; break;
+          case "Future": m = site.milestones[1]; break;
+          case "Waiting-external": m = site.milestones[2]; break;
           default:
-            let m = site.milestones.find(element => {return element.title == issue.node.milestone.title});
+            m = site.milestones.find(element => {return element.title == issue.milestone.title});
             if(!m) {
-              m = { id: 'future', title: issue.node.milestone.title, count: 0};
+              m = { id: 'future', title: issue.milestone.title, count: 0, nodes: []};
               site.milestones.push(m);
             }
-            m.count++;
             break;
-
+        }
+        if(m) {
+          m.count++;
+          m.nodes.push(issue);
         }
       });
       site.milestones = site.milestones.sort(sortMilestones);

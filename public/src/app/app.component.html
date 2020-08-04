@@ -213,7 +213,10 @@
           <td class='issues'>
 
             <ng-container *ngFor="let milestone of site.value.milestones">
-              <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-'+milestone.id"></app-count-box>
+              <span class="issue-box">
+                <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-'+milestone.id"></app-count-box>
+                <app-issue-list *ngIf="milestone.title != 'Future'" [issues]="milestone?.nodes"></app-issue-list>
+              </span>
             </ng-container>
           </td>
         </ng-container>

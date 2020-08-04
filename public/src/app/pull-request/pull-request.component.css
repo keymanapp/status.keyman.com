@@ -102,3 +102,51 @@
 .cherry-pick {
   color: rgba(0,0,0,0.5);
 }
+
+.pull-request {
+  position: relative;
+}
+
+.pull-request-detail {
+  display: none;
+  position: absolute;
+  right: 4px;
+  top: 30px;
+  text-align: left;
+  z-index: 10;
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  padding: 3px;
+  width: max-content;
+  max-width: 720px;
+  font-size: 10pt;
+}
+
+.pull-request:hover > .pull-request-detail {
+  display: block;
+}
+
+.branches {
+  display: block;
+}
+
+.branch {
+  color: #0366d6;
+  background: #eff7ff;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  border-radius: 6px;
+  padding: 0 5px;
+  display: inline-block;
+  margin: 0 2px;
+ }
+
+ .title {
+   display: block;
+   font-weight: bold;
+ }
+
+ .status {
+   display: block;
+ }

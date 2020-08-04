@@ -80,21 +80,6 @@ exports.queryString = function(sprint) {
           name
           openIssues: issues(first: 100, filterBy: {states: [OPEN]}) {
             totalCount
-            nodes {
-
-              author {
-                login
-                avatarUrl
-                url
-              }
-              title
-              number
-              url
-
-              milestone {
-                title
-              }
-            }
           }
         }
       }
@@ -179,23 +164,6 @@ exports.queryString = function(sprint) {
     repositories(first: 30) {
       nodes {
         name
-        issuesByMilestone: issues(first: 100, filterBy: {states: [OPEN]}) {
-          totalCount
-          nodes {
-            author {
-              login
-              avatarUrl
-              url
-            }
-            title
-            number
-            url
-
-            milestone {
-              title
-            }
-          }
-        }
         pullRequests(last: 50, states: OPEN) {
           edges {
             node {

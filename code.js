@@ -6,6 +6,7 @@ const app = express();
 
 const githubContributions = require('./github-contributions');
 const githubStatus = require('./github-status');
+const githubIssues = require('./github-issues');
 const currentSprint = require('./current-sprint');
 
 const isProduction = process.env['NODE_ENV'] == 'production';
@@ -39,6 +40,7 @@ app.get('/status/', (request, response) => {
       teamCityRunning: data.teamCityRunningData,
       keyman: data.keymanVersionData,
       github: data.githubPullsData,
+      issues: data.githubIssuesData,
       contributions: data.githubContributionsData,
       currentSprint: currentSprint.getCurrentSprint(data.githubPullsData.data),
       sentry: data.sentry
@@ -82,7 +84,7 @@ function refreshStatus(sprint, callback) {
   const ghStatusQuery = githubStatus.queryString(sprint);
 
   Promise.all([
-    httpget(
+    httpget(  //0
       'build.palaso.org',
       '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
         'build(id,number,status,statusText)))',
@@ -91,7 +93,7 @@ function refreshStatus(sprint, callback) {
         Accept: 'application/json'
       }
     ),
-    httpget(
+    httpget(  //1
       'build.palaso.org',
       '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(running:true,canceled:false,branch:default:any),'+
         'build(id,number,status,statusText)))',
@@ -100,8 +102,8 @@ function refreshStatus(sprint, callback) {
         Accept: 'application/json'
       }
     ),
-    httpget('downloads.keyman.com', '/api/version/2.0'),
-    httppost('api.github.com', '/graphql',
+    httpget('downloads.keyman.com', '/api/version/2.0'),  //2
+    httppost('api.github.com', '/graphql',  //3
       {
         Authorization: ` Bearer ${github_token}`,
         Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
@@ -111,18 +113,20 @@ function refreshStatus(sprint, callback) {
       // and all open pull requests + status for keymanapp repo
       // Gather the contributions for each recent user
 
-      // Current rate limit cost is 31 points. We have 5000 points/hour.
+      // Current rate limit cost is 60 points. We have 5000 points/hour.
       // https://developer.github.com/v4/guides/resource-limitations/
 
       JSON.stringify({query: ghStatusQuery})
     ),
 
-
+    getGitHubIssues(null, []), //4
   ]).then(data => {
     // Get the current sprint from the GitHub data
     // We actually get data from the Saturday before the 'official' sprint start
 
     //console.log(data);
+
+    let githubIssuesData = data[4];
 
     let githubPullsData = JSON.parse(data[3]);
     const phase = currentSprint.getCurrentSprint(githubPullsData.data);
@@ -170,6 +174,7 @@ function refreshStatus(sprint, callback) {
       cachedData[sprint].githubContributionsData = JSON.parse(contributions);
       cachedData[sprint].lastRefreshTime = Date.now();
       cachedData[sprint].sentry = sentryPlatforms.reduce((obj,item,index) => { obj[item] = JSON.parse(phaseData[index]); return obj; }, {});
+      cachedData[sprint].githubIssuesData = githubIssuesData;
       if(callback) callback(cachedData[sprint]);
     });
   });
@@ -249,6 +254,29 @@ function httppost(hostname, path, headers, data) {
     req.end();
   });
 };
+
+function getGitHubIssues(cursor, issues) {
+  const ghIssuesQuery = githubIssues.queryString(cursor);
+  const promise = httppost('api.github.com', '/graphql',  //4
+  {
+    Authorization: ` Bearer ${github_token}`,
+    Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+  },
+
+  // Lists all open issues in Keyman repos, cost 1 point per page
+  JSON.stringify({query: ghIssuesQuery})
+  );
+
+  return promise.then(data => {
+    data = JSON.parse(data);
+    //console.log(data);
+    const newIssues = [].concat(issues, data.data.search.nodes);
+    if(data.data.search.pageInfo.hasNextPage) {
+      return getGitHubIssues(data.data.search.pageInfo.endCursor, newIssues);
+    }
+    return newIssues;
+  });
+}
 
 refreshStatus('current');
 

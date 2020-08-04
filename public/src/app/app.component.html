@@ -149,9 +149,7 @@
         </td>
 
         <td class="issues">
-          <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}
-            <span *ngIf="platform.value.totalIssueCount > 100" title="Too many issues — values shown are incomplete">⚠</span>
-          </a>
+          <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}</a>
 
           <ng-container *ngFor="let milestone of platform.value.milestones">
             <span class="issue-box">

@@ -276,7 +276,8 @@ table#sites-and-relatives {
 
 /* Issue List */
 
-.navbar-new-issues {
+.navbar-new-issues,
+.issue-box {
   position: relative;
 }
 
@@ -289,5 +290,12 @@ app-issue-list {
   width: auto;
 }
 
-.navbar-new-issues:hover app-issue-list { display: block; }
+.navbar-new-issues:hover app-issue-list,
+.issue-box:hover app-issue-list {
+  display: block;
+}
 
+.issue-box app-issue-list {
+  bottom: -2px;
+  left: 2px;
+}

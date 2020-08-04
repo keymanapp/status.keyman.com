@@ -154,7 +154,10 @@
           </a>
 
           <ng-container *ngFor="let milestone of platform.value.milestones">
-            <app-count-box [repo]="'keyman'" [title]="milestone.title" [count]="milestone.count" [label]="platform.value.id+'/'" [class]="'milestone-'+milestone.id"></app-count-box>
+            <span class="issue-box">
+              <app-count-box [repo]="'keyman'" [title]="milestone.title" [count]="milestone.count" [label]="platform.value.id+'/'" [class]="'milestone-'+milestone.id"></app-count-box>
+              <app-issue-list [issues]="milestone?.nodes"></app-issue-list>
+            </span>
           </ng-container>
         </td>
 

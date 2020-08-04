@@ -23,12 +23,20 @@ li {
 
 .label {
   display: block;
-  text-indent: -12px;
-  margin-left: 24px;
+  text-indent: 0;
+  margin-left: 4px;
 }
 
 .issue {
-  padding-left: 2px;
+  display: inline-block;
+  height: 22px;
+  padding: 4px 8px 2px 4px;
+  margin-top: 4px;
+}
+
+.issue:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
 }
 
 .label a,
@@ -47,4 +55,7 @@ li {
 
 .author {
   display: inline-block;
+  vertical-align: bottom;
+  margin-top: 4px;
+  margin-right: 4px;
 }

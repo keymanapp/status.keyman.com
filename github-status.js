@@ -80,11 +80,19 @@ exports.queryString = function(sprint) {
           name
           openIssues: issues(first: 100, filterBy: {states: [OPEN]}) {
             totalCount
-            edges {
-              node {
-                milestone {
-                  title
-                }
+            nodes {
+
+              author {
+                login
+                avatarUrl
+                url
+              }
+              title
+              number
+              url
+
+              milestone {
+                title
               }
             }
           }

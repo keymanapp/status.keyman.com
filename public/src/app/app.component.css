@@ -276,18 +276,36 @@ table#sites-and-relatives {
 
 /* Issue List */
 
-.navbar-new-issues {
+.navbar-new-issues,
+.issue-box {
   position: relative;
 }
 
 app-issue-list {
   display: none;
   position: absolute;
-  left: 4px;
-  bottom: -6px;
   max-width: 400px;
   width: auto;
+  z-index: 10;
+  text-align: left;
 }
 
-.navbar-new-issues:hover app-issue-list { display: block; }
+.navbar-new-issues:hover app-issue-list,
+.issue-box:hover app-issue-list {
+  display: block;
+}
 
+.tr-platform .issue-box app-issue-list {
+  top: 24px;
+  left: 2px;
+}
+
+.tr-site .issue-box app-issue-list {
+  bottom: 22px;
+  left: 2px;
+}
+
+.navbar-new-issues app-issue-list {
+  left: 4px;
+  top: 28px;
+}

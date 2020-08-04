@@ -15,7 +15,7 @@ const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
 const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
 const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
 
-const REFRESH_INTERVAL = 60000; //msec
+const REFRESH_INTERVAL = isProduction ? 60000 : 60000 * 60; //msec
 let lastRefreshTime = 0;
 
 let cachedData = {};

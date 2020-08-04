@@ -80,11 +80,19 @@ exports.queryString = function(sprint) {
           name
           openIssues: issues(first: 100, filterBy: {states: [OPEN]}) {
             totalCount
-            edges {
-              node {
-                milestone {
-                  title
-                }
+            nodes {
+
+              author {
+                login
+                avatarUrl
+                url
+              }
+              title
+              number
+              url
+
+              milestone {
+                title
               }
             }
           }
@@ -121,6 +129,9 @@ exports.queryString = function(sprint) {
           }
 
           isDraft # requires application/vnd.github.shadow-cat-preview+json
+
+          headRefName
+          baseRefName
 
           author {
             avatarUrl
@@ -170,11 +181,18 @@ exports.queryString = function(sprint) {
         name
         issuesByMilestone: issues(first: 100, filterBy: {states: [OPEN]}) {
           totalCount
-          edges {
-            node {
-              milestone {
-                title
-              }
+          nodes {
+            author {
+              login
+              avatarUrl
+              url
+            }
+            title
+            number
+            url
+
+            milestone {
+              title
             }
           }
         }
@@ -184,6 +202,8 @@ exports.queryString = function(sprint) {
               title
               number
               isDraft # requires application/vnd.github.shadow-cat-preview+json
+              headRefName
+              baseRefName
               milestone {
                 title
               }

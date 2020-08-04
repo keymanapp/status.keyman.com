@@ -17,7 +17,7 @@ export class AppComponent {
   timer: any;
   title = 'Keyman Status';
 
-  TIMER_INTERVAL = 60000; //msec
+  TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
   sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
@@ -251,31 +251,36 @@ export class AppComponent {
       return (parseInt(a0[1], 10) - parseInt(b0[1], 10))*100 + (parseInt(a0[2], 10) - parseInt(b0[2], 10));
     };
 
+    // TODO: split search against future and current milestones (future milestone shows only count; current milestone shows more detail)
     // For each platform, fill in the milestone counts
     this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
       let platform = this.getPlatform(label.node.name.substring(0,label.node.name.length-1));
       if(!platform) return;
       platform.totalIssueCount = label.node.openIssues.totalCount;
       platform.milestones = [
-        { id: 'current', title: this.phase.title, count: 0 },
-        { id: 'future', title: "Future", count: 0 },
-        { id: 'waiting', title: "Waiting-external", count: 0 },
-        { id: 'other', title: "Other", count: 0 }
+        { id: 'current', title: this.phase.title, count: 0, nodes: [] },
+        { id: 'future', title: "Future", count: 0, nodes: [] },
+        { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+        { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
-      label.node.openIssues.edges.forEach(issue => {
-        if(!issue.node.milestone) platform.milestones[3].count++;
-        else switch(issue.node.milestone.title) {
-          case this.phase.title: platform.milestones[0].count++; break;
-          case "Future": platform.milestones[1].count++; break;
-          case "Waiting-external": platform.milestones[2].count++; break;
+      label.node.openIssues.nodes.forEach(issue => {
+        let m = null;
+        if(!issue.milestone) m = platform.milestones[3];
+        else switch(issue.milestone.title) {
+          case this.phase.title: m = platform.milestones[0]; break;
+          case "Future": m = platform.milestones[1]; break;
+          case "Waiting-external": m = platform.milestones[2]; break;
           default:
-            let m = platform.milestones.find(element => {return element.title == issue.node.milestone.title});
+            m = platform.milestones.find(element => {return element.title == issue.milestone.title});
             if(!m) {
-              m = { id: 'future', title: issue.node.milestone.title, count: 0};
+              m = { id: 'future', title: issue.milestone.title, count: 0, nodes: []};
               platform.milestones.push(m);
             }
-            m.count++;
             break;
+        }
+        if(m) {
+          m.count++;
+          m.nodes.push(issue);
         }
       });
 
@@ -287,26 +292,29 @@ export class AppComponent {
       let site = this.sites[repo.name];
       if(!site) return;
       site.milestones = [
-        { id: 'current', title: this.phase.title, count: 0 },
-        { id: 'future', title: "Future", count: 0 },
-        { id: 'waiting', title: "Waiting-external", count: 0 },
-        { id: 'other', title: "Other", count: 0 }
+        { id: 'current', title: this.phase.title, count: 0, nodes: [] },
+        { id: 'future', title: "Future", count: 0, nodes: [] },
+        { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+        { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
-      repo.issuesByMilestone.edges.forEach(issue => {
-        if(!issue.node.milestone) site.milestones[3].count++;
-        else switch(issue.node.milestone.title) {
-          case this.phase.title: site.milestones[0].count++; break;
-          case "Future": site.milestones[1].count++; break;
-          case "Waiting-external": site.milestones[2].count++; break;
+      repo.issuesByMilestone.nodes.forEach(issue => {
+        let m = null;
+        if(!issue.milestone) m = site.milestones[3];
+        else switch(issue.milestone.title) {
+          case this.phase.title: m = site.milestones[0]; break;
+          case "Future": m = site.milestones[1]; break;
+          case "Waiting-external": m = site.milestones[2]; break;
           default:
-            let m = site.milestones.find(element => {return element.title == issue.node.milestone.title});
+            m = site.milestones.find(element => {return element.title == issue.milestone.title});
             if(!m) {
-              m = { id: 'future', title: issue.node.milestone.title, count: 0};
+              m = { id: 'future', title: issue.milestone.title, count: 0, nodes: []};
               site.milestones.push(m);
             }
-            m.count++;
             break;
-
+        }
+        if(m) {
+          m.count++;
+          m.nodes.push(issue);
         }
       });
       site.milestones = site.milestones.sort(sortMilestones);

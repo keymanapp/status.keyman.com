@@ -1,11 +1,9 @@
 .issue-list {
-  position: absolute;
-  z-index: 10;
   background: #fcfffc;
   border: solid 1px #4c4c30;
   border-radius: 0 0 4px 4px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  padding: 8px;
+  padding: 0 3px 3px 3px;
   width: max-content;
   max-width: 720px;
 }
@@ -23,12 +21,20 @@ li {
 
 .label {
   display: block;
-  text-indent: -12px;
-  margin-left: 24px;
+  text-indent: 0;
+  margin-left: 4px;
 }
 
 .issue {
-  padding-left: 2px;
+  display: inline-block;
+  height: 22px;
+  padding: 4px 8px 2px 4px;
+  margin-top: 4px;
+}
+
+.issue:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
 }
 
 .label a,
@@ -47,4 +53,7 @@ li {
 
 .author {
   display: inline-block;
+  vertical-align: bottom;
+  margin-top: 4px;
+  margin-right: 4px;
 }

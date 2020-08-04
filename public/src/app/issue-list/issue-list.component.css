@@ -5,7 +5,7 @@
   border: solid 1px #4c4c30;
   border-radius: 0 0 4px 4px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  padding: 8px;
+  padding: 0 3px 3px 3px;
   width: max-content;
   max-width: 720px;
 }

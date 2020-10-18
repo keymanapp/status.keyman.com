@@ -384,4 +384,49 @@ export class AppComponent {
     const build = this.tierTestRunningAndLatestBuild(platformId,tier);
     return build ? `https://build.palaso.org/viewLog.html?buildId=${build.id}` : null;
   }
+
+  escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+  }  
+
+  repoShortName(url) {
+    const matches = url.match(/\/github.com\/keymanapp\/([^\/]+)\//);
+    if(!matches) return '';
+    switch(matches[1]) {
+      case 'keyman': return '';
+      case 'keyman.com': return 'keyman.com';
+    }
+
+    const submatches = matches[1].match(/^([^.]+)\.keyman\.com/);
+    return submatches ? submatches[1] : matches[1];
+  }
+
+  getContributionText(nodes, type) {
+    const text = 
+      '<ul>' + 
+      nodes.reduce(
+        (text, node) => {
+          const repo = this.repoShortName(node[type].url);
+          return text + `<li>${this.escapeHtml(node[type].title)} (<a href='${node[type].url}'>${repo}#${node[type].number}</a>)</li>\n`
+        }, '') +
+      '</ul>';
+    return { content: text, type: 'text/html' };
+  }
+
+  getContributionPRText(user) { 
+    return this.getContributionText(user.contributions.pullRequests.nodes, 'pullRequest');
+  }
+
+  getContributionIssueText(user) {
+    return this.getContributionText(user.contributions.issues.nodes, 'issue');
+  }
+
+  getContributionReviewText(user) {
+    return this.getContributionText(user.contributions.reviews.nodes, 'pullRequest');
+  }
 }

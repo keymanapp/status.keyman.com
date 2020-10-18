@@ -300,13 +300,14 @@ function transformKeymanResponse(data) {
     Object.keys(data[platform]).forEach(tier => {
       const version = data[platform][tier].version;
       const prefix = `https://downloads.keyman.com/${platform}/${tier}/${version}`;
+      const winapp = parseInt(version,10) >= 14 ? 'keyman' : 'keymandesktop';
       switch(platform) {
         case 'android':   data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.apk`; break;
         case 'ios':       data[platform][tier].downloadUrl = `${prefix}/keyman-ios-${version}.ipa`; break;
         case 'linux':     data[platform][tier].downloadUrl = `${prefix}/`; break;
         case 'mac':       data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.dmg`; break;
         case 'web':       data[platform][tier].downloadUrl = `https://keymanweb.com?version=${version}`; break;
-        case 'windows':   data[platform][tier].downloadUrl = `${prefix}/keymandesktop-${version}.exe`; break;
+        case 'windows':   data[platform][tier].downloadUrl = `${prefix}/${winapp}-${version}.exe`; break;
         case 'developer': data[platform][tier].downloadUrl = `${prefix}/keymandeveloper-${version}.exe`; break;
       }
     });

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
+import { escapeHtml } from '../utility/escapeHtml';
 
 @Component({
   selector: 'app-issue-list',
@@ -55,5 +57,19 @@ export class IssueListComponent implements OnInit {
     }
 
     return this.rgbToYIQ(rgb) >= threshold ? '#000' : '#fff';
+  }
+
+  getIssueListText() {
+    if(!this.issues) return null;
+    
+    const text = 
+      '<ul>' + 
+      this.issues.reduce(
+        (text, node) => {
+          const repo = repoShortNameFromGithubUrl(node.url);
+          return text + `<li>${escapeHtml(node.title)} (<a href='${node.url}'>${repo}#${node.number}</a>)</li>\n`
+        }, '') +
+      '</ul>';
+    return { content: text, type: 'text/html' };
   }
 }

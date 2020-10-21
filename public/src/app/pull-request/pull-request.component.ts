@@ -15,27 +15,49 @@ export class PullRequestComponent implements OnInit {
   }
 
   pullClass() {
-    let base = this.pull.pull.node.milestone ? this.pull.pull.node.milestone.title == 'Future' ? 'future ' : '' : '';
+    const pr = this.pull.pull.node;
+    const base = pr.milestone ? pr.milestone.title == 'Future' ? 'future ' : '' : '';
     //if(this.pull.pull.node.commits?.nodes[0]?.commit?.checkSuites?.nodes[0]?.status == 'COMPLETED') {
     //One day, with optional chaining (nearly here)
-    if(this.pull.pull.node.commits && this.pull.pull.node.commits.nodes && this.pull.pull.node.commits.nodes.length && this.pull.pull.node.commits.nodes[0].commit &&
-        this.pull.pull.node.commits.nodes[0].commit.checkSuites &&
-        this.pull.pull.node.commits.nodes[0].commit.checkSuites.nodes.length) {
-      if(this.pull.pull.node.commits.nodes[0].commit.checkSuites.nodes[0].status == 'COMPLETED') {
-        switch(this.pull.pull.node.commits.nodes[0].commit.checkSuites.nodes[0].conclusion) {
-          case 'SUCCESS':   return base+'success';
-          case 'ACTION_REQUIRED':
-          case 'TIMED_OUT':
-          case 'FAILURE':   return base+'failure';
-          case 'CANCELLED':
-          case 'SKIPPED':
-          case 'STALE':
-          case 'NEUTRAL':
-          default: return base+'missing'; // various other states
+    if(pr.commits && pr.commits.nodes && pr.commits.nodes.length && pr.commits.nodes[0].commit &&
+        pr.commits.nodes[0].commit.checkSuites &&
+        pr.commits.nodes[0].commit.checkSuites.nodes.length) {
+      const checks = pr.commits.nodes[0].commit.checkSuites.nodes;
+      let conclusion = '';
+      for(let check of checks) {
+        if(check.app == null) { 
+          // GitHub will return a QUEUED null-app check. Not sure why.
+          continue;
         }
-      } else {
-        //IN_PROGRESS, QUEUED, REQUESTED
-        return base+'pending';
+        if(check.status == 'COMPLETED') {
+          switch(check.conclusion) {
+            case 'SUCCESS':  
+              if(conclusion == '') conclusion = 'SUCCESS'; 
+              break;
+            case 'ACTION_REQUIRED':
+            case 'TIMED_OUT':
+            case 'FAILURE':
+              conclusion = 'FAILURE'; //   return base+'failure';
+              break;
+            case 'CANCELLED':
+            case 'SKIPPED':
+            case 'STALE':
+            case 'NEUTRAL':
+            default:
+              if(conclusion == '') conclusion = 'CANCELLED';
+              //return base+'missing'; // various other states
+          }
+        } else {
+          //IN_PROGRESS, QUEUED, REQUESTED
+          conclusion = 'QUEUED';
+          //return base+'pending';
+        }
+      }
+      switch(conclusion) {
+        case 'QUEUED': return base+'pending';
+        case 'SUCCESS': return base+'success';
+        case 'FAILURE': return base+'failure';
+        default: return base+'missing';
       }
     }
     if(!this.pull.state) return base+'missing';

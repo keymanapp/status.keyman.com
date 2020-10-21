@@ -184,8 +184,9 @@ exports.queryString = function(sprint) {
               commits(last: 1) {
                 nodes {
                   commit {
-                    checkSuites(last:1) {
+                    checkSuites(last: 10) {
                       nodes {
+                        app { name }
                         conclusion
                         status
                       }

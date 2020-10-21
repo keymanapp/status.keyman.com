@@ -157,12 +157,15 @@ export class AppComponent {
           if(label.node.name == platform.id+'/') {
             let foundContext = null;
             for(let context of contexts) {
-              //
-              if(context.context.includes(platform.context)) {
+              if(context.state != 'SUCCESS') {
                 foundContext = context;
                 break;
               }
+              if(context.context.match(new RegExp('Test-\\d\\d\\.\\d \\('+platform.context+'\\)'))) {
+                foundContext = context;
+              }
             }
+            if(contexts.length && !foundContext) foundContext = contexts[0];
             platform.pulls.push({pull: pull, state: foundContext});
             this.labeledPulls.push(pull);
           }

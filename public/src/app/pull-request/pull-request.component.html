@@ -12,6 +12,6 @@
   </span>
   
   <span class="title">{{pull.pull.node.title}}</span>
-  <span class="status">{{pull.state?.description}}</span>
+  <span class="status">{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</span>
 </div>
 </span>

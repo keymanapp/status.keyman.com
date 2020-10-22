@@ -145,28 +145,27 @@ export class AppComponent {
   transformPlatformStatusData() {
     this.labeledPulls = [];
 
-    for(let p in this.platforms) {
-      let platform = this.platforms[p];
+    for(let platform of this.platforms) {
       platform.pulls = [];
       //console.log(this.status.github.data.repository.pullRequests.edges);
-      for(let q in this.status.github.data.repository.pullRequests.edges) {
-        let pull=this.status.github.data.repository.pullRequests.edges[q];
+      for(let pull of this.status.github.data.repository.pullRequests.edges) {
         //console.log(pull);
         let labels = pull.node.labels.edges;
         let status = pull.node.commits.edges[0].node.commit.status;
         let contexts = status ? status.contexts : null;
-        for(let l in labels) {
-          let label = labels[l].node;
-          if(label.name == platform.id+'/') {
+        for(let label of labels) {
+          if(label.node.name == platform.id+'/') {
             let foundContext = null;
-            for(let r in contexts) {
-              let context=contexts[r];
-              //
-              if(context.context == platform.context) {
+            for(let context of contexts) {
+              if(context.state != 'SUCCESS') {
                 foundContext = context;
                 break;
               }
+              if(context.context.match(new RegExp('Test-\\d\\d\\.\\d \\('+platform.context+'\\)'))) {
+                foundContext = context;
+              }
             }
+            if(contexts.length && !foundContext) foundContext = contexts[0];
             platform.pulls.push({pull: pull, state: foundContext});
             this.labeledPulls.push(pull);
           }

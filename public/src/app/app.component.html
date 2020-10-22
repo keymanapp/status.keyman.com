@@ -37,7 +37,10 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <th>Issues</th>
+                        <th>
+                          Issues
+                          <app-clipboard [text]="getContributionIssueText(user)" title="Copy HTML formatted list of issues to clipboard"></app-clipboard>
+                        </th>
                         <td  *ngFor="let day of sprintDays">
                           <span *ngFor="let issue of user.contributions.issues.nodes | filterObjectByDate: day.date">
                             <a class='contribution-issue' href='{{issue.issue.url}}' target='_blank' title='{{issue.issue.title}}'>{{issue.issue.number}}</a>
@@ -45,7 +48,10 @@
                         </td>
                       </tr>
                       <tr>
-                        <th>PRs</th>
+                        <th>
+                          PRs
+                          <app-clipboard [text]="getContributionPRText(user)" title="Copy HTML formatted list of pull requests to clipboard"></app-clipboard>
+                        </th>
                         <td *ngFor="let day of sprintDays">
                           <span *ngFor="let pr of user.contributions.pullRequests.nodes | filterObjectByDate: day.date">
                             <a class='contribution-issue' href='{{pr.pullRequest.url}}' target='_blank' title='{{pr.pullRequest.title}}'>{{pr.pullRequest.number}}</a>
@@ -53,7 +59,10 @@
                         </td>
                       </tr>
                       <tr>
-                        <th>Reviews</th>
+                        <th>
+                          Reviews
+                          <app-clipboard [text]="getContributionReviewText(user)" title="Copy HTML formatted list of reviews to clipboard"></app-clipboard>
+                        </th>
                         <td *ngFor="let day of sprintDays">
                           <span *ngFor="let review of user.contributions.reviews.nodes | filterObjectByDate: day.date">
                             <a class='contribution-issue' href='{{review.pullRequest.url}}' target='_blank' title='{{review.pullRequest.title}}'>{{review.pullRequest.number}}</a>

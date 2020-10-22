@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { StatusService } from './status/status.service';
 import { platforms, PlatformSpec } from './platforms';
 import { sites } from './sites';
+import { repoShortNameFromGithubUrl } from './utility/repoShortNameFromGithubUrl';
+import { escapeHtml } from './utility/escapeHtml';
 
 @Component({
   selector: 'app-root',
@@ -383,5 +385,29 @@ export class AppComponent {
     if(!this.status) return null;
     const build = this.tierTestRunningAndLatestBuild(platformId,tier);
     return build ? `https://build.palaso.org/viewLog.html?buildId=${build.id}` : null;
+  }
+
+  getContributionText(nodes, type) {
+    const text = 
+      '<ul>' + 
+      nodes.reduce(
+        (text, node) => {
+          const repo = repoShortNameFromGithubUrl(node[type].url);
+          return text + `<li>${escapeHtml(node[type].title)} (<a href='${node[type].url}'>${repo}#${node[type].number}</a>)</li>\n`
+        }, '') +
+      '</ul>';
+    return { content: text, type: 'text/html' };
+  }
+
+  getContributionPRText(user) { 
+    return this.getContributionText(user.contributions.pullRequests.nodes, 'pullRequest');
+  }
+
+  getContributionIssueText(user) {
+    return this.getContributionText(user.contributions.issues.nodes, 'issue');
+  }
+
+  getContributionReviewText(user) {
+    return this.getContributionText(user.contributions.reviews.nodes, 'pullRequest');
   }
 }

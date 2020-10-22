@@ -9,10 +9,12 @@ import { FilterObjectByDatePipe } from './pipes/filter-object-by-date.pipe';
 import { CountBoxComponent } from './count-box/count-box.component';
 import { SentryComponent } from './sentry/sentry.component';
 import { IssueListComponent } from './issue-list/issue-list.component';
+import { ClipboardComponent } from './clipboard/clipboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    ClipboardComponent,
     PullRequestComponent,
     CountBoxComponent,
     FilterObjectByDatePipe,

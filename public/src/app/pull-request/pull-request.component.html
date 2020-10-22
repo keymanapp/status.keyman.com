@@ -6,7 +6,11 @@
   </a>
 </span>
 <div class="pull-request-detail">
-  <span class="branches"><span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span></span>
+  <span class="branches">
+    <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span> 
+    <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
+  </span>
+  
   <span class="title">{{pull.pull.node.title}}</span>
   <span class="status">{{pull.state?.description}}</span>
 </div>

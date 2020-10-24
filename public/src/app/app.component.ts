@@ -153,19 +153,24 @@ export class AppComponent {
         let labels = pull.node.labels.edges;
         let status = pull.node.commits.edges[0].node.commit.status;
         let contexts = status ? status.contexts : null;
+        if(!labels) {
+          continue;
+        }
         for(let label of labels) {
           if(label.node.name == platform.id+'/') {
             let foundContext = null;
-            for(let context of contexts) {
-              if(context.state != 'SUCCESS') {
-                foundContext = context;
-                break;
+            if(contexts) {
+              for(let context of contexts) {
+                if(context.state != 'SUCCESS') {
+                  foundContext = context;
+                  break;
+                }
+                if(context.context.match(new RegExp('Test-\\d\\d\\.\\d \\('+platform.context+'\\)'))) {
+                  foundContext = context;
+                }
               }
-              if(context.context.match(new RegExp('Test-\\d\\d\\.\\d \\('+platform.context+'\\)'))) {
-                foundContext = context;
-              }
+              if(contexts.length && !foundContext) foundContext = contexts[0];
             }
-            if(contexts.length && !foundContext) foundContext = contexts[0];
             platform.pulls.push({pull: pull, state: foundContext});
             this.labeledPulls.push(pull);
           }

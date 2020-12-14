@@ -128,6 +128,9 @@
                 <a href="{{status?.keyman[platform.value.id].beta.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].beta.version}}">v</a>
               </div>
             </div>
+            <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
+              <a href="{{tierTestLink(platform.value.id,'beta')}}" target="_blank">🧪</a>
+            </div>
             <div class="tier-release-date">
               {{releaseDate(platform.value.id,'beta')}}
             </div>

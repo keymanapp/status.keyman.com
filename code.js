@@ -87,7 +87,7 @@ function refreshStatus(sprint, callback) {
     httpget(  //0
       'build.palaso.org',
       '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
-        'build(id,number,status,statusText)))',
+        'build(id,number,branchName,status,statusText)))',
       {
         Authorization: ` Bearer ${teamcity_token}`,
         Accept: 'application/json'
@@ -96,7 +96,7 @@ function refreshStatus(sprint, callback) {
     httpget(  //1
       'build.palaso.org',
       '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(running:true,canceled:false,branch:default:any),'+
-        'build(id,number,status,statusText)))',
+        'build(id,number,branchName,status,statusText)))',
       {
         Authorization: ` Bearer ${teamcity_token}`,
         Accept: 'application/json'
@@ -270,6 +270,7 @@ function getGitHubIssues(cursor, issues) {
   return promise.then(data => {
     data = JSON.parse(data);
     //console.log(data);
+    if(!data.data.search) return [];
     const newIssues = [].concat(issues, data.data.search.nodes);
     if(data.data.search.pageInfo.hasNextPage) {
       return getGitHubIssues(data.data.search.pageInfo.endCursor, newIssues);

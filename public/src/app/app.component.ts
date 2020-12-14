@@ -99,39 +99,59 @@ export class AppComponent {
         'tier-release-version-pending';
   }
 
+  getFirstBuild(builds: any, tier: string) {
+    if(!builds || !builds.builds || !builds.builds.length) return null;
+    for(let build of builds.builds) {
+      if(build.branchName == tier) return build;
+      if(parseFloat(build.branchName) && tier == 'stable') return build;
+      if(tier == 'alpha' && !build.branchName) return build; // legacy builds do not have a branch name
+      if(tier == 'alpha' && build.branchName == 'master') return build;
+    }
+    return null;
+  }
+
   statusClass(platformId: string, tier: string): string {
     let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
-    if(br && br.builds && br.builds.length) {
-      return br.builds[0].status == 'SUCCESS' ? 'pending' : 'failure';
+    let build = this.getFirstBuild(br, tier);
+    if(build) {
+      return build.status == 'SUCCESS' ? 'pending' : 'failure';
     }
-    if(!b || !b.builds || !b.builds.length) return 'missing';
-    return b.builds[0].status == 'SUCCESS' ? 'success' : 'failure';
+
+    build = this.getFirstBuild(b, tier);
+    if(!build) return 'missing';
+    return build.status == 'SUCCESS' ? 'success' : 'failure';
   }
 
   statusText(platformId: string, tier: string): string {
     let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
-    if(br && br.builds && br.builds.length) {
-      return br.builds[0].number;
+    let build = this.getFirstBuild(br, tier);
+    if(build) {
+      return build.number;
     }
-    if(!b || !b.builds || !b.builds.length) return 'Unreported';
-    return b.builds[0].number;
+
+    build = this.getFirstBuild(b, tier);
+    if(!build) return 'Unreported';
+    return build.number;
   }
 
   statusTip(platformId: string, tier: string): string {
     let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
-    if(br && br.builds && br.builds.length) {
-      return br.builds[0].statusText;
+    let build = this.getFirstBuild(br, tier);
+    if(build) {
+      return build.statusText;
     }
-    if(!b || !b.builds || !b.builds.length) return '';
-    return b.builds[0].statusText;
+
+    build = this.getFirstBuild(b, tier);
+    if(!build) return '';
+    return build.statusText;
   }
 
   statusLink(platformId: string, tier: string): string {
     let b = this.getStatus(platformId, tier);
-    if(!b || !b.builds || !b.builds.length) return '';
+    let build = this.getFirstBuild(b, tier);
+    if(!build) return '';
+    return `https://build.palaso.org/viewLog.html?buildId=${build.id}&buildTypeId=${b.id}`;
 
-    return `https://build.palaso.org/viewLog.html?buildId=${b.builds[0].id}&buildTypeId=${b.id}`;
-    //return b.builds[0].number;
   }
 
   releaseDate(platformId: string, tier: string): string {
@@ -392,8 +412,8 @@ export class AppComponent {
   }
 
   getContributionText(nodes, type) {
-    const text = 
-      '<ul>' + 
+    const text =
+      '<ul>' +
       nodes.reduce(
         (text, node) => {
           const repo = repoShortNameFromGithubUrl(node[type].url);
@@ -403,7 +423,7 @@ export class AppComponent {
     return { content: text, type: 'text/html' };
   }
 
-  getContributionPRText(user) { 
+  getContributionPRText(user) {
     return this.getContributionText(user.contributions.pullRequests.nodes, 'pullRequest');
   }
 

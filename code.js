@@ -270,7 +270,7 @@ function getGitHubIssues(cursor, issues) {
   return promise.then(data => {
     data = JSON.parse(data);
     //console.log(data);
-    if(!data.data.search) return [];
+    if(!data.data || !data.data.search) return [];
     const newIssues = [].concat(issues, data.data.search.nodes);
     if(data.data.search.pageInfo.hasNextPage) {
       return getGitHubIssues(data.data.search.pageInfo.endCursor, newIssues);

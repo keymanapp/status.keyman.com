@@ -23,6 +23,24 @@ let cachedData = {};
 
 app.use('/', express.static('public/dist/public'));
 
+/* TODO: web hook based refresh of GitHub with worker threads to collect data,
+         one for each data source. This data will then be cached for main http
+         server thread to respond with. We can probably also use web hooks for
+         Sentry and TeamCity. In future, may also be able to do similar for
+         api.keyman.com/downloads.keyman.com/api
+
+if(!isProduction) {
+  app.get('/github-refresh', () => {
+    githubDirty = true;
+  });
+} else {
+  app.post('/github-refresh', (request, response) => {
+    let body = JSON.parse(request.body);
+    githubDirty = true;
+  });
+}
+*/
+
 app.get('/status/', (request, response) => {
 
   let sprint = request.query.sprint ? request.query.sprint : 'current';
@@ -103,22 +121,7 @@ function refreshStatus(sprint, callback) {
       }
     ),
     httpget('downloads.keyman.com', '/api/version/2.0'),  //2
-    httppost('api.github.com', '/graphql',  //3
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
-
-      // Lists all open pull requests in keyman repos
-      // and all open pull requests + status for keymanapp repo
-      // Gather the contributions for each recent user
-
-      // Current rate limit cost is 60 points. We have 5000 points/hour.
-      // https://developer.github.com/v4/guides/resource-limitations/
-
-      JSON.stringify({query: ghStatusQuery})
-    ),
-
+    getGitHubStatus(ghStatusQuery), // 3
     getGitHubIssues(null, []), //4
   ]).then(data => {
     // Get the current sprint from the GitHub data
@@ -155,15 +158,8 @@ function refreshStatus(sprint, callback) {
     // Run the queries!
 
     Promise.all([
-      httppost('api.github.com', '/graphql',
-        {
-          Authorization: ` Bearer ${github_token}`,
-          Accept: 'application/vnd.github.antiope-preview, application/vnd.github.shadow-cat-preview+json'
-        },
-        // Gather the contributions for each recent user
-
-        JSON.stringify({query: ghContributionsQuery}),
-      )].concat(sentryQueryPromises)
+      getGitHubContributions(ghContributionsQuery)
+      ].concat(sentryQueryPromises)
     ).then(phaseData => {
       let contributions = phaseData.shift();
 
@@ -255,6 +251,24 @@ function httppost(hostname, path, headers, data) {
   });
 };
 
+function getGitHubStatus(ghStatusQuery) {
+  return httppost('api.github.com', '/graphql',  //3
+    {
+      Authorization: ` Bearer ${github_token}`,
+      Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+    },
+
+    // Lists all open pull requests in keyman repos
+    // and all open pull requests + status for keymanapp repo
+    // Gather the contributions for each recent user
+
+    // Current rate limit cost is 60 points. We have 5000 points/hour.
+    // https://developer.github.com/v4/guides/resource-limitations/
+
+    JSON.stringify({query: ghStatusQuery})
+  );
+}
+
 function getGitHubIssues(cursor, issues) {
   const ghIssuesQuery = githubIssues.queryString(cursor);
   const promise = httppost('api.github.com', '/graphql',  //4
@@ -277,6 +291,18 @@ function getGitHubIssues(cursor, issues) {
     }
     return newIssues;
   });
+}
+
+function getGitHubContributions(ghContributionsQuery) {
+  return httppost('api.github.com', '/graphql',
+    {
+      Authorization: ` Bearer ${github_token}`,
+      Accept: 'application/vnd.github.antiope-preview, application/vnd.github.shadow-cat-preview+json'
+    },
+    // Gather the contributions for each recent user
+
+    JSON.stringify({query: ghContributionsQuery}),
+  );
 }
 
 refreshStatus('current');

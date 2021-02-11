@@ -254,6 +254,7 @@ td.sentry-events {
 }
 
 .contribution-issue {
+  font-size: 12px;
   display: inline-block;
   background: #c0c0c0;
   border-radius: 3px;

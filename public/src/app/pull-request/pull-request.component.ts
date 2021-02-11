@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { labelColor } from '../utility/labelColor';
 
 @Component({
   selector: 'app-pull-request',
@@ -9,7 +11,7 @@ export class PullRequestComponent implements OnInit {
   @Input() pull: any;
   @Input() class?: string;
 
-  constructor() { }
+  constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
   }
@@ -25,14 +27,14 @@ export class PullRequestComponent implements OnInit {
       const checks = pr.commits.nodes[0].commit.checkSuites.nodes;
       let conclusion = '';
       for(let check of checks) {
-        if(check.app == null) { 
+        if(check.app == null) {
           // GitHub will return a QUEUED null-app check. Not sure why.
           continue;
         }
         if(check.status == 'COMPLETED') {
           switch(check.conclusion) {
-            case 'SUCCESS':  
-              if(conclusion == '') conclusion = 'SUCCESS'; 
+            case 'SUCCESS':
+              if(conclusion == '') conclusion = 'SUCCESS';
               break;
             case 'ACTION_REQUIRED':
             case 'TIMED_OUT':
@@ -94,6 +96,14 @@ export class PullRequestComponent implements OnInit {
         (c[1] as any).state == 'APPROVED' || a == 'status-approved' ? 'status-approved' : 'status-pending',
       'status-pending' // Initial value
     );
+  }
+
+  labelColor(label) {
+    return this.sanitizer.bypassSecurityTrustStyle(labelColor(label));
+  }
+
+  labelName(label: string) {
+    return label.replace(/-/g, '‑');
   }
 
 }

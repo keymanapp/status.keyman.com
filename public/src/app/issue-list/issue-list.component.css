@@ -57,3 +57,13 @@ li {
   margin-top: 4px;
   margin-right: 4px;
 }
+
+.related-pr {
+  padding: 0 4px;
+  margin: 0 4px;
+}
+
+.related-pr:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
+}

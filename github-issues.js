@@ -38,6 +38,7 @@ exports.queryString = function(after) {
                 subject {
                   ... on PullRequest {
                     number
+                    url
                   }
                 }
               }

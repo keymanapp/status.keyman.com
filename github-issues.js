@@ -31,6 +31,27 @@ exports.queryString = function(after) {
             }
           }
 
+          timelineItems(itemTypes: [CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+            nodes {
+              ... on ConnectedEvent {
+                __typename
+                subject {
+                  ... on PullRequest {
+                    number
+                  }
+                }
+              }
+              ... on DisconnectedEvent {
+                __typename
+                subject {
+                  ... on PullRequest {
+                    number
+                  }
+                }
+              }
+            }
+          }
+
           milestone {
             title
           }

@@ -4,7 +4,10 @@
       <span class="label">
         <a class="author" title="{{issue.author.login}}" target="_blank" href="{issue.author.url}}"><img class="avatar-22" src="{{issue.author.avatarUrl}}&size=22"></a>
         <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}"><b>{{issue.number}}</b> {{issue.title}}</a>
-        <span *ngFor="let label of issue.labels?.nodes"><span class="issue-label" [style]="issueColor(label)">{{labelName(label.name)}}</span><wbr /></span>
+        <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">
+          <a href="{{pr.subject.url}}" target="_blank">🔗 #{{pr.subject.number}}</a>
+        </span>
+        <span *ngFor="let label of issue.labels?.nodes"><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span><wbr /></span>
       </span>
     </li>
   </ul>

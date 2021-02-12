@@ -124,6 +124,28 @@ exports.queryString = function(sprint) {
             url
           }
 
+          timelineItems(itemTypes: [CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+            nodes {
+              ... on ConnectedEvent {
+                __typename
+                subject {
+                  ... on Issue {
+                    number
+                    url
+                  }
+                }
+              }
+              ... on DisconnectedEvent {
+                __typename
+                subject {
+                  ... on Issue {
+                    number
+                  }
+                }
+              }
+            }
+          }
+
           reviews(last:100) {
             nodes {
               author { login }
@@ -152,6 +174,7 @@ exports.queryString = function(sprint) {
           labels(first: 25) {
             edges {
               node {
+                color
                 name
               }
             }
@@ -206,6 +229,7 @@ exports.queryString = function(sprint) {
               labels(first: 25) {
                 edges {
                   node {
+                    color
                     name
                   }
                 }

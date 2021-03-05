@@ -414,7 +414,7 @@ export class AppComponent {
   getContributionText(nodes, type) {
     const text =
       '<ul>' +
-      nodes.reduce(
+      nodes.reverse().reduce(
         (text, node) => {
           const repo = repoShortNameFromGithubUrl(node[type].url);
           return text + `<li>${escapeHtml(node[type].title)} (<a href='${node[type].url}'>${repo}#${node[type].number}</a>)</li>\n`

@@ -274,8 +274,8 @@ export class AppComponent {
       if(a0 !== null && b0 === null) return -1;
       if(a0 === null && b0 !== null) return 1;
       if(a0 === null) return a.title.localeCompare(b.title);
-      return (a0[1].charCodeAt(0)-b0[1].charCodeAt(0))*1000 +
-             (parseInt(a0[2], 10) - parseInt(b0[2], 10))*100 +
+      return (parseInt(a0[2], 10) - parseInt(b0[2], 10))*1000 +
+             (a0[1].charCodeAt(0)-b0[1].charCodeAt(0))*100 +
              (parseInt(a0[3], 10) - parseInt(b0[3], 10));
     };
 

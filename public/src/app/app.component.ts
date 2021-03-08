@@ -269,7 +269,7 @@ export class AppComponent {
     };
 
     let sortMilestones = (a,b) => {
-      const sprintMilestone = /^P(\d+)S(\d+)$/;
+      const sprintMilestone = /^[A-Z](\d+)S(\d+)$/;
       let a0 = sprintMilestone.exec(a.title), b0 = sprintMilestone.exec(b.title);
       if(a0 !== null && b0 === null) return -1;
       if(a0 === null && b0 !== null) return 1;

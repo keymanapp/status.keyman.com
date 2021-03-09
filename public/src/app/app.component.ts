@@ -269,12 +269,14 @@ export class AppComponent {
     };
 
     let sortMilestones = (a,b) => {
-      const sprintMilestone = /^[A-Z](\d+)S(\d+)$/;
+      const sprintMilestone = /^([A-Z])(\d+)S(\d+)$/;
       let a0 = sprintMilestone.exec(a.title), b0 = sprintMilestone.exec(b.title);
       if(a0 !== null && b0 === null) return -1;
       if(a0 === null && b0 !== null) return 1;
       if(a0 === null) return a.title.localeCompare(b.title);
-      return (parseInt(a0[1], 10) - parseInt(b0[1], 10))*100 + (parseInt(a0[2], 10) - parseInt(b0[2], 10));
+      return (parseInt(a0[2], 10) - parseInt(b0[2], 10))*1000 +
+             (a0[1].charCodeAt(0)-b0[1].charCodeAt(0))*100 +
+             (parseInt(a0[3], 10) - parseInt(b0[3], 10));
     };
 
     // TODO: split search against future and current milestones (future milestone shows only count; current milestone shows more detail)

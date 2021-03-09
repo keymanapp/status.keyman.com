@@ -33,7 +33,13 @@ export class IssueListComponent implements OnInit {
       this.issues.reduce(
         (text, node) => {
           const repo = repoShortNameFromGithubUrl(node.url);
-          return text + `<li>${escapeHtml(node.title)} (<a href='${node.url}'>${repo}#${node.number}</a>)</li>\n`
+          const check = node.timelineItems && node.timelineItems.nodes.length ? '✔ ' : '';
+          const prs = check
+            ? node.timelineItems.nodes.reduce(
+                (current, pr) => `${current} <a href='${pr.subject.url}'>#${pr.subject.number}</a>`, ' 🔗 '
+              )
+            : '';
+          return text + `<li>${check}${escapeHtml(node.title)} (<a href='${node.url}'>${repo}#${node.number}</a>)${prs}</li>\n`
         }, '') +
       '</ul>';
     return { content: text, type: 'text/html' };

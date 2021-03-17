@@ -9,6 +9,11 @@ const githubStatus = require('./services/github/github-status');
 const githubIssues = require('./services/github/github-issues');
 const currentSprint = require('./current-sprint');
 
+import httpget from "./util/httpget";
+import httppost from "./util/httppost";
+
+import versionGet from "./services/downloads.keyman.com/version";
+
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
@@ -41,6 +46,25 @@ if(!isProduction) {
 }
 */
 
+let cache = {
+  teamCity: null,
+  teamCityRunning: null,
+  keymanVersionData: null,
+  github: null,
+  issues: null,
+  contributions: null,
+  currentSprint: null,
+  sentry: null
+};
+
+function refreshKeymanVersionData() {
+  versionGet.get().then(data => cache.keymanVersionData = data);
+}
+
+setInterval(refreshKeymanVersionData, 60000);
+refreshKeymanVersionData();
+
+
 app.get('/status/', (request, response) => {
 
   let sprint = request.query.sprint ? request.query.sprint : 'current';
@@ -56,7 +80,7 @@ app.get('/status/', (request, response) => {
     response.write(JSON.stringify({
       teamCity: data.teamCityData,
       teamCityRunning: data.teamCityRunningData,
-      keyman: data.keymanVersionData,
+      keyman: cache.keymanVersionData,
       github: data.githubPullsData,
       issues: data.githubIssuesData,
       contributions: data.githubContributionsData,
@@ -94,7 +118,7 @@ function getSprintStart() {
   return StartOfWeek;
 }
 
-function refreshStatus(sprint, callback) {
+function refreshStatus(sprint, callback?) {
   cachedData[sprint] = {lastRefreshTime: 0};
 
   let SprintStartDateTime = getSprintStart().toISOString();
@@ -120,7 +144,7 @@ function refreshStatus(sprint, callback) {
         Accept: 'application/json'
       }
     ),
-    httpget('downloads.keyman.com', '/api/version/2.0'),  //2
+    Promise.resolve(), // versionGet.get(), //    httpget('downloads.keyman.com', '/api/version/2.0'),  //2
     getGitHubStatus(ghStatusQuery), // 3
     getGitHubIssues(null, []), //4
   ]).then(data => {
@@ -128,6 +152,8 @@ function refreshStatus(sprint, callback) {
     // We actually get data from the Saturday before the 'official' sprint start
 
     //console.log(data);
+
+    //data = data as string[];
 
     let githubIssuesData = data[4];
 
@@ -165,7 +191,7 @@ function refreshStatus(sprint, callback) {
 
       cachedData[sprint].teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
       cachedData[sprint].teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
-      cachedData[sprint].keymanVersionData = transformKeymanResponse(JSON.parse(data[2]));
+      //cachedData[sprint].keymanVersionData = transformKeymanResponse(JSON.parse(data[2]));
       cachedData[sprint].githubPullsData = githubPullsData;
       cachedData[sprint].githubContributionsData = JSON.parse(contributions);
       cachedData[sprint].lastRefreshTime = Date.now();
@@ -176,82 +202,7 @@ function refreshStatus(sprint, callback) {
   });
 }
 
-function httpget(hostname, path, headers) {
-  return new Promise(resolve => {
-    const options = {
-      hostname: hostname,
-      port: 443,
-      path: path,
-      method: 'GET'
-    }
-
-    if(headers) options.headers = headers;
-
-    let chunk = '';
-
-    const req = https.request(options, res => {
-      if(res.statusCode != 200) {
-        console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
-      }
-
-      res.on('data', d => {
-        chunk += d;
-        });
-
-      res.on('end', () => {
-        resolve(chunk);
-      });
-    });
-
-    req.on('error', error => {
-      console.error(error);
-    });
-
-    req.end();
-  });
-};
-
-function httppost(hostname, path, headers, data) {
-  return new Promise(resolve => {
-    const options = {
-      hostname: hostname,
-      port: 443,
-      path: path,
-      method: 'POST',
-      headers: headers
-    }
-
-    headers['User-Agent'] = 'Keyman Status App/1.0';
-    headers['Content-Type'] = 'application/json';
-    headers['Content-Length'] = data.length;
-
-    let chunk = '';
-
-    const req = https.request(options, res => {
-      if(res.statusCode != 200) {
-        console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
-      }
-
-      res.on('data', d => {
-        chunk += d;
-        });
-
-      res.on('end', () => {
-        //console.log(chunk);
-        resolve(chunk);
-      });
-    });
-
-    req.on('error', error => {
-      console.error(error);
-    });
-
-    req.write(data);
-    req.end();
-  });
-};
-
-function getGitHubStatus(ghStatusQuery) {
+function getGitHubStatus(ghStatusQuery): Promise<string> {
   return httppost('api.github.com', '/graphql',  //3
     {
       Authorization: ` Bearer ${github_token}`,
@@ -269,25 +220,25 @@ function getGitHubStatus(ghStatusQuery) {
   );
 }
 
-function getGitHubIssues(cursor, issues) {
+function getGitHubIssues(cursor, issues): Promise<Array<any>> {
   const ghIssuesQuery = githubIssues.queryString(cursor);
   const promise = httppost('api.github.com', '/graphql',  //4
-  {
-    Authorization: ` Bearer ${github_token}`,
-    Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-  },
+    {
+      Authorization: ` Bearer ${github_token}`,
+      Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+    },
 
-  // Lists all open issues in Keyman repos, cost 1 point per page
-  JSON.stringify({query: ghIssuesQuery})
+    // Lists all open issues in Keyman repos, cost 1 point per page
+    JSON.stringify({query: ghIssuesQuery})
   );
 
   return promise.then(data => {
-    data = JSON.parse(data);
+    let obj = JSON.parse(data);
     //console.log(data);
-    if(!data.data || !data.data.search) return [];
-    const newIssues = [].concat(issues, data.data.search.nodes);
-    if(data.data.search.pageInfo.hasNextPage) {
-      return getGitHubIssues(data.data.search.pageInfo.endCursor, newIssues);
+    if(!obj.data || !obj.data.search) return [];
+    const newIssues = [].concat(issues, obj.data.search.nodes);
+    if(obj.data.search.pageInfo.hasNextPage) {
+      return getGitHubIssues(obj.data.search.pageInfo.endCursor, newIssues);
     }
     return newIssues;
   });
@@ -322,22 +273,3 @@ function transformTeamCityResponse(data) {
   return data;
 }
 
-function transformKeymanResponse(data) {
-  Object.keys(data).forEach(platform => {
-    Object.keys(data[platform]).forEach(tier => {
-      const version = data[platform][tier].version;
-      const prefix = `https://downloads.keyman.com/${platform}/${tier}/${version}`;
-      const winapp = parseInt(version,10) >= 14 ? 'keyman' : 'keymandesktop';
-      switch(platform) {
-        case 'android':   data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.apk`; break;
-        case 'ios':       data[platform][tier].downloadUrl = `${prefix}/keyman-ios-${version}.ipa`; break;
-        case 'linux':     data[platform][tier].downloadUrl = `${prefix}/`; break;
-        case 'mac':       data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.dmg`; break;
-        case 'web':       data[platform][tier].downloadUrl = `https://keymanweb.com?version=${version}`; break;
-        case 'windows':   data[platform][tier].downloadUrl = `${prefix}/${winapp}-${version}.exe`; break;
-        case 'developer': data[platform][tier].downloadUrl = `${prefix}/keymandeveloper-${version}.exe`; break;
-      }
-    });
-  });
-  return data;
-}

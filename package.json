@@ -4,7 +4,7 @@
   "description": "Report on status of Keyman projects",
   "main": "code.js",
   "scripts": {
-    "build": "cd public && npm run-script build && cd ..",
+    "build": "cd public && npm install && npm run-script build && cd ..",
     "start-client": "cd public && npm run-script start",
     "start-server": "run-script-os",
     "start-server:windows": "_start_server.bat",

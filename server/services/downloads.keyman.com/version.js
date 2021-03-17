@@ -9,7 +9,7 @@ export default {
       return httpget('downloads.keyman.com', '/api/version/2.0').then(data => this.transformKeymanResponse(JSON.parse(data)));
    },
 
-   private transformKeymanResponse: function(data) {
+   transformKeymanResponse: function(data) {
       Object.keys(data).forEach(platform => {
         Object.keys(data[platform]).forEach(tier => {
           const version = data[platform][tier].version;

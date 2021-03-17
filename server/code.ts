@@ -5,19 +5,22 @@ const https = require('https');
 const app = express();
 
 const githubContributions = require('./services/github/github-contributions');
-const githubStatus = require('./services/github/github-status');
+//const githubStatus = require('./services/github/github-status');
 const githubIssues = require('./services/github/github-issues');
 const currentSprint = require('./current-sprint');
 
 import httpget from "./util/httpget";
 import httppost from "./util/httppost";
 
-import versionGet from "./services/downloads.keyman.com/version";
+import versionService from "./services/downloads.keyman.com/version";
+import teamcityService from "./services/teamcity/teamcity";
+import githubStatusService from "./services/github/github-status";
+import githubIssuesService from "./services/github/github-issues";
 
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
-const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
+//const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
 const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
 const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
 
@@ -49,52 +52,104 @@ if(!isProduction) {
 let cache = {
   teamCity: null,
   teamCityRunning: null,
-  keymanVersionData: null,
-  github: null,
+  keymanVersion: null,
   issues: null,
-  contributions: null,
-  currentSprint: null,
-  sentry: null
+  /*currentSprint: {
+  },*/
+  sprints: {
+    current: {
+      github: null,
+      //issues: null,
+      contributions: null,
+      currentSprint: null,
+      sentry: null
+    }
+  }
 };
 
-function refreshKeymanVersionData() {
-  versionGet.get().then(data => cache.keymanVersionData = data);
+function refreshKeymanVersion() {
+  console.log('refreshKeymanVersion');
+  versionService.get().then(data => cache.keymanVersion = data);
+  Promise.all(teamcityService.get()).then(data => {
+    cache.teamCity = data[0];
+    cache.teamCityRunning = data[1];
+  });
+
+  githubIssuesService.get(null, []).then(data => cache.issues = data);
+  refreshGitHubStatus('current');
 }
 
-setInterval(refreshKeymanVersionData, 60000);
-refreshKeymanVersionData();
+//refreshGitHubStatus('current');
 
+function refreshGitHubStatus(sprintName) {
+  console.log('refreshGitHubStatus');
+  githubStatusService.get(sprintName).then(data => {
+    cache.sprints[sprintName].github = data.github;
+    cache.sprints[sprintName].phase = data.phase;
+    cache.sprints[sprintName].adjustedStart = data.adjustedStart;
+    refreshGitHubContributions(sprintName);
+    refreshSentry(sprintName);
+  })
+}
+
+function refreshGitHubContributions(sprintName) {
+  console.log('refreshGitHubContributions');
+  const sprint = cache.sprints[sprintName];
+  if(!sprint || !sprint.phase) return;
+  // TODO
+  let SprintStartDateTime = getSprintStart().toISOString();
+  const ghContributionsQuery = githubContributions.queryString(sprint.phase ? new Date(sprint.adjustedStart).toISOString() : SprintStartDateTime);
+  getGitHubContributions(ghContributionsQuery).then(data => sprint.contributions = JSON.parse(data));
+}
+
+function refreshSentry(sprintName) {
+  console.log('refreshSentry');
+  const sprint = cache.sprints[sprintName];
+  if(!sprint || !sprint.phase) return;
+  // TODO
+  const phaseStartDateInSeconds = new Date(sprint.adjustedStart).valueOf() / 1000;
+
+  // Build a list of sentry queries per platform; TODO refactor into shared source
+  let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer',
+    'api.keyman.com', 'developer.keyman.com', 'donate.keyman.com', 'downloads.keyman.com',
+    'help.keyman.com', 'keyman.com', 'keymanweb.com', 's.keyman.com', 'status.keyman.com'
+  ];
+  let sentryQueryPromises = sentryPlatforms.map(platform => httpget('sentry.keyman.com',
+    `/api/0/projects/keyman/${platform.indexOf('.')<0? "keyman-":""}${platform.replace(/\./g,'-')}/stats/?stats=received&since=${phaseStartDateInSeconds}&resolution=1d`,
+    {
+      Authorization: ` Bearer ${sentry_token}`,
+      Accept: 'application/json'
+    }
+  ));
+
+  Promise.all(sentryQueryPromises).then(phaseData =>
+    sprint.sentry = sentryPlatforms.reduce((obj,item,index) => { obj[item] = JSON.parse(phaseData[index]); return obj; }, {})
+  );
+}
+
+setInterval(refreshKeymanVersion, 60000);
+refreshKeymanVersion();
 
 app.get('/status/', (request, response) => {
-
+  console.log('GET /status');
   let sprint = request.query.sprint ? request.query.sprint : 'current';
-  let cacheInvalid = cachedData[sprint] ? Date.now()-cachedData[sprint].lastRefreshTime > REFRESH_INTERVAL : true;
-
-  let cb = (data) => {
-    let headers = {"Content-Type": "text/html"};
-    if(!isProduction) {
-      // Allow requests from ng-served host in development
-      headers["Access-Control-Allow-Origin"] = '*';
-    }
-    response.writeHead(200, headers);
-    response.write(JSON.stringify({
-      teamCity: data.teamCityData,
-      teamCityRunning: data.teamCityRunningData,
-      keyman: cache.keymanVersionData,
-      github: data.githubPullsData,
-      issues: data.githubIssuesData,
-      contributions: data.githubContributionsData,
-      currentSprint: currentSprint.getCurrentSprint(data.githubPullsData.data),
-      sentry: data.sentry
-    }));
-    response.end();
-  };
-
-  if(cacheInvalid || !cachedData[sprint] || !cachedData[sprint].lastRefreshTime) {
-    refreshStatus(sprint, cb);
-  } else {
-    cb(cachedData[sprint]);
+  let headers = {"Content-Type": "application/json"}; //text/html"};
+  if(!isProduction) {
+    // Allow requests from ng-served host in development
+    headers["Access-Control-Allow-Origin"] = '*';
   }
+  response.writeHead(200, headers);
+  response.write(JSON.stringify({
+    teamCity: cache.teamCity,
+    teamCityRunning: cache.teamCityRunning,
+    keyman: cache.keymanVersion,
+    github: cache.sprints[sprint].github,
+    issues: cache.issues,
+    contributions: cache.sprints[sprint].contributions,
+    currentSprint: currentSprint.getCurrentSprint(cache.sprints[sprint].github.data),
+    sentry: cache.sprints[sprint].sentry
+  }));
+  response.end();
 });
 
 function getSprintStart() {
@@ -118,131 +173,8 @@ function getSprintStart() {
   return StartOfWeek;
 }
 
-function refreshStatus(sprint, callback?) {
-  cachedData[sprint] = {lastRefreshTime: 0};
 
-  let SprintStartDateTime = getSprintStart().toISOString();
 
-  const ghStatusQuery = githubStatus.queryString(sprint);
-
-  Promise.all([
-    httpget(  //0
-      'build.palaso.org',
-      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
-        'build(id,number,branchName,status,statusText)))',
-      {
-        Authorization: ` Bearer ${teamcity_token}`,
-        Accept: 'application/json'
-      }
-    ),
-    httpget(  //1
-      'build.palaso.org',
-      '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(running:true,canceled:false,branch:default:any),'+
-        'build(id,number,branchName,status,statusText)))',
-      {
-        Authorization: ` Bearer ${teamcity_token}`,
-        Accept: 'application/json'
-      }
-    ),
-    Promise.resolve(), // versionGet.get(), //    httpget('downloads.keyman.com', '/api/version/2.0'),  //2
-    getGitHubStatus(ghStatusQuery), // 3
-    getGitHubIssues(null, []), //4
-  ]).then(data => {
-    // Get the current sprint from the GitHub data
-    // We actually get data from the Saturday before the 'official' sprint start
-
-    //console.log(data);
-
-    //data = data as string[];
-
-    let githubIssuesData = data[4];
-
-    let githubPullsData = JSON.parse(data[3]);
-    const phase = currentSprint.getCurrentSprint(githubPullsData.data);
-
-    let adjustedStart = new Date(phase.start-2);
-
-    // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
-    if(adjustedStart > new Date()) adjustedStart = new Date()
-
-    const ghContributionsQuery = githubContributions.queryString(phase ? new Date(adjustedStart).toISOString() : SprintStartDateTime);
-    const phaseStartDateInSeconds = new Date(adjustedStart).valueOf() / 1000;
-
-    // Build a list of sentry queries per platform; TODO refactor into shared source
-    let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer',
-      'api.keyman.com', 'developer.keyman.com', 'donate.keyman.com', 'downloads.keyman.com',
-      'help.keyman.com', 'keyman.com', 'keymanweb.com', 's.keyman.com', 'status.keyman.com'
-    ];
-    let sentryQueryPromises = sentryPlatforms.map(platform => httpget('sentry.keyman.com',
-      `/api/0/projects/keyman/${platform.indexOf('.')<0? "keyman-":""}${platform.replace(/\./g,'-')}/stats/?stats=received&since=${phaseStartDateInSeconds}&resolution=1d`,
-      {
-        Authorization: ` Bearer ${sentry_token}`,
-        Accept: 'application/json'
-      }
-    ));
-
-    // Run the queries!
-
-    Promise.all([
-      getGitHubContributions(ghContributionsQuery)
-      ].concat(sentryQueryPromises)
-    ).then(phaseData => {
-      let contributions = phaseData.shift();
-
-      cachedData[sprint].teamCityData = transformTeamCityResponse(JSON.parse(data[0]));
-      cachedData[sprint].teamCityRunningData = transformTeamCityResponse(JSON.parse(data[1]));
-      //cachedData[sprint].keymanVersionData = transformKeymanResponse(JSON.parse(data[2]));
-      cachedData[sprint].githubPullsData = githubPullsData;
-      cachedData[sprint].githubContributionsData = JSON.parse(contributions);
-      cachedData[sprint].lastRefreshTime = Date.now();
-      cachedData[sprint].sentry = sentryPlatforms.reduce((obj,item,index) => { obj[item] = JSON.parse(phaseData[index]); return obj; }, {});
-      cachedData[sprint].githubIssuesData = githubIssuesData;
-      if(callback) callback(cachedData[sprint]);
-    });
-  });
-}
-
-function getGitHubStatus(ghStatusQuery): Promise<string> {
-  return httppost('api.github.com', '/graphql',  //3
-    {
-      Authorization: ` Bearer ${github_token}`,
-      Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-    },
-
-    // Lists all open pull requests in keyman repos
-    // and all open pull requests + status for keymanapp repo
-    // Gather the contributions for each recent user
-
-    // Current rate limit cost is 60 points. We have 5000 points/hour.
-    // https://developer.github.com/v4/guides/resource-limitations/
-
-    JSON.stringify({query: ghStatusQuery})
-  );
-}
-
-function getGitHubIssues(cursor, issues): Promise<Array<any>> {
-  const ghIssuesQuery = githubIssues.queryString(cursor);
-  const promise = httppost('api.github.com', '/graphql',  //4
-    {
-      Authorization: ` Bearer ${github_token}`,
-      Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-    },
-
-    // Lists all open issues in Keyman repos, cost 1 point per page
-    JSON.stringify({query: ghIssuesQuery})
-  );
-
-  return promise.then(data => {
-    let obj = JSON.parse(data);
-    //console.log(data);
-    if(!obj.data || !obj.data.search) return [];
-    const newIssues = [].concat(issues, obj.data.search.nodes);
-    if(obj.data.search.pageInfo.hasNextPage) {
-      return getGitHubIssues(obj.data.search.pageInfo.endCursor, newIssues);
-    }
-    return newIssues;
-  });
-}
 
 function getGitHubContributions(ghContributionsQuery) {
   return httppost('api.github.com', '/graphql',
@@ -256,20 +188,6 @@ function getGitHubContributions(ghContributionsQuery) {
   );
 }
 
-refreshStatus('current');
-
 console.log(`Starting app listening on ${port}`);
 app.listen(port);
-
-function transformTeamCityResponse(data) {
-  let t = data;
-  t.buildType.forEach((value) => {
-    data[value.id] = value;
-    // Remove a level of indirection
-    value.builds = value.builds ? value.builds.build : null;
-  });
-
-  data.buildType = {};
-  return data;
-}
 

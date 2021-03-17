@@ -1,4 +1,4 @@
-exports.getCurrentSprint = function(ghdata) {
+export function getCurrentSprint(ghdata) {
   // For specific milestone queries, we get this from the initial milestoneDueOn
 
   let phase = null;

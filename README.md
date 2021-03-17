@@ -10,14 +10,16 @@ cd status.keyman.com/
 Build status.keyman.com
 
 ```
+cd server
 npm install
-cd public/
+npm run-script build
+cd ../public
 npm install
 npm run-script build
 cd ..
 ```
 
-Before running the node server, you need to have two API tokens set as environment variables.  You might want to add these to a shell script.
+Before running the node server, you need to have two API tokens set as environment variables.  You might want to add these to script `server/localenv.sh`.
 
 ```
 export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
@@ -26,22 +28,6 @@ export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
 ```
 
 On Windows, you'll also need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
-
-## Running the server ##
-
-For a simple run, you can just run on localhost:3000. Start the Node Server:
-
-```
-node code.js
-```
-
-You should see the following output in the console:
-```
-$ node code.js
-Starting app listening on 3000
-```
-
-Point your browser to `http://localhost:3000` to view the application
 
 ## Development server ##
 

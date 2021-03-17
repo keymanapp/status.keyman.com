@@ -4,9 +4,9 @@ const https = require('https');
 
 const app = express();
 
-const githubContributions = require('./github-contributions');
-const githubStatus = require('./github-status');
-const githubIssues = require('./github-issues');
+const githubContributions = require('./services/github/github-contributions');
+const githubStatus = require('./services/github/github-status');
+const githubIssues = require('./services/github/github-issues');
 const currentSprint = require('./current-sprint');
 
 const isProduction = process.env['NODE_ENV'] == 'production';
@@ -21,7 +21,7 @@ let lastRefreshTime = 0;
 
 let cachedData = {};
 
-app.use('/', express.static('public/dist/public'));
+app.use('/', express.static('../../public/dist/public'));
 
 /* TODO: web hook based refresh of GitHub with worker threads to collect data,
          one for each data source. This data will then be cached for main http

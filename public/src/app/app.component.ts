@@ -5,6 +5,7 @@ import { platforms, PlatformSpec } from './platforms';
 import { sites } from './sites';
 import { repoShortNameFromGithubUrl } from './utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from './utility/escapeHtml';
+import { DataSocket } from './datasocket/datasocket.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class AppComponent {
   error: any;
   JSON: any;
   timer: any;
+  ws: DataSocket;
   title = 'Keyman Status';
 
   TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
@@ -59,6 +61,9 @@ export class AppComponent {
     this.timer = setInterval(() => {
       this.refreshStatus();
     }, this.TIMER_INTERVAL);
+
+    this.ws = new DataSocket();
+    this.ws.onMessage = () => { this.refreshStatus(); };
   }
 
   refreshStatus() {

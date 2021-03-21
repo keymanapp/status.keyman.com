@@ -1,35 +1,21 @@
-const url = require('url');
+require('source-map-support').install();
 const express = require('express');
-const https = require('https');
-
 const app = express();
 
-const githubContributions = require('./services/github/github-contributions');
-//const githubStatus = require('./services/github/github-status');
-const githubIssues = require('./services/github/github-issues');
 const currentSprint = require('./current-sprint');
-
-import httpget from "./util/httpget";
-import httppost from "./util/httppost";
 
 import versionService from "./services/downloads.keyman.com/version";
 import teamcityService from "./services/teamcity/teamcity";
 import githubStatusService from "./services/github/github-status";
 import githubIssuesService from "./services/github/github-issues";
+import githubContributionsService from "./services/github/github-contributions";
+import sentryService from "./services/sentry/sentry";
 
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
-//const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
-const github_token=process.env['KEYMANSTATUS_GITHUB_TOKEN'];
-const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
-
 const REFRESH_INTERVAL = isProduction ? 60000 : 60000 * 60; //msec
-let lastRefreshTime = 0;
 
-let cachedData = {};
-
-app.use('/', express.static('../../public/dist/public'));
 
 /* TODO: web hook based refresh of GitHub with worker threads to collect data,
          one for each data source. This data will then be cached for main http
@@ -49,105 +35,150 @@ if(!isProduction) {
 }
 */
 
-let cache = {
-  teamCity: null,
-  teamCityRunning: null,
-  keymanVersion: null,
-  issues: null,
-  /*currentSprint: {
-  },*/
+interface StatusDataCache {
+  teamCity?: any;
+  teamCityRunning?: any;
+  keymanVersion?: any;
+  issues?: any;
   sprints: {
     current: {
-      github: null,
-      //issues: null,
-      contributions: null,
-      currentSprint: null,
-      sentry: null
-    }
-  }
+      github?: any;
+      contributions?: any;
+      currentSprint?: any;
+      sentry?: any;
+    };
+  };
 };
 
-function refreshKeymanVersion() {
-  console.log('refreshKeymanVersion');
-  versionService.get().then(data => cache.keymanVersion = data);
-  Promise.all(teamcityService.get()).then(data => {
-    cache.teamCity = data[0];
-    cache.teamCityRunning = data[1];
-  });
+class StatusData {
+  cache: StatusDataCache;
 
-  githubIssuesService.get(null, []).then(data => cache.issues = data);
-  refreshGitHubStatus('current');
-}
+  constructor() {
+    this.cache = { sprints: { current: { } } };
+  };
 
-//refreshGitHubStatus('current');
+  refreshKeymanVersionData = async () => {
+    console.log('refreshKeymanVersion starting');
+    this.cache.keymanVersion = await versionService.get();
+    console.log('refreshKeymanVersion finished');
+  };
 
-function refreshGitHubStatus(sprintName) {
-  console.log('refreshGitHubStatus');
-  githubStatusService.get(sprintName).then(data => {
-    cache.sprints[sprintName].github = data.github;
-    cache.sprints[sprintName].phase = data.phase;
-    cache.sprints[sprintName].adjustedStart = data.adjustedStart;
-    refreshGitHubContributions(sprintName);
-    refreshSentry(sprintName);
-  })
-}
+  refreshTeamcityData = async () => {
+    console.log('refreshTeamcityData starting');
+    const data = await teamcityService.get();
+    this.cache.teamCity = data[0];
+    this.cache.teamCityRunning = data[1];
+    console.log('refreshTeamcityData finished');
+  };
 
-function refreshGitHubContributions(sprintName) {
-  console.log('refreshGitHubContributions');
-  const sprint = cache.sprints[sprintName];
-  if(!sprint || !sprint.phase) return;
-  // TODO
-  let SprintStartDateTime = getSprintStart().toISOString();
-  const ghContributionsQuery = githubContributions.queryString(sprint.phase ? new Date(sprint.adjustedStart).toISOString() : SprintStartDateTime);
-  getGitHubContributions(ghContributionsQuery).then(data => sprint.contributions = JSON.parse(data));
-}
+  refreshGitHubIssuesData = async () => {
+    console.log('refreshGitHubIssuesData starting');
+    this.cache.issues = await githubIssuesService.get(null, []);
+    console.log('refreshGitHubIssuesData finished');
+  };
 
-function refreshSentry(sprintName) {
-  console.log('refreshSentry');
-  const sprint = cache.sprints[sprintName];
-  if(!sprint || !sprint.phase) return;
-  // TODO
-  const phaseStartDateInSeconds = new Date(sprint.adjustedStart).valueOf() / 1000;
+  refreshGitHubStatusData = async (sprintName) => {
+    console.log('refreshGitHubStatusData starting');
+    const data = await githubStatusService.get(sprintName);
+    this.cache.sprints[sprintName].github = data.github;
+    this.cache.sprints[sprintName].phase = data.phase;
 
-  // Build a list of sentry queries per platform; TODO refactor into shared source
-  let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer',
-    'api.keyman.com', 'developer.keyman.com', 'donate.keyman.com', 'downloads.keyman.com',
-    'help.keyman.com', 'keyman.com', 'keymanweb.com', 's.keyman.com', 'status.keyman.com'
-  ];
-  let sentryQueryPromises = sentryPlatforms.map(platform => httpget('sentry.keyman.com',
-    `/api/0/projects/keyman/${platform.indexOf('.')<0? "keyman-":""}${platform.replace(/\./g,'-')}/stats/?stats=received&since=${phaseStartDateInSeconds}&resolution=1d`,
-    {
-      Authorization: ` Bearer ${sentry_token}`,
-      Accept: 'application/json'
+    if(this.cache.sprints[sprintName].adjustedStart !== data.adjustedStart) {
+      this.cache.sprints[sprintName].adjustedStart = data.adjustedStart;
+
+      // Once GitHub status data has been refreshed, we get
+      // sprint dates and we can pass that to other date-based
+      // services.
+
+      // We only need to do this if we have a change in
+      // the date range (i.e. usually only if the current sprint
+      // changes)
+      await Promise.all([
+        this.refreshGitHubContributionsData(sprintName),
+        this.refreshSentryData(sprintName)
+      ]);
     }
-  ));
+    console.log('refreshGitHubStatusData finished');
+  };
 
-  Promise.all(sentryQueryPromises).then(phaseData =>
-    sprint.sentry = sentryPlatforms.reduce((obj,item,index) => { obj[item] = JSON.parse(phaseData[index]); return obj; }, {})
-  );
-}
+  refreshGitHubContributionsData = async (sprintName) => {
+    console.log('refreshGitHubContributionsData starting');
+    const sprint = this.cache.sprints[sprintName];
+    if(!sprint || !sprint.phase) return;
+    const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
+    sprint.contributions = await githubContributionsService.get(sprintStartDateTime);
+    console.log('refreshGitHubContributionsData finished');
+  };
 
-setInterval(refreshKeymanVersion, 60000);
-refreshKeymanVersion();
+  refreshSentryData = async (sprintName) => {
+    console.log('refreshSentryData starting');
+    const sprint = this.cache.sprints[sprintName];
+    if(!sprint || !sprint.phase) return;
+    sprint.sentry = await sentryService.get(sprint.adjustedStart);
+    console.log('refreshSentryData finished');
+  };
+
+  initialLoad() {
+    this.refreshKeymanVersionData();
+    this.refreshTeamcityData();
+    this.refreshGitHubIssuesData();
+    this.refreshGitHubStatusData('current');
+  };
+};
+
+const statusData = new StatusData();
+statusData.initialLoad();
+
+/* Interval triggers */
+
+setInterval(statusData.refreshKeymanVersionData, REFRESH_INTERVAL);
+
+/******************************************
+ * Web endpoints
+ ******************************************/
+
+/* Static Endpoints */
+
+app.use('/', express.static('../../public/dist/public'));
+
+/* Web hooks */
+
+app.get('/webhook/github', (request, response) => {
+  statusData.refreshGitHubIssuesData();
+  statusData.refreshGitHubStatusData('current');
+  response.send('ok');
+});
+
+app.get('/webhook/teamcity', (request, response) => {
+  statusData.refreshTeamcityData();
+  response.send('ok');
+});
+
+app.get('/webhook/sentry', (request, response) => {
+  statusData.refreshSentryData('current');
+  response.send('ok');
+});
+
+/* App Service */
 
 app.get('/status/', (request, response) => {
   console.log('GET /status');
-  let sprint = request.query.sprint ? request.query.sprint : 'current';
-  let headers = {"Content-Type": "application/json"}; //text/html"};
+  const sprint = request.query.sprint ? request.query.sprint : 'current';
+  let headers = {"Content-Type": "application/json"};
   if(!isProduction) {
     // Allow requests from ng-served host in development
     headers["Access-Control-Allow-Origin"] = '*';
   }
   response.writeHead(200, headers);
   response.write(JSON.stringify({
-    teamCity: cache.teamCity,
-    teamCityRunning: cache.teamCityRunning,
-    keyman: cache.keymanVersion,
-    github: cache.sprints[sprint].github,
-    issues: cache.issues,
-    contributions: cache.sprints[sprint].contributions,
-    currentSprint: currentSprint.getCurrentSprint(cache.sprints[sprint].github.data),
-    sentry: cache.sprints[sprint].sentry
+    teamCity: statusData.cache.teamCity,
+    teamCityRunning: statusData.cache.teamCityRunning,
+    keyman: statusData.cache.keymanVersion,
+    github: statusData.cache.sprints[sprint].github,
+    issues: statusData.cache.issues,
+    contributions: statusData.cache.sprints[sprint].contributions,
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    sentry: statusData.cache.sprints[sprint].sentry
   }));
   response.end();
 });
@@ -171,21 +202,6 @@ function getSprintStart() {
     StartOfWeek.setDate(StartOfWeek.getDate() - 7);
 
   return StartOfWeek;
-}
-
-
-
-
-function getGitHubContributions(ghContributionsQuery) {
-  return httppost('api.github.com', '/graphql',
-    {
-      Authorization: ` Bearer ${github_token}`,
-      Accept: 'application/vnd.github.antiope-preview, application/vnd.github.shadow-cat-preview+json'
-    },
-    // Gather the contributions for each recent user
-
-    JSON.stringify({query: ghContributionsQuery}),
-  );
 }
 
 console.log(`Starting app listening on ${port}`);

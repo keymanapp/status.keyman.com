@@ -8,7 +8,7 @@ const teamcity_token=process.env['KEYMANSTATUS_TEAMCITY_TOKEN'];
 
 export default {
    get: function() {
-    return [
+    return Promise.all([
       httpget(  //0
         'build.palaso.org',
         '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
@@ -28,7 +28,7 @@ export default {
           Accept: 'application/json'
         }
       ).then(data => this.transformTeamCityResponse(JSON.parse(data)))
-    ];
+    ]);
   },
 
   transformTeamCityResponse: function (data) {

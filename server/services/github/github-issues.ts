@@ -16,7 +16,6 @@ export default {
       // Lists all open issues in Keyman repos, cost 1 point per page
       JSON.stringify({query: ghIssuesQuery})
     ).then(data => {
-      console.log('page n');
       let obj = JSON.parse(data);
       //console.log(data);
       if(!obj.data || !obj.data.search) return [];

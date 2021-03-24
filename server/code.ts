@@ -1,4 +1,10 @@
 require('source-map-support').install();
+
+const Sentry = require("@sentry/node");
+Sentry.init({
+  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@sentry.keyman.com/13",
+});
+
 const express = require('express');
 const app = express();
 const ws = require('ws');

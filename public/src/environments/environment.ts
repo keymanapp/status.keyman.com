@@ -8,7 +8,7 @@ export const environment = {
   // When running in development with ng watch on 4200 and nodemon on 3000, otherwise
   // assume we are on the same host as the status backend
   statusUrl: window.location.host == 'localhost:4200' ? '//localhost:3000/status' : '/status',
-  webSocketUrl: window.location.host == 'localhost:4200' ? 'ws://localhost:3000' : 'ws://'+window.location.host,
+  webSocketUrl: window.location.host == 'localhost:4200' ? 'ws://localhost:3000' : 'wss://'+window.location.host,
 };
 
 /*

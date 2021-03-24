@@ -5,7 +5,7 @@ import githubStatusService from "../services/github/github-status";
 import githubIssuesService from "../services/github/github-issues";
 import githubContributionsService from "../services/github/github-contributions";
 import sentryService from "../services/sentry/sentry";
-
+import deepEqual from "deep-equal";
 
 export interface StatusDataCache {
   teamCity?: any;
@@ -29,27 +29,39 @@ export class StatusData {
     this.cache = { sprints: { current: { } } };
   };
 
-  refreshKeymanVersionData = async () => {
+  refreshKeymanVersionData = async (): Promise<boolean> => {
     console.log('refreshKeymanVersion starting');
-    this.cache.keymanVersion = await versionService.get();
+    let keymanVersion = await versionService.get();
+    let result = !deepEqual(keymanVersion, this.cache.keymanVersion);
+    this.cache.keymanVersion = keymanVersion;
     console.log('refreshKeymanVersion finished');
+    return result;
   };
 
-  refreshTeamcityData = async () => {
+  refreshTeamcityData = async (): Promise<boolean> => {
     console.log('refreshTeamcityData starting');
     const data = await teamcityService.get();
+    let result =
+      !deepEqual(data[0], this.cache.teamCity) ||
+      !deepEqual(data[1], this.cache.teamCityRunning);
     this.cache.teamCity = data[0];
     this.cache.teamCityRunning = data[1];
     console.log('refreshTeamcityData finished');
+    return result;
   };
 
-  refreshGitHubIssuesData = async () => {
+  refreshGitHubIssuesData = async (): Promise<boolean> => {
     console.log('refreshGitHubIssuesData starting');
-    this.cache.issues = await githubIssuesService.get(null, []);
+    let issues = await githubIssuesService.get(null, []);
+    let result = !deepEqual(issues, this.cache.issues);
+    this.cache.issues = issues;
     console.log('refreshGitHubIssuesData finished');
+    return result;
   };
 
-  refreshGitHubStatusData = async (sprintName) => {
+  // Warning: this currently returns TRUE if sprint dates have changed,
+  // not if any data has changed. This is different to all the others
+  refreshGitHubStatusData = async (sprintName): Promise<boolean> => {
     console.log('refreshGitHubStatusData starting');
     const data = await githubStatusService.get(sprintName);
     this.cache.sprints[sprintName].github = data.github;
@@ -63,21 +75,27 @@ export class StatusData {
     return result;
   };
 
-  refreshGitHubContributionsData = async (sprintName) => {
+  refreshGitHubContributionsData = async (sprintName): Promise<boolean> => {
     console.log('refreshGitHubContributionsData starting');
     const sprint = this.cache.sprints[sprintName];
-    if(!sprint || !sprint.phase) return;
+    if(!sprint || !sprint.phase) return false;
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
-    sprint.contributions = await githubContributionsService.get(sprintStartDateTime);
+    let contributions = await githubContributionsService.get(sprintStartDateTime);
+    let result = !deepEqual(contributions, sprint.contributions);
+    sprint.contributions = contributions;
     console.log('refreshGitHubContributionsData finished');
+    return result;
   };
 
-  refreshSentryData = async (sprintName) => {
+  refreshSentryData = async (sprintName): Promise<boolean> => {
     console.log('refreshSentryData starting');
     const sprint = this.cache.sprints[sprintName];
-    if(!sprint || !sprint.phase) return;
-    sprint.sentry = await sentryService.get(sprint.adjustedStart);
+    if(!sprint || !sprint.phase) return false;
+    let sentry = await sentryService.get(sprint.adjustedStart);
+    let result = !deepEqual(sentry, sprint.sentry);
+    sprint.sentry = sentry;
     console.log('refreshSentryData finished');
+    return result;
   };
 };
 

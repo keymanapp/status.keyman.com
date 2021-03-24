@@ -149,7 +149,7 @@ export class AppComponent {
     if(!builds || !builds.builds || !builds.builds.length) return null;
     for(let build of builds.builds) {
       if(build.branchName == tier) return build;
-      if(parseFloat(build.branchName) && tier == 'stable') return build;
+      if(tier == 'stable' && build.branchName.startsWith('stable-')) return build; // stable builds have stable-version.version branch names
       if(tier == 'alpha' && !build.branchName) return build; // legacy builds do not have a branch name
       if(tier == 'alpha' && build.branchName == 'master') return build;
     }

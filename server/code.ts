@@ -10,14 +10,23 @@ import { StatusData } from './data/status-data';
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
-const REFRESH_INTERVAL = isProduction ? 60000 : 60000 * 60; //msec
+const REFRESH_INTERVAL = isProduction ? 60000 : 30000;
 
 const statusData = new StatusData();
-statusData.initialLoad();
+
+initialLoad();
+
+function initialLoad() {
+  respondGitHubDataChange();
+  respondKeymanDataChange();
+  respondTeamcityDataChange();
+};
 
 /* Interval triggers */
 
-setInterval(statusData.refreshKeymanVersionData, REFRESH_INTERVAL);
+setInterval(() => {
+  respondKeymanDataChange();
+}, REFRESH_INTERVAL);
 
 /******************************************
  * Web endpoints
@@ -29,8 +38,52 @@ setInterval(statusData.refreshKeymanVersionData, REFRESH_INTERVAL);
 // events that come in.
 const wsServer = new ws.Server({ noServer: true });
 wsServer.on('connection', socket => {
-  socket.on('message', message => console.log(message));
+  socket.on('message', message => {
+    console.log(message);
+    if(message == 'ping')
+      socket.send('pong');
+  });
+  sendInitialRefreshMessages(socket);
 });
+
+function respondKeymanDataChange() {
+  statusData.refreshKeymanVersionData().then(() => sendWsAlert('keyman'));
+}
+
+function respondGitHubDataChange() {
+  statusData.refreshGitHubIssuesData().then(() => sendWsAlert('github-issues'));
+  statusData.refreshGitHubStatusData('current').then((shouldLoad) => {
+    sendWsAlert('github');
+    if(shouldLoad) {
+      respondGitHubContributionsDataChange();
+      respondSentryDataChange();
+    }
+  });
+}
+
+function respondGitHubContributionsDataChange() {
+  statusData.refreshGitHubContributionsData('current').then(() => sendWsAlert('github-contributions'));
+}
+
+function respondTeamcityDataChange() {
+  statusData.refreshTeamcityData().then(() => sendWsAlert('teamcity'));
+}
+
+function respondSentryDataChange() {
+  statusData.refreshSentryData('current').then(() => sendWsAlert('sentry'));
+}
+
+function sendInitialRefreshMessages(socket) {
+  const sprint = statusData.cache.sprints['current'];
+  if(sprint) {
+    if(sprint.contributions) socket.send('github-contributions');
+    if(sprint.github) socket.send('github');
+    if(sprint.sentry) socket.send('sentry');
+  }
+  if(statusData.cache.issues) socket.send('github-issues');
+  if(statusData.cache.teamCity && statusData.cache.teamCityRunning) socket.send('teamcity');
+  if(statusData.cache.keymanVersion) socket.send('keyman');
+}
 
 /* Static Endpoints */
 
@@ -39,21 +92,17 @@ app.use('/', express.static('../../public/dist/public'));
 /* Web hooks */
 
 app.get('/webhook/github', (request, response) => {
-  Promise.all([
-    statusData.refreshGitHubIssuesData(),
-    statusData.refreshGitHubStatusData('current')
-  ]).then(() => sendWsAlert('github'));
-
+  respondGitHubDataChange();
   response.send('ok');
 });
 
 app.get('/webhook/teamcity', (request, response) => {
-  statusData.refreshTeamcityData().then(() => sendWsAlert('teamcity'));
+  respondTeamcityDataChange();
   response.send('ok');
 });
 
 app.get('/webhook/sentry', (request, response) => {
-  statusData.refreshSentryData('current').then(() => sendWsAlert('sentry'));
+  respondSentryDataChange();
   response.send('ok');
 });
 
@@ -65,11 +114,9 @@ function sendWsAlert(message) {
   });
 }
 
-
 /* App Service */
 
-app.get('/status/', (request, response) => {
-  console.log('GET /status');
+function statusHead(request, response) {
   const sprint = request.query.sprint ? request.query.sprint : 'current';
   let headers = {"Content-Type": "application/json"};
   if(!isProduction) {
@@ -77,13 +124,64 @@ app.get('/status/', (request, response) => {
     headers["Access-Control-Allow-Origin"] = '*';
   }
   response.writeHead(200, headers);
+  return sprint;
+}
+
+app.get('/status/teamcity', (request, response) => {
+  console.log('GET /status/teamcity');
+  const sprint = statusHead(request, response);
   response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
     teamCity: statusData.cache.teamCity,
-    teamCityRunning: statusData.cache.teamCityRunning,
-    keyman: statusData.cache.keymanVersion,
-    github: statusData.cache.sprints[sprint].github,
-    issues: statusData.cache.issues,
-    contributions: statusData.cache.sprints[sprint].contributions,
+    teamCityRunning: statusData.cache.teamCityRunning
+  }));
+  response.end();
+});
+
+app.get('/status/keyman', (request, response) => {
+  console.log('GET /status/keyman');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    keyman: statusData.cache.keymanVersion
+  }));
+  response.end();
+});
+
+app.get('/status/github', (request, response) => {
+  console.log('GET /status/github');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    github: statusData.cache.sprints[sprint].github
+  }));
+  response.end();
+});
+
+app.get('/status/github-issues', (request, response) => {
+  console.log('GET /status/github-issues');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    issues: statusData.cache.issues
+  }));
+  response.end();
+});
+
+app.get('/status/github-contributions', (request, response) => {
+  console.log('GET /status/github-contributions');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    contributions: statusData.cache.sprints[sprint].contributions
+  }));
+  response.end();
+});
+
+app.get('/status/sentry', (request, response) => {
+  console.log('GET /status/sentry');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
     sentry: statusData.cache.sprints[sprint].sentry
   }));

@@ -10,8 +10,8 @@
             <span class="navbar-phase-dates">{{phaseStart}} &mdash; {{phaseEnd}}</span>
           </span>
           <span class="navbar-new-issues">
-            <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(status?.github.data.unlabeledIssues.issueCount)}}">New issues: {{status?.github.data.unlabeledIssues.issueCount}}</a>
-            <app-issue-list [issues]="status?.github.data.unlabeledIssues.nodes"></app-issue-list>
+            <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(status?.github?.data.unlabeledIssues.issueCount)}}">New issues: {{status?.github?.data.unlabeledIssues.issueCount}}</a>
+            <app-issue-list [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
           </span>
           <span class="navbar-new-pulls">
             <span *ngFor="let pull of unlabeledPulls">
@@ -19,7 +19,7 @@
             </span>
           </span>
           <span class="navbar-contributions" *ngIf="showContributions">
-            <span class="navbar-contribution {{selectedContribution == user.login ? 'fixed' : ''}}" *ngFor="let user of status?.contributions.data.repository.contributions.nodes">
+            <span class="navbar-contribution {{selectedContribution == user.login ? 'fixed' : ''}}" *ngFor="let user of status?.contributions?.data.repository.contributions.nodes">
               <span *ngIf="user.contributions.pullRequests.nodes.length + user.contributions.reviews.nodes.length + user.contributions.issues.nodes.length > 0">
                 <img class="avatar-40" src="{{user.avatarUrl}}&size=40" (click)="selectUser(user.login)">
                 <span class="navbar-contribution-data dropdown-menu-right">
@@ -109,7 +109,7 @@
             </div>
             <div class="tier-release">
               <div class="tier-release-version {{downloadClass(platform.value.id,'stable')}}">
-                <a href="{{status?.keyman[platform.value.id].stable.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].stable.version}}">v</a>
+                <a href="{{status?.keyman[platform.value.id]?.stable.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.stable.version}}">v</a>
               </div>
             </div>
             <div class="tier-release-date">
@@ -125,7 +125,7 @@
             </div>
             <div class="tier-release">
               <div class="tier-release-version {{downloadClass(platform.value.id,'beta')}}">
-                <a href="{{status?.keyman[platform.value.id].beta.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].beta.version}}">v</a>
+                <a href="{{status?.keyman[platform.value.id]?.beta.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.beta.version}}">v</a>
               </div>
             </div>
             <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
@@ -144,7 +144,7 @@
             </div>
             <div class="tier-release">
               <div class="tier-release-version {{downloadClass(platform.value.id,'alpha')}}">
-                <a href="{{status?.keyman[platform.value.id].alpha.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].alpha.version}}">v</a>
+                <a href="{{status?.keyman[platform.value.id]?.alpha.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.alpha.version}}">v</a>
               </div>
             </div>
             <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'alpha')}}" title="{{tierTestTitle(platform.value.id,'alpha')}}">
@@ -193,10 +193,10 @@
       </tr>
       <tr class='tr-site'>
         <td class='pulls'>
-          <app-count-box [repo]="'keyboards'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github.data.keyboards.pullRequests.totalCount"></app-count-box>
+          <app-count-box [repo]="'keyboards'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github?.data.keyboards.pullRequests.totalCount"></app-count-box>
         </td>
         <td class='pulls'>
-          <app-count-box [repo]="'lexical-models'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github.data.lexicalModels.pullRequests.totalCount"></app-count-box>
+          <app-count-box [repo]="'lexical-models'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github?.data.lexicalModels.pullRequests.totalCount"></app-count-box>
         </td>
         <td class='gap'></td>
         <ng-container *ngFor="let site of sites | keyvalue">
@@ -211,10 +211,10 @@
       </tr>
       <tr class='tr-site'>
         <td class='issues'>
-          <app-count-box [repo]="'keyboards'" [title]="'Open issues'" [count]="status?.github.data.keyboards.issues.totalCount"></app-count-box>
+          <app-count-box [repo]="'keyboards'" [title]="'Open issues'" [count]="status?.github?.data.keyboards.issues.totalCount"></app-count-box>
         </td>
         <td class='issues'>
-          <app-count-box [repo]="'lexical-models'" [title]="'Open issues'" [count]="status?.github.data.lexicalModels.issues.totalCount"></app-count-box>
+          <app-count-box [repo]="'lexical-models'" [title]="'Open issues'" [count]="status?.github?.data.lexicalModels.issues.totalCount"></app-count-box>
         </td>
         <td class='gap'></td>
         <ng-container *ngFor="let site of sites | keyvalue">

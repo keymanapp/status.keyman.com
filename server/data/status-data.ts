@@ -55,22 +55,12 @@ export class StatusData {
     this.cache.sprints[sprintName].github = data.github;
     this.cache.sprints[sprintName].phase = data.phase;
 
-    if(this.cache.sprints[sprintName].adjustedStart !== data.adjustedStart) {
+    const result = this.cache.sprints[sprintName].adjustedStart !== data.adjustedStart;
+    if(result) {
       this.cache.sprints[sprintName].adjustedStart = data.adjustedStart;
-
-      // Once GitHub status data has been refreshed, we get
-      // sprint dates and we can pass that to other date-based
-      // services.
-
-      // We only need to do this if we have a change in
-      // the date range (i.e. usually only if the current sprint
-      // changes)
-      await Promise.all([
-        this.refreshGitHubContributionsData(sprintName),
-        this.refreshSentryData(sprintName)
-      ]);
     }
     console.log('refreshGitHubStatusData finished');
+    return result;
   };
 
   refreshGitHubContributionsData = async (sprintName) => {
@@ -88,13 +78,6 @@ export class StatusData {
     if(!sprint || !sprint.phase) return;
     sprint.sentry = await sentryService.get(sprint.adjustedStart);
     console.log('refreshSentryData finished');
-  };
-
-  initialLoad() {
-    this.refreshKeymanVersionData();
-    this.refreshTeamcityData();
-    this.refreshGitHubIssuesData();
-    this.refreshGitHubStatusData('current');
   };
 };
 

@@ -6,18 +6,23 @@ import { environment } from '../../environments/environment';
 export class StatusService {
   statusUrl = environment.statusUrl;
 
+
   constructor(private http: HttpClient) { }
 
-  getStatus(sprint?: string) {
-    let data = sprint ? 
-      this.http.get(this.statusUrl, {params:{sprint:sprint}}) : 
-      this.http.get(this.statusUrl);
-
-    // Keyman version data is already pretty clean.
-
-    // But we want to transform the data returned from the TeamCity JSON.
-
-    // console.log(data);
-    return data; //data.teamCity
+  getStatus(source: StatusSource, sprint?: string) {
+    const url = this.statusUrl + '/' + source;
+    return sprint ?
+      this.http.get(url, {params:{sprint:sprint}}) :
+      this.http.get(url);
   }
-}
+};
+
+// TODO share this between client and server
+export enum StatusSource {
+  Keyman = "keyman",
+  GitHub = "github",
+  GitHubIssues = "github-issues",
+  GitHubContributions = "github-contributions",
+  TeamCity = "teamcity",
+  Sentry = "sentry"
+};

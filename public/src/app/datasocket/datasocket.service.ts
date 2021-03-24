@@ -5,18 +5,23 @@ export class DataSocket {
   public onMessage;
 
   constructor() {
-    this.client = new WebSocket(environment.webSocketUrl);
+    this.reconnect();
+  }
 
-    //this.client.addEventListener('open', () => {
-    //});
+  reconnect = () => {
+    this.client = new WebSockHop(environment.webSocketUrl);
 
-    this.client.addEventListener('message', (message) => {
-      console.log('WebSocket: '+message.data);
+    this.client.formatter = new WebSockHop.StringFormatter();
+    this.client.formatter.pingMessage = 'ping';
+    this.client.formatter.handlePong = function (message) {
+      return message == 'pong';
+    };
+
+    this.client.on('message', (message) => {
+      console.log('WebSocket: '+message);
       if(this.onMessage) {
-        this.onMessage(message.data);
+        this.onMessage(message);
       }
     });
   }
-
-
 }

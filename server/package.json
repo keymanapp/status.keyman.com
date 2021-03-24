@@ -12,6 +12,8 @@
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
+    "@sentry/node": "^6.2.3",
+    "@sentry/tracing": "^6.2.3",
     "express": "^4.17.1",
     "source-map-support": "^0.5.19",
     "ws": "^7.4.4"

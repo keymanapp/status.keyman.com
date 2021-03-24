@@ -1,10 +1,22 @@
-import { Component } from '@angular/core';
+import { NgZone, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { StatusService } from './status/status.service';
+import { StatusSource, StatusService } from './status/status.service';
 import { platforms, PlatformSpec } from './platforms';
 import { sites } from './sites';
 import { repoShortNameFromGithubUrl } from './utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from './utility/escapeHtml';
+import { DataSocket } from './datasocket/datasocket.service';
+
+interface Status {
+  currentSprint: any;
+  github: any;
+  issues: any;
+  contributions: any;
+  keyman: any[];
+  sentry: any[];
+  teamCity: any[];
+  teamCityRunning: any[];
+};
 
 @Component({
   selector: 'app-root',
@@ -13,10 +25,20 @@ import { escapeHtml } from './utility/escapeHtml';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  status: any;
+  status: Status = {
+    currentSprint: undefined,
+    github: undefined,
+    issues: undefined,
+    contributions: undefined,
+    keyman: [],
+    sentry: [],
+    teamCity: [],
+    teamCityRunning: []
+  };
   error: any;
   JSON: any;
   timer: any;
+  ws: DataSocket;
   title = 'Keyman Status';
 
   TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
@@ -39,7 +61,7 @@ export class AppComponent {
   showContributions = false;
   sprintOverride = null;
 
-  constructor(private statusService: StatusService, private route: ActivatedRoute) {
+  constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
     this.JSON = JSON;
   };
 
@@ -53,27 +75,51 @@ export class AppComponent {
 
         this.showContributions = queryParams.get('c') == '1';
         this.sprintOverride = queryParams.get('sprint');
-        this.refreshStatus();
       });
 
-    this.timer = setInterval(() => {
-      this.refreshStatus();
-    }, this.TIMER_INTERVAL);
+
+    this.ws = new DataSocket();
+    this.ws.onMessage = (data) => {
+      this.zone.run(() => this.refreshStatus(data as StatusSource));
+    };
   }
 
-  refreshStatus() {
+  refreshStatus(source: StatusSource) {
     // Suck in Keyman Status from code.js (server side)
+    let self = this;
 
-    this.statusService.getStatus(this.sprintOverride)
+    this.statusService.getStatus(source, this.sprintOverride)
       .subscribe(
-        (data: Object) => {
-          this.status = { ...data };
+        (data: any) => {
+          console.log('getStatus.data for '+source);
+          this.status.currentSprint = data.currentSprint;
+          switch(source) {
+            case StatusSource.GitHub:
+              this.status.github = data.github;
+              this.transformPlatformStatusData();
+              this.transformSiteStatusData();
+              this.extractUnlabeledPulls();
+              break;
+            case StatusSource.GitHubIssues:
+              this.status.issues = data.issues;
+              break;
+            case StatusSource.GitHubContributions:
+              this.status.contributions = data.contributions;
+              break;
+            case StatusSource.Keyman:
+              this.status.keyman = data.keyman;
+              break;
+            case StatusSource.Sentry:
+              this.status.sentry = data.sentry;
+              break;
+            case StatusSource.TeamCity:
+              this.status.teamCity = data.teamCity;
+              this.status.teamCityRunning = data.teamCityRunning;
+              break;
+          }
 
-          // transform the platform data into our existing platforms
-          this.transformPlatformStatusData();
-          this.transformSiteStatusData();
-          this.extractUnlabeledPulls();
-          this.extractMilestoneData();
+          if(this.status.github && this.status.issues)
+            this.extractMilestoneData();
         }, // success path
         error => this.error = error // error path
       );
@@ -156,7 +202,9 @@ export class AppComponent {
 
   releaseDate(platformId: string, tier: string): string {
     if(!this.status) return '';
-    let files = this.status.keyman[platformId][tier].files;
+    let files = this.status.keyman[platformId];
+    if(!files) return '';
+    files = files[tier].files;
     let items = Object.keys(files);
     if(items.length == 0) return '';
     return files[items[0]].date;
@@ -205,7 +253,7 @@ export class AppComponent {
   }
 
   isBetaRunning() {
-    let e = this.status ? this.status.github.data.repository.refs.nodes.find(e => e.name == 'beta') : undefined;
+    let e = this.status && this.status.github ? this.status.github.data.repository.refs.nodes.find(e => e.name == 'beta') : undefined;
     return (typeof e != 'undefined');
   }
 
@@ -373,7 +421,7 @@ export class AppComponent {
     const buildNumberRE = "^\\d+\\.\\d+\\.\\d+-"+tier+"-test$";
     const tcData = this.status.teamCity[this.getPlatform(platformId).configs['test']];
     const tcRunningData = this.status.teamCityRunning[this.getPlatform(platformId).configs['test']];
-
+    if(!tcRunningData) return null;
     const build = tcRunningData.builds.find(build => build.number.match(buildNumberRE));
     if(build) {
       // teamcity returns 'SUCCESS' for a pending build that hasn't yet failed

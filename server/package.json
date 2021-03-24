@@ -12,7 +12,9 @@
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "source-map-support": "^0.5.19",
+    "ws": "^7.4.4"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",

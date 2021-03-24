@@ -11,5 +11,6 @@
     "start-server": "cd server && npm run-script start"
   },
   "author": "Marc Durdin",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }

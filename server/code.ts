@@ -86,7 +86,14 @@ function respondGitHubContributionsDataChange() {
 }
 
 function respondTeamcityDataChange() {
-  statusData.refreshTeamcityData().then(hasChanged => sendWsAlert(hasChanged, 'teamcity'));
+  if(timingManager.isTooSoon('teamcity', 10000, respondTeamcityDataChange)) {
+    return;
+  }
+
+  timingManager.start('teamcity');
+  statusData.refreshTeamcityData().
+    then(hasChanged => sendWsAlert(hasChanged, 'teamcity')).
+    finally(() => timingManager.finish('teamcity'));
 }
 
 function respondSentryDataChange() {

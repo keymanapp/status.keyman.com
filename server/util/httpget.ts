@@ -2,7 +2,7 @@ import * as https from "https";
 
 type resolver = (a: string) => void;
 
-export default function httpget(hostname, path, headers) {
+export default function httpget(hostname, path, headers?) {
   return new Promise((resolve: resolver) => {
     const options: https.RequestOptions = {
       hostname: hostname,

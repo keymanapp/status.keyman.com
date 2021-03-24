@@ -12,13 +12,16 @@ const ws = require('ws');
 const currentSprint = require('./current-sprint');
 
 import { StatusData } from './data/status-data';
+import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
-const REFRESH_INTERVAL = isProduction ? 60000 : 240000;
+const REFRESH_INTERVAL = isProduction ? 60000 : 30000;
 
 const statusData = new StatusData();
+
+const timingManager = new DataChangeTimingManager();
 
 initialLoad();
 
@@ -32,8 +35,10 @@ function initialLoad() {
 
 setInterval(() => {
   respondKeymanDataChange();
-  respondTeamcityDataChange(); // Prefer to turn this into a webhook in the future!
-  respondSentryDataChange(); // May make this into a webhook in the future!
+  if(!isProduction) {
+    // We have a webhook running on production so no need to poll the server
+    respondTeamcityDataChange();
+  }
 }, REFRESH_INTERVAL);
 
 /******************************************
@@ -55,32 +60,44 @@ wsServer.on('connection', socket => {
 });
 
 function respondKeymanDataChange() {
-  statusData.refreshKeymanVersionData().then(() => sendWsAlert('keyman'));
+  statusData.refreshKeymanVersionData().then(hasChanged => sendWsAlert(hasChanged, 'keyman'));
 }
 
 function respondGitHubDataChange() {
-  // TODO: handle notification chains
-  return statusData.refreshGitHubStatusData('current').then((shouldLoad) => {
-    sendWsAlert('github');
-    if(shouldLoad) {
-      respondSentryDataChange();
-      return respondGitHubContributionsDataChange();
-    }
-    return null;
-  }).then(() => statusData.refreshGitHubIssuesData()
-  ).then(() => sendWsAlert('github-issues'));
+  if(timingManager.isTooSoon('github', 5000, respondGitHubDataChange)) {
+    return;
+  }
+
+  timingManager.start('github');
+
+  return statusData.refreshGitHubStatusData('current').
+    then(hasChanged => sendWsAlert(hasChanged, 'github')).
+    then(respondGitHubContributionsDataChange).
+    then(respondGitHubIssuesDataChange).
+    finally(() => timingManager.finish('github'));
+}
+
+function respondGitHubIssuesDataChange() {
+  return statusData.refreshGitHubIssuesData().then(hasChanged => sendWsAlert(hasChanged, 'github-issues'));
 }
 
 function respondGitHubContributionsDataChange() {
-  statusData.refreshGitHubContributionsData('current').then(() => sendWsAlert('github-contributions'));
+  statusData.refreshGitHubContributionsData('current').then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'));
 }
 
 function respondTeamcityDataChange() {
-  statusData.refreshTeamcityData().then(() => sendWsAlert('teamcity'));
+  statusData.refreshTeamcityData().then(hasChanged => sendWsAlert(hasChanged, 'teamcity'));
 }
 
 function respondSentryDataChange() {
-  statusData.refreshSentryData('current').then(() => sendWsAlert('sentry'));
+  if(timingManager.isTooSoon('sentry', 15000, respondSentryDataChange)) {
+    return;
+  }
+
+  timingManager.start('sentry');
+  statusData.refreshSentryData('current').
+    then(hasChanged => sendWsAlert(hasChanged, 'sentry')).
+    finally(() => timingManager.finish('sentry'));
 }
 
 function sendInitialRefreshMessages(socket) {
@@ -102,31 +119,29 @@ app.use('/', express.static('../../public/dist/public'));
 /* Web hooks */
 
 app.post('/webhook/github', (request, response) => {
-  // Warning: this could be rate limited if we are not careful...
   respondGitHubDataChange();
   response.send('ok');
 });
 
-/* Note: TC webhook is not installed
-app.get('/webhook/teamcity', (request, response) => {
+app.post('/webhook/teamcity', (request, response) => {
   respondTeamcityDataChange();
   response.send('ok');
 });
-*/
 
-/* Note: We may enable this in the future
-app.get('/webhook/sentry', (request, response) => {
+app.post('/webhook/sentry', (request, response) => {
   respondSentryDataChange();
   response.send('ok');
 });
-*/
 
-function sendWsAlert(message) {
-  wsServer.clients.forEach((client) => {
-    if(client.readState === wsServer.OPEN) {
-      client.send(message);
-    }
-  });
+function sendWsAlert(hasChanged: boolean, message: string): boolean {
+  if(hasChanged) {
+    wsServer.clients.forEach((client) => {
+      if(client.readState === wsServer.OPEN) {
+        client.send(message);
+      }
+    });
+  }
+  return hasChanged;
 }
 
 /* App Service */

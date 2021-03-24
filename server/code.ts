@@ -10,7 +10,7 @@ import { StatusData } from './data/status-data';
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
-const REFRESH_INTERVAL = isProduction ? 60000 : 30000;
+const REFRESH_INTERVAL = isProduction ? 60000 : 240000;
 
 const statusData = new StatusData();
 
@@ -26,6 +26,8 @@ function initialLoad() {
 
 setInterval(() => {
   respondKeymanDataChange();
+  respondTeamcityDataChange(); // Prefer to turn this into a webhook in the future!
+  respondSentryDataChange(); // May make this into a webhook in the future!
 }, REFRESH_INTERVAL);
 
 /******************************************
@@ -51,14 +53,16 @@ function respondKeymanDataChange() {
 }
 
 function respondGitHubDataChange() {
-  statusData.refreshGitHubIssuesData().then(() => sendWsAlert('github-issues'));
-  statusData.refreshGitHubStatusData('current').then((shouldLoad) => {
+  // TODO: handle notification chains
+  return statusData.refreshGitHubStatusData('current').then((shouldLoad) => {
     sendWsAlert('github');
     if(shouldLoad) {
-      respondGitHubContributionsDataChange();
       respondSentryDataChange();
+      return respondGitHubContributionsDataChange();
     }
-  });
+    return null;
+  }).then(() => statusData.refreshGitHubIssuesData()
+  ).then(() => sendWsAlert('github-issues'));
 }
 
 function respondGitHubContributionsDataChange() {
@@ -91,20 +95,25 @@ app.use('/', express.static('../../public/dist/public'));
 
 /* Web hooks */
 
-app.get('/webhook/github', (request, response) => {
+app.post('/webhook/github', (request, response) => {
+  // Warning: this could be rate limited if we are not careful...
   respondGitHubDataChange();
   response.send('ok');
 });
 
+/* Note: TC webhook is not installed
 app.get('/webhook/teamcity', (request, response) => {
   respondTeamcityDataChange();
   response.send('ok');
 });
+*/
 
+/* Note: We may enable this in the future
 app.get('/webhook/sentry', (request, response) => {
   respondSentryDataChange();
   response.send('ok');
 });
+*/
 
 function sendWsAlert(message) {
   wsServer.clients.forEach((client) => {

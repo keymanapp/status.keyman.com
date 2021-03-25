@@ -303,7 +303,7 @@ app-issue-list {
 
 .tr-site .issue-box app-issue-list {
   bottom: 21px;
-  left: 2px;
+  right: 2px;
 }
 
 .navbar-new-issues app-issue-list {

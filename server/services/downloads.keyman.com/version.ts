@@ -6,7 +6,7 @@ import httpget from "../../util/httpget";
 
 export default {
    get: function() {
-      return httpget('downloads.keyman.com', '/api/version/2.0').then(data => this.transformKeymanResponse(JSON.parse(data)));
+      return httpget('downloads.keyman.com', '/api/version/2.0').then(data => this.transformKeymanResponse(JSON.parse(data.data)));
    },
 
    transformKeymanResponse: function(data) {

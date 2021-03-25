@@ -89,11 +89,7 @@
         <th id='th-stable' class='tier'>Stable</th>
         <th id='th-beta' class='tier'>Beta</th>
         <th id='th-alpha' class='tier'>Alpha</th>
-        <th id='th-errors' title='Event summary from Sentry (this sprint only)'>Errors
-          <span *ngIf="status?.sentry['windows']?.errorId" title="An error '{{status?.sentry['windows']?.detail}}' has been detected on sentry.keyman.com">
-            <a href="https://sentry.keyman.com/" target="_blank">⚠</a>
-          </span>
-        </th>
+        <th id='th-errors'>Errors (14d)</th>
         <th id='th-issues'>Issues</th>
         <th id='th-pulls'>Pull Requests</th>
       </tr>
@@ -157,7 +153,7 @@
         </td>
 
         <td class="sentry-events">
-          <app-sentry [platform]="platform.value.id" [stats]="status?.sentry[platform.value.id]"></app-sentry>
+          <app-sentry [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
         </td>
 
         <td class="issues">
@@ -188,7 +184,7 @@
         <th class='gap'></th>
         <th *ngFor="let site of sites | keyvalue"><a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id}}</a>
           <span class='nodeping'></span>
-          <app-sentry [site]="site.key" [platform]="site.key" [stats]="status?.sentry[site.key]"></app-sentry>
+          <app-sentry [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
         </th>
       </tr>
       <tr class='tr-site'>

@@ -102,8 +102,9 @@ function respondSentryDataChange() {
   }
 
   timingManager.start('sentry');
-  statusData.refreshSentryData('current').
-    then(hasChanged => sendWsAlert(hasChanged, 'sentry')).
+
+  statusData.refreshSentryIssuesData().
+    then(hasChanged => sendWsAlert(hasChanged, 'sentry-issues')).
     finally(() => timingManager.finish('sentry'));
 }
 
@@ -112,8 +113,8 @@ function sendInitialRefreshMessages(socket) {
   if(sprint) {
     if(sprint.contributions) socket.send('github-contributions');
     if(sprint.github) socket.send('github');
-    if(sprint.sentry) socket.send('sentry');
   }
+  if(statusData.cache.sentryIssues) socket.send('sentry-issues');
   if(statusData.cache.issues) socket.send('github-issues');
   if(statusData.cache.teamCity && statusData.cache.teamCityRunning) socket.send('teamcity');
   if(statusData.cache.keymanVersion) socket.send('keyman');
@@ -215,12 +216,12 @@ app.get('/status/github-contributions', (request, response) => {
   response.end();
 });
 
-app.get('/status/sentry', (request, response) => {
-  console.log('GET /status/sentry');
+app.get('/status/sentry-issues', (request, response) => {
+  console.log('GET /status/sentry-issues');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
-    sentry: statusData.cache.sprints[sprint].sentry
+    sentryIssues: statusData.cache.sentryIssues
   }));
   response.end();
 });

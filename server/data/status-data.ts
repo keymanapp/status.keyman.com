@@ -4,7 +4,7 @@ import teamcityService from "../services/teamcity/teamcity";
 import githubStatusService from "../services/github/github-status";
 import githubIssuesService from "../services/github/github-issues";
 import githubContributionsService from "../services/github/github-contributions";
-import sentryService from "../services/sentry/sentry";
+import sentryIssuesService from "../services/sentry/sentry-issues";
 import deepEqual from "deep-equal";
 
 export interface StatusDataCache {
@@ -12,12 +12,12 @@ export interface StatusDataCache {
   teamCityRunning?: any;
   keymanVersion?: any;
   issues?: any;
+  sentryIssues?: any;
   sprints: {
     current: {
       github?: any;
       contributions?: any;
       currentSprint?: any;
-      sentry?: any;
     };
   };
 };
@@ -87,16 +87,15 @@ export class StatusData {
     return result;
   };
 
-  refreshSentryData = async (sprintName): Promise<boolean> => {
-    console.log('refreshSentryData starting');
-    const sprint = this.cache.sprints[sprintName];
-    if(!sprint || !sprint.phase) return false;
-    let sentry = await sentryService.get(sprint.adjustedStart);
-    let result = !deepEqual(sentry, sprint.sentry);
-    sprint.sentry = sentry;
-    console.log('refreshSentryData finished');
+  refreshSentryIssuesData = async (): Promise<boolean> => {
+    console.log('refreshSentryIssuesData starting');
+    let sentryIssues = await sentryIssuesService.get();
+    let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
+    this.cache.sentryIssues = sentryIssues;
+    console.log('refreshSentryIssuesData finished');
     return result;
   };
+
 };
 
 

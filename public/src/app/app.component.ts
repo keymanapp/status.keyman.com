@@ -2,7 +2,7 @@ import { NgZone, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusSource, StatusService } from './status/status.service';
 import { platforms, PlatformSpec } from './platforms';
-import { sites } from './sites';
+import { sites, siteSentryNames } from './sites';
 import { repoShortNameFromGithubUrl } from './utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from './utility/escapeHtml';
 import { DataSocket } from './datasocket/datasocket.service';
@@ -13,7 +13,7 @@ interface Status {
   issues: any;
   contributions: any;
   keyman: any[];
-  sentry: any[];
+  sentryIssues: any[];
   teamCity: any[];
   teamCityRunning: any[];
 };
@@ -31,7 +31,7 @@ export class AppComponent {
     issues: undefined,
     contributions: undefined,
     keyman: [],
-    sentry: [],
+    sentryIssues: [],
     teamCity: [],
     teamCityRunning: []
   };
@@ -109,8 +109,8 @@ export class AppComponent {
             case StatusSource.Keyman:
               this.status.keyman = data.keyman;
               break;
-            case StatusSource.Sentry:
-              this.status.sentry = data.sentry;
+            case StatusSource.SentryIssues:
+              this.status.sentryIssues = this.transformSentryData(data.sentryIssues);
               break;
             case StatusSource.TeamCity:
               this.status.teamCity = data.teamCity;
@@ -255,6 +255,33 @@ export class AppComponent {
   isBetaRunning() {
     let e = this.status && this.status.github ? this.status.github.data.repository.refs.nodes.find(e => e.name == 'beta') : undefined;
     return (typeof e != 'undefined');
+  }
+
+  getPlatformFromSentryProject(slug) {
+    for(let p of platforms) {
+      if(p.sentry == slug) return p.id;
+    }
+    return null;
+  }
+  transformSentryData(data) {
+    let result = [];
+    if(!data) return result;
+    data.forEach(issue => {
+      if(!issue) return;
+      let platformName = siteSentryNames[issue.project.slug] ?
+        siteSentryNames[issue.project.slug] :
+        this.getPlatformFromSentryProject(issue.project.slug);
+      let platform = result[platformName];
+      if(!platform) platform = result[platformName] = {
+        totalUsers: 0,
+        totalEvents: 0,
+        issues: [],
+      };
+      platform.totalUsers += issue.userCount;
+      platform.totalEvents += parseInt(issue.count, 10);
+      platform.issues.push(issue);
+    });
+    return result;
   }
 
   transformSiteStatusData() {

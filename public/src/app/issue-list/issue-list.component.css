@@ -1,21 +1,95 @@
+.issue-box.nav {
+  display: inline-flex;
+}
+
+.navbar-new-issues {
+  display: inline-flex;
+}
+
+.navbar-new-issues .label {
+  font-size: 1rem;
+  padding: 4px;
+  margin: 0 4px;
+  border-radius: 4px;
+  display: inline-block;
+  color: white;
+  background: rgb(255, 24, 48);
+}
+
+.navbar-new-issues .label.hide-if-zero {
+  display: none;
+}
+
+.navbar-new-issues .label.hide-if-zero.failure {
+  display: inline-block;
+}
+
+
+.issue-box.platform .issue-list-container {
+  top: 24px;
+  left: 2px;
+}
+
+.issue-box.site .issue-list-container {
+  bottom: 21px;
+  right: 2px;
+}
+
+.issue-box.nav .issue-list-container {
+  left: 0;
+  top: 32px;
+}
+
+.issue-box.pinned .issue-list-container,
+.issue-box:hover .issue-list-container {
+  display: block;
+}
+
+.issue-box {
+  position: relative;
+}
+
+.issue-list-container {
+  display: none;
+  position: absolute;
+  width: auto;
+  z-index: 10;
+  text-align: left;
+}
+
+.issue-list-container ul {
+  max-width: 800px;
+  max-height: 640px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.issue-list-container.pinned {
+  display: block;
+}
+
 .issue-list {
   background: #fcfffc;
   border: solid 1px #4c4c30;
   border-radius: 0 0 4px 4px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  padding: 0 3px 3px 3px;
+  padding: 0;
   width: max-content;
 }
 
 ul {
   margin: 0;
-  padding: 0;
+  padding: 0 3px 3px 3px;
 }
 
 li {
   margin: 2px 0 2px 0;
   list-style: none;
   font-size: 9pt;
+  overflow: hidden;
+  max-height: 26px;
 }
 
 .label {
@@ -27,8 +101,8 @@ li {
 .issue {
   display: inline-block;
   height: 22px;
-  padding: 4px 8px 2px 4px;
-  margin-top: 4px;
+  padding: 0px 8px 0px 4px;
+  margin-top: 2px;
 }
 
 .issue:hover {
@@ -49,6 +123,7 @@ li {
   word-wrap: break-word;
   word-break: normal;
   white-space: normal;
+  display: inline-block;
 }
 
 .author {
@@ -66,4 +141,34 @@ li {
 .related-pr:hover {
   background: #c0ffff;
   border-radius: 3px 3px 0 0;
+}
+
+.summary {
+  background: #e0e0e8;
+  border-bottom: solid 1px #4c4c30;
+  padding: 4px;
+  font-size: 8pt;
+}
+
+.summary .summary-label {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.summary .summary-label::after {
+  content: ':';
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
 }

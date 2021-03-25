@@ -1,15 +1,29 @@
-<div class="issue-list">
-  <ul>
-    <li *ngFor="let issue of issues">
-      <span class="label">
-        <a class="author" title="{{issue.author.login}}" target="_blank" href="{issue.author.url}}"><img class="avatar-22" src="{{issue.author.avatarUrl}}&size=22"></a>
-        <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issue.timelineItems?.nodes.length ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
-        <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">
-          <a href="{{pr.subject.url}}" target="_blank">🔗 #{{pr.subject.number}}</a>
-        </span>
-        <span *ngFor="let label of issue.labels?.nodes"><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span><wbr /></span>
-      </span>
-    </li>
-  </ul>
-  <app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard>
-</div>
+<span class="issue-box {{isNav ? 'nav' : platform ? 'platform' : 'site'}} {{pinned ? 'pinned' : ''}}">
+  <app-count-box *ngIf="!isNav" [repo]="repo" [title]="milestone?.title" [count]="milestone?.count" [label]="platform?.value.id+'/'" [class]="'milestone-'+milestone?.id"></app-count-box>
+
+  <span *ngIf="isNav" class="navbar-new-issues">
+    <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
+  </span>
+
+  <div class="issue-list-container">
+    <div class="issue-list">
+      <div class="summary">
+        <span class="pin" (click)="pin()">📌</span>
+        <app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard>
+        <span class="summary-label">Issues</span><span>{{issues?.length}}</span>
+      </div>
+      <ul>
+        <li *ngFor="let issue of issues">
+          <span class="label">
+            <a class="author" title="{{issue.author.login}}" target="_blank" href="{issue.author.url}}"><img class="avatar-22" src="{{issue.author.avatarUrl}}&size=22"></a>
+            <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issue.timelineItems?.nodes.length ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
+            <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">
+              <a href="{{pr.subject.url}}" target="_blank">🔗 #{{pr.subject.number}}</a>
+            </span>
+            <span *ngFor="let label of issue.labels?.nodes"><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</span>

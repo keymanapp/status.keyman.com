@@ -10,11 +10,21 @@ import { labelColor } from '../utility/labelColor';
   styleUrls: ['./issue-list.component.css']
 })
 export class IssueListComponent implements OnInit {
+  @Input() isNav: boolean;
   @Input() issues: any;
+  @Input() repo?: any;
+  @Input() milestone?: any;
+  @Input() platform?: any;
 
   constructor(private sanitizer: DomSanitizer) { }
 
+  pinned: boolean = false;
+
   ngOnInit() {
+  }
+
+  pin() {
+    this.pinned = !this.pinned;
   }
 
   labelColor(label) {
@@ -44,4 +54,10 @@ export class IssueListComponent implements OnInit {
       '</ul>';
     return { content: text, type: 'text/html' };
   }
+
+  errorClassIfNonZero(v) {
+    if(v !== null && v != 0) return "failure";
+    return "";
+  }
+
 }

@@ -9,17 +9,16 @@
             <a target='_blank' href='https://github.com/keymanapp/keyman/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+milestone%3A{{phase?.title}}+org%3Akeymanapp'>{{phase?.title}}</a>
             <span class="navbar-phase-dates">{{phaseStart}} &mdash; {{phaseEnd}}</span>
           </span>
-          <span class="navbar-new-issues">
-            <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(status?.github.data.unlabeledIssues.issueCount)}}">New issues: {{status?.github.data.unlabeledIssues.issueCount}}</a>
-            <app-issue-list [issues]="status?.github.data.unlabeledIssues.nodes"></app-issue-list>
-          </span>
+
+          <app-issue-list [repo]="'keyman'" [isNav]="true" [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
+
           <span class="navbar-new-pulls">
             <span *ngFor="let pull of unlabeledPulls">
               <app-pull-request [class]="'failure'" [pull]="pull"></app-pull-request>
             </span>
           </span>
           <span class="navbar-contributions" *ngIf="showContributions">
-            <span class="navbar-contribution {{selectedContribution == user.login ? 'fixed' : ''}}" *ngFor="let user of status?.contributions.data.repository.contributions.nodes">
+            <span class="navbar-contribution {{selectedContribution == user.login ? 'fixed' : ''}}" *ngFor="let user of status?.contributions?.data.repository.contributions.nodes">
               <span *ngIf="user.contributions.pullRequests.nodes.length + user.contributions.reviews.nodes.length + user.contributions.issues.nodes.length > 0">
                 <img class="avatar-40" src="{{user.avatarUrl}}&size=40" (click)="selectUser(user.login)">
                 <span class="navbar-contribution-data dropdown-menu-right">
@@ -89,11 +88,7 @@
         <th id='th-stable' class='tier'>Stable</th>
         <th id='th-beta' class='tier'>Beta</th>
         <th id='th-alpha' class='tier'>Alpha</th>
-        <th id='th-errors' title='Event summary from Sentry (this sprint only)'>Errors
-          <span *ngIf="status?.sentry?.windows?.errorId" title="An error '{{status?.sentry?.windows?.detail}}' has been detected on sentry.keyman.com">
-            <a href="https://sentry.keyman.com/" target="_blank">⚠</a>
-          </span>
-        </th>
+        <th id='th-errors'>Errors (14d)</th>
         <th id='th-issues'>Issues</th>
         <th id='th-pulls'>Pull Requests</th>
       </tr>
@@ -109,7 +104,7 @@
             </div>
             <div class="tier-release">
               <div class="tier-release-version {{downloadClass(platform.value.id,'stable')}}">
-                <a href="{{status?.keyman[platform.value.id].stable.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].stable.version}}">v</a>
+                <a href="{{status?.keyman[platform.value.id]?.stable.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.stable.version}}">v</a>
               </div>
             </div>
             <div class="tier-release-date">
@@ -125,7 +120,7 @@
             </div>
             <div class="tier-release">
               <div class="tier-release-version {{downloadClass(platform.value.id,'beta')}}">
-                <a href="{{status?.keyman[platform.value.id].beta.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].beta.version}}">v</a>
+                <a href="{{status?.keyman[platform.value.id]?.beta.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.beta.version}}">v</a>
               </div>
             </div>
             <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
@@ -144,7 +139,7 @@
             </div>
             <div class="tier-release">
               <div class="tier-release-version {{downloadClass(platform.value.id,'alpha')}}">
-                <a href="{{status?.keyman[platform.value.id].alpha.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id].alpha.version}}">v</a>
+                <a href="{{status?.keyman[platform.value.id]?.alpha.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.alpha.version}}">v</a>
               </div>
             </div>
             <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'alpha')}}" title="{{tierTestTitle(platform.value.id,'alpha')}}">
@@ -157,17 +152,14 @@
         </td>
 
         <td class="sentry-events">
-          <app-sentry [platform]="platform.value.id" [stats]="status?.sentry[platform.value.id]"></app-sentry>
+          <app-sentry [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
         </td>
 
         <td class="issues">
           <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}</a>
 
           <ng-container *ngFor="let milestone of platform.value.milestones">
-            <span class="issue-box">
-              <app-count-box [repo]="'keyman'" [title]="milestone.title" [count]="milestone.count" [label]="platform.value.id+'/'" [class]="'milestone-'+milestone.id"></app-count-box>
-              <app-issue-list *ngIf="milestone.title != 'Future'" [issues]="milestone?.nodes"></app-issue-list>
-            </span>
+            <app-issue-list [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
           </ng-container>
         </td>
 
@@ -188,15 +180,15 @@
         <th class='gap'></th>
         <th *ngFor="let site of sites | keyvalue"><a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id}}</a>
           <span class='nodeping'></span>
-          <app-sentry [site]="site.key" [platform]="site.key" [stats]="status?.sentry[site.key]"></app-sentry>
+          <app-sentry [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
         </th>
       </tr>
       <tr class='tr-site'>
         <td class='pulls'>
-          <app-count-box [repo]="'keyboards'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github.data.keyboards.pullRequests.totalCount"></app-count-box>
+          <app-count-box [repo]="'keyboards'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github?.data.keyboards.pullRequests.totalCount"></app-count-box>
         </td>
         <td class='pulls'>
-          <app-count-box [repo]="'lexical-models'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github.data.lexicalModels.pullRequests.totalCount"></app-count-box>
+          <app-count-box [repo]="'lexical-models'" [isPulls]="true" [title]="'Open PRs'" [count]="status?.github?.data.lexicalModels.pullRequests.totalCount"></app-count-box>
         </td>
         <td class='gap'></td>
         <ng-container *ngFor="let site of sites | keyvalue">
@@ -211,10 +203,10 @@
       </tr>
       <tr class='tr-site'>
         <td class='issues'>
-          <app-count-box [repo]="'keyboards'" [title]="'Open issues'" [count]="status?.github.data.keyboards.issues.totalCount"></app-count-box>
+          <app-count-box [repo]="'keyboards'" [title]="'Open issues'" [count]="status?.github?.data.keyboards.issues.totalCount"></app-count-box>
         </td>
         <td class='issues'>
-          <app-count-box [repo]="'lexical-models'" [title]="'Open issues'" [count]="status?.github.data.lexicalModels.issues.totalCount"></app-count-box>
+          <app-count-box [repo]="'lexical-models'" [title]="'Open issues'" [count]="status?.github?.data.lexicalModels.issues.totalCount"></app-count-box>
         </td>
         <td class='gap'></td>
         <ng-container *ngFor="let site of sites | keyvalue">
@@ -223,10 +215,14 @@
           <td class='issues'>
 
             <ng-container *ngFor="let milestone of site.value.milestones">
-              <span class="issue-box">
+
+              <!--<span class="issue-box">
                 <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-'+milestone.id"></app-count-box>
-                <app-issue-list *ngIf="milestone.title != 'Future'" [issues]="milestone?.nodes"></app-issue-list>
-              </span>
+                <app-issue-list  *ngIf="milestone.title != 'Future'" [issues]="milestone?.nodes"></app-issue-list>-->
+
+                <app-issue-list [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+
+              <!--</span>-->
             </ng-container>
           </td>
         </ng-container>

@@ -1,6 +1,34 @@
-<span class="sentry-container" *ngIf="platform != 'common' && (!site || sum() != 0)">
-  <span class="label {{sum() == 0 && !stats?.errorId ? 'normal' : 'error'}}">
+<span class="sentry-container {{site ? 'sentry-site' : 'sentry-platform'}}" *ngIf="platform != 'common' && (!site || eventCount() != 0)">
+
+  <span class="label">
     <img class="avatar-22" src="assets/{{platform}}.png" *ngIf="!site">
-    <a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank" title="{{summary()}}">{{stats?.errorId ? '⚠' : sum()}}</a>
+    <span class="issue-total {{issueCount() == 0 ? 'normal' : 'error'}}"><a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank">{{issueCount()}}</a></span>
+    <span class="event-total {{eventCount() == 0 ? 'normal' : 'error'}}"><a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank">{{eventCount()}}</a></span>
   </span>
+
+  <div class="sentry-detail {{pinned ? 'pinned':''}}">
+    <div class="summary">
+      <span class="pin" (click)="pin()">📌</span>
+      <app-clipboard [text]="getSentryIssueText()" title="Copy HTML formatted list of sentry issues to clipboard"></app-clipboard>
+      <span class="summary-label">Issues</span><span>{{issueCount()}}</span>
+      <span class="summary-label">Events</span><span>{{eventCount()}}</span>
+      <span class="summary-label">Users</span><span>{{userCount()}}</span>
+    </div>
+    <ul class="issues">
+      <li *ngFor="let issue of issues?.issues">
+        <a href="{{issue.permalink}}" target="_blank">
+          <b>{{issue.shortId}}</b>
+          <span class="issue-title">{{issue.title}}</span>
+        </a>
+        <span class="label">
+          <span class="issue-count normal" title="# events"><span>{{issue.count}}</span></span>
+          <span class="issue-users normal" title="# users"><span>{{issue.userCount}}</span></span>
+        </span>
+
+        <span *ngFor="let annotation of issue.annotations">
+          <a href="{{extractAnnotationLink(annotation)}}">🔗 #{{extractAnnotationIssueNumber(annotation)}}</a>
+        </span>
+      </li>
+    </ul>
+  </div>
 </span>

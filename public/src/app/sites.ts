@@ -22,3 +22,15 @@ export const siteSentryIds = {
   's.keyman.com': 17,
   'status.keyman.com': 13
 };
+
+export const siteSentryNames = {
+  'api-keyman-com': 'api.keyman.com',
+  'developer-keyman-com': 'developer.keyman.com',
+  'donate-keyman-com': 'donate.keyman.com',
+  'downloads-keyman-com': 'downloads.keyman.com',
+  'help-keyman-com': 'help.keyman.com',
+  'keyman-com': 'keyman.com',
+  'keymanweb-com': 'keymanweb.com',
+  's-keyman-com': 's.keyman.com',
+  'status-keyman-com': 'status.keyman.com'
+};

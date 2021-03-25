@@ -24,5 +24,5 @@ export enum StatusSource {
   GitHubIssues = "github-issues",
   GitHubContributions = "github-contributions",
   TeamCity = "teamcity",
-  Sentry = "sentry"
+  SentryIssues = "sentry-issues"
 };

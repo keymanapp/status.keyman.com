@@ -17,7 +17,7 @@ export default {
           Authorization: ` Bearer ${teamcity_token}`,
           Accept: 'application/json'
         }
-      ).then(data => this.transformTeamCityResponse(JSON.parse(data))),
+      ).then(data => this.transformTeamCityResponse(JSON.parse(data.data))),
 
       httpget(  //1
         'build.palaso.org',
@@ -27,7 +27,7 @@ export default {
           Authorization: ` Bearer ${teamcity_token}`,
           Accept: 'application/json'
         }
-      ).then(data => this.transformTeamCityResponse(JSON.parse(data)))
+      ).then(data => this.transformTeamCityResponse(JSON.parse(data.data)))
     ]);
   },
 

@@ -1,6 +1,6 @@
 import * as https from "https";
 
-type resolver = (a: string) => void;
+type resolver = (a: {data: string; res: any}) => void;
 
 export default function httpget(hostname, path, headers?) {
   return new Promise((resolve: resolver) => {
@@ -25,7 +25,7 @@ export default function httpget(hostname, path, headers?) {
         });
 
       res.on('end', () => {
-        resolve(chunk);
+        resolve({data: chunk, res: res});
       });
     });
 

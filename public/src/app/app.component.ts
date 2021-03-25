@@ -303,6 +303,8 @@ export class AppComponent {
       this.sites[s].pulls = [];
     }
 
+    this.otherSites.pulls = [];
+
     this.status.github.data.organization.repositories.nodes.forEach(repo => {
       if(repo.name == 'keyboards' || repo.name == 'lexical-models' || repo.name == 'keyman') {
         // report on keyboards and lexical models

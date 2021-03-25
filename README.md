@@ -7,7 +7,7 @@ git clone https://github.com/keymanapp/status.keyman.com
 cd status.keyman.com/
 ```
 
-Build status.keyman.com
+Build status.keyman.com:
 
 ```
 cd server

@@ -1,6 +1,6 @@
 ## Quick Start ##
 
-Clone the repo
+Clone the repo:
 
 ```
 git clone https://github.com/keymanapp/status.keyman.com

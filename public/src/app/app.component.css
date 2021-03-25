@@ -274,3 +274,35 @@ table#sites-and-relatives {
   padding: 8px;
   margin: 0;
 }
+
+#other-repos-cell {
+  position: relative;
+  cursor: default;
+}
+
+#other-repos {
+  display: none;
+  cursor: auto;
+  position: absolute;
+  bottom: 32px;
+  right: -1px;
+  z-index: 10;
+  background: white;
+  border: solid 1px #c0c0c0;
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+#other-repos ul {
+  margin: 0.5em 1em;
+  padding-left: 1em;
+}
+
+#other-repos li {
+  font-size: 0.8em;
+  text-align: left;
+}
+
+#other-repos-cell:hover > #other-repos {
+  display: block;
+}

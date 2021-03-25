@@ -18,6 +18,12 @@ interface Status {
   teamCityRunning: any[];
 };
 
+interface OtherSites {
+  repos: string[];
+  pulls: any[];
+  milestones: any[];
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -56,6 +62,13 @@ export class AppComponent {
   phase: any = null;
   phaseEnd = '';
   phaseStart = '';
+
+  // Other sites
+  otherSites: OtherSites = {
+    repos: [],
+    pulls: [],
+    milestones: []
+  };
 
   // Query parameters
   showContributions = false;
@@ -291,13 +304,17 @@ export class AppComponent {
     }
 
     this.status.github.data.organization.repositories.nodes.forEach(repo => {
-      if(repo.name == 'keyboards' || repo.name == 'lexical-models') {
+      if(repo.name == 'keyboards' || repo.name == 'lexical-models' || repo.name == 'keyman') {
         // report on keyboards and lexical models
         return;
       }
       let site = this.sites[repo.name];
-      if(!site) return; // Not a repo we are interested in!
-      site.pulls = repo.pullRequests.edges.map(v => { return { pull: v }});
+      let pulls = repo.pullRequests.edges.map(v => { return { pull: v }});
+      if(!site) {
+        this.otherSites.pulls = [].concat(this.otherSites.pulls, pulls);
+      } else {
+        site.pulls = pulls;
+      }
     });
   }
 
@@ -392,11 +409,23 @@ export class AppComponent {
       platform.milestones = platform.milestones.sort(sortMilestones);
     });
 
+    this.otherSites.milestones = [
+      { id: 'current', title: this.phase.title, count: 0, nodes: [] },
+      { id: 'future', title: "Future", count: 0, nodes: [] },
+      { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+      { id: 'other', title: "Other", count: 0, nodes: [] }
+    ];
+    this.otherSites.repos = [];
+
     // For each site, fill in the milestone counts
     this.status.github.data.organization.repositories.nodes.forEach(repo => {
+      if(repo.name == 'keyboards' || repo.name == 'lexical-models' || repo.name == 'keyman') return;
       let site = this.sites[repo.name];
-      if(!site) return;
-      site.milestones = [
+      if(!site) {
+        this.otherSites.repos.push(repo.name);
+        site = this.otherSites;
+      }
+      else site.milestones = [
         { id: 'current', title: this.phase.title, count: 0, nodes: [] },
         { id: 'future', title: "Future", count: 0, nodes: [] },
         { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
@@ -426,6 +455,8 @@ export class AppComponent {
       });
       site.milestones = site.milestones.sort(sortMilestones);
     });
+
+    this.otherSites.repos.sort();
   }
 
   extractUnlabeledPulls() {

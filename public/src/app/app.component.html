@@ -182,6 +182,17 @@
           <span class='nodeping'></span>
           <app-sentry [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
         </th>
+        <th class='gap'></th>
+        <th id='other-repos-cell'>
+          <span id='other-repos-title'>other repos</span>
+          <div id='other-repos'>
+            <ul>
+              <li *ngFor="let repo of otherSites?.repos">
+                <a target="_blank" href='https://github.com/keymanapp/{{repo}}'>{{repo}}</a>
+              </li>
+            </ul>
+          </div>
+        </th>
       </tr>
       <tr class='tr-site'>
         <td class='pulls'>
@@ -192,14 +203,18 @@
         </td>
         <td class='gap'></td>
         <ng-container *ngFor="let site of sites | keyvalue">
-        <!--<td class='issues'></td>
-        <td class='crashes'></td>-->
         <td class='pulls'>
           <span *ngFor="let pull of site.value.pulls">
             <app-pull-request [class]="" [pull]="pull"></app-pull-request>
           </span>
         </td>
         </ng-container>
+        <td class='gap'></td>
+        <td class='pulls'>
+          <span *ngFor="let pull of otherSites?.pulls">
+            <app-pull-request [class]="" [pull]="pull"></app-pull-request>
+          </span>
+        </td>
       </tr>
       <tr class='tr-site'>
         <td class='issues'>
@@ -210,22 +225,18 @@
         </td>
         <td class='gap'></td>
         <ng-container *ngFor="let site of sites | keyvalue">
-          <!--<td class='issues'></td>
-          <td class='crashes'></td>-->
           <td class='issues'>
-
             <ng-container *ngFor="let milestone of site.value.milestones">
-
-              <!--<span class="issue-box">
-                <app-count-box [repo]="site.key" [title]="milestone.title" [count]="milestone.count" [class]="'milestone-'+milestone.id"></app-count-box>
-                <app-issue-list  *ngIf="milestone.title != 'Future'" [issues]="milestone?.nodes"></app-issue-list>-->
-
-                <app-issue-list [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
-
-              <!--</span>-->
+              <app-issue-list [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
             </ng-container>
           </td>
         </ng-container>
+        <td class='gap'></td>
+        <td class='issues'>
+          <ng-container *ngFor="let milestone of otherSites?.milestones">
+            <app-issue-list [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+          </ng-container>
+        </td>
       </tr>
     </tbody>
   </table>

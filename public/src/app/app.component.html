@@ -10,7 +10,7 @@
             <span class="navbar-phase-dates">{{phaseStart}} &mdash; {{phaseEnd}}</span>
           </span>
 
-          <app-issue-list [repo]="'keyman'" [isNav]="true" [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
+          <app-issue-list [gravity]="'left'" [repo]="'keyman'" [isNav]="true" [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
 
           <span class="navbar-new-pulls">
             <span *ngFor="let pull of unlabeledPulls">
@@ -159,7 +159,7 @@
           <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}</a>
 
           <ng-container *ngFor="let milestone of platform.value.milestones">
-            <app-issue-list [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
+            <app-issue-list [gravity]="'right'" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
           </ng-container>
         </td>
 
@@ -227,14 +227,14 @@
         <ng-container *ngFor="let site of sites | keyvalue">
           <td class='issues'>
             <ng-container *ngFor="let milestone of site.value.milestones">
-              <app-issue-list [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+              <app-issue-list [gravity]="site.key &lt; 'help' ? 'left' : 'right'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
             </ng-container>
           </td>
         </ng-container>
         <td class='gap'></td>
         <td class='issues'>
           <ng-container *ngFor="let milestone of otherSites?.milestones">
-            <app-issue-list [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+            <app-issue-list [gravity]="'right'" [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
           </ng-container>
         </td>
       </tr>

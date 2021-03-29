@@ -6,7 +6,7 @@
     <span class="event-total {{eventCount() == 0 ? 'normal' : 'error'}}"><a href="https://sentry.keyman.com/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank">{{eventCount()}}</a></span>
   </span>
 
-  <div class="sentry-detail {{pinned ? 'pinned':''}}">
+  <div class="sentry-detail {{pinned ? 'pinned':''}} gravity-{{gravity}}">
     <div class="summary">
       <span class="pin" (click)="pin()">📌</span>
       <app-clipboard [text]="getSentryIssueText()" title="Copy HTML formatted list of sentry issues to clipboard"></app-clipboard>

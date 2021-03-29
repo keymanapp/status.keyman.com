@@ -5,7 +5,7 @@
     <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>{{pull.pull.node.number}}
   </a>
 </span>
-<div class="pull-request-detail">
+<div class="pull-request-detail gravity-{{gravity}}">
   <span class="branches">
     <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
     <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">

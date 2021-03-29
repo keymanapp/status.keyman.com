@@ -32,9 +32,17 @@
 }
 
 .gravity-left {
-  left: 0;
+  right: 0;
 }
 
 .gravity-right {
-  right: 0;
+  left: 0;
+}
+
+.gravity-top {
+  bottom: 0;
+}
+
+.gravity-bottom {
+  top: 0;
 }

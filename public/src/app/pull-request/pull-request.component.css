@@ -110,18 +110,25 @@
 .pull-request-detail {
   display: none;
   position: absolute;
-  right: 4px;
-  top: 29px;
+  margin: 29px 4px 24px 4px;
   text-align: left;
   z-index: 10;
   background: #fcfffc;
   border: solid 1px #4c4c30;
-  border-radius: 0 0 4px 4px;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   padding: 3px;
   width: max-content;
   max-width: 720px;
   font-size: 10pt;
+}
+
+.gravity-top.pull-request-detail {
+  border-radius: 4px 4px 0 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.gravity-bottom.pull-request-detail {
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .pull-request:hover > .pull-request-detail {

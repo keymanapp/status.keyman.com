@@ -67,28 +67,32 @@
   width: max-content;
   max-width: 1000px;
   font-size: 10pt;
+  flex-direction: column;
+}
+
+.sentry-detail.gravity-top {
+  border-radius: 4px 4px 0 0;
+  flex-direction: column-reverse;
 }
 
 .sentry-detail > .issues {
   padding: 3px;
-  max-height: 640px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
-.sentry-platform .sentry-detail {
-  left: 0;
+.gravity-bottom.sentry-detail {
   top: 22px;
 }
 
-.sentry-site .sentry-detail {
-  right: 0;
+.gravity-top.sentry-detail {
   bottom: 22px;
 }
 
 .sentry-detail:hover,
 .sentry-detail.pinned,
 .label:hover + .sentry-detail {
-  display: block;
+  display: flex;
 }
 
 .pinned .pin {
@@ -98,9 +102,26 @@
 
 .summary {
   background: #e0e0e8;
-  border-bottom: solid 1px #4c4c30;
   padding: 4px;
   font-size: 8pt;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.gravity-left .summary > span {
+  float: right;
+  margin: 0 2px;
+}
+
+.gravity-left .summary > .clear {
+  float: none;
+  clear: right;
 }
 
 .summary .summary-label {

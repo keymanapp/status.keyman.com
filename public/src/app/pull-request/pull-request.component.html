@@ -5,13 +5,13 @@
     <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>{{pull.pull.node.number}}
   </a>
 </span>
-<div class="pull-request-detail gravity-{{gravity}}">
+<div class="pull-request-detail gravity-{{gravityX}} gravity-{{gravityY}}">
   <span class="branches">
     <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
+    <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
     <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
       <a href="https://github.com/keymanapp/keyman/issues/{{issue.subject.number}}" target="_blank">🔗 #{{issue.subject.number}}</a>
     </span>
-    <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
   </span>
   <span class="title">{{pull.pull.node.title}}</span>
   <span class="status">{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</span>

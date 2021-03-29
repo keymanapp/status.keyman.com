@@ -15,14 +15,16 @@ export class IssueListComponent implements OnInit {
   @Input() repo?: any;
   @Input() milestone?: any;
   @Input() platform?: any;
-  @Input() gravity?: string;
+  @Input() gravityX?: string;
+  @Input() gravityY?: string;
 
   constructor(private sanitizer: DomSanitizer) { }
 
   pinned: boolean = false;
 
   ngOnInit() {
-    if(this.gravity == '') this.gravity = 'left';
+    if(!this.gravityX) this.gravityX = 'right';
+    if(!this.gravityY) this.gravityY = 'bottom';
   }
 
   pin() {

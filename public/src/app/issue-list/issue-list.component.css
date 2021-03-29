@@ -25,12 +25,12 @@
 }
 
 
-.issue-box.platform .issue-list-container {
-  top: 24px;
+.gravity-bottom.issue-list-container {
+  margin-top: 24px;
 }
 
-.issue-box.site .issue-list-container {
-  bottom: 21px;
+.gravity-top.issue-list-container {
+  margin-bottom: 21px;
 }
 
 .issue-box.nav .issue-list-container {
@@ -57,7 +57,7 @@
 
 .issue-list-container ul {
   max-width: 800px;
-  max-height: 640px;
+  max-height: 320px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow-x: hidden;
@@ -71,10 +71,20 @@
 .issue-list {
   background: #fcfffc;
   border: solid 1px #4c4c30;
-  border-radius: 0 0 4px 4px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   padding: 0;
   width: max-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.gravity-top .issue-list {
+  flex-direction: column-reverse;
+  border-radius: 4px 4px 0 0;
+}
+
+.gravity-bottom .issue-list {
+  border-radius: 0 0 4px 4px;
 }
 
 ul {
@@ -143,9 +153,16 @@ li {
 
 .summary {
   background: #e0e0e8;
-  border-bottom: solid 1px #4c4c30;
   padding: 4px;
   font-size: 8pt;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
 }
 
 .summary .summary-label {
@@ -155,6 +172,24 @@ li {
 
 .summary .summary-label::after {
   content: ':';
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.gravity-left .summary > span {
+  float: right;
+  margin: 0 2px;
+}
+
+.gravity-left .summary > .clear {
+  float: none;
+  clear: right;
 }
 
 .pin:hover {

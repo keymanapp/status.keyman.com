@@ -17,7 +17,7 @@ import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 const isProduction = process.env['NODE_ENV'] == 'production';
 
 const port=isProduction ? 80 : 3000;
-const REFRESH_INTERVAL = isProduction ? 60000 : 30000;
+const REFRESH_INTERVAL = isProduction ? 60000 : 300000;
 
 const statusData = new StatusData();
 
@@ -29,6 +29,7 @@ function initialLoad() {
   respondGitHubDataChange();
   respondKeymanDataChange();
   respondTeamcityDataChange();
+  respondSentryDataChange();
 };
 
 /* Interval triggers */

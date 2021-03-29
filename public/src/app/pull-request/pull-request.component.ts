@@ -10,12 +10,14 @@ import { labelColor } from '../utility/labelColor';
 export class PullRequestComponent implements OnInit {
   @Input() pull: any;
   @Input() class?: string;
-  @Input() gravity?: string;
+  @Input() gravityX?: string;
+  @Input() gravityY?: string;
 
   constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    if(this.gravity == '') this.gravity = 'left';
+    if(!this.gravityX) this.gravityX = 'right';
+    if(!this.gravityY) this.gravityY = 'bottom';
   }
 
   pullClass() {

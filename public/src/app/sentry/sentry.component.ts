@@ -11,14 +11,16 @@ export class SentryComponent implements OnInit {
   @Input() platform?: string;
   @Input() site?: string;
   @Input() issues?: any;
-  @Input() gravity?: string;
+  @Input() gravityX?: string;
+  @Input() gravityY?: string;
 
   pinned: boolean = false;
 
   constructor() { }
 
   ngOnInit() {
-    if(this.gravity == '') this.gravity = 'left';
+    if(!this.gravityX) this.gravityX = 'right';
+    if(!this.gravityY) this.gravityY = 'bottom';
   }
 
   projectIndex(): number {

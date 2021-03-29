@@ -5,12 +5,15 @@
     <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
   </span>
 
-  <div class="issue-list-container gravity-{{gravity}}">
+  <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}">
     <div class="issue-list">
       <div class="summary">
         <span class="pin" (click)="pin()">📌</span>
-        <app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard>
-        <span class="summary-label">Issues</span><span>{{issues?.length}}</span>
+        <span><app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard></span>
+        <span>
+          <span class="summary-label">Issues</span><span>{{issues?.length}}</span>
+        </span>
+        <div class='clear'></div>
       </div>
       <ul>
         <li *ngFor="let issue of issues">

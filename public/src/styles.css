@@ -30,3 +30,11 @@
   font-family: "Noto Color Emoji";
   src: url("assets/NotoColorEmoji.ttf");
 }
+
+.gravity-left {
+  left: 0;
+}
+
+.gravity-right {
+  right: 0;
+}

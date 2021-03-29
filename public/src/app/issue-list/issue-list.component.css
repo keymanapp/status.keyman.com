@@ -27,12 +27,10 @@
 
 .issue-box.platform .issue-list-container {
   top: 24px;
-  left: 2px;
 }
 
 .issue-box.site .issue-list-container {
   bottom: 21px;
-  right: 2px;
 }
 
 .issue-box.nav .issue-list-container {

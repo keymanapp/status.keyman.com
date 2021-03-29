@@ -5,7 +5,7 @@
     <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
   </span>
 
-  <div class="issue-list-container">
+  <div class="issue-list-container gravity-{{gravity}}">
     <div class="issue-list">
       <div class="summary">
         <span class="pin" (click)="pin()">📌</span>

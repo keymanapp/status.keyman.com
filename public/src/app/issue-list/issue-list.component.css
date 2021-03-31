@@ -34,8 +34,8 @@
 }
 
 .issue-box.nav .issue-list-container {
-  left: 0;
-  top: 32px;
+  left: 4px;
+  top: 8px;
 }
 
 .issue-box.pinned .issue-list-container,

@@ -152,7 +152,7 @@
         </td>
 
         <td class="sentry-events">
-          <app-sentry [gravityX]="'left'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
+          <app-sentry [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
         </td>
 
         <td class="issues">

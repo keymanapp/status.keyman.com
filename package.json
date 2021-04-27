@@ -12,5 +12,7 @@
   },
   "author": "Marc Durdin",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "compare-versions": "^3.6.0"
+  }
 }

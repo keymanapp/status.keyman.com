@@ -1,5 +1,5 @@
 <div class="tier-release {{pinned ? 'pinned' : ''}}">
-  <div class="tier-release-version {{downloadClass}}">
+  <div class="tier-release-version {{getDownloadClass()}}">
     <a href="{{status?.keyman[platform.value.id]?.stable.downloadUrl}}" target="_blank">v</a>
   </div>
 
@@ -16,12 +16,7 @@
 
     <table class="tier-release-items table table-sm">
       <tbody>
-        <tr>
-          <th><a href="{{status?.keyman[platform.value.id][tier]?.downloadUrl}}" target="_blank">download.keyman.com</a></th>
-          <td>{{status?.keyman[platform.value.id][tier]?.version}}</td>
-          <td>{{releaseDate}}</td>
-        </tr>
-        <tr *ngFor="target of targets">
+        <tr *ngFor="let target of targets">
           <th><a href="{{target.url}}" target="_blank">{{target.name}}</a></th>
           <td class="{{getVersionClass(target.version)}}">{{target.version}}</td>
           <td>{{target.date}}</td>

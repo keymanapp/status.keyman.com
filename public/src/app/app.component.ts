@@ -1,4 +1,4 @@
-import { NgZone, Component, ɵbypassSanitizationTrustResourceUrl } from '@angular/core';
+import { NgZone, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from './status/status.service';
 import { StatusSource } from '../../../shared/status-source';

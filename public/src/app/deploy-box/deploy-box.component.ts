@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import { StatusSource } from '../../../../shared/status-source';
 import { compare as versionCompare } from "compare-versions";
 
@@ -14,7 +14,7 @@ interface DeployTarget {
   templateUrl: './deploy-box.component.html',
   styleUrls: ['./deploy-box.component.css']
 })
-export class DeployBoxComponent implements OnInit {
+export class DeployBoxComponent implements OnInit, OnChanges {
   @Input() tier: string;
   @Input() platform: any;
   @Input() status: any;
@@ -33,8 +33,24 @@ export class DeployBoxComponent implements OnInit {
   ngOnInit() {
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
+    this.prepareData();
+  }
 
-    switch(this.platform) {
+  ngOnChanges() {
+    this.prepareData();
+  }
+
+  prepareData() {
+    this.targets = [];
+
+    this.targets.push({
+      name: 'download.keyman.com',
+      url: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.downloadUrl,
+      version: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.version,
+      date: this.releaseDate
+    });
+
+    switch(this.platform.value.id) {
       case 'android':
         if(this.tier == 'stable')
           this.targets.push({
@@ -61,7 +77,7 @@ export class DeployBoxComponent implements OnInit {
             date:this.status?.deployment?.['launch-pad']?.date_published.substr(0,10)
           }, {
             name: 'packages.sil.org',
-            url: '#',
+            url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman-config/',
             version: this.status?.deployment?.['packages-sil-org']?.version
           });
         break;
@@ -80,11 +96,11 @@ export class DeployBoxComponent implements OnInit {
         this.targets.push({
           name: '@keymanapp/lexical-model-compiler',
           url: 'https://npmjs.com/package/@keymanapp/lexical-model-compiler',
-          version: this.status?.deployment?.['npm-lexical-model-compiler']?.[this.tier]
+          version: this.status?.deployment?.['npm-lexical-model-compiler']?.[this.tier]?.split('-')[0]
         }, {
           name: '@keymanapp/models-types',
           url: 'https://npmjs.com/package/@keymanapp/models-types',
-          version: this.status?.deployment?.['npm-models-types']?.[this.tier]
+          version: this.status?.deployment?.['npm-models-types']?.[this.tier]?.split('-')[0]
         });
         break;
     }
@@ -112,8 +128,13 @@ export class DeployBoxComponent implements OnInit {
     return foundVersion == '0' ? null : foundVersion;
   }
 
+  getDownloadClass() {
+    if(!this.targets.length) return 'tier-release-version-equal';
+    return this.targets.find(target => target.version != undefined && target.version != this.builtVersion) == undefined ? 'tier-release-version-equal' : 'tier-release-version-error';
+  }
+
   getVersionClass(version) {
-    if(version == this.builtVersion) return 'tier-release-version-equal';
+    if(version == this.builtVersion || version == undefined) return 'tier-release-version-equal';
     return 'tier-release-version-error';
   }
 

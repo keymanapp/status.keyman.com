@@ -129,14 +129,6 @@ export class StatusData {
     if(!services[source]) return Promise.resolve(false);
     return this.refreshService(source, services[source]);
   }
-  /*refreshITunesData = async (): Promise<boolean> => this.refreshService(StatusSource.ITunes, iTunesService);
-  refreshPlayStoreData = async (): Promise<boolean> => this.refreshService(StatusSource.PlayStore, playStoreService);*/
-  /*refreshSKeymanComData = async (): Promise<boolean> => this.refreshService('sKeymanCom', sKeymanComService);
-  refreshLaunchPadData = async (): Promise<boolean> => this.refreshService('launchPad', launchPadService);
-  refreshNpmLexicalModelCompilerData = async (): Promise<boolean> =>
-    this.refreshService('npmLexicalModelCompiler', npmLexicalModelCompilerService);
-  refreshNpmModelsTypesData = async (): Promise<boolean> =>
-    this.refreshService('npmModelsTypes', npmModelsTypesService);*/
 };
 
 

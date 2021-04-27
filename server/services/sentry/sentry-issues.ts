@@ -44,7 +44,8 @@ export default {
     return sentryQuery.then((data) => {
       let results = [].concat(issues, JSON.parse(data.data));
       if(data.res.headers.link) {
-        const links = parseLinkHeader(data.res.headers.link);
+        const link = typeof data.res.headers.link == 'string' ? data.res.headers.link : data.res.headers.link[0];
+        const links = parseLinkHeader(link);
         if(links && links.next && links.next.results == 'true') {
           return this.get(links.next.cursor, results);
         }

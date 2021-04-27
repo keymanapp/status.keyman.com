@@ -29,7 +29,7 @@
         </span>
 
         <span *ngFor="let annotation of issue.annotations">
-          <a href="{{extractAnnotationLink(annotation)}}">🔗 #{{extractAnnotationIssueNumber(annotation)}}</a>
+          <a href="{{extractAnnotationLink(annotation)}}" target="_blank">🔗 #{{extractAnnotationIssueNumber(annotation)}}</a>
         </span>
       </li>
     </ul>

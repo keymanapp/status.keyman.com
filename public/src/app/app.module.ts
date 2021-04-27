@@ -10,6 +10,7 @@ import { CountBoxComponent } from './count-box/count-box.component';
 import { SentryComponent } from './sentry/sentry.component';
 import { IssueListComponent } from './issue-list/issue-list.component';
 import { ClipboardComponent } from './clipboard/clipboard.component';
+import { DeployBoxComponent } from './deploy-box/deploy-box.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ClipboardComponent } from './clipboard/clipboard.component';
     FilterObjectByDatePipe,
     SentryComponent,
     IssueListComponent,
+    DeployBoxComponent,
   ],
   imports: [
     BrowserModule,

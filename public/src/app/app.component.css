@@ -149,40 +149,9 @@ td, th {
   display: inline-block;
 }
 
-.tier-release {
-  display: inline-block;
-  vertical-align: middle;
-}
-
 .tier-release-date {
   text-align: center;
   font-size: 12px;
-}
-
-.tier-release-version a {
-  display: inline-block;
-  text-align: center;
-  text-decoration: underline;
-  font-size: 19px;
-  font-weight: 200;
-  color: white;
-  background-color: #44cc11;
-  width: 30px;
-  border-radius: 0 4px 4px 0;
-  border-left: 1px solid white;
-  min-height: 32px;
-  max-height: 32px;
-  height: 32px;
-}
-
-.tier-release-version.tier-release-version-error a {
-  background-color: red;
-  color: white;
-}
-
-.tier-release-version.tier-release-version-pending a {
-  background-color: rgb(240,240,100);
-  color: black;
 }
 
 .tier-build-state a.label {

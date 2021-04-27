@@ -6,6 +6,23 @@ import githubIssuesService from "../services/github/github-issues";
 import githubContributionsService from "../services/github/github-contributions";
 import sentryIssuesService from "../services/sentry/sentry-issues";
 import deepEqual from "deep-equal";
+import DataService from "../services/data-service";
+import iTunesService from "../services/deployment/itunes";
+import playStoreService from "../services/deployment/play-store";
+import sKeymanComService from "../services/deployment/s-keyman-com";
+import launchPadService from "../services/deployment/launch-pad";
+import packagesSilOrgService from "../services/deployment/packages-sil-org";
+import { lmcService, mtService } from "../services/deployment/npmjs";
+import { StatusSource } from "../../shared/status-source";
+
+const services = {};
+services[StatusSource.ITunes] = iTunesService;
+services[StatusSource.PlayStore] = playStoreService;
+services[StatusSource.SKeymanCom] = sKeymanComService;
+services[StatusSource.LaunchPad] = launchPadService;
+services[StatusSource.PackagesSilOrg] = packagesSilOrgService;
+services[StatusSource.NpmLexicalModelCompiler] = lmcService;
+services[StatusSource.NpmModelsTypes] = mtService;
 
 export interface StatusDataCache {
   teamCity?: any;
@@ -20,13 +37,14 @@ export interface StatusDataCache {
       currentSprint?: any;
     };
   };
+  deployment: {}
 };
 
 export class StatusData {
   cache: StatusDataCache;
 
   constructor() {
-    this.cache = { sprints: { current: { } } };
+    this.cache = { sprints: { current: { } }, deployment: { } };
   };
 
   refreshKeymanVersionData = async (): Promise<boolean> => {
@@ -96,6 +114,29 @@ export class StatusData {
     return result;
   };
 
+  // Deployment endpoints
+
+  refreshService = async (id: StatusSource, service: DataService): Promise<boolean> => {
+    console.log('Refresh '+id+' starting');
+    let status = await service.get();
+    let result = !deepEqual(status, this.cache.deployment[id]);
+    this.cache.deployment[id] = status;
+    console.log('Refresh '+id+' finished');
+    return result;
+  }
+
+  refreshEndpointData = async (source: StatusSource): Promise<boolean> => {
+    if(!services[source]) return Promise.resolve(false);
+    return this.refreshService(source, services[source]);
+  }
+  /*refreshITunesData = async (): Promise<boolean> => this.refreshService(StatusSource.ITunes, iTunesService);
+  refreshPlayStoreData = async (): Promise<boolean> => this.refreshService(StatusSource.PlayStore, playStoreService);*/
+  /*refreshSKeymanComData = async (): Promise<boolean> => this.refreshService('sKeymanCom', sKeymanComService);
+  refreshLaunchPadData = async (): Promise<boolean> => this.refreshService('launchPad', launchPadService);
+  refreshNpmLexicalModelCompilerData = async (): Promise<boolean> =>
+    this.refreshService('npmLexicalModelCompiler', npmLexicalModelCompilerService);
+  refreshNpmModelsTypesData = async (): Promise<boolean> =>
+    this.refreshService('npmModelsTypes', npmModelsTypesService);*/
 };
 
 

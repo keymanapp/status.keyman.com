@@ -5,6 +5,8 @@ Sentry.init({
   dsn: "https://4ed13a2db1294bb695765ebe2f98171d@sentry.keyman.com/13",
 });
 
+import { StatusSource } from '../shared/status-source';
+
 const express = require('express');
 const app = express();
 const ws = require('ws');
@@ -23,6 +25,18 @@ const statusData = new StatusData();
 
 const timingManager = new DataChangeTimingManager();
 
+/* Deployment Endpoints */
+
+const STATUS_SOURCES: StatusSource[] = [
+  StatusSource.ITunes,
+  StatusSource.PlayStore,
+  StatusSource.LaunchPad,
+  StatusSource.NpmLexicalModelCompiler,
+  StatusSource.NpmModelsTypes,
+  StatusSource.SKeymanCom,
+  StatusSource.PackagesSilOrg
+];
+
 initialLoad();
 
 function initialLoad() {
@@ -30,12 +44,15 @@ function initialLoad() {
   respondKeymanDataChange();
   respondTeamcityDataChange();
   respondSentryDataChange();
+  // We have a bunch of deploy endpoints
+  respondPolledEndpoints();
 };
 
 /* Interval triggers */
 
 setInterval(() => {
   respondKeymanDataChange();
+  respondPolledEndpoints();
   if(!isProduction) {
     // We have a webhook running on production so no need to poll the server
     respondTeamcityDataChange();
@@ -109,6 +126,12 @@ function respondSentryDataChange() {
     finally(() => timingManager.finish('sentry'));
 }
 
+function respondPolledEndpoints() {
+  for(let s of STATUS_SOURCES) {
+    statusData.refreshEndpointData(s).then(hasChanged => sendWsAlert(hasChanged, s));
+  }
+}
+
 function sendInitialRefreshMessages(socket) {
   const sprint = statusData.cache.sprints['current'];
   if(sprint) {
@@ -119,6 +142,10 @@ function sendInitialRefreshMessages(socket) {
   if(statusData.cache.issues) socket.send('github-issues');
   if(statusData.cache.teamCity && statusData.cache.teamCityRunning) socket.send('teamcity');
   if(statusData.cache.keymanVersion) socket.send('keyman');
+  // Deployment refreshes
+  for(let s of STATUS_SOURCES) {
+    if(statusData.cache.deployment[s]) socket.send(s);
+  }
 }
 
 /* Static Endpoints */
@@ -226,6 +253,25 @@ app.get('/status/sentry-issues', (request, response) => {
   }));
   response.end();
 });
+
+/* Deployment endpoints */
+
+function addEndpoint(id, dataSource) {
+  app.get('/status/'+id, (request, response) => {
+    console.log('GET /status/'+id);
+    const sprint = statusHead(request, response);
+    const data = {
+      currentSprint: sprint,
+      data: dataSource()
+    };
+    response.write(JSON.stringify(data));
+    response.end();
+  });
+}
+
+for(let s of STATUS_SOURCES) {
+  addEndpoint(s, () => statusData.cache.deployment[s]);
+}
 
 console.log(`Starting app listening on ${port}`);
 const server = app.listen(port);

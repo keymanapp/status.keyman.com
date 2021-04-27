@@ -1,6 +1,7 @@
-import { NgZone, Component } from '@angular/core';
+import { NgZone, Component, ɵbypassSanitizationTrustResourceUrl } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { StatusSource, StatusService } from './status/status.service';
+import { StatusService } from './status/status.service';
+import { StatusSource } from '../../../shared/status-source';
 import { platforms, PlatformSpec } from './platforms';
 import { sites, siteSentryNames } from './sites';
 import { repoShortNameFromGithubUrl } from './utility/repoShortNameFromGithubUrl';
@@ -16,6 +17,8 @@ interface Status {
   sentryIssues: any[];
   teamCity: any[];
   teamCityRunning: any[];
+  deployment: {
+  }
 };
 
 interface OtherSites {
@@ -39,7 +42,9 @@ export class AppComponent {
     keyman: [],
     sentryIssues: [],
     teamCity: [],
-    teamCityRunning: []
+    teamCityRunning: [],
+    deployment: {
+    }
   };
   error: any;
   JSON: any;
@@ -129,7 +134,16 @@ export class AppComponent {
               this.status.teamCity = data.teamCity;
               this.status.teamCityRunning = data.teamCityRunning;
               break;
-          }
+            case StatusSource.ITunes:
+            case StatusSource.PlayStore:
+            case StatusSource.SKeymanCom:
+            case StatusSource.LaunchPad:
+            case StatusSource.PackagesSilOrg:
+            case StatusSource.NpmLexicalModelCompiler:
+            case StatusSource.NpmModelsTypes:
+              this.status.deployment[source] = data.data;
+              break;
+            }
 
           if(this.status.github && this.status.issues)
             this.extractMilestoneData();

@@ -1,8 +1,19 @@
 require('source-map-support').install();
 
+enum Environment {
+  Development = 'development',
+  Production = 'production',
+  Staging = 'staging'
+};
+const environment: Environment =
+  process.env['NODE_ENV'] == 'production' ? Environment.Production :
+  process.env['NODE_ENV'] == 'staging' ? Environment.Staging :
+  Environment.Development;
+
 const Sentry = require("@sentry/node");
 Sentry.init({
   dsn: "https://4ed13a2db1294bb695765ebe2f98171d@sentry.keyman.com/13",
+  environment: environment
 });
 
 import { StatusSource } from '../shared/status-source';
@@ -16,10 +27,9 @@ const currentSprint = require('./current-sprint');
 import { StatusData } from './data/status-data';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
-const isProduction = process.env['NODE_ENV'] == 'production';
 
-const port=isProduction ? 80 : 3000;
-const REFRESH_INTERVAL = isProduction ? 60000 : 300000;
+const port = environment == Environment.Development ? 3000 : 80;
+const REFRESH_INTERVAL = environment == Environment.Development ? 300000 : 60000;
 
 const statusData = new StatusData();
 
@@ -53,7 +63,7 @@ function initialLoad() {
 setInterval(() => {
   respondKeymanDataChange();
   respondPolledEndpoints();
-  if(!isProduction) {
+  if(environment != Environment.Production) {
     // We have a webhook running on production so no need to poll the server
     respondTeamcityDataChange();
   }
@@ -150,7 +160,7 @@ function sendInitialRefreshMessages(socket) {
 
 /* Static Endpoints */
 
-app.use('/', express.static('../../../public/dist/public'));
+app.use('/', express.static((environment == Environment.Development ? '' : '../') + '../../public/dist/public'));
 
 /* Web hooks */
 
@@ -185,7 +195,7 @@ function sendWsAlert(hasChanged: boolean, message: string): boolean {
 function statusHead(request, response) {
   const sprint = request.query.sprint ? request.query.sprint : 'current';
   let headers = {"Content-Type": "application/json"};
-  if(!isProduction) {
+  if(environment == Environment.Development) {
     // Allow requests from ng-served host in development
     headers["Access-Control-Allow-Origin"] = '*';
   }

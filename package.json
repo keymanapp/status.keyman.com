@@ -2,7 +2,7 @@
   "name": "keyman-status",
   "version": "1.0.0",
   "description": "Report on status of Keyman projects",
-  "main": "server/dist/code.js",
+  "main": "server/dist/server/code.js",
   "scripts": {
     "build": "npm run-script build-server && npm run-script build-client",
     "build-client": "cd public && npm install && npm run-script build",

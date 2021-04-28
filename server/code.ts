@@ -150,7 +150,7 @@ function sendInitialRefreshMessages(socket) {
 
 /* Static Endpoints */
 
-app.use('/', express.static('../../public/dist/public'));
+app.use('/', express.static('../../../public/dist/public'));
 
 /* Web hooks */
 

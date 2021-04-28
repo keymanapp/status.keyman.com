@@ -30,7 +30,7 @@
                           {{user.login}}</a>
                         </th>
                         <th style='width:6.5%' *ngFor="let day of sprintDays">
-                          <a href='https://github.com/{{user.login}}?tab=overview&from={{day?.ghdate}}&to={{day?.ghdate}}' target='_blank'>{{day.dayText}}<br>{{day.monthText}} {{day.dateText}}</a>
+                          <a href='https://github.com/{{user.login}}?tab=overview&from={{day?.ghdate}}&to={{day?.ghdate}}' target='_blank'>{{day?.dayText}}<br>{{day?.monthText}} {{day?.dateText}}</a>
                         </th>
                       </tr>
                     </thead>
@@ -102,15 +102,16 @@
             <div class="tier-build-state" title="{{statusTip(platform.value.id,'stable')}}">
               <a class="label {{statusClass(platform.value.id,'stable')}}" href="{{statusLink(platform.value.id,'stable')}}" target="_blank">{{statusText(platform.value.id,'stable')}}</a>
             </div>
-            <div class="tier-release">
-              <div class="tier-release-version {{downloadClass(platform.value.id,'stable')}}">
-                <a href="{{status?.keyman[platform.value.id]?.stable.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.stable.version}}">v</a>
-              </div>
-            </div>
-            <div class="tier-release-date">
-              {{releaseDate(platform.value.id,'stable')}}
-            </div>
-        </div>
+
+            <app-deploy-box
+              [tier]="'stable'"
+              [status]="status"
+              [builtVersion]="statusText(platform.value.id,'stable')"
+              [platform]="platform"
+              [downloadClass]="downloadClass(platform.value.id,'stable')"
+              [releaseDate]="releaseDate(platform.value.id,'stable')">
+            </app-deploy-box>
+          </div>
         </td>
 
         <td class="tier" id="tier-beta">
@@ -118,18 +119,20 @@
             <div class="tier-build-state" title="{{statusTip(platform.value.id,'beta')}}">
               <a class="label {{statusClass(platform.value.id,'beta')}}" href="{{statusLink(platform.value.id,'beta')}}" target="_blank">{{statusText(platform.value.id,'beta')}}</a>
             </div>
-            <div class="tier-release">
-              <div class="tier-release-version {{downloadClass(platform.value.id,'beta')}}">
-                <a href="{{status?.keyman[platform.value.id]?.beta.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.beta.version}}">v</a>
-              </div>
-            </div>
-            <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
+
+            <app-deploy-box
+              [tier]="'beta'"
+              [status]="status"
+              [builtVersion]="statusText(platform.value.id,'beta')"
+              [platform]="platform"
+              [downloadClass]="downloadClass(platform.value.id,'beta')"
+              [releaseDate]="releaseDate(platform.value.id,'beta')">
+            </app-deploy-box>
+
+            <div class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
               <a href="{{tierTestLink(platform.value.id,'beta')}}" target="_blank">🧪</a>
             </div>
-            <div class="tier-release-date">
-              {{releaseDate(platform.value.id,'beta')}}
-            </div>
-        </div>
+          </div>
         </td>
 
         <td class="tier" id="tier-alpha">
@@ -137,18 +140,20 @@
             <div class="tier-build-state" title="{{statusTip(platform.value.id,'alpha')}}">
               <a class="label {{statusClass(platform.value.id,'alpha')}}" href="{{statusLink(platform.value.id,'alpha')}}" target="_blank">{{statusText(platform.value.id,'alpha')}}</a>
             </div>
-            <div class="tier-release">
-              <div class="tier-release-version {{downloadClass(platform.value.id,'alpha')}}">
-                <a href="{{status?.keyman[platform.value.id]?.alpha.downloadUrl}}" target="_blank" title="Version on download.keyman.com: {{status?.keyman[platform.value.id]?.alpha.version}}">v</a>
-              </div>
-            </div>
-            <div class="tier-test" class="tier-test {{tierTestClass(platform.value.id,'alpha')}}" title="{{tierTestTitle(platform.value.id,'alpha')}}">
+
+            <app-deploy-box
+              [tier]="'alpha'"
+              [status]="status"
+              [builtVersion]="statusText(platform.value.id,'alpha')"
+              [platform]="platform"
+              [downloadClass]="downloadClass(platform.value.id,'alpha')"
+              [releaseDate]="releaseDate(platform.value.id,'alpha')">
+            </app-deploy-box>
+
+            <div class="tier-test {{tierTestClass(platform.value.id,'alpha')}}" title="{{tierTestTitle(platform.value.id,'alpha')}}">
               <a href="{{tierTestLink(platform.value.id,'alpha')}}" target="_blank">🧪</a>
             </div>
-            <div class="tier-release-date">
-              {{releaseDate(platform.value.id,'alpha')}}
-            </div>
-        </div>
+          </div>
         </td>
 
         <td class="sentry-events">

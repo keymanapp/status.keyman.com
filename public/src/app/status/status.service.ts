@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { StatusSource } from '../../../../shared/status-source';
 
 @Injectable()
 export class StatusService {
@@ -15,14 +16,4 @@ export class StatusService {
       this.http.get(url, {params:{sprint:sprint}}) :
       this.http.get(url);
   }
-};
-
-// TODO share this between client and server
-export enum StatusSource {
-  Keyman = "keyman",
-  GitHub = "github",
-  GitHubIssues = "github-issues",
-  GitHubContributions = "github-contributions",
-  TeamCity = "teamcity",
-  SentryIssues = "sentry-issues"
 };

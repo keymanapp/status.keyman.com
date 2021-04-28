@@ -1,0 +1,129 @@
+.tier-release {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+
+.tier-release-version a {
+  display: inline-block;
+  text-align: center;
+  text-decoration: underline;
+  font-size: 19px;
+  font-weight: 200;
+  color: white;
+  background-color: #44cc11;
+  width: 30px;
+  border-radius: 0 4px 4px 0;
+  border-left: 1px solid white;
+  min-height: 32px;
+  max-height: 32px;
+  height: 32px;
+}
+
+.tier-release-version-error,
+.tier-release-version-error a {
+  background-color: red;
+  color: white;
+}
+
+.tier-release-version-pending,
+.tier-release-version-pending a {
+  background-color: rgb(240,240,100);
+  color: black;
+}
+
+/* Popup */
+
+.tier-release-detail {
+  display: none;
+  position: absolute;
+  text-align: left;
+  z-index: 10;
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  width: max-content;
+  max-width: 720px;
+  font-size: 10pt;
+}
+
+.tier-release-detail .tier-release-items {
+  padding: 4px;
+}
+
+.tier-release.pinned > .tier-release-detail,
+.tier-release:hover > .tier-release-detail {
+  display: block;
+}
+
+.gravity-top.tier-release-detail {
+  border-radius: 4px 4px 0 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.gravity-bottom.tier-release-detail {
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Popup Summary */
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+.summary {
+  background: #e0e0e8;
+  padding: 4px;
+  font-size: 8pt;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom {
+  top: auto;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.summary .summary-label {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.gravity-left .summary > span {
+  float: right;
+  margin: 0 2px;
+}
+
+.gravity-left .summary > .clear {
+  float: none;
+  clear: right;
+}
+
+/* Popup Content */
+
+.table {
+  margin-bottom: 0;
+}

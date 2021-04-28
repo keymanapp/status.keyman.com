@@ -1,0 +1,27 @@
+<div class="tier-release {{pinned ? 'pinned' : ''}}">
+  <div class="tier-release-version {{getDownloadClass()}}">
+    <a href="{{status?.keyman[platform.value.id]?.stable.downloadUrl}}" target="_blank">v</a>
+  </div>
+
+  <!-- target deployment platforms -->
+  <div class="tier-release-detail gravity-{{gravityX}} gravity-{{gravityY}}">
+    <div class="summary">
+      <span class="pin" (click)="pin()">📌</span>
+      <!--<span><app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard></span>-->
+      <span>
+        <span class="summary-label">Deployed Versions</span>
+      </span>
+      <div class='clear'></div>
+    </div>
+
+    <table class="tier-release-items table table-sm">
+      <tbody>
+        <tr *ngFor="let target of targets">
+          <th><a href="{{target.url}}" target="_blank">{{target.name}}</a></th>
+          <td class="{{getVersionClass(target.version)}}">{{target.version}}</td>
+          <td>{{target.date}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

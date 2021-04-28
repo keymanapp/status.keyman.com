@@ -2,7 +2,7 @@
   "name": "keyman-status",
   "version": "1.0.0",
   "description": "Report on status of Keyman projects",
-  "main": "dist/code.js",
+  "main": "dist/server/code.js",
   "scripts": {
     "build": "tsc",
     "start": "run-script-os",

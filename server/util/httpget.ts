@@ -1,14 +1,15 @@
 import * as https from "https";
+import * as http from "http";
 
-type resolver = (a: {data: string; res: any}) => void;
+type resolver = (a: {data: string; res: http.IncomingMessage}) => void;
 
-export default function httpget(hostname, path, headers?) {
+export default function httpget(hostname, path, headers?, head?: boolean) {
   return new Promise((resolve: resolver) => {
     const options: https.RequestOptions = {
       hostname: hostname,
       port: 443,
       path: path,
-      method: 'GET'
+      method: head ? 'HEAD' : 'GET'
     }
 
     if(headers) options.headers = headers;

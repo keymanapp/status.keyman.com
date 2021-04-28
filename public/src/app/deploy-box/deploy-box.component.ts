@@ -44,7 +44,7 @@ export class DeployBoxComponent implements OnInit, OnChanges {
     this.targets = [];
 
     this.targets.push({
-      name: 'download.keyman.com',
+      name: 'downloads.keyman.com',
       url: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.downloadUrl,
       version: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.version,
       date: this.releaseDate

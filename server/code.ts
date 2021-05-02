@@ -271,7 +271,7 @@ function addEndpoint(id, dataSource) {
     console.log('GET /status/'+id);
     const sprint = statusHead(request, response);
     const data = {
-      currentSprint: sprint,
+      currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
       data: dataSource()
     };
     response.write(JSON.stringify(data));

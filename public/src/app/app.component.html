@@ -104,6 +104,7 @@
             </div>
 
             <app-deploy-box
+              [changeCounter]="changeCounter"
               [tier]="'stable'"
               [status]="status"
               [builtVersion]="statusText(platform.value.id,'stable')"
@@ -121,6 +122,7 @@
             </div>
 
             <app-deploy-box
+              [changeCounter]="changeCounter"
               [tier]="'beta'"
               [status]="status"
               [builtVersion]="statusText(platform.value.id,'beta')"
@@ -142,6 +144,7 @@
             </div>
 
             <app-deploy-box
+              [changeCounter]="changeCounter"
               [tier]="'alpha'"
               [status]="status"
               [builtVersion]="statusText(platform.value.id,'alpha')"

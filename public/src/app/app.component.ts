@@ -57,6 +57,7 @@ export class AppComponent {
   sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
   labeledPulls = [];
+  changeCounter: number = 0;
 
   sprintDays = [];
 
@@ -142,6 +143,7 @@ export class AppComponent {
             case StatusSource.NpmLexicalModelCompiler:
             case StatusSource.NpmModelsTypes:
               this.status.deployment[source] = data.data;
+              this.changeCounter++; // forces a rebuild
               break;
             }
 

@@ -23,6 +23,7 @@ export class DeployBoxComponent implements OnInit, OnChanges {
   @Input() releaseDate: string;
   @Input() gravityX?: string;
   @Input() gravityY?: string;
+  @Input() changeCounter: number;
 
   pinned: boolean = false;
 

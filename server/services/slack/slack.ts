@@ -5,9 +5,9 @@ import { slack_bot_token, slack_user_token } from '../../identity/slack';
 const SLACK_CHANNEL='C6Q9WS09G';
 
 export function slackLGTM(data) {
-  if(data.action == 'submitted' && data.review && data.review.pull_request_url) {
+  if(data.action == 'submitted' && data.review && data.pull_request && data.pull_request.html_url) {
     let reaction = data.review.state == 'approved' ? 'lgtm' : 'eyes';
-    let url = data.review.pull_request_url;
+    let url = data.pull_request.html_url;
     console.log(`Received ${reaction} on PR ${url}`);
     //console.log(reaction);
     //console.log(url);

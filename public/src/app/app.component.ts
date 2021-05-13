@@ -134,6 +134,7 @@ export class AppComponent {
             case StatusSource.TeamCity:
               this.status.teamCity = data.teamCity;
               this.status.teamCityRunning = data.teamCityRunning;
+              this.changeCounter++; // forces a rebuild
               break;
             case StatusSource.ITunes:
             case StatusSource.PlayStore:

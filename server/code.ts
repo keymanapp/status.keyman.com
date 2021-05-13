@@ -25,6 +25,7 @@ const ws = require('ws');
 const currentSprint = require('./current-sprint');
 
 import { StatusData } from './data/status-data';
+import { slackLGTM } from './services/slack/slack';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
 
@@ -160,12 +161,15 @@ function sendInitialRefreshMessages(socket) {
 
 /* Static Endpoints */
 
+app.use(express.json()); // for parsing application/json
+
 app.use('/', express.static((environment == Environment.Development ? '' : '../') + '../../public/dist/public'));
 
 /* Web hooks */
 
 app.post('/webhook/github', (request, response) => {
   respondGitHubDataChange();
+  slackLGTM(request.body);
   response.send('ok');
 });
 

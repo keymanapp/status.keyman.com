@@ -5,7 +5,7 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-//https://itunes.apple.com/lookup?id=bundleId=Tavultesoft.Keyman
+//https://itunes.apple.com/lookup?bundleId=Tavultesoft.Keyman
 const KEYMAN_APP_BUNDLE_ID='Tavultesoft.Keyman';
 const ITUNES_HOST='itunes.apple.com';
 const ITUNES_PATH='/lookup?bundleId='+KEYMAN_APP_BUNDLE_ID;

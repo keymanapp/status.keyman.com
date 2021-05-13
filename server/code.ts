@@ -29,7 +29,7 @@ import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
 
 const port = environment == Environment.Development ? 3000 : 80;
-const REFRESH_INTERVAL = environment == Environment.Development ? 300000 : 60000;
+const REFRESH_INTERVAL = environment == Environment.Development ? 10000 : 60000;
 
 const statusData = new StatusData();
 

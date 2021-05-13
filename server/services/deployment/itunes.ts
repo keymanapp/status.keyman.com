@@ -5,10 +5,10 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-//https://itunes.apple.com/lookup?id=933676545
-const KEYMAN_APP_ID=933676545;
+//https://itunes.apple.com/lookup?id=bundleId=Tavultesoft.Keyman
+const KEYMAN_APP_BUNDLE_ID='Tavultesoft.Keyman';
 const ITUNES_HOST='itunes.apple.com';
-const ITUNES_PATH='/lookup?id='+KEYMAN_APP_ID;
+const ITUNES_PATH='/lookup?bundleId='+KEYMAN_APP_BUNDLE_ID;
 
 const service: DataService = {
    get: function() {

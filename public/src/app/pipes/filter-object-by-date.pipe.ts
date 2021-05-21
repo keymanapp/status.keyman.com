@@ -14,6 +14,8 @@ export class FilterObjectByDatePipe implements PipeTransform {
         return items.filter(item => {
             let od = new Date(item.occurredAt);
             return od.getDate() == filter.getDate() && od.getMonth() == filter.getMonth() && od.getFullYear() == filter.getFullYear();
-        }).sort((a,b) => new Date(a.occuredAt).valueOf() - new Date(b.occuredAt).valueOf());
+        }).sort(
+            (a,b) => new Date(a.occurredAt).valueOf() - new Date(b.occurredAt).valueOf()
+        );
     }
 }

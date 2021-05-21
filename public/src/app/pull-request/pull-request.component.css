@@ -76,7 +76,7 @@
 }
 
 .label.status-changes-requested::after {
-  content:'❌';
+  content:'👀';
   alt: 'Changes Requested';
   font-size: 0.75rem;
   font-family: "Noto Color Emoji";

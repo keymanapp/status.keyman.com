@@ -45,7 +45,10 @@ const STATUS_SOURCES: StatusSource[] = [
   StatusSource.NpmLexicalModelCompiler,
   StatusSource.NpmModelsTypes,
   StatusSource.SKeymanCom,
-  StatusSource.PackagesSilOrg
+  StatusSource.PackagesSilOrg,
+  StatusSource.LinuxLsdevSilOrgAlpha,
+  StatusSource.LinuxLsdevSilOrgBeta,
+  StatusSource.LinuxLsdevSilOrgStable
 ];
 
 initialLoad();

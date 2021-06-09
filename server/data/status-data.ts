@@ -12,6 +12,9 @@ import playStoreService from "../services/deployment/play-store";
 import sKeymanComService from "../services/deployment/s-keyman-com";
 import launchPadService from "../services/deployment/launch-pad";
 import packagesSilOrgService from "../services/deployment/packages-sil-org";
+import linuxLsdevSilOrgAlphaService from "../services/deployment/linux-lsdev-sil-org-alpha";
+import linuxLsdevSilOrgBetaService from "../services/deployment/linux-lsdev-sil-org-beta";
+import linuxLsdevSilOrgStableService from "../services/deployment/linux-lsdev-sil-org-stable";
 import { lmcService, mtService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
 
@@ -21,6 +24,9 @@ services[StatusSource.PlayStore] = playStoreService;
 services[StatusSource.SKeymanCom] = sKeymanComService;
 services[StatusSource.LaunchPad] = launchPadService;
 services[StatusSource.PackagesSilOrg] = packagesSilOrgService;
+services[StatusSource.LinuxLsdevSilOrgAlpha] = linuxLsdevSilOrgAlphaService;
+services[StatusSource.LinuxLsdevSilOrgBeta] = linuxLsdevSilOrgBetaService;
+services[StatusSource.LinuxLsdevSilOrgStable] = linuxLsdevSilOrgStableService;
 services[StatusSource.NpmLexicalModelCompiler] = lmcService;
 services[StatusSource.NpmModelsTypes] = mtService;
 

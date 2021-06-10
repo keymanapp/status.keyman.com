@@ -5,13 +5,16 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
+// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-alpha?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true
+// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-beta?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true
 // https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true
 const HOST='api.launchpad.net';
-const PATH='/1.0/~keymanapp/+archive/ubuntu/keyman?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true';
+const PATH_PREFIX='/1.0/~keymanapp/+archive/ubuntu/keyman';
+const PATH_SUFFIX='?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true';
 
-const service: DataService = {
-   get: function() {
-    return httpget(HOST, PATH).then((data) => {
+const service = {
+   get: function(tier) {
+    return httpget(HOST, PATH_PREFIX+tier+PATH_SUFFIX).then((data) => {
       const results = JSON.parse(data.data);
       // We only want two fields from the results
       if(results && typeof results.entries == 'object' && results.entries.length > 0) {
@@ -27,5 +30,13 @@ const service: DataService = {
   }
 };
 
-export default service;
+class ServiceClass implements DataService {
+  constructor(private readonly tier: string) {
+  }
 
+  get = () => service.get(this.tier);
+};
+
+export const launchPadAlphaService: DataService = new ServiceClass('-alpha');
+export const launchPadBetaService: DataService = new ServiceClass('-beta');
+export const launchPadStableService: DataService = new ServiceClass('');

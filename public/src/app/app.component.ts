@@ -141,6 +141,9 @@ export class AppComponent {
             case StatusSource.SKeymanCom:
             case StatusSource.LaunchPad:
             case StatusSource.PackagesSilOrg:
+            case StatusSource.LinuxLsdevSilOrgAlpha:
+            case StatusSource.LinuxLsdevSilOrgBeta:
+            case StatusSource.LinuxLsdevSilOrgStable:
             case StatusSource.NpmLexicalModelCompiler:
             case StatusSource.NpmModelsTypes:
               this.status.deployment[source] = data.data;

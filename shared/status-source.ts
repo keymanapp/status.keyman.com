@@ -12,6 +12,9 @@ export enum StatusSource {
   NpmLexicalModelCompiler = "npm-lexical-model-compiler",
   NpmModelsTypes = "npm-models-types",
   SKeymanCom = "s-keyman-com",
-  PackagesSilOrg = "packages-sil-org"
+  PackagesSilOrg = "packages-sil-org",
+  LinuxLsdevSilOrgAlpha = "linux-lsdev-sil-org-alpha",
+  LinuxLsdevSilOrgBeta = "linux-lsdev-sil-org-beta",
+  LinuxLsdevSilOrgStable = "linux-lsdev-sil-org-stable"
 };
 

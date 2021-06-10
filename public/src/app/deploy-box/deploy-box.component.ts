@@ -70,17 +70,33 @@ export class DeployBoxComponent implements OnInit, OnChanges {
           });
         break;
       case 'linux':
-        if(this.tier == 'stable')
+        if (this.tier == 'stable') {
           this.targets.push({
             name: 'Launchpad',
             url: 'https://launchpad.net/~keymanapp/+archive/ubuntu/keyman',
             version: this.status?.deployment?.['launch-pad']?.version,
-            date:this.status?.deployment?.['launch-pad']?.date_published.substr(0,10)
+            date: this.status?.deployment?.['launch-pad']?.date_published.substr(0, 10)
           }, {
             name: 'packages.sil.org',
             url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman-config/',
             version: this.status?.deployment?.['packages-sil-org']?.version
+          }, {
+            name: 'linux.lsdev.sil.org',
+            url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
+            version: this.status?.deployment?.['linux-lsdev-sil-org-stable']?.version
           });
+        } else if (this.tier == 'beta' || this.tier == 'alpha') {
+          this.targets.push({
+            name: 'Launchpad',
+            url: `https://launchpad.net/~keymanapp/+archive/ubuntu-${this.tier}/keyman`,
+            version: this.status?.deployment?.['launch-pad']?.version,
+            date: this.status?.deployment?.['launch-pad']?.date_published.substr(0, 10)
+          }, {
+            name: 'linux.lsdev.sil.org',
+            url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
+            version: this.status?.deployment?.[`linux-lsdev-sil-org-${this.tier}`]?.version
+          });
+        }
         break;
       case 'web':
         this.targets.push({

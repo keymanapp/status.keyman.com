@@ -74,8 +74,8 @@ export class DeployBoxComponent implements OnInit, OnChanges {
           this.targets.push({
             name: 'Launchpad',
             url: 'https://launchpad.net/~keymanapp/+archive/ubuntu/keyman',
-            version: this.status?.deployment?.['launch-pad']?.version,
-            date: this.status?.deployment?.['launch-pad']?.date_published.substr(0, 10)
+            version: this.status?.deployment?.[StatusSource.LaunchPadStable]?.version,
+            date: this.status?.deployment?.[StatusSource.LaunchPadStable]?.date_published.substr(0, 10)
           }, {
             name: 'packages.sil.org',
             url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman-config/',
@@ -89,8 +89,8 @@ export class DeployBoxComponent implements OnInit, OnChanges {
           this.targets.push({
             name: 'Launchpad',
             url: `https://launchpad.net/~keymanapp/+archive/ubuntu-${this.tier}/keyman`,
-            version: this.status?.deployment?.['launch-pad']?.version,
-            date: this.status?.deployment?.['launch-pad']?.date_published.substr(0, 10)
+            version: this.status?.deployment?.[`launch-pad-${this.tier}`]?.version,
+            date: this.status?.deployment?.[`launch-pad-${this.tier}`]?.date_published.substr(0, 10)
           }, {
             name: 'linux.lsdev.sil.org',
             url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',

@@ -3,11 +3,11 @@ import * as http from "http";
 
 type resolver = (a: {data: string; res: http.IncomingMessage}) => void;
 
-export default function httpget(hostname, path, headers?, head?: boolean) {
+export default function httpget(hostname, path, headers?, head?: boolean, httpOnly?: boolean) {
   return new Promise((resolve: resolver) => {
     const options: https.RequestOptions = {
       hostname: hostname,
-      port: 443,
+      port: httpOnly ? 80 : 443,
       path: path,
       method: head ? 'HEAD' : 'GET'
     }
@@ -16,7 +16,7 @@ export default function httpget(hostname, path, headers?, head?: boolean) {
 
     let chunk = '';
 
-    const req = https.request(options, res => {
+    const req = (httpOnly ? http : https).request(options, res => {
       if(res.statusCode != 200) {
         console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
       }

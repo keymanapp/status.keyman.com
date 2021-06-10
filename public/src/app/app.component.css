@@ -60,8 +60,9 @@
   color: #606060;
 }
 
-.not-in-beta #tier-beta {
-  opacity: 0.25;
+.not-in-beta #tier-beta .tier-build-state,
+.not-in-beta #tier-beta ::ng-deep .tier-release-version a {
+  filter: brightness(1.25) saturate(0.25);
 }
 
 /* Background of pull request and build status */

@@ -8,7 +8,9 @@ export enum StatusSource {
   // Deployment targets
   ITunes = "itunes",
   PlayStore = "play-store",
-  LaunchPad = "launch-pad",
+  LaunchPadAlpha = "launch-pad-alpha",
+  LaunchPadBeta = "launch-pad-beta",
+  LaunchPadStable = "launch-pad-stable",
   NpmLexicalModelCompiler = "npm-lexical-model-compiler",
   NpmModelsTypes = "npm-models-types",
   SKeymanCom = "s-keyman-com",

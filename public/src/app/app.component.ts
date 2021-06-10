@@ -139,7 +139,9 @@ export class AppComponent {
             case StatusSource.ITunes:
             case StatusSource.PlayStore:
             case StatusSource.SKeymanCom:
-            case StatusSource.LaunchPad:
+            case StatusSource.LaunchPadAlpha:
+            case StatusSource.LaunchPadBeta:
+            case StatusSource.LaunchPadStable:
             case StatusSource.PackagesSilOrg:
             case StatusSource.LinuxLsdevSilOrgAlpha:
             case StatusSource.LinuxLsdevSilOrgBeta:

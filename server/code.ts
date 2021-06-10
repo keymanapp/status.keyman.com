@@ -41,7 +41,9 @@ const timingManager = new DataChangeTimingManager();
 const STATUS_SOURCES: StatusSource[] = [
   StatusSource.ITunes,
   StatusSource.PlayStore,
-  StatusSource.LaunchPad,
+  StatusSource.LaunchPadAlpha,
+  StatusSource.LaunchPadBeta,
+  StatusSource.LaunchPadStable,
   StatusSource.NpmLexicalModelCompiler,
   StatusSource.NpmModelsTypes,
   StatusSource.SKeymanCom,

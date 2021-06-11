@@ -88,7 +88,7 @@ export class DeployBoxComponent implements OnInit, OnChanges {
         } else if (this.tier == 'beta' || this.tier == 'alpha') {
           this.targets.push({
             name: 'Launchpad',
-            url: `https://launchpad.net/~keymanapp/+archive/ubuntu-${this.tier}/keyman`,
+            url: `https://launchpad.net/~keymanapp/+archive/ubuntu/keyman-${this.tier}`,
             version: this.status?.deployment?.[`launch-pad-${this.tier}`]?.version,
             date: this.status?.deployment?.[`launch-pad-${this.tier}`]?.date_published.substr(0, 10)
           }, {

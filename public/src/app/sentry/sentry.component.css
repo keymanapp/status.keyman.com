@@ -55,7 +55,7 @@
 }
 
 .sentry-detail {
-  display: none;
+  display: flex;
   position: absolute;
   text-align: left;
   z-index: 10;
@@ -68,6 +68,11 @@
   max-width: 800px;
   font-size: 10pt;
   flex-direction: column;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
 }
 
 .sentry-detail.gravity-top {
@@ -92,7 +97,8 @@
 .sentry-detail:hover,
 .sentry-detail.pinned,
 .label:hover + .sentry-detail {
-  display: flex;
+  visibility: visible;
+  opacity: 1;
 }
 
 .pinned .pin {

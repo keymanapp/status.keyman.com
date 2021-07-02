@@ -108,7 +108,7 @@
 }
 
 .pull-request-detail {
-  display: none;
+  display: block;
   position: absolute;
   margin: 29px 4px 24px 4px;
   text-align: left;
@@ -119,6 +119,11 @@
   width: max-content;
   max-width: 720px;
   font-size: 10pt;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
 }
 
 .gravity-top.pull-request-detail {
@@ -132,7 +137,8 @@
 }
 
 .pull-request:hover > .pull-request-detail {
-  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 .branches {

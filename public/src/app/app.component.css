@@ -208,7 +208,7 @@ td.sentry-events {
 }
 
 .navbar-contribution-data {
-  display: none;
+  display: block;
   position: fixed;
   background-color: #f9f9f9;
   min-width: 160px;
@@ -217,11 +217,16 @@ td.sentry-events {
   z-index: 1;
   left: 60px;
   right: 60px;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
 }
 
 .navbar-contribution:hover .navbar-contribution-data,
 .navbar-contribution.fixed .navbar-contribution-data {
-  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 .navbar-contribution.fixed .navbar-contribution-data {

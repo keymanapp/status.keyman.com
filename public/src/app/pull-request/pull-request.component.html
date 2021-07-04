@@ -2,7 +2,8 @@
 <span class="label {{class || pullClass()}} {{pullStatus()}}">
   <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{pull.pull.node.author.avatarUrl}}&size=32"></a>
   <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
-    <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>{{pull.pull.node.number}}
+    <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>
+    <span class='emoji'>{{pullEmoji()}}</span>{{pull.pull.node.number}}
   </a>
 </span>
 <div class="pull-request-detail gravity-{{gravityX}} gravity-{{gravityY}}">
@@ -12,6 +13,10 @@
     <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
       <a href="https://github.com/keymanapp/keyman/issues/{{issue.subject.number}}" target="_blank">🔗 #{{issue.subject.number}}</a>
     </span>
+  </span>
+  <span class="changes">
+    <span class="additions">+{{pull.pull.node.additions}}</span>
+    <span class="deletions">−{{pull.pull.node.deletions}}</span>
   </span>
   <span class="title">{{pull.pull.node.title}}</span>
   <span class="status">{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</span>

@@ -99,7 +99,7 @@
   vertical-align: middle;
 }
 
-.cherry-pick {
+.cherry-pick, .emoji {
   color: rgba(0,0,0,0.5);
 }
 
@@ -153,6 +153,25 @@
   padding: 0 5px;
   display: inline-block;
   margin: 0 2px;
+ }
+
+ .changes {
+  display: block;
+  float: right;
+  font-size: 0.9em;
+ }
+
+ .additions, .deletions {
+   font-weight: bold;
+   margin-left: 4px;
+ }
+
+ .additions {
+   color: #22863a;
+ }
+
+ .deletions {
+   color: #cb2431;
  }
 
  .title {

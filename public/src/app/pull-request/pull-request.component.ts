@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
+import emojiRegex from 'emoji-regex/es2015/RGI_Emoji';
 
 @Component({
   selector: 'app-pull-request',
@@ -100,6 +101,16 @@ export class PullRequestComponent implements OnInit {
         (c[1] as any).state == 'APPROVED' || a == 'status-approved' ? 'status-approved' : 'status-pending',
       'status-pending' // Initial value
     );
+  }
+
+  pullEmoji() {
+    let title: string = this.pull.pull.node.title;
+    let regex = emojiRegex(), match;
+    while(match = regex.exec(title)) {
+      const emoji = match[0];
+      if(emoji != '🍒') return emoji + ' ';
+    }
+    return '';
   }
 
   labelColor(label) {

@@ -88,7 +88,6 @@
         <th id='th-stable' class='tier'>Stable</th>
         <th id='th-beta' class='tier'>Beta</th>
         <th id='th-alpha' class='tier'>Alpha</th>
-        <th id='th-errors'>Errors (14d)</th>
         <th id='th-issues'>Issues</th>
         <th id='th-pulls'>Pull Requests</th>
       </tr>
@@ -112,6 +111,9 @@
               [downloadClass]="downloadClass(platform.value.id,'stable')"
               [releaseDate]="releaseDate(platform.value.id,'stable')">
             </app-deploy-box>
+
+            <app-sentry [environment]="'stable'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
+
           </div>
         </td>
 
@@ -134,6 +136,9 @@
             <div class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
               <a href="{{tierTestLink(platform.value.id,'beta')}}" target="_blank">🧪</a>
             </div>
+
+            <app-sentry [mode]="'simple'" [environment]="'beta'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
+
           </div>
         </td>
 
@@ -156,11 +161,9 @@
             <div class="tier-test {{tierTestClass(platform.value.id,'alpha')}}" title="{{tierTestTitle(platform.value.id,'alpha')}}">
               <a href="{{tierTestLink(platform.value.id,'alpha')}}" target="_blank">🧪</a>
             </div>
-          </div>
-        </td>
 
-        <td class="sentry-events">
-          <app-sentry [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
+            <app-sentry [mode]="'simple'" [environment]="'alpha'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
+          </div>
         </td>
 
         <td class="issues">
@@ -188,7 +191,7 @@
         <th class='gap'></th>
         <th *ngFor="let site of sites | keyvalue"><a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id}}</a>
           <span class='nodeping'></span>
-          <app-sentry [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
+          <app-sentry [environment]="'production'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
         </th>
         <th class='gap'></th>
         <th id='other-repos-cell'>

@@ -151,6 +151,9 @@ export default {
 
             isDraft # requires application/vnd.github.shadow-cat-preview+json
 
+            additions
+            deletions
+
             headRefName
             baseRefName
 
@@ -231,6 +234,10 @@ export default {
                 isDraft # requires application/vnd.github.shadow-cat-preview+json
                 headRefName
                 baseRefName
+
+                additions
+                deletions
+
                 milestone {
                   title
                 }

@@ -110,6 +110,7 @@
   background: #e0e0e8;
   padding: 4px;
   font-size: 8pt;
+  font-weight: normal;
 }
 
 .gravity-top .summary {
@@ -133,6 +134,11 @@
 .summary .summary-label {
   padding: 0 4px;
   font-weight: bold;
+}
+
+.summary .summary-environment {
+  color: #914108;
+  padding-left: 4px;
 }
 
 .summary .summary-label::after {

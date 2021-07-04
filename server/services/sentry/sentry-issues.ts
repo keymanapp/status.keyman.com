@@ -8,13 +8,16 @@ import parseLinkHeader from "parse-link-header";
 const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
 
 export default {
-   get: function(cursor?, issues?) {
+  get: async function() {
+    let environments = ['alpha', 'beta', 'stable', /*'local', 'development',*/ 'production', /*'staging', 'test'*/];
+    let result = {};
+    for(let environment of environments) {
+      result[environment] = await this.getEnvironment(environment);
+    }
+    return result;
+  },
 
-    // Build a list of sentry queries per platform; TODO refactor into shared source
-    let sentryPlatforms = ['android','ios','linux','mac','web','windows','developer',
-      'api.keyman.com', 'developer.keyman.com', 'donate.keyman.com', 'downloads.keyman.com',
-      'help.keyman.com', 'keyman.com', 'keymanweb.com', 's.keyman.com', 'status.keyman.com'
-    ];
+  getEnvironment: function(environment, cursor?, issues?) {
 
 // https://sentry.keyman.com/api/0/organizations/keyman/issues/
 // end=2021-03-24T12%3A59%3A59
@@ -28,10 +31,15 @@ export default {
 // utc=false
 
     const url =
-      `/api/0/organizations/keyman/issues/?`+
-      `statsPeriod=14d&`+
-      `&groupStatsPeriod=auto&`+
-      `limit=100&query=is%3Aunresolved&shortIdLookup=1&sort=freq&utc=false`+
+      `/api/0/organizations/keyman/issues/`+
+      `?statsPeriod=14d`+
+      `&groupStatsPeriod=auto`+
+      `&shortIdLookup=1`+
+      `&sort=freq`+
+      `&utc=false`+
+      `&limit=100`+
+      `&query=is%3Aunresolved`+
+      `&environment=${environment}`+
       (cursor ? `&cursor=${cursor}` : ``);
     const authOptions = {
       Authorization: ` Bearer ${sentry_token}`,
@@ -47,7 +55,7 @@ export default {
         const link = typeof data.res.headers.link == 'string' ? data.res.headers.link : data.res.headers.link[0];
         const links = parseLinkHeader(link);
         if(links && links.next && links.next.results == 'true') {
-          return this.get(links.next.cursor, results);
+          return this.getEnvironment(environment, links.next.cursor, results);
         }
       }
       return results;

@@ -65,6 +65,12 @@
   filter: brightness(1.25) saturate(0.25);
 }
 
+.tier app-sentry {
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 8px;
+}
+
 /* Background of pull request and build status */
 
 .label {

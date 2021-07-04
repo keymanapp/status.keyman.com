@@ -1,4 +1,4 @@
-import { NgZone, Component } from '@angular/core';
+import { NgZone, Component, PlatformRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from './status/status.service';
 import { StatusSource } from '../../../shared/status-source';
@@ -14,7 +14,7 @@ interface Status {
   issues: any;
   contributions: any;
   keyman: any[];
-  sentryIssues: any[];
+  sentryIssues: any;
   teamCity: any[];
   teamCityRunning: any[];
   deployment: {
@@ -40,7 +40,7 @@ export class AppComponent {
     issues: undefined,
     contributions: undefined,
     keyman: [],
-    sentryIssues: [],
+    sentryIssues: {},
     teamCity: [],
     teamCityRunning: [],
     deployment: {
@@ -299,22 +299,26 @@ export class AppComponent {
     return null;
   }
   transformSentryData(data) {
-    let result = [];
+    let result = {};
     if(!data) return result;
-    data.forEach(issue => {
-      if(!issue) return;
-      let platformName = siteSentryNames[issue.project.slug] ?
-        siteSentryNames[issue.project.slug] :
-        this.getPlatformFromSentryProject(issue.project.slug);
-      let platform = result[platformName];
-      if(!platform) platform = result[platformName] = {
-        totalUsers: 0,
-        totalEvents: 0,
-        issues: [],
-      };
-      platform.totalUsers += issue.userCount;
-      platform.totalEvents += parseInt(issue.count, 10);
-      platform.issues.push(issue);
+    Object.keys(data).forEach(environment => {
+      data[environment].forEach(issue => {
+        if(!issue) return;
+        let platformName = siteSentryNames[issue.project.slug] ?
+          siteSentryNames[issue.project.slug] :
+          this.getPlatformFromSentryProject(issue.project.slug);
+        let platform = result[platformName];
+        if(!platform) platform = result[platformName] = {};
+        let env = platform[environment];
+        if(!env) env = platform[environment] = {
+          totalUsers: 0,
+          totalEvents: 0,
+          issues: [],
+        };
+        env.totalUsers += issue.userCount;
+        env.totalEvents += parseInt(issue.count, 10);
+        env.issues.push(issue);
+      });
     });
     return result;
   }

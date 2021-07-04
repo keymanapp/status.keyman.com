@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import { siteSentryIds } from '../sites';
 import { escapeHtml } from '../utility/escapeHtml';
 
@@ -7,20 +7,37 @@ import { escapeHtml } from '../utility/escapeHtml';
   templateUrl: './sentry.component.html',
   styleUrls: ['./sentry.component.css']
 })
-export class SentryComponent implements OnInit {
+export class SentryComponent implements OnInit, OnChanges {
+  @Input() environment: string;
   @Input() platform?: string;
   @Input() site?: string;
   @Input() issues?: any;
   @Input() gravityX?: string;
   @Input() gravityY?: string;
+  @Input() mode?: string;
 
   pinned: boolean = false;
+
+  env: any;
 
   constructor() { }
 
   ngOnInit() {
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
+    this.env = this.issues && this.issues[this.environment] ? this.issues[this.environment] : {
+      totalUsers: 0,
+      totalEvents: 0,
+      issues: []
+    };
+  }
+
+  ngOnChanges() {
+    this.env = this.issues && this.issues[this.environment] ? this.issues[this.environment] : {
+      totalUsers: 0,
+      totalEvents: 0,
+      issues: []
+    };
   }
 
   projectIndex(): number {
@@ -37,16 +54,6 @@ export class SentryComponent implements OnInit {
       }
     };
     return map[this.platform];
-  }
-
-  userCount() {
-    return this.issues ? this.issues.totalUsers : 0;
-  }
-  issueCount() {
-    return this.issues ? this.issues.issues.length : 0;
-  }
-  eventCount() {
-    return this.issues ? this.issues.totalEvents : 0;
   }
 
   // annotations are returned in the form "<a href=\"https://github.com/keymanapp/status.keyman.com/issues/88\">keymanapp/status.keyman.com#88</a>"
@@ -67,10 +74,10 @@ export class SentryComponent implements OnInit {
   }
 
   getSentryIssueText() {
-    if(!this.issues) return '';
+    if(!this.env) return '';
     const text =
       '<ul>' +
-      this.issues.issues.reduce(
+      this.env.issues.reduce(
         (text, node) => {
           return text + `<li>${escapeHtml(node.title)} (<a href='${node.permalink}'>${node.shortId}</a>)</li>\n`
         }, '') +

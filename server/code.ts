@@ -69,7 +69,8 @@ function initialLoad() {
 setInterval(() => {
   respondKeymanDataChange();
   respondPolledEndpoints();
-  if(environment != Environment.Production) {
+  if(environment != Environment.Production || true) {
+    // NOTE: using polling in production as webhook stopped working on 6 July 2021?
     // We have a webhook running on production so no need to poll the server
     respondTeamcityDataChange();
   }

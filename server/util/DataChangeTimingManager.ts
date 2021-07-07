@@ -7,12 +7,12 @@ export class DataChangeTimingManager {
     if (this.started[id] || this.lastRun[id] &&
         (new Date()).valueOf() - this.lastRun[id].valueOf() < minInterval) {
 
-      if(process.env['NODE_ENV'] != 'production') {
+      //if(process.env['NODE_ENV'] != 'production') {
         if(this.isRunning(id))
           console.log(`Data change for ${id} is still underway; waiting ${minInterval} milliseconds`);
         else
           console.log(`Data change for ${id} is too soon; waiting ${minInterval} milliseconds`);
-      }
+      //}
 
       if (this.dataChangeTimeout[id]) {
         clearTimeout(this.dataChangeTimeout[id]);

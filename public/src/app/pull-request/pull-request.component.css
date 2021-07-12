@@ -99,6 +99,14 @@
   vertical-align: middle;
 }
 
+.emoji {
+  font-family: "Noto Color Emoji";
+}
+
+.scope-platform .emoji {
+  display: none;
+}
+
 .cherry-pick, .emoji {
   color: rgba(0,0,0,0.5);
 }

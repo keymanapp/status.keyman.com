@@ -175,9 +175,12 @@
         </td>
 
         <td class="pulls">
-          <span *ngFor="let pull of platform.value.pulls">
-            <app-pull-request [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-          </span>
+          <div [class]="'emoji-group' + (emoji.key == '' ? '' : ' emoji-group-border')" *ngFor="let emoji of platform.value.pullsByEmoji | keyvalue">
+            <span *ngIf="emoji.key != ''" class="emoji">{{emoji.key}}</span>
+            <span *ngFor="let pull of emoji.value">
+              <app-pull-request [scope]="'platform'" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+            </span>
+            </div>
         </td>
       </tr>
 
@@ -216,14 +219,14 @@
         <ng-container *ngFor="let site of sites | keyvalue">
         <td class='pulls'>
           <span *ngFor="let pull of site.value.pulls">
-            <app-pull-request [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
+            <app-pull-request [scope]="'site'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
           </span>
         </td>
         </ng-container>
         <td class='gap'></td>
         <td class='pulls'>
           <span *ngFor="let pull of otherSites?.pulls">
-            <app-pull-request [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
+            <app-pull-request [scope]="'site'" [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
           </span>
         </td>
       </tr>

@@ -13,6 +13,7 @@ export class PullRequestComponent implements OnInit {
   @Input() class?: string;
   @Input() gravityX?: string;
   @Input() gravityY?: string;
+  @Input() scope?: string;
 
   constructor(private sanitizer: DomSanitizer) { }
 

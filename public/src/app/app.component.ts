@@ -7,6 +7,7 @@ import { sites, siteSentryNames } from './sites';
 import { repoShortNameFromGithubUrl } from './utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from './utility/escapeHtml';
 import { DataSocket } from './datasocket/datasocket.service';
+import emojiRegex from 'emoji-regex/es2015/RGI_Emoji';
 
 interface Status {
   currentSprint: any;
@@ -248,8 +249,19 @@ export class AppComponent {
   transformPlatformStatusData() {
     this.labeledPulls = [];
 
+    let pullEmoji = (pull) => {
+      let title: string = pull.node.title;
+      let regex = emojiRegex(), match;
+      while(match = regex.exec(title)) {
+        const emoji = match[0];
+        if(emoji != '🍒') return emoji;
+      }
+      return "";
+    }
+
     for(let platform of this.platforms) {
       platform.pulls = [];
+      platform.pullsByEmoji = {};
       //console.log(this.status.github.data.repository.pullRequests.edges);
       for(let pull of this.status.github.data.repository.pullRequests.edges) {
         //console.log(pull);
@@ -276,6 +288,11 @@ export class AppComponent {
             }
             platform.pulls.push({pull: pull, state: foundContext});
             this.labeledPulls.push(pull);
+            let emoji = pullEmoji(pull);
+            if(!platform.pullsByEmoji[emoji]) {
+              platform.pullsByEmoji[emoji] = [];
+            }
+            platform.pullsByEmoji[emoji].push({pull: pull, state: foundContext});
           }
         }
       }

@@ -5,6 +5,7 @@ export interface PlatformSpec {
   context?: string,
   sentry?: string,
   pulls?: any,
+  pullsByEmoji?: any,
   milestones?: any,
   totalIssueCount?: number
 };

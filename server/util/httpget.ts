@@ -4,7 +4,7 @@ import * as http from "http";
 type resolver = (a: {data: string; res: http.IncomingMessage}) => void;
 
 export default function httpget(hostname, path, headers?, head?: boolean, httpOnly?: boolean) {
-  return new Promise((resolve: resolver) => {
+  return new Promise((resolve: resolver, reject) => {
     const options: https.RequestOptions = {
       hostname: hostname,
       port: httpOnly ? 80 : 443,
@@ -31,7 +31,7 @@ export default function httpget(hostname, path, headers?, head?: boolean, httpOn
     });
 
     req.on('error', error => {
-      console.error(error);
+      reject(error);
     });
 
     req.end();

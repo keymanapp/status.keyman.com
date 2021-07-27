@@ -95,7 +95,9 @@ wsServer.on('connection', socket => {
 });
 
 function respondKeymanDataChange() {
-  statusData.refreshKeymanVersionData().then(hasChanged => sendWsAlert(hasChanged, 'keyman'));
+  return statusData.refreshKeymanVersionData()
+    .then(hasChanged => sendWsAlert(hasChanged, 'keyman'))
+    .catch(error => console.log(error));
 }
 
 function respondGitHubDataChange() {
@@ -105,19 +107,24 @@ function respondGitHubDataChange() {
 
   timingManager.start('github');
 
-  return statusData.refreshGitHubStatusData('current').
-    then(hasChanged => sendWsAlert(hasChanged, 'github')).
-    then(respondGitHubContributionsDataChange).
-    then(respondGitHubIssuesDataChange).
-    finally(() => timingManager.finish('github'));
+  return statusData.refreshGitHubStatusData('current')
+    .then(hasChanged => sendWsAlert(hasChanged, 'github'))
+    .then(respondGitHubContributionsDataChange)
+    .then(respondGitHubIssuesDataChange)
+    .catch(error => console.error(error))
+    .finally(() => timingManager.finish('github'));
 }
 
 function respondGitHubIssuesDataChange() {
-  return statusData.refreshGitHubIssuesData().then(hasChanged => sendWsAlert(hasChanged, 'github-issues'));
+  return statusData.refreshGitHubIssuesData()
+    .then(hasChanged => sendWsAlert(hasChanged, 'github-issues'))
+    .catch(error => console.log(error));
 }
 
 function respondGitHubContributionsDataChange() {
-  statusData.refreshGitHubContributionsData('current').then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'));
+  return statusData.refreshGitHubContributionsData('current')
+    .then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'))
+    .catch(error => console.log(error));
 }
 
 function respondTeamcityDataChange() {
@@ -126,9 +133,10 @@ function respondTeamcityDataChange() {
   }
 
   timingManager.start('teamcity');
-  statusData.refreshTeamcityData().
-    then(hasChanged => sendWsAlert(hasChanged, 'teamcity')).
-    finally(() => timingManager.finish('teamcity'));
+  return statusData.refreshTeamcityData()
+    .then(hasChanged => sendWsAlert(hasChanged, 'teamcity'))
+    .catch(error => console.error(error))
+    .finally(() => timingManager.finish('teamcity'));
 }
 
 function respondSentryDataChange() {
@@ -138,9 +146,10 @@ function respondSentryDataChange() {
 
   timingManager.start('sentry');
 
-  statusData.refreshSentryIssuesData().
-    then(hasChanged => sendWsAlert(hasChanged, 'sentry-issues')).
-    finally(() => timingManager.finish('sentry'));
+  return statusData.refreshSentryIssuesData()
+    .then(hasChanged => sendWsAlert(hasChanged, 'sentry-issues'))
+    .catch(error => console.error(error))
+    .finally(() => timingManager.finish('sentry'));
 }
 
 function respondPolledEndpoints() {

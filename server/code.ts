@@ -94,10 +94,15 @@ wsServer.on('connection', socket => {
   sendInitialRefreshMessages(socket);
 });
 
+function reportError(error) {
+  console.error(error);
+  Sentry.captureMessage(error);
+}
+
 function respondKeymanDataChange() {
   return statusData.refreshKeymanVersionData()
     .then(hasChanged => sendWsAlert(hasChanged, 'keyman'))
-    .catch(error => console.log(error));
+    .catch(error => reportError(error));
 }
 
 function respondGitHubDataChange() {
@@ -111,20 +116,20 @@ function respondGitHubDataChange() {
     .then(hasChanged => sendWsAlert(hasChanged, 'github'))
     .then(respondGitHubContributionsDataChange)
     .then(respondGitHubIssuesDataChange)
-    .catch(error => console.error(error))
+    .catch(error => reportError(error))
     .finally(() => timingManager.finish('github'));
 }
 
 function respondGitHubIssuesDataChange() {
   return statusData.refreshGitHubIssuesData()
     .then(hasChanged => sendWsAlert(hasChanged, 'github-issues'))
-    .catch(error => console.log(error));
+    .catch(error => reportError(error));
 }
 
 function respondGitHubContributionsDataChange() {
   return statusData.refreshGitHubContributionsData('current')
     .then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'))
-    .catch(error => console.log(error));
+    .catch(error => reportError(error));
 }
 
 function respondTeamcityDataChange() {
@@ -135,7 +140,7 @@ function respondTeamcityDataChange() {
   timingManager.start('teamcity');
   return statusData.refreshTeamcityData()
     .then(hasChanged => sendWsAlert(hasChanged, 'teamcity'))
-    .catch(error => console.error(error))
+    .catch(error => reportError(error))
     .finally(() => timingManager.finish('teamcity'));
 }
 
@@ -148,7 +153,7 @@ function respondSentryDataChange() {
 
   return statusData.refreshSentryIssuesData()
     .then(hasChanged => sendWsAlert(hasChanged, 'sentry-issues'))
-    .catch(error => console.error(error))
+    .catch(error => reportError(error))
     .finally(() => timingManager.finish('sentry'));
 }
 

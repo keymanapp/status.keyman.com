@@ -19,6 +19,7 @@ export default function httpget(hostname, path, headers?, head?: boolean, httpOn
     const req = (httpOnly ? http : https).request(options, res => {
       if(res.statusCode != 200) {
         console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+        //Sentry.captureMessage(`statusCode for ${hostname}${path}: ${res.statusCode}`);
       }
 
       res.on('data', d => {

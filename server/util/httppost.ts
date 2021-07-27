@@ -3,7 +3,7 @@ import * as https from "https";
 type resolver = (a: string) => void;
 
 export default function httppost(hostname, path, headers, data) {
-  return new Promise((resolve: resolver) => {
+  return new Promise((resolve: resolver, reject) => {
     const options: https.RequestOptions = {
       hostname: hostname,
       port: 443,
@@ -34,7 +34,7 @@ export default function httppost(hostname, path, headers, data) {
     });
 
     req.on('error', error => {
-      console.error(error);
+      reject(error);
     });
 
     req.write(data);

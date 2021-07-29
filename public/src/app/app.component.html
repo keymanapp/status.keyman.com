@@ -112,6 +112,10 @@
               [releaseDate]="releaseDate(platform.value.id,'stable')">
             </app-deploy-box>
 
+            <div class="tier-test {{tierTestClass(platform.value.id,'stable')}}" title="{{tierTestTitle(platform.value.id,'stable')}}">
+              <a href="{{tierTestLink(platform.value.id,'stable')}}" target="_blank">🧪</a>
+            </div>
+
             <app-sentry [environment]="'stable'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
 
           </div>

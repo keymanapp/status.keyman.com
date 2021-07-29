@@ -521,7 +521,8 @@ export class AppComponent {
   /* Show test build result (alpha-only until 14.0 release phase) */
 
   tierTestRunningAndLatestBuild(platformId,tier): {id,number,status,statusText} {
-    const buildNumberRE = "^\\d+\\.\\d+\\.\\d+-"+tier+"-test$";
+    const tierText = (tier == 'stable' ? '' : '-'+tier);
+    const buildNumberRE = "^\\d+\\.\\d+\\.\\d+"+tierText+"-test$";
     const tcData = this.status.teamCity[this.getPlatform(platformId).configs['test']];
     const tcRunningData = this.status.teamCityRunning[this.getPlatform(platformId).configs['test']];
     if(!tcRunningData) return null;

@@ -28,7 +28,7 @@ const PATH='/ubuntu/dists/focal/main/binary-amd64/Packages';
 const service: DataService = {
    get: function() {
     return httpget(HOST, PATH).then((data) => {
-      const results = data.data.match(/^Package: keyman\s*\nSource:\s*keyman-config[^\n]*\nVersion: (\d+\.\d+\.\d+)-\d+/m);
+      const results = data.data.match(/^Package: keyman\s*\nSource:\s*keyman[^\n]*\nVersion: (\d+\.\d+\.\d+)-\d+/m);
       if(results) {
         return { version: results[1] };
       }

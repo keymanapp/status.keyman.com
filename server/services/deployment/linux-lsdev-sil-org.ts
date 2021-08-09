@@ -30,7 +30,7 @@ const PATH_SUFFIX='/main/binary-amd64/Packages';
 const service = {
    get: function(llsoTier: string) {
     return httpget(HOST, PATH_PREFIX+llsoTier+PATH_SUFFIX, null, false, true).then((data) => {
-      const results = data.data.match(/^Package: keyman\s*\nSource:\s*keyman-config[^\n]*\nVersion: (\d+\.\d+\.\d+)-\d+/m);
+      const results = data.data.match(/^Package: keyman\s*\nSource:\s*keyman[^\n]*\nVersion: (\d+\.\d+\.\d+)-\d+/m);
       if(results) {
         return { version: results[1] };
       }

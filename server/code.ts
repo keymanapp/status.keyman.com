@@ -21,13 +21,14 @@ import { StatusSource } from '../shared/status-source';
 const express = require('express');
 const app = express();
 const ws = require('ws');
-
+const keymanAppTestBotMiddleware = require('./keymanapp-test-bot/keymanapp-test-bot-middleware');
 const currentSprint = require('./current-sprint');
 
 import { StatusData } from './data/status-data';
 import { slackLGTM } from './services/slack/slack';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
+const debugTestBot = true;
 
 const port = environment == Environment.Development ? 3000 : 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;
@@ -56,6 +57,9 @@ const STATUS_SOURCES: StatusSource[] = [
 initialLoad();
 
 function initialLoad() {
+
+  if(debugTestBot) return;
+
   respondGitHubDataChange();
   respondKeymanDataChange();
   respondTeamcityDataChange();
@@ -67,6 +71,9 @@ function initialLoad() {
 /* Interval triggers */
 
 setInterval(() => {
+
+  if(debugTestBot) return;
+
   respondKeymanDataChange();
   respondPolledEndpoints();
   if(environment != Environment.Production || true) {
@@ -202,6 +209,8 @@ app.post('/webhook/sentry', (request, response) => {
   respondSentryDataChange();
   response.send('ok');
 });
+
+app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware);
 
 function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {

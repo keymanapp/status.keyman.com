@@ -320,7 +320,8 @@ export class AppComponent {
     if(!data) return result;
     Object.keys(data).forEach(environment => {
       data[environment].forEach(issue => {
-        if(!issue) return;
+        if (!issue) return;
+        if (!issue.project) return;
         let platformName = siteSentryNames[issue.project.slug] ?
           siteSentryNames[issue.project.slug] :
           this.getPlatformFromSentryProject(issue.project.slug);

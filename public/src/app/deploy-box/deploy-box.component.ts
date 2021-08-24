@@ -93,7 +93,7 @@ export class DeployBoxComponent implements OnInit, OnChanges {
             date: this.status?.deployment?.[`launch-pad-${this.tier}`]?.date_published.substr(0, 10)
           }, {
             name: 'linux.lsdev.sil.org',
-            url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
+            url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman/',
             version: this.status?.deployment?.[`linux-lsdev-sil-org-${this.tier}`]?.version
           });
         }

@@ -1,3 +1,5 @@
+# DONE
+
 -12. test results should include one line summary from latest results
 -1. user-test-missing label should be added auto when no tests are there
 -2. a `@keymanapp-test-bot skip [testing]` command would tell us that user test is not required
@@ -8,17 +10,46 @@
     - blue / white / grey :  all pending
     - yellow: partial results (all have passed)
 -6. status of a test in the User Testing comment should be a link to the comment where it is reported
+-13. add a '*' if there are details for a test result
+-5. design how we would run test suites and grouped tests (SUITE / GROUP / TEST)
+-   a) consider using emoji for SUITES and GROUPS so we don't confuse with checkboxes ✅ 🟧 🟥 🟩 🟦 🟨 ❎ ❌
+-3. auto PRs will not be tagged by the bot. (either auto label or created by [any] bot)
+-2. icon and metadata for the bot - which orgs can install it, etc.
+-1. Deploy manual-test-bot - PEM, secret, and address.
+-5. Update wiki page for groups and suites
+
+# TO DO
 
 
-A) TO DO:
+6. Edumacation and links from our internal documentation
+7. Enhanced status.keyman.com reporting on PR user test status
 
-3. ensure that comments are only processed if they are from people on the team
-11. auto PRs will not be tagged by the bot. (either auto label or created by [any] bot)
+# FUTURE
 
-B) TO DO:
+2. ensure that comments are only processed if they are from people on the team?
+4. add an error report in the protocol to be placed into the user test results
+7. bot can auto-inject a template result comment that it updates.
+   a) Initial: ya ain't got none. do sommat about it."
+8) PR template(?) has a template suite that may be filled out.
+9. editing test protocols in status.keyman.com
+10. editing test results in status.keyman.com
 
-5. design how we would run test suites and grouped tests (SUITE / GROUP / TEST)
-   a) consider using emoji for SUITES and GROUPS so we don't confuse with checkboxes ✅ 🟧 🟥 🟩 🟦 🟨 ❎ ❌
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    b) Specification mode:
        i)  SUITE_ scoping
        ii) GROUP_ + TEST_ defined at same level
@@ -78,8 +109,3 @@ Example results mode:
 ### GROUP_MACOS
 * TEST_RESIZING:  FAILED
 ```
-7. bot can auto-inject a template result comment that it updates.
-   a) Initial: ya ain't got none. do sommat about it."
-8) PR template(?) has a template suite that may be filled out.
-9. editing test protocols in status.keyman.com
-10. editing test results in status.keyman.com

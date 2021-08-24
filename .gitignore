@@ -1,2 +1,3 @@
 localenv.sh
 node_modules/
+.keymanapp-test-bot.*

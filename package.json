@@ -8,7 +8,8 @@
     "build-client": "cd public && npm install && npm run-script build",
     "build-server": "cd server && npm install && npm run-script build",
     "start-client": "cd public && npm run-script start",
-    "start-server": "cd server && npm run-script start"
+    "start-server": "cd server && npm run-script start",
+    "test": "cd server && npx mocha"
   },
   "author": "Marc Durdin",
   "license": "MIT",

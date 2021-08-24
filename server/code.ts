@@ -28,7 +28,7 @@ import { StatusData } from './data/status-data';
 import { slackLGTM } from './services/slack/slack';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
-const debugTestBot = true;
+const debugTestBot = false;
 
 const port = environment == Environment.Development ? 3000 : 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;

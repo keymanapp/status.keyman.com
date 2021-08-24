@@ -32,21 +32,39 @@ export class ManualTestStatusUtil {
   }
 }
 
+export class ManualTestUtil {
+  static commentLink(owner: string, repo: string, issuenum: number, commentID: number, isPR: boolean): string {
+    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#issuecomment-${commentID}`
+  }
+}
+
 export class ManualTestRun {
-  status: ManualTestStatus;
+  status: ManualTestStatus; // result of the test run
   commentID: number;        // comment id from GitHub (may be multiple test results in a comment)
-  isControl: boolean;
+  isControl: boolean;       // true if not actually a test run but rather the result of a control command such as `retest`
   summary?: string;         // one line summary
   notes?: string;           // detailed test results
 };
 
 export class ManualTest {
   commentID: number;        // comment id from GitHub where the test is defined, tests may be defined in multiple issues
-  name: string;
-  description: string;
-  summary?: string;         // optional summary title for the detailed steps, default to 'Steps'
-  detailedSteps?: string;
+  name: string;             // the name of the test, excluding the TEST_ prefix
+  description: string;      // a short one-line description of the test
+  summary?: string;         // optional summary title for the detailed steps, <details><summary>___</summary></details>
+  detailedSteps?: string;   // detailed steps for the test; if summary is set, within a <details></details> block
   testRuns: ManualTestRun[];
+
+  clone(): ManualTest {
+    const result = new ManualTest();
+    result.commentID = this.commentID;
+    result.name = this.name;
+    result.description = this.description;
+    result.summary = this.summary;
+    result.detailedSteps = this.detailedSteps;
+    result.testRuns = [];
+    return result;
+  }
+
   status(): ManualTestStatus {
     return this.testRuns.length == 0 ?
       ManualTestStatus.Open :
@@ -57,26 +75,82 @@ export class ManualTest {
     return ManualTestStatusUtil.emoji(this.status());
   }
 
-  statusLink(owner: string, repo: string, issuenum: number, isPR: boolean): string {
+  commentLink(owner: string, repo: string, issuenum: number, isPR: boolean): string {
     return this.testRuns.length ?
-      `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#issuecomment-${this.testRuns[this.testRuns.length-1].commentID}` :
-      '';
+      ManualTestUtil.commentLink(owner,repo,issuenum,this.testRuns[this.testRuns.length-1].commentID,isPR) : '';
   }
 
   resultText(owner: string, repo: string, issuenum: number, isPR: boolean): string {
-    const statusLink = this.statusLink(owner, repo, issuenum, isPR);
+    const commentLink = this.commentLink(owner, repo, issuenum, isPR);
+    const lastRun = this.testRuns.length ? this.testRuns[this.testRuns.length-1] : null;
 
     // Get status from last test run
-    let statusDescription = this.testRuns.length ? this.testRuns[this.testRuns.length-1].summary : '';
-    statusDescription = statusDescription ? statusDescription = ': '+statusDescription : '';
+    let runDescription = lastRun ? (lastRun.isControl ? ' _retest_ ' : '') + (lastRun.summary || '') : '';
+    runDescription = runDescription ? ': '+runDescription : '';
 
+    // If there are detailed test result notes in the last test run, add a `(notes)` link
+    let runNotes = lastRun ? lastRun.notes : '';
+    runNotes = runNotes && commentLink ? ` ([notes](${commentLink}))` : '';
+
+    // Get the test run status and link it to its comment
     let statusText = ManualTestStatusUtil.toString(this.status());
-    statusText = statusLink ? `([${statusText}](${statusLink}))` : `(${statusText})`;
-    return `- ${this.statusEmoji()} **TEST_${this.name} ${statusText}**${statusDescription}`;
+    statusText = commentLink ? `([${statusText}](${commentLink}))` : `(${statusText})`;
+
+    return `- ${this.statusEmoji()} **TEST_${this.name} ${statusText}**${runDescription}${runNotes}`;
   }
 
   constructor () {
     this.testRuns = [];
+    this.detailedSteps = '';
+  }
+};
+
+function reduceStatus(prev: ManualTestStatus, current: ManualTestStatus): ManualTestStatus {
+  return prev == ManualTestStatus.Failed || current == ManualTestStatus.Failed ? ManualTestStatus.Failed :
+    prev == ManualTestStatus.Blocked || current == ManualTestStatus.Blocked ? ManualTestStatus.Blocked :
+    prev == ManualTestStatus.Open || current == ManualTestStatus.Open ? ManualTestStatus.Open :
+    current;
+}
+
+export class ManualTestGroup {
+  name: string;
+  description?: string;   // one liner
+  detail?: string;
+  status(): ManualTestStatus {
+    return this.tests.length == 0 ?
+      ManualTestStatus.Open :
+      this.tests.reduce((status, test) => reduceStatus(status, test.status()), ManualTestStatus.Unknown);
+  }
+  statusEmoji(): string {
+    return ManualTestStatusUtil.emoji(this.status());
+  }
+
+  tests: ManualTest[];
+  constructor() {
+    this.tests = [];
+    this.detail = '';
+  }
+};
+
+export class ManualTestSuite {
+  name: string;
+  description?: string;   // one liner
+  detail?: string;
+  status(): ManualTestStatus {
+    return this.groups.length == 0 ?
+      ManualTestStatus.Open :
+      this.groups.reduce((status, group) => reduceStatus(status, group.status()), ManualTestStatus.Unknown);
+  }
+  statusEmoji(): string {
+    return ManualTestStatusUtil.emoji(this.status());
+  }
+
+  testTemplates: ManualTest[];
+  groups: ManualTestGroup[];
+  constructor() {
+    this.testTemplates = [];
+    this.groups = [];
+    this.detail = '';
   }
 };
 
@@ -86,20 +160,24 @@ export class ManualTestComment {
 }
 
 export class ManualTestProtocol {
-  org: string;
+  owner: string;
   repo: string;
   issue: number;           // may be an issue number or pull request
   isPR: boolean;
   skipTesting: boolean;
   userTesting: ManualTestComment;
   userTestResults: ManualTestComment;
-  tests: ManualTest[];
+  suites: ManualTestSuite[];
 
-  constructor (org: string, repo: string, issue: number, isPR: boolean) {
-    this.tests = [];
+  getTests(): ManualTest[] {
+    return this.suites.flatMap(suite => suite.groups.flatMap(group => group.tests));
+  }
+
+  constructor (owner: string, repo: string, issue: number, isPR: boolean) {
+    this.suites = [];
     this.userTesting = new ManualTestComment();
     this.userTestResults = new ManualTestComment();
-    this.org = org;
+    this.owner = owner;
     this.repo = repo;
     this.issue = issue;
     this.isPR = isPR;

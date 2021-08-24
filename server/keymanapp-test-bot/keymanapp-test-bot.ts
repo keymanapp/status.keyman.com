@@ -1,13 +1,14 @@
 /*
  * Keyman is copyright (C) SIL International. MIT License.
  *
- * @keymanapptestbot implementation
+ * @keymanapp-test-bot implementation
  */
 
-import { ManualTestProtocol, ManualTestStatus } from "../../shared/manual-test/manual-test-protocols";
+import { ManualTestProtocol, ManualTestStatus, ManualTestUtil } from "../../shared/manual-test/manual-test-protocols";
 import ManualTestParser from '../../shared/manual-test/manual-test-parser';
 import { Octokit } from "@octokit/core";
 import { restEndpointMethods } from "@octokit/plugin-rest-endpoint-methods";
+import { User } from "@octokit/webhooks-types";
 import { Probot, ProbotOctokit } from "probot";
 
 const manualTestRequiredLabelName = 'user-test-required';
@@ -32,29 +33,34 @@ async function processEvent(
   // TODO: we may just be able to use the issue data coming in
   const issue = await octokit.rest.issues.get({...data});
 
-  // TODO: deal with greater numbers of comments with pagination
-  const issue_comments = await octokit.rest.issues.listComments({...data, per_page: 100});
+  const issue_comments = await octokit.paginate(
+    octokit.rest.issues.listComments,
+    {...data, per_page: 100},
+    response => response.data
+  );
 
   const mtp = new ManualTestParser();
   let protocol = new ManualTestProtocol(data.owner, data.repo, data.issue_number, is_pull_request);
 
   // Process all comments in the issue / PR
   mtp.parseComment(protocol, null, issue.data.body);
-  issue_comments.data.forEach((comment) => {
+  issue_comments.forEach((comment) => {
     mtp.parseComment(protocol, comment.id, comment.body);
   });
 
-  // Determine if all tests no longer have an 'Open' status
-  let testResult = protocol.tests.reduce((previous, test) => test.status() != ManualTestStatus.Open ? previous : false, true);
+  // DEBUG: console.log(JSON.stringify(protocol, null, 2));
 
   // For issues, we don't make any changes unless someone has added a `# User Testing` comment
   // In the unlikely event that someone removes a `# User Testing` comment, it is up to them to remove the
   // label and the `# User Test Results` comment if they wish.
-  if(!is_pull_request && !protocol.userTesting.id) {
+  if(!is_pull_request && !protocol.userTesting.body) {
     return null;
   }
 
-  // manual-test-required
+  // Determine if all tests have a non-'Open' status
+  let testResult = protocol.getTests().reduce((previous, test) => test.status() != ManualTestStatus.Open ? previous : false, true);
+
+  // manual-test-required label
   const hasManualTestRequiredLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestRequiredLabelName);
   if(testResult && hasManualTestRequiredLabel) {
     log(`Removing ${manualTestRequiredLabelName} label`);
@@ -64,24 +70,25 @@ async function processEvent(
     await octokit.rest.issues.addLabels({...data, labels: [manualTestRequiredLabelName]});
   }
 
-  // manual-test-missing
+  // manual-test-missing label
   const hasManualTestMissingLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestMissingLabelName);
-  if(protocol.tests.length == 0 && !protocol.skipTesting && !hasManualTestMissingLabel) {
+  if(protocol.getTests().length == 0 && !protocol.skipTesting && !hasManualTestMissingLabel) {
     log(`Adding ${manualTestMissingLabelName} label`);
     await octokit.rest.issues.addLabels({...data, labels: [manualTestMissingLabelName]});
-  } else if((protocol.tests.length > 0 || protocol.skipTesting) && hasManualTestMissingLabel) {
+  } else if((protocol.getTests().length > 0 || protocol.skipTesting) && hasManualTestMissingLabel) {
     log(`Removing ${manualTestMissingLabelName} label`);
     await octokit.rest.issues.removeLabel({...data, name: manualTestMissingLabelName});
   }
 
-  // Update the User Test Results comment:
+  // Update the `# User Test Results` comment
   let comment = mtp.getUserTestResultsComment(protocol);
   if(comment != protocol.userTestResults.body) {
     if(protocol.userTestResults.id) {
-      // Update the body of result comment
       await octokit.rest.issues.updateComment({...data, comment_id: protocol.userTestResults.id, body: comment});
     } else {
-      await octokit.rest.issues.createComment({...data, body: comment});
+      let commentData = await octokit.rest.issues.createComment({...data, body: comment});
+      // note: assuming success here
+      protocol.userTestResults.id = commentData.data.id;
     }
   }
 
@@ -89,27 +96,38 @@ async function processEvent(
   if(is_pull_request) {
     let pr = await octokit.pulls.get({...data, pull_number: data.issue_number});
 
-    const passedTests = protocol.tests.reduce((total, test) => test.status() == ManualTestStatus.Passed ? total + 1 : total, 0);
+    const passedTests = protocol.getTests().reduce((total, test) => test.status() == ManualTestStatus.Passed ? total + 1 : total, 0);
     const checkDescription = protocol.skipTesting ? 'User tests are not required' :
-      protocol.tests.length == 0 ? 'ERROR: User tests have not yet been defined' :
-      `${passedTests} of ${protocol.tests.length} user tests passed`;
+      protocol.getTests().length == 0 ? 'ERROR: User tests have not yet been defined' :
+      `${passedTests} of ${protocol.getTests().length} user tests passed`;
 
     await octokit.repos.createCommitStatus({...data,
       name: '@keymanapp-test-bot User Test Coverage',
       sha: pr.data.head.sha,
-      state: protocol.skipTesting || (protocol.tests.length > 0 && passedTests == protocol.tests.length) ? 'success' : 'failure',
-      target_url: `https://status.keyman.com/user-test/${data.owner}/${data.repo}/${data.issue_number}`,
+      state: protocol.skipTesting || (protocol.getTests().length > 0 && passedTests == protocol.getTests().length) ? 'success' : 'failure',
+      target_url: ManualTestUtil.commentLink(data.owner, data.repo, data.issue_number, protocol.userTestResults.id, is_pull_request),
+      // for future, perhaps: `https://status.keyman.com/user-test/${data.owner}/${data.repo}/${data.issue_number}`,
       description: checkDescription,
       context: 'user_testing',
     });
   }
 }
 
+function shouldProcessEvent(sender: User): boolean {
+  if(sender.type != "User")
+    return false;
+
+  if(sender.login == "keyman-server")
+    return false;
+
+  return true;
+}
+
 module.exports = (app: Probot) => {
 
-  app.on(['pull_request.edited', 'pull_request.opened'], async (context) => {
-    log('pull_request: '+context.name+', '+context.payload.pull_request.number);
-
+  app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], async (context) => {
+    if(!shouldProcessEvent(context.payload.sender)) return null;
+    log('pull_request: '+context.id+', '+context.payload.pull_request.number);
     return processEvent(
       context.octokit,
       {
@@ -117,13 +135,13 @@ module.exports = (app: Probot) => {
         repo: context.payload.repository.name,
         issue_number: context.payload.pull_request.number
       },
-      false
+      true
     );
   });
 
   app.on(['issues.opened', 'issues.edited'], async (context) => {
-    log('issue: '+context.name+', '+context.payload.issue.number);
-
+    if(!shouldProcessEvent(context.payload.sender)) return null;
+    log('issue: '+context.id+', '+context.payload.issue.number);
     return processEvent(
       context.octokit,
       {
@@ -136,12 +154,8 @@ module.exports = (app: Probot) => {
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async (context) => {
-    if(context.isBot) {
-      log('issue_comment: isBot');
-      return;
-    }
-    log('issue_comment: '+context.name+', '+context.payload.comment.id);
-
+    if(!shouldProcessEvent(context.payload.sender)) return null;
+    log('issue_comment: '+context.id+', '+context.payload.comment.id);
     return processEvent(
       context.octokit,
       {

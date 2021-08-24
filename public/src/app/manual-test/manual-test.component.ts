@@ -1,4 +1,12 @@
+/*
+ * Keyman is copyright (C) SIL International. MIT License.
+ *
+ * @keymanapptestbot implementation
+ */
+
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-manual-test',
@@ -6,10 +14,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./manual-test.component.css']
 })
 export class ManualTestComponent implements OnInit {
+  prNumber: number;
 
-  constructor() { }
-
-  ngOnInit(): void {
+  ngOnInit() {
+    this.route.paramMap.pipe(
+      switchMap(params => {
+        this.prNumber = Number(params.get('id'));
+        return null;
+      })
+    );
   }
+
+  constructor(private route: ActivatedRoute) { }
 
 }

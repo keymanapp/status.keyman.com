@@ -1,7 +1,22 @@
-1. user-test-missing label should be added auto when no tests are there
-2. a `@keymanapp-test-bot skip [testing]` command would tell us that user test is not required
+-12. test results should include one line summary from latest results
+-1. user-test-missing label should be added auto when no tests are there
+-2. a `@keymanapp-test-bot skip [testing]` command would tell us that user test is not required
+-4. enable webhook for initial comment in a PR/issue
+-- emoji use:
+    - green w checkmark:  all passed
+    - red:  at least one failure
+    - blue / white / grey :  all pending
+    - yellow: partial results (all have passed)
+-6. status of a test in the User Testing comment should be a link to the comment where it is reported
+
+
+A) TO DO:
+
 3. ensure that comments are only processed if they are from people on the team
-4. enable webhook for initial comment in a PR/issue
+11. auto PRs will not be tagged by the bot. (either auto label or created by [any] bot)
+
+B) TO DO:
+
 5. design how we would run test suites and grouped tests (SUITE / GROUP / TEST)
    a) consider using emoji for SUITES and GROUPS so we don't confuse with checkboxes ✅ 🟧 🟥 🟩 🟦 🟨 ❎ ❌
    b) Specification mode:
@@ -51,11 +66,6 @@ First comment (auto-reserved by test-bot):
     - if a group has a failure, the rolled's link (for point 6)
       hops to the unrolled's summary with the direct link.
 
-- emoji use:
-    - green w checkmark:  all passed
-    - red:  at least one failure
-    - blue / white / grey :  all pending
-    - yellow: partial results (all have passed)
 
 Example results mode:
 ```markdown
@@ -68,12 +78,8 @@ Example results mode:
 ### GROUP_MACOS
 * TEST_RESIZING:  FAILED
 ```
-
-6. status of a test in the User Testing comment should be a link to the comment where it is reported
-
 7. bot can auto-inject a template result comment that it updates.
    a) Initial: ya ain't got none. do sommat about it."
 8) PR template(?) has a template suite that may be filled out.
 9. editing test protocols in status.keyman.com
 10. editing test results in status.keyman.com
-11. auto PRs will not be tagged by the bot. (either auto label or created by [any] bot)

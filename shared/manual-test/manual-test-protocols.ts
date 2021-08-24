@@ -26,35 +26,53 @@ export class ManualTestStatusUtil {
     const result = ManualTestStatus[(status.substr(0,1).toUpperCase() + status.substr(1)) as keyof typeof ManualTestStatus];
     return result || ManualTestStatus.Open;
   }
+  public static emoji(status: ManualTestStatus) {
+    const statusEmoji: string[] = ['⬜', '✅', '🟥', '🟧', '🟦'];
+    return statusEmoji[status];
+  }
 }
 
 export class ManualTestRun {
   status: ManualTestStatus;
-  commentID: number;         // comment id from GitHub (may be multiple test results in a comment)
+  commentID: number;        // comment id from GitHub (may be multiple test results in a comment)
   isControl: boolean;
-  notes?: string;
+  summary?: string;         // one line summary
+  notes?: string;           // detailed test results
 };
 
 export class ManualTest {
   commentID: number;        // comment id from GitHub where the test is defined, tests may be defined in multiple issues
   name: string;
-  titleIndex: number;       // position in the comment text, for replacement
-  titleLength: number;      // position in the comment text, for replacement
   description: string;
   summary?: string;         // optional summary title for the detailed steps, default to 'Steps'
   detailedSteps?: string;
   testRuns: ManualTestRun[];
-  reportedTicked: boolean;   // true if checkbox is checked
-  reportedStatus: ManualTestStatus; // what was reported in the user testing comment, which may not be accurate
   status(): ManualTestStatus {
     return this.testRuns.length == 0 ?
       ManualTestStatus.Open :
       this.testRuns[this.testRuns.length-1].status;
   }
-  title(): string {
-    const x = this.status() == ManualTestStatus.Passed ? 'x' : ' ';
-    const status = ManualTestStatusUtil.toString(this.status());
-    return `- [${x}] **TEST_${this.name} (${status})**: ${this.description}`;
+
+  statusEmoji(): string {
+    return ManualTestStatusUtil.emoji(this.status());
+  }
+
+  statusLink(owner: string, repo: string, issuenum: number, isPR: boolean): string {
+    return this.testRuns.length ?
+      `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#issuecomment-${this.testRuns[this.testRuns.length-1].commentID}` :
+      '';
+  }
+
+  resultText(owner: string, repo: string, issuenum: number, isPR: boolean): string {
+    const statusLink = this.statusLink(owner, repo, issuenum, isPR);
+
+    // Get status from last test run
+    let statusDescription = this.testRuns.length ? this.testRuns[this.testRuns.length-1].summary : '';
+    statusDescription = statusDescription ? statusDescription = ': '+statusDescription : '';
+
+    let statusText = ManualTestStatusUtil.toString(this.status());
+    statusText = statusLink ? `([${statusText}](${statusLink}))` : `(${statusText})`;
+    return `- ${this.statusEmoji()} **TEST_${this.name} ${statusText}**${statusDescription}`;
   }
 
   constructor () {
@@ -62,15 +80,29 @@ export class ManualTest {
   }
 };
 
+export class ManualTestComment {
+  id: number;
+  body: string;
+}
+
 export class ManualTestProtocol {
   org: string;
   repo: string;
   issue: number;           // may be an issue number or pull request
-  userTestingComment: string;
-  userTestingCommentId: number;
+  isPR: boolean;
+  skipTesting: boolean;
+  userTesting: ManualTestComment;
+  userTestResults: ManualTestComment;
   tests: ManualTest[];
 
-  constructor () {
+  constructor (org: string, repo: string, issue: number, isPR: boolean) {
     this.tests = [];
-  }
+    this.userTesting = new ManualTestComment();
+    this.userTestResults = new ManualTestComment();
+    this.org = org;
+    this.repo = repo;
+    this.issue = issue;
+    this.isPR = isPR;
+    this.skipTesting = false;
+    }
 };

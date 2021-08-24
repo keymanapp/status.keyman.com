@@ -23,9 +23,6 @@ export default class ManualTestParser {
 
   isControlComment(comment: string): boolean {
     let result = this.controlRegex.test(comment);
-    if(result) {
-      //console.log('isControlComment: '+comment);
-    }
     return result;
   }
 
@@ -145,39 +142,11 @@ export default class ManualTestParser {
     const testTitleRegex = /^\s*(?:(?:[-*]|(?:#{1,4}))\s)?(?:\*\*)?(TEST|SUITE|GROUP)_([A-Z0-9_.-]+)(?:\*\*)?:?(?:\*\*)?\s*(.*?)\s*$/i;
     const testStatusRegex = /(OPEN|PASSED|FAILED|BLOCKED|UNKNOWN|PASS|FAIL|BLOCK)(?:\*\*)? *(.*) *$/i;
 
-    //const testTitleRegex = /^(?:[\*-] )?(?:\*\*)?TEST_([A-Z0-9_.-]+)(?:\*\*)?:?(?:\*\*)?\s*(OPEN|PASSED|FAILED|BLOCKED|UNKNOWN|PASS|FAIL|BLOCK)(?:\*\*)? *([^\r\n]*?) *$/smgi;
-
-    /*
-    let title = testTitleRegex.exec(comment);
-    while(title !== null) {
-      let test = protocol.getTests().find((value) => value.name.toLowerCase() == title[1].toLowerCase());
-
-      comment = comment.substr(testTitleRegex.lastIndex);
-      testTitleRegex.lastIndex = 0;
-
-      let lastIndex = comment.search(testTitleRegex);
-      if(lastIndex == -1) lastIndex = comment.length + 1;
-      let fullDetail = comment.substr(0, lastIndex);
-      //let fullDetailMatch = fullDetail.match(testDetailRegex);
-      if(test) {
-        let run = new ManualTestRun();
-        run.commentID = id;
-        run.isControl = false;
-        run.summary = title[3];
-        run.notes = fullDetail.trim();
-        run.status = ManualTestStatusUtil.fromString(title[2]);
-        test.testRuns.push(run);
-      } else {
-        // TODO: log
-      }
-
-      title = testTitleRegex.exec(comment);
-    }*/
-
     if(protocol.suites.length == 0) return;
     let suite: ManualTestSuite = protocol.suites[0];
     if(suite.groups.length == 0) return;
     let group: ManualTestGroup = suite.groups[0];
+
     // For named suites and groups, test result has to specify them
     if(suite.name) suite = null;
     if(group.name) group = null;
@@ -291,8 +260,6 @@ export default class ManualTestParser {
    * @returns         the comment body in markdown
    */
   getUserTestResultsComment(protocol: ManualTestProtocol): string {
-    // We'll explode this into test strings
-
     let content = '# User Test Results\n\n';
 
     if(protocol.getTests().length == 0) {

@@ -76,6 +76,16 @@ export class PullRequestComponent implements OnInit {
     }
   }
 
+  pullUserTesting() {
+    const c = this.pull.userTesting;
+    if(!c) return 'user-test-none';
+    switch(c.state) {
+      case 'SUCCESS': return 'user-test-success';
+      case 'FAILURE': return 'user-test-failure';
+      default: return 'user-test-pending';
+    }
+  }
+
   pullIsCherryPick() {
     return this.pull.pull.node.labels.edges.reduce( (f, e) => f || e.node.name == 'cherry-pick', false);
   }

@@ -96,15 +96,36 @@ async function processEvent(
   if(is_pull_request) {
     let pr = await octokit.pulls.get({...data, pull_number: data.issue_number});
 
-    const passedTests = protocol.getTests().reduce((total, test) => test.status() == ManualTestStatus.Passed ? total + 1 : total, 0);
-    const checkDescription = protocol.skipTesting ? 'User tests are not required' :
-      protocol.getTests().length == 0 ? 'ERROR: User tests have not yet been defined' :
-      `${passedTests} of ${protocol.getTests().length} user tests passed`;
+    let statusCounts = {}, totalTests = 0;
+    statusCounts[ManualTestStatus.Open] = 0;
+    statusCounts[ManualTestStatus.Passed] = 0;
+    statusCounts[ManualTestStatus.Failed] = 0;
+    statusCounts[ManualTestStatus.Blocked] = 0;
+    statusCounts[ManualTestStatus.Unknown] = 0;
+    for(let test of protocol.getTests()) {
+      statusCounts[test.status()]++;
+      totalTests++;
+    }
+
+    const checkDescription =
+      protocol.skipTesting ? 'User tests are not required' :
+      totalTests == 0 ? 'ERROR: User tests have not yet been defined' :
+
+      (statusCounts[ManualTestStatus.Failed] ? `${statusCounts[ManualTestStatus.Failed]} failed, ` : '') +
+      (statusCounts[ManualTestStatus.Blocked] ? `${statusCounts[ManualTestStatus.Blocked]} blocked, ` : '') +
+      `${statusCounts[ManualTestStatus.Passed]} test(s) passed of ${totalTests}`;
+
+    const state =
+      protocol.skipTesting ? 'success' :
+      totalTests == 0 ? 'failure' : // no tests defined, this is an error
+      statusCounts[ManualTestStatus.Passed] == totalTests ? 'success' : // all passed
+      statusCounts[ManualTestStatus.Failed] + statusCounts[ManualTestStatus.Blocked] == 0 ? 'pending' :  // no errors, but testing unfinished
+      'failure'; // at least one error
 
     await octokit.repos.createCommitStatus({...data,
       name: '@keymanapp-test-bot User Test Coverage',
       sha: pr.data.head.sha,
-      state: protocol.skipTesting || (protocol.getTests().length > 0 && passedTests == protocol.getTests().length) ? 'success' : 'failure',
+      state: state,
       target_url: ManualTestUtil.commentLink(data.owner, data.repo, data.issue_number, protocol.userTestResults.id, is_pull_request),
       // for future, perhaps: `https://status.keyman.com/user-test/${data.owner}/${data.repo}/${data.issue_number}`,
       description: checkDescription,

@@ -273,26 +273,29 @@ export class HomeComponent {
         }
         for(let label of labels) {
           if(label.node.name == platform.id+'/') {
-            let foundContext = null;
+            let foundContext = null, userTestingContext = null;
             if(contexts) {
               for(let context of contexts) {
+                if(context.context == 'user_testing') {
+                  userTestingContext = context;
+                  continue;
+                }
                 if(context.state != 'SUCCESS') {
                   foundContext = context;
-                  break;
                 }
-                if(context.context.match(new RegExp('Test-\\d\\d\\.\\d \\('+platform.context+'\\)'))) {
+                if(!foundContext && context.context.match(new RegExp('Test-\\d\\d\\.\\d \\('+platform.context+'\\)'))) {
                   foundContext = context;
                 }
               }
               if(contexts.length && !foundContext) foundContext = contexts[0];
             }
-            platform.pulls.push({pull: pull, state: foundContext});
+            platform.pulls.push({pull: pull, state: foundContext, userTesting: userTestingContext});
             this.labeledPulls.push(pull);
             let emoji = pullEmoji(pull);
             if(!platform.pullsByEmoji[emoji]) {
               platform.pullsByEmoji[emoji] = [];
             }
-            platform.pullsByEmoji[emoji].push({pull: pull, state: foundContext});
+            platform.pullsByEmoji[emoji].push({pull: pull, state: foundContext, userTesting: userTestingContext});
           }
         }
       }

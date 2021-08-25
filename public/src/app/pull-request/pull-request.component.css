@@ -4,6 +4,7 @@
   display: inline-block;
   background: #c0c0c0;
   box-shadow: 3px 3px rgba(40,40,40,0.2);
+  border: solid 2px rgb(224,229,233);
 }
 
 .label a.author img.avatar-32 {
@@ -68,11 +69,53 @@
 }
 
 .label.status-pending::after {
-  content:'😶';
+  content:'🟡';
   alt: 'Pending';
   font-size: 0.75rem;
   font-family: "Noto Color Emoji";
   color: black;
+}
+
+/* User Testing formatting */
+
+.label.user-test-failure {
+  border: solid 2px rgb(255, 24, 48);
+}
+
+.label.user-test-pending {
+  border: solid 2px rgb(255,255,32);
+}
+
+.label.user-test-success {
+  border: solid 2px rgb(68,204,17);
+}
+
+.user-test-failure.user-testing-status {
+  color: #A01624;
+}
+
+.user-test-pending.user-testing-status {
+  color: #A0A024;
+}
+
+.user-test-success.user-testing-status {
+  color: #206f24;
+}
+
+.user-testing-status-title {
+  font-weight: bold;
+}
+
+.user-test-failure .user-testing-status-title::after {
+  content:'😡';
+}
+
+.user-test-success .user-testing-status-title::after {
+  content:'😄';
+}
+
+.user-test-pending .user-testing-status-title::after {
+  content:'😶';
 }
 
 .label.status-changes-requested::after {
@@ -188,7 +231,7 @@
    margin-left: 4px;
  }
 
- .status {
+ .status, .user-testing-status {
    display: block;
    margin-left: 4px;
  }

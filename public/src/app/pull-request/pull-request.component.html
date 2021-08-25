@@ -1,10 +1,11 @@
 <span class="pull-request scope-{{scope}}">
-<span class="label {{class || pullClass()}} {{pullStatus()}}">
+<span class="label {{class || pullClass()}} {{pullStatus()}} {{pullUserTesting()}}">
   <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{pull.pull.node.author.avatarUrl}}&size=32"></a>
   <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
     <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>
     <span class='emoji'>{{pullEmoji()}}</span>{{pull.pull.node.number}}
   </a>
+  <span class='user-testing'> </span>
 </span>
 <div class="pull-request-detail gravity-{{gravityX}} gravity-{{gravityY}}">
   <span class="branches">
@@ -20,6 +21,7 @@
   </span>
   <span class="title">{{pull.pull.node.title}}</span>
   <span class="status">{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</span>
+  <span class="user-testing-status {{pullUserTesting()}}"><span class='user-testing-status-title'>User testing: </span> {{pull.userTesting ? pull.userTesting.description : ''}}</span>
   <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>
 </div>
 </span>

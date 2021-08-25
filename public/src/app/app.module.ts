@@ -11,6 +11,8 @@ import { SentryComponent } from './sentry/sentry.component';
 import { IssueListComponent } from './issue-list/issue-list.component';
 import { ClipboardComponent } from './clipboard/clipboard.component';
 import { DeployBoxComponent } from './deploy-box/deploy-box.component';
+import { ManualTestComponent } from './manual-test/manual-test.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -22,13 +24,18 @@ import { DeployBoxComponent } from './deploy-box/deploy-box.component';
     SentryComponent,
     IssueListComponent,
     DeployBoxComponent,
+    ManualTestComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     // Remark: because we haven't defined any routes, have to pass an empty
     // route collection to forRoot, as the first parameter is mandatory.
-    RouterModule.forRoot([]),
+    RouterModule.forRoot([
+      {path: '', component: HomeComponent},
+      {path: 'manual-test', component: ManualTestComponent},
+    ]),
   ],
   providers: [],
   bootstrap: [AppComponent]

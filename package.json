@@ -8,11 +8,19 @@
     "build-client": "cd public && npm install && npm run-script build",
     "build-server": "cd server && npm install && npm run-script build",
     "start-client": "cd public && npm run-script start",
-    "start-server": "cd server && npm run-script start"
+    "start-server": "cd server && npm run-script start",
+    "test": "cd server && npx mocha"
   },
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
     "compare-versions": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.6.2",
+    "mocha": "^9.0.3",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.5"
   }
 }

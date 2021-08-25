@@ -1,3 +1,4 @@
+/* // commented out so it doesn't keep triggering slack...
 import { slackLGTM } from '../services/slack/slack';
 
 (async function main() {
@@ -10,3 +11,4 @@ import { slackLGTM } from '../services/slack/slack';
     }}
   );
 })();
+*/

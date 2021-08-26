@@ -198,6 +198,7 @@ export default class ManualTestParser {
           console.log('suite not found: SUITE_'+titleName);
           continue;
         }
+        if(!suite.groups[0].name) group = suite.groups[0];
         break;
       case 'GROUP':
         if(!suite) {

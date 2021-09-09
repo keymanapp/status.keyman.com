@@ -275,10 +275,14 @@ export class HomeComponent {
           if(label.node.name == platform.id+'/') {
             let foundContext = null, userTestingContext = null;
             if(contexts) {
+              let firstContext = null;
               for(let context of contexts) {
                 if(context.context == 'user_testing') {
                   userTestingContext = context;
                   continue;
+                }
+                if(!firstContext) {
+                  firstContext = context;
                 }
                 if(context.state != 'SUCCESS') {
                   foundContext = context;
@@ -287,7 +291,7 @@ export class HomeComponent {
                   foundContext = context;
                 }
               }
-              if(contexts.length && !foundContext) foundContext = contexts[0];
+              if(contexts.length && !foundContext) foundContext = firstContext;
             }
             platform.pulls.push({pull: pull, state: foundContext, userTesting: userTestingContext});
             this.labeledPulls.push(pull);

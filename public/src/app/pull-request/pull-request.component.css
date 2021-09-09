@@ -76,6 +76,100 @@
   color: black;
 }
 
+.label.status-changes-requested::after {
+  content:'👀';
+  alt: 'Changes Requested';
+  font-size: 0.75rem;
+  font-family: "Noto Color Emoji";
+  color: black;
+}
+
+.label.status-draft::after {
+  content:'🚧';
+  alt: 'In Draft';
+  padding-right: 4px;
+  font-size: 0.75rem;
+  font-family: "Noto Color Emoji";
+  color: black;
+}
+
+.status-table {
+  margin-bottom: 0;
+}
+
+.status-table tbody tr {
+  /*background-color: rgba(0,0,0,0)*/
+}
+
+.status-table tbody tr td,
+.status-table tbody tr th {
+  padding: 0 4px;
+}
+
+/* Build Status Formatting */
+
+.status.success {
+  color: #206f24;
+}
+
+.status.pending {
+  color: #A0A024;
+}
+
+.status.failure {
+  color: #A01624;
+}
+
+.status.missing {
+  color: #808080;
+}
+
+.status.failure td::before {
+  content:'😡 ';
+}
+
+.status.success td::before {
+  content:'✔️ ';
+}
+
+.status.pending td::before {
+  content:'🟡 ';
+}
+
+/* Review Status Formatting */
+
+.review-status.status-changes-requested {
+  color: #A01624;
+}
+
+.review-status.status-changes-requested td::after {
+  content:'👀 Changes Requested';
+}
+
+.review-status.status-draft {
+  color: #808080;
+}
+
+.review-status.status-draft td::after {
+  content:'🚧 In Draft';
+}
+
+.review-status.status-approved {
+  color: #206f24;
+}
+
+.review-status.status-approved td::after {
+  content: '✔️ Approved';
+}
+
+.review-status.status-pending {
+  color: #A0A024;
+}
+
+.review-status.status-pending td::after {
+  content:'🟡 Pending';
+}
+
 /* User Testing formatting */
 
 .label.user-test-failure {
@@ -102,38 +196,19 @@
   color: #206f24;
 }
 
-.user-testing-status-title {
-  font-weight: bold;
+.user-test-failure td::before {
+  content:'😡 ';
 }
 
-.user-test-failure .user-testing-status-title::after {
-  content:'😡';
+.user-test-success td::before {
+  content:'✔️ ';
 }
 
-.user-test-success .user-testing-status-title::after {
-  content:'😄';
+.user-test-pending td::before {
+  content:'😶 ';
 }
 
-.user-test-pending .user-testing-status-title::after {
-  content:'😶';
-}
 
-.label.status-changes-requested::after {
-  content:'👀';
-  alt: 'Changes Requested';
-  font-size: 0.75rem;
-  font-family: "Noto Color Emoji";
-  color: black;
-}
-
-.label.status-draft::after {
-  content:'🚧';
-  alt: 'In Draft';
-  padding-right: 4px;
-  font-size: 0.75rem;
-  font-family: "Noto Color Emoji";
-  color: black;
-}
 
 .label a.pull {
   padding: 0px 6px;
@@ -187,13 +262,15 @@
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-.pull-request:hover > .pull-request-detail {
+.pull-request:hover > .pull-request-detail,
+.pull-request > .pull-request-detail.pinned {
   visibility: visible;
   opacity: 1;
 }
 
 .branches {
   display: block;
+  padding: 2px 0;
 }
 
 .branch {
@@ -231,9 +308,10 @@
    margin-left: 4px;
  }
 
- .status, .user-testing-status {
-   display: block;
-   margin-left: 4px;
+ .user-testing-status-title,
+ .status-title,
+ .review-status-title {
+   font-weight: normal;
  }
 
  .issue-label {
@@ -257,4 +335,21 @@
 .related-issue:hover {
   background: #c0ffff;
   border-radius: 3px 3px 0 0;
+}
+
+/* Pin */
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+  font-size: 8pt;
 }

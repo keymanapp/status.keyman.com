@@ -7,7 +7,12 @@
   </a>
   <span class='user-testing'> </span>
 </span>
-<div class="pull-request-detail gravity-{{gravityX}} gravity-{{gravityY}}">
+<div class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}">
+  <span class="changes">
+    <span class="additions">+{{pull.pull.node.additions}}</span>
+    <span class="deletions">−{{pull.pull.node.deletions}}</span>
+  </span>
+  <span class="title"><span class="pin" (click)="pin()">📌</span> {{pull.pull.node.title}}</span>
   <span class="branches">
     <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
     <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
@@ -15,13 +20,21 @@
       <a href="https://github.com/keymanapp/keyman/issues/{{issue.subject.number}}" target="_blank">🔗 #{{issue.subject.number}}</a>
     </span>
   </span>
-  <span class="changes">
-    <span class="additions">+{{pull.pull.node.additions}}</span>
-    <span class="deletions">−{{pull.pull.node.deletions}}</span>
-  </span>
-  <span class="title">{{pull.pull.node.title}}</span>
-  <span class="status">{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</span>
-  <span class="user-testing-status {{pullUserTesting()}}"><span class='user-testing-status-title'>User testing: </span> {{pull.userTesting ? pull.userTesting.description : ''}}</span>
+  <table class="table table-sm table-borderless status-table"><tbody>
+    <tr class="status {{pullClass()}}">
+      <th class="status-title">Build</th>
+      <td>{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</td>
+    </tr>
+    <tr class="review-status {{pullStatus()}}">
+      <th class="review-status-title">Code review</th>
+      <td></td>
+    </tr>
+    <tr class="user-testing-status {{pullUserTesting()}}">
+      <th class="user-testing-status-title">User testing</th>
+      <td>{{pull.userTesting ? pull.userTesting.description : ''}}</td>
+    </tr>
+  </tbody></table>
+
   <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>
 </div>
 </span>

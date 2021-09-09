@@ -15,6 +15,8 @@ export class PullRequestComponent implements OnInit {
   @Input() gravityY?: string;
   @Input() scope?: string;
 
+  pinned: boolean = false;
+
   constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
@@ -132,4 +134,7 @@ export class PullRequestComponent implements OnInit {
     return label.replace(/-/g, '‑');
   }
 
+  pin() {
+    this.pinned = !this.pinned;
+  }
 }

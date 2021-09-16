@@ -337,6 +337,10 @@
   border-radius: 3px 3px 0 0;
 }
 
+.related-issue a {
+    white-space: nowrap;
+}
+
 /* Pin */
 
 .pinned .pin {

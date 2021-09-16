@@ -149,7 +149,11 @@ li {
 
 .related-pr {
   padding: 0 4px;
-  margin: 0 4px;
+  margin: 0 2px;
+}
+
+.related-pr a {
+  white-space: nowrap;
 }
 
 .related-pr:hover {

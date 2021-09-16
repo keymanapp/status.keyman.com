@@ -60,8 +60,21 @@ export default {
               }
             }
 
-            timelineItems(itemTypes: [CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
               nodes {
+                ... on CrossReferencedEvent {
+                  __typename
+                  subject: source {
+                    ... on PullRequest {
+                      number
+                      url
+                    }
+                    ... on Issue {
+                      number
+                      url
+                    }
+                  }
+                }
                 ... on ConnectedEvent {
                   __typename
                   subject {

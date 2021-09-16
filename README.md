@@ -46,3 +46,11 @@ npm run start-client
 * Point your browser to <http://localhost:4200> to view the live reload version of the application.
 * The query parameter `?c=1` adds a contributions view which is not visible by default.
 * Another query parameter `?sprint=P8S4` parameter to view sprint contributions data for P8S4
+
+### @keymanapp-test-bot
+
+Three files needed for development:
+
+* `.keymanapp-test-bot.appid`: integer appid (e.g. 134443 for the normal test app)
+* `.keymanapp-test-bot.pem`: certificate for GitHub integration for app
+* `.keymanapp-test-bot.secret`: secret for GitHub integration for app

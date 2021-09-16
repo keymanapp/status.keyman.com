@@ -13,7 +13,10 @@ const fs = require('fs');
 const rootPath = __dirname + '/../../../../';
 const privateKeyFilename = rootPath + '.keymanapp-test-bot.pem';
 const secretFilename = rootPath + '.keymanapp-test-bot.secret';
-const appId = 133554;
+const appIdFilename = rootPath + '.keymanapp-test-bot.appid';
+const appId = fs.existsSync(appIdFilename) ?
+  parseInt(fs.readFileSync(appIdFilename, 'utf8'), 10) :
+  133554; //test id: 134443;
 
 let privateKey, secret;
 if(fs.existsSync(privateKeyFilename))

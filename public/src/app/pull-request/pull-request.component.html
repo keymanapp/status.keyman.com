@@ -17,7 +17,7 @@
     <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
     <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
     <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
-      <a href="https://github.com/keymanapp/keyman/issues/{{issue.subject.number}}" target="_blank">🔗 #{{issue.subject.number}}</a>
+      <a href="{{issue.subject.url}}" target="_blank">{{issue.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{issue.subject.number}}</a>
     </span>
   </span>
   <table class="table table-sm table-borderless status-table"><tbody>

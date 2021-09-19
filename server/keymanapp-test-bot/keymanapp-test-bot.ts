@@ -134,11 +134,14 @@ async function processEvent(
   }
 }
 
-function shouldProcessEvent(sender: User): boolean {
+function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
   if(sender.type != "User")
     return false;
 
   if(sender.login == "keyman-server")
+    return false;
+
+  if(state == "closed")
     return false;
 
   return true;
@@ -147,7 +150,7 @@ function shouldProcessEvent(sender: User): boolean {
 module.exports = (app: Probot) => {
 
   app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender)) return null;
+    if(!shouldProcessEvent(context.payload.sender, context.payload.pull_request.state)) return null;
     log('pull_request: '+context.id+', '+context.payload.pull_request.number);
     return processEvent(
       context.octokit,
@@ -161,7 +164,7 @@ module.exports = (app: Probot) => {
   });
 
   app.on(['issues.opened', 'issues.edited'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender)) return null;
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) return null;
     log('issue: '+context.id+', '+context.payload.issue.number);
     return processEvent(
       context.octokit,
@@ -175,7 +178,7 @@ module.exports = (app: Probot) => {
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender)) return null;
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) return null;
     log('issue_comment: '+context.id+', '+context.payload.comment.id);
     return processEvent(
       context.octokit,

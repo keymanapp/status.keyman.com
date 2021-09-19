@@ -220,11 +220,11 @@ export default class ManualTestParser {
   parseControlComment(protocol: ManualTestProtocol, id: number, comment: string) {
     const retest = comment.match(this.controlRetestRegex);
     if(retest)
-    return this.parseRetestControlComment(protocol, id, retest);
+      return this.parseRetestControlComment(protocol, id, retest[1]);
 
     const skip = comment.match(this.controlSkipRegex);
     if(skip)
-    return this.parseSkipControlComment(protocol);
+      return this.parseSkipControlComment(protocol);
 
     return protocol;
   }
@@ -241,15 +241,36 @@ export default class ManualTestParser {
    * @param comment
    * @returns
    */
-  parseRetestControlComment(protocol: ManualTestProtocol, id: number, retest: RegExpMatchArray) {
-    const matches = retest[1];
-    for(let test of protocol.getTests()) {
-      if(!matches || matches.match(/all/i) || matches.match(new RegExp("TEST_"+test.name+"\\b", 'i'))) {
-        let run = new ManualTestRun();
-        run.commentID = id;
-        run.isControl = true;
-        run.status = ManualTestStatus.Open;
-        test.testRuns.push(run);
+  parseRetestControlComment(protocol: ManualTestProtocol, id: number, comment: string) {
+    let matches = comment.trim().split(/[ ,]/);
+    if(!matches.length || !matches[0].length) {
+      // if no comment is given, retest all tests
+      matches = ['all'];
+    }
+
+    if(protocol.suites.length == 0) {
+      return protocol;
+    }
+
+    let suite: ManualTestSuite = null;
+    let group: ManualTestGroup = null;
+
+    for(let match of matches) {
+      if(match.match(/^SUITE_/i)) {
+        suite = protocol.findSuite(match.substring(6));
+      } else if(match.match(/^GROUP_/i)) {
+        group = (suite || protocol.suites[0]).findGroup(match.substring(6));
+      } else if(match.match(/^TEST_/i)) {
+        let test = (group || protocol).findTest(match.substring(5));
+        if(test) {
+          test.addRun(id, true, ManualTestStatus.Open);
+        }
+      } else if(match == 'all') {
+        for(let test of (group ? group.tests :
+            suite ? suite.getTests() :
+            protocol.getTests())) {
+          test.addRun(id, true, ManualTestStatus.Open);
+        }
       }
     }
     return protocol;

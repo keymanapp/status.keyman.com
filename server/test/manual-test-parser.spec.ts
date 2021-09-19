@@ -213,6 +213,8 @@ GROUP_MAC
 This was okay but I got a puzzle?
 * TEST_OSK_KEY_SEQUENCE: PASS`;
 
+const nestedRetestControlComment = 'SUITE_DESKTOP GROUP_MAC TEST_HARDWARE_SHIFT';
+
 describe('ManualTestParser', function() {
   describe('isUserTestingComment()', function() {
     it('should return true when comment includes a User Testing title', function() {
@@ -412,6 +414,10 @@ describe('ManualTestParser', function() {
       mtp.parseUserTestingComment(protocol, 1, nestedUserTest);
       mtp.parseComment(protocol, 2, nestedResult);
       assert.strictEqual(protocol.suites[0].groups[1].tests[1].testRuns[0].notes, 'This was okay but I got a puzzle?');
+
+      assert.strictEqual(protocol.suites[0].groups[1].tests[1].testRuns[0].status, ManualTestStatus.Passed);
+      mtp.parseRetestControlComment(protocol, 3, nestedRetestControlComment);
+      assert.strictEqual(protocol.suites[0].groups[1].tests[1].testRuns[1].status, ManualTestStatus.Open);
     });
   });
 });

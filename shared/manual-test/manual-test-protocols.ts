@@ -65,6 +65,15 @@ export class ManualTest {
     return result;
   }
 
+  addRun(commentID: number, isControl: boolean, status: ManualTestStatus): ManualTestRun {
+    let run = new ManualTestRun();
+    run.commentID = commentID;
+    run.isControl = isControl;
+    run.status = status;
+    this.testRuns.push(run);
+    return run;
+  }
+
   status(): ManualTestStatus {
     return this.testRuns.length == 0 ?
       ManualTestStatus.Open :
@@ -119,7 +128,7 @@ export class ManualTestGroup {
   status(): ManualTestStatus {
     return this.tests.length == 0 ?
       ManualTestStatus.Open :
-      this.tests.reduce((status, test) => reduceStatus(status, test.status()), ManualTestStatus.Unknown);
+      this.tests.reduce<ManualTestStatus>((status, test) => reduceStatus(status, test.status()), ManualTestStatus.Unknown);
   }
   statusEmoji(): string {
     return ManualTestStatusUtil.emoji(this.status());
@@ -130,6 +139,10 @@ export class ManualTestGroup {
     this.tests = [];
     this.detail = '';
   }
+
+  findTest(name: string): ManualTest {
+    return this.tests.find(test => test.name.toLowerCase() == name.toLowerCase());
+  }
 };
 
 export class ManualTestSuite {
@@ -139,10 +152,19 @@ export class ManualTestSuite {
   status(): ManualTestStatus {
     return this.groups.length == 0 ?
       ManualTestStatus.Open :
-      this.groups.reduce((status, group) => reduceStatus(status, group.status()), ManualTestStatus.Unknown);
+      this.groups.reduce<ManualTestStatus>((status, group) => reduceStatus(status, group.status()), ManualTestStatus.Unknown);
   }
+
+  getTests(): ManualTest[] {
+    return this.groups.flatMap(group => group.tests);
+  }
+
   statusEmoji(): string {
     return ManualTestStatusUtil.emoji(this.status());
+  }
+
+  findGroup(name: string): ManualTestGroup {
+    return this.groups.find(group => group.name.toLowerCase() == name.toLowerCase());
   }
 
   testTemplates: ManualTest[];
@@ -171,6 +193,14 @@ export class ManualTestProtocol {
 
   getTests(): ManualTest[] {
     return this.suites.flatMap(suite => suite.groups.flatMap(group => group.tests));
+  }
+
+  findTest(name: string): ManualTest {
+    return this.getTests().find(test => test.name.toLowerCase() == name.toLowerCase());
+  }
+
+  findSuite(name: string): ManualTestSuite {
+    return this.suites.find(suite => suite.name.toLowerCase() == name.toLowerCase());
   }
 
   constructor (owner: string, repo: string, issue: number, isPR: boolean) {

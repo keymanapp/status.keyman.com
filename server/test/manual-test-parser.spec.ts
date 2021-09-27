@@ -79,6 +79,8 @@ const altRetestComment = `x
 const userTestResultsComment =
 `# User Test Results
 
+[Test specification and instructions](https://github.com/keymanapp/keyman/issues/1#issuecomment-1)
+
 - ✅ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - 🟥 **TEST_BAR ([FAILED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - ⬜ **TEST_FIZZ (OPEN)**
@@ -86,6 +88,8 @@ const userTestResultsComment =
 
 const userTestResultsAllPassedComment =
 `# User Test Results
+
+[Test specification and instructions](https://github.com/keymanapp/keyman/issues/1#issuecomment-1)
 
 - ✅ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - ✅ **TEST_BAR ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))

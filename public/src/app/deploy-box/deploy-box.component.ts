@@ -1,6 +1,7 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import { StatusSource } from '../../../../shared/status-source';
 import { compare as versionCompare } from "compare-versions";
+import { PopupComponent } from '../popup/popup.component';
 
 interface DeployTarget {
   name: string;
@@ -14,27 +15,23 @@ interface DeployTarget {
   templateUrl: './deploy-box.component.html',
   styleUrls: ['./deploy-box.component.css']
 })
-export class DeployBoxComponent implements OnInit, OnChanges {
+export class DeployBoxComponent extends PopupComponent implements OnInit, OnChanges {
   @Input() tier: string;
   @Input() platform: any;
   @Input() status: any;
   @Input() downloadClass: string;
   @Input() builtVersion: string;
   @Input() releaseDate: string;
-  @Input() gravityX?: string;
-  @Input() gravityY?: string;
   @Input() changeCounter: number;
-
-  pinned: boolean = false;
 
   targets: DeployTarget[] = [];
 
-  constructor() { }
-
   ngOnInit() {
+    this.popupId = 'deploy-box-'+this.platform?.value?.id+'-'+this.tier;
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
     this.prepareData();
+    super.ngOnInit();
   }
 
   ngOnChanges() {
@@ -121,10 +118,6 @@ export class DeployBoxComponent implements OnInit, OnChanges {
         });
         break;
     }
-  }
-
-  pin() {
-    this.pinned = !this.pinned;
   }
 
   getLatestKeymanWebFromSKeymanCom(version: string) {

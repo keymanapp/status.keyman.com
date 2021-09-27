@@ -13,6 +13,7 @@ import { ClipboardComponent } from './clipboard/clipboard.component';
 import { DeployBoxComponent } from './deploy-box/deploy-box.component';
 import { ManualTestComponent } from './manual-test/manual-test.component';
 import { HomeComponent } from './home/home.component';
+import { PopupComponent } from './popup/popup.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { HomeComponent } from './home/home.component';
     DeployBoxComponent,
     ManualTestComponent,
     HomeComponent,
+    PopupComponent,
   ],
   imports: [
     BrowserModule,

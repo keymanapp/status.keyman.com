@@ -4,7 +4,7 @@
  * Parsing of user testing comments from GitHub issues/pull requests
  */
 
-import { ManualTestStatusUtil, ManualTest, ManualTestProtocol, ManualTestStatus, ManualTestRun, ManualTestSuite, ManualTestGroup } from './manual-test-protocols';
+import { ManualTestStatusUtil, ManualTest, ManualTestProtocol, ManualTestStatus, ManualTestRun, ManualTestSuite, ManualTestGroup, ManualTestUtil } from './manual-test-protocols';
 
 export default class ManualTestParser {
   controlRegex = /@keymanapp-test-bot\b/i;
@@ -283,6 +283,10 @@ export default class ManualTestParser {
    */
   getUserTestResultsComment(protocol: ManualTestProtocol): string {
     let content = '# User Test Results\n\n';
+
+    if(protocol.userTesting && protocol.userTesting.id) {
+      content += `[Test specification and instructions](${ManualTestUtil.commentLink(protocol.owner, protocol.repo, protocol.issue, protocol.userTesting.id, protocol.isPR)})\n\n`;
+    }
 
     if(protocol.getTests().length == 0) {
       return protocol.skipTesting ?

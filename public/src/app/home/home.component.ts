@@ -119,9 +119,11 @@ export class HomeComponent {
               this.transformPlatformStatusData();
               this.transformSiteStatusData();
               this.extractUnlabeledPulls();
+              this.removeDuplicateTimelineItems();
               break;
             case StatusSource.GitHubIssues:
               this.status.issues = data.issues;
+              this.removeDuplicateTimelineItems();
               break;
             case StatusSource.GitHubContributions:
               this.status.contributions = data.contributions;
@@ -322,6 +324,53 @@ export class HomeComponent {
     }
     return null;
   }
+
+  removeDuplicateTimelineItems() {
+    let removeDuplicates = function(items) {
+      // This is very much O(n^2) but the arrays are generally short
+      items.nodes = items.nodes.filter(item => {
+        let master = items.nodes.find(e => e.subject.number == item.subject.number);
+        return items.nodes.indexOf(master) == items.nodes.indexOf(item);
+      })
+    };
+
+    if(this.status.github && this.status.github.data) {
+      this.status.github.data.repository.pullRequests.edges.forEach(item => {
+        removeDuplicates(item.node.timelineItems);
+/*
+"timelineItems": {
+                  "nodes": [
+                    {
+                      "__typename": "CrossReferencedEvent",
+                      "subject": {
+                        "number": 4427,
+                        "url": "https://github.com/keymanapp/keyman/pull/4427"
+                      }
+                    }
+                  ]
+                },
+*/
+     });
+    }
+
+    if(this.status.issues) {
+      this.status.issues.forEach(issue => {
+        removeDuplicates(issue.timelineItems);
+/*
+"timelineItems": {
+        "nodes": [
+          {
+            "__typename": "CrossReferencedEvent",
+            "subject": {
+              "number": 5754,
+              "url": "https://github.com/keymanapp/keyman/pull/5754"
+            }
+          },
+*/
+      });
+    }
+  }
+
   transformSentryData(data) {
     let result = {};
     if(!data) return result;

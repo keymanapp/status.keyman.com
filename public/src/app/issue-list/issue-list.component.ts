@@ -57,6 +57,11 @@ export class IssueListComponent extends PopupComponent implements OnInit {
     return { content: text, type: 'text/html' };
   }
 
+  issueHasLinkedPR(issue) {
+    return issue && issue.timelineItems && Array.isArray(issue.timelineItems.nodes) ?
+      issue.timelineItems.nodes.find(pr=>pr.subject.url&&pr.subject.url.includes('/pull/')) != null : false;
+  }
+
   errorClassIfNonZero(v) {
     if(v !== null && v != 0) return "failure";
     return "";

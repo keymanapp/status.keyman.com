@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { PopupComponent } from '../popup/popup.component';
 import { siteSentryIds } from '../sites';
 import { escapeHtml } from '../utility/escapeHtml';
 
@@ -7,22 +8,17 @@ import { escapeHtml } from '../utility/escapeHtml';
   templateUrl: './sentry.component.html',
   styleUrls: ['./sentry.component.css']
 })
-export class SentryComponent implements OnInit, OnChanges {
+export class SentryComponent extends PopupComponent implements OnInit, OnChanges {
   @Input() environment: string;
   @Input() platform?: string;
   @Input() site?: string;
   @Input() issues?: any;
-  @Input() gravityX?: string;
-  @Input() gravityY?: string;
   @Input() mode?: string;
-
-  pinned: boolean = false;
 
   env: any;
 
-  constructor() { }
-
   ngOnInit() {
+    this.popupId = 'sentry-'+this.environment+'-'+(this.platform ? this.platform : this.site);
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
     this.env = this.issues && this.issues[this.environment] ? this.issues[this.environment] : {
@@ -30,6 +26,7 @@ export class SentryComponent implements OnInit, OnChanges {
       totalEvents: 0,
       issues: []
     };
+    super.ngOnInit();
   }
 
   ngOnChanges() {
@@ -67,10 +64,6 @@ export class SentryComponent implements OnInit, OnChanges {
     const res = /<a href=".+\/(\d+)">/.exec(annotation);
     if(res) return res[1];
     return '';
-  }
-
-  pin() {
-    this.pinned = !this.pinned;
   }
 
   getSentryIssueText() {

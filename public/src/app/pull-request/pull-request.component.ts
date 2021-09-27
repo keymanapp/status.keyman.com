@@ -2,26 +2,27 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
 import emojiRegex from 'emoji-regex/es2015/RGI_Emoji';
+import { PopupComponent } from '../popup/popup.component';
+import { PopupCoordinatorService } from '../popup-coordinator.service';
 
 @Component({
   selector: 'app-pull-request',
   templateUrl: './pull-request.component.html',
   styleUrls: ['./pull-request.component.css']
 })
-export class PullRequestComponent implements OnInit {
+export class PullRequestComponent extends PopupComponent implements OnInit {
   @Input() pull: any;
   @Input() class?: string;
-  @Input() gravityX?: string;
-  @Input() gravityY?: string;
   @Input() scope?: string;
+  @Input() scopeValue?: string;
 
-  pinned: boolean = false;
-
-  constructor(private sanitizer: DomSanitizer) { }
+  constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService) { super(popupCoordinator); }
 
   ngOnInit() {
+    this.popupId = 'pull-'+this.pull.pull.node.number+(this.scopeValue ? '-'+this.scopeValue:'');
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
+    super.ngOnInit();
   }
 
   pullClass() {
@@ -132,9 +133,5 @@ export class PullRequestComponent implements OnInit {
 
   labelName(label: string) {
     return label.replace(/-/g, '‑');
-  }
-
-  pin() {
-    this.pinned = !this.pinned;
   }
 }

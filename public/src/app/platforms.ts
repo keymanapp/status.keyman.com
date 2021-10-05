@@ -67,3 +67,14 @@ export const platforms: PlatformSpec[] = [
     context: "Common"
   },
 ];
+
+// TODO: consolidate with list in sentry-issues.ts
+export const platformSentryIds = {
+  android:   5983520,
+  developer: 5983519,
+  ios:       5983521,
+  linux:     5983525,
+  mac:       5983522,
+  web:       5983524,
+  windows:   5983518
+};

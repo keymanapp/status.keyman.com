@@ -12,7 +12,7 @@ const environment: Environment =
 
 const Sentry = require("@sentry/node");
 Sentry.init({
-  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@sentry.keyman.com/13",
+  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@o1005580.ingest.sentry.io/5983526",
   environment: environment
 });
 

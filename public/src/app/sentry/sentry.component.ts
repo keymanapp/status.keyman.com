@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { platformSentryIds } from '../platforms';
 import { PopupComponent } from '../popup/popup.component';
 import { siteSentryIds } from '../sites';
 import { escapeHtml } from '../utility/escapeHtml';
@@ -39,17 +40,7 @@ export class SentryComponent extends PopupComponent implements OnInit, OnChanges
 
   projectIndex(): number {
     if(!this.platform) return 0;
-    // TODO: consolidate with list in code.js
-    const map = { ...siteSentryIds, ...{
-      android:7,
-      developer:6,
-      ios:8,
-      linux:12,
-      mac:9,
-      web:11,
-      windows:5
-      }
-    };
+    const map = { ...siteSentryIds, ...platformSentryIds };
     return map[this.platform];
   }
 

@@ -11,16 +11,17 @@ export const sites = [
 ];
 
 // TODO: this could be consolidated above
+// TODO: consolidate with list in sentry-issues.ts
 export const siteSentryIds = {
-  'api.keyman.com': 4,
-  'developer.keyman.com': 14,
-  'donate.keyman.com': 15,
-  'downloads.keyman.com': 16,
-  'help.keyman.com': 2,
-  'keyman.com': 3,
-  'keymanweb.com': 10,
-  's.keyman.com': 17,
-  'status.keyman.com': 13
+  'api.keyman.com': 5983517,
+  'developer.keyman.com': 5983527,
+  'donate.keyman.com': 5983528,
+  'downloads.keyman.com': 5983529,
+  'help.keyman.com': 5983515,
+  'keyman.com': 5983516,
+  'keymanweb.com': 5983523,
+  's.keyman.com': 5983530,
+  'status.keyman.com': 5983526
 };
 
 export const siteSentryNames = {

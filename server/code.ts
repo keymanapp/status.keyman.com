@@ -80,6 +80,9 @@ setInterval(() => {
     // NOTE: using polling in production as webhook stopped working on 6 July 2021?
     // We have a webhook running on production so no need to poll the server
     respondTeamcityDataChange();
+    // NOTE: adding sentry polling here as we don't get events on errors on our
+    // current plan with sentry.io
+    respondSentryDataChange();
   }
 }, REFRESH_INTERVAL);
 
@@ -206,6 +209,14 @@ app.post('/webhook/teamcity', (request, response) => {
 });
 
 app.post('/webhook/sentry', (request, response) => {
+  // TODO: use the webhook data returned from sentry to refresh only the
+  //       affected project, as returned in request.body.data.issue.project.
+  //       This will be easier to implement if we refactor the sentry data to
+  //       group by project instead of by environment. (History, we grouped) by
+  //       environment originally because we were able to do 1 query per env
+  //       rather than per-project, but on sentry.io we don't have perms to do
+  //       the org-wide query at this time.
+  //console.log('webhook sentry project='+request.body?.data?.issue?.project?.id);
   respondSentryDataChange();
   response.send('ok');
 });

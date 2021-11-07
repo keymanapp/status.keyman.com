@@ -67,7 +67,7 @@ export default class ManualTestParser {
 
     const lines = comment.replace(/\r/g, '').split('\n');
 
-    const testTitleRegex = /^\s*(?:(?:[-*]|(?:#{1,4}))\s)?(?:\*\*)?(TEST|SUITE|GROUP)_([A-Z0-9_.-]+)(?::\*\*|\*\*:?|:)?\s*(.+) *$/i;
+    const testTitleRegex = /^\s*(?:(?:[-*]|(?:#{1,4}))\s)?(?:\*\*)?(TEST|SUITE|GROUP)_([A-Z0-9_.-]+)(?::\*\*|\*\*:?|:)?\s*(.*) *$/i;
 
     protocol.userTesting.id = id;
     protocol.userTesting.body = comment;

@@ -239,6 +239,16 @@ describe('ManualTestParser', function() {
   });
 
   describe('parseUserTestingComment()', function() {
+    it('should parse suite without description', function() {
+      // parser was treating `# SUITE_BASIC` as `SUITE_BASI: C`!
+      let mtp = new ManualTestParser();
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      mtp.parseUserTestingComment(protocol, 1, '# SUITE_BASIC\n* TEST_FOO: test');
+      assert.strictEqual(protocol.suites.length, 1);
+      assert.strictEqual(protocol.suites[0].name, 'BASIC');
+      assert.strictEqual(protocol.suites[0].description, '');
+    });
+
     it('should parse title information', function() {
       let mtp = new ManualTestParser();
       let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);

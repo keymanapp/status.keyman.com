@@ -217,6 +217,7 @@ export default {
                         description
                         context
                         state
+                        targetUrl
                       }
                     }
                   }

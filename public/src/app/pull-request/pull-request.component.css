@@ -341,6 +341,31 @@
     white-space: nowrap;
 }
 
+/* Test builds */
+
+.test-builds > span {
+  border-radius: 4px;
+  background: #e0e0e0;
+  padding: 0 4px 0 0;
+  margin: 0 2px 0 0;
+  display: inline-block;
+}
+
+.test-builds > span > img {
+  width: 32px;
+  height: 32px;
+}
+
+.test-builds > span > span {
+  background: white;
+  display: inline-block;
+}
+
+.test-builds > span > span img {
+  width: 24px;
+  height: 24px;
+}
+
 /* Pin */
 
 .pinned .pin {

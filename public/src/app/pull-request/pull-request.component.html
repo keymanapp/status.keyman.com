@@ -33,6 +33,18 @@
       <th class="user-testing-status-title">User testing</th>
       <td>{{pull.userTesting ? pull.userTesting.description : ''}}</td>
     </tr>
+    <tr *ngIf="scope == 'platform'">
+      <td class="test-builds" colspan='2'>
+        <ng-container *ngFor="let context of contexts">
+          <span *ngIf="context.downloads.length">
+            <img src="assets/{{context.icon}}" alt="{{context.name}}" title="{{context.name}}">
+            <span *ngFor="let download of context.downloads">
+              <a href='{{download.url}}' target='_blank'><img src="assets/artifacts/{{download.icon}}" title="{{download.name}}" alt="{{download.name}}" /></a>
+            </span>
+          </span>
+        </ng-container>
+      </td>
+    </tr>
   </tbody></table>
 
   <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>

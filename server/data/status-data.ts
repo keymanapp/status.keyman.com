@@ -137,6 +137,7 @@ export class StatusData {
   }
 };
 
+export const statusData = new StatusData();
 
 function getSprintStart() {
   // Get the start of sprint. Messy but probably works okay for now

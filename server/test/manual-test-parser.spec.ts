@@ -242,7 +242,7 @@ describe('ManualTestParser', function() {
     it('should parse suite without description', function() {
       // parser was treating `# SUITE_BASIC` as `SUITE_BASI: C`!
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseUserTestingComment(protocol, 1, '# SUITE_BASIC\n* TEST_FOO: test');
       assert.strictEqual(protocol.suites.length, 1);
       assert.strictEqual(protocol.suites[0].name, 'BASIC');
@@ -251,7 +251,7 @@ describe('ManualTestParser', function() {
 
     it('should parse title information', function() {
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseUserTestingComment(protocol, 1, userTestingComment);
       assert.strictEqual(protocol.getTests().length, 4);
       assert.strictEqual(protocol.getTests()[0].name, 'FOO');
@@ -289,7 +289,7 @@ describe('ManualTestParser', function() {
 
     it('should parse a nested test spec', function() {
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseUserTestingComment(protocol, 1, nestedUserTest);
       assert.strictEqual(protocol.suites.length, 2);
       assert.strictEqual(protocol.suites[0].name, 'DESKTOP');
@@ -322,7 +322,7 @@ describe('ManualTestParser', function() {
   describe('parseTestRunComment()', function() {
     it('should parse test results', function() {
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseComment(protocol, 1, userTestingComment);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Open);
@@ -390,7 +390,7 @@ describe('ManualTestParser', function() {
     it('should retest', function() {
       // setup
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseComment(protocol, 1, userTestingComment);
       mtp.parseComment(protocol, 2, testRunComment);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Passed);
@@ -411,7 +411,7 @@ describe('ManualTestParser', function() {
   describe('getUserTestResultsComment()', function() {
     it('should set checkmarks and status correctly', function() {
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseComment(protocol, 1, userTestingComment);
       mtp.parseComment(protocol, 2, testRunComment);
       let comment = mtp.getUserTestResultsComment(protocol);
@@ -424,7 +424,7 @@ describe('ManualTestParser', function() {
 
     it('should parse nested results', function() {
       let mtp = new ManualTestParser();
-      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false);
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseUserTestingComment(protocol, 1, nestedUserTest);
       mtp.parseComment(protocol, 2, nestedResult);
       assert.strictEqual(protocol.suites[0].groups[1].tests[1].testRuns[0].notes, 'This was okay but I got a puzzle?');

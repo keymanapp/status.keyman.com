@@ -33,8 +33,8 @@ export class ManualTestStatusUtil {
 }
 
 export class ManualTestUtil {
-  static commentLink(owner: string, repo: string, issuenum: number, commentID: number, isPR: boolean): string {
-    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#issuecomment-${commentID}`
+  static commentLink(owner: string, repo: string, issuenum: number, commentID: number, isPR: boolean, baseID?: number): string {
+    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#${commentID?'issuecomment':'issue'}-${commentID?commentID:baseID}`
   }
 }
 
@@ -185,6 +185,7 @@ export class ManualTestProtocol {
   owner: string;
   repo: string;
   issue: number;           // may be an issue number or pull request
+  baseId: number;          // pull request or issue id
   isPR: boolean;
   skipTesting: boolean;
   userTesting: ManualTestComment;
@@ -203,7 +204,7 @@ export class ManualTestProtocol {
     return this.suites.find(suite => suite.name.toLowerCase() == name.toLowerCase());
   }
 
-  constructor (owner: string, repo: string, issue: number, isPR: boolean) {
+  constructor (owner: string, repo: string, issue: number, isPR: boolean, baseId: number) {
     this.suites = [];
     this.userTesting = new ManualTestComment();
     this.userTestResults = new ManualTestComment();
@@ -212,5 +213,6 @@ export class ManualTestProtocol {
     this.issue = issue;
     this.isPR = isPR;
     this.skipTesting = false;
+    this.baseId = baseId;
     }
 };

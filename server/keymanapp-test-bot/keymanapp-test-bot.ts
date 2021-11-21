@@ -287,23 +287,21 @@ module.exports = (app: Probot) => {
     }
 
     for(let pull of pulls) {
-      let ctxs = pull?.node?.commits?.edges?.[0]?.node?.commit?.status?.contexts;
-      if(!ctxs) {
-        continue;
+      let commit = pull?.node?.commits?.edges?.[0]?.node?.commit;
+      if(!commit) {
+        continue
       }
-      for(let ctx of ctxs) {
-        if(ctx.targetUrl == context.payload.target_url) {
-          log('status: found matching target url');
-          return processEvent(
-            context.octokit,
-            {
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              issue_number: pull.node.number
-            },
-            true // is pull request
-          );
-        }
+      if(commit.oid == context.payload.sha){
+        log('status: found matching target url');
+        return processEvent(
+          context.octokit,
+          {
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            issue_number: pull.node.number
+          },
+          true // is pull request
+        );
       }
     }
     log('status: no matching pull request found');

@@ -272,10 +272,11 @@ module.exports = (app: Probot) => {
   });
 
   app.on(['status'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender, 'open') || context.payload.state != 'success') {
+    log('status: '+context.id+', '+context.payload.sha);
+    if(context.payload.context == 'user_testing' || context.payload.state != 'success') {
+      log('status: ignoring event');
       return null;
     }
-    log('status: '+context.id+', '+context.payload.sha);
 
     // We can look for a corresponding PR in our cache because we'll almost certainly have it there
     // before any check returns 'success'.

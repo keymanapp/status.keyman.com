@@ -284,8 +284,8 @@ export default class ManualTestParser {
   getUserTestResultsComment(protocol: ManualTestProtocol): string {
     let content = '# User Test Results\n\n';
 
-    if(protocol.userTesting && protocol.userTesting.id) {
-      content += `[Test specification and instructions](${ManualTestUtil.commentLink(protocol.owner, protocol.repo, protocol.issue, protocol.userTesting.id, protocol.isPR)})\n\n`;
+    if(protocol.userTesting) {
+      content += `[Test specification and instructions](${ManualTestUtil.commentLink(protocol.owner, protocol.repo, protocol.issue, protocol.userTesting.id, protocol.isPR, protocol.baseId)})\n\n`;
     }
 
     if(protocol.getTests().length == 0) {

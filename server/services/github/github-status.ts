@@ -212,6 +212,7 @@ export default {
               edges {
                 node {
                   commit {
+                    oid
                     status {
                       contexts {
                         description

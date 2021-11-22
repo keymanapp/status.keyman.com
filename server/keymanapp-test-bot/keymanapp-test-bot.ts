@@ -42,7 +42,7 @@ async function processEvent(
   );
 
   const mtp = new ManualTestParser();
-  let protocol = new ManualTestProtocol(data.owner, data.repo, data.issue_number, is_pull_request, issue.data.id);
+  let protocol = new ManualTestProtocol(data.owner, data.repo, data.issue_number, is_pull_request, pull ? pull.data.id : issue.data.id);
 
   // Process all comments in the issue / PR
   mtp.parseComment(protocol, null, issue.data.body);

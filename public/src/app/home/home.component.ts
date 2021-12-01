@@ -8,6 +8,7 @@ import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUr
 import { escapeHtml } from '../utility/escapeHtml';
 import { DataSocket } from '../datasocket/datasocket.service';
 import emojiRegex from 'emoji-regex/es2015/RGI_Emoji';
+import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
 
 interface Status {
   currentSprint: any;
@@ -26,7 +27,14 @@ interface OtherSites {
   repos: string[];
   pulls: any[];
   milestones: any[];
-}
+};
+
+enum PullRequestView {
+  Platform = 'platform',
+  Project = 'project',
+  Status = 'status',
+  Author = 'author'
+};
 
 @Component({
   selector: 'app-home',
@@ -81,6 +89,27 @@ export class HomeComponent {
   showContributions = false;
   sprintOverride = null;
 
+  // Pull Request View
+  pullRequestView: PullRequestView = PullRequestView.Platform;
+  pullsByStatus = {
+    draft: [],
+    waitingReview: [],
+    waitingResponse: [],
+    waitingTest: [],
+    waitingGoodBuild: [],
+    readyToMerge: []
+  };
+  pullStatusName = {
+    draft: 'Draft',
+    waitingReview: 'Waiting for review',
+    waitingResponse: 'Changes requested',
+    waitingTest: 'Waiting for user test',
+    waitingGoodBuild: 'Waiting for build',
+    readyToMerge: 'Ready to merge'
+  };
+  pullsByProject = {};
+  pullsByAuthor = {};
+
   constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
     this.JSON = JSON;
   };
@@ -119,6 +148,7 @@ export class HomeComponent {
               this.transformPlatformStatusData();
               this.transformSiteStatusData();
               this.extractUnlabeledPulls();
+              this.extractPullsByAuthorProjectAndStatus();
               this.removeDuplicateTimelineItems();
               break;
             case StatusSource.GitHubIssues:
@@ -248,18 +278,18 @@ export class HomeComponent {
     return files[items[0]].date;
   }
 
+  pullEmoji(pull) {
+    let title: string = pull.node.title;
+    let regex = emojiRegex(), match;
+    while(match = regex.exec(title)) {
+      const emoji = match[0];
+      if(emoji != '🍒') return emoji;
+    }
+    return "";
+  }
+
   transformPlatformStatusData() {
     this.labeledPulls = [];
-
-    let pullEmoji = (pull) => {
-      let title: string = pull.node.title;
-      let regex = emojiRegex(), match;
-      while(match = regex.exec(title)) {
-        const emoji = match[0];
-        if(emoji != '🍒') return emoji;
-      }
-      return "";
-    }
 
     for(let platform of this.platforms) {
       platform.pulls = [];
@@ -297,7 +327,7 @@ export class HomeComponent {
             }
             platform.pulls.push({pull: pull, state: foundContext, userTesting: userTestingContext});
             this.labeledPulls.push(pull);
-            let emoji = pullEmoji(pull);
+            let emoji = this.pullEmoji(pull);
             if(!platform.pullsByEmoji[emoji]) {
               platform.pullsByEmoji[emoji] = [];
             }
@@ -644,5 +674,96 @@ export class HomeComponent {
 
   getContributionReviewText(user) {
     return this.getContributionText(user.contributions.reviews.nodes, 'pullRequest');
+  }
+
+  /* Multiple PR views */
+
+  setPRView(view: string) {
+    this.pullRequestView = view as PullRequestView;
+  }
+
+  getPlatformPullData(pull) {
+    for(let p of this.platforms) {
+      for(let q of p.pulls) {
+        if(q.pull.node.number == pull.node.number) {
+          return q;
+        }
+      }
+    }
+    return {pull:pull,userTesting:null,state:null};
+  }
+
+  extractPullsByAuthorProjectAndStatus() {
+    this.pullsByAuthor = {};
+    this.pullsByProject = {};
+    this.pullsByStatus.draft = [];
+    this.pullsByStatus.readyToMerge = [];
+    this.pullsByStatus.waitingGoodBuild = [];
+    this.pullsByStatus.waitingReview = [];
+    this.pullsByStatus.waitingTest = [];
+    for(let q in this.status.github.data.repository.pullRequests.edges) {
+      let pull = this.status.github.data.repository.pullRequests.edges[q];
+      let emoji = this.pullEmoji(pull) || "other";
+      if(!this.pullsByProject[emoji]) this.pullsByProject[emoji] = [];
+
+      let pd = this.getPlatformPullData(pull);
+      this.pullsByProject[emoji].push(pd);
+
+      if(!this.pullsByAuthor[pull.node.author.login]) this.pullsByAuthor[pull.node.author.login] = [];
+      this.pullsByAuthor[pull.node.author.login].push(pd);
+
+      let status = pullStatus(pd);
+      let userTesting = pullUserTesting(pd);
+      let buildState = pullBuildState(pd);
+
+      switch(status) {
+        case 'status-draft':
+          this.pullsByStatus.draft.push(pd);
+          continue; // We don't add draft PRs to other categories
+        case 'status-pending':
+          this.pullsByStatus.waitingReview.push(pd);
+          break;
+        case 'status-changes-requested':
+          this.pullsByStatus.waitingResponse.push(pd);
+          break;
+        case 'status-approved':
+          break;
+        default:
+          console.log('unexpected '+status);
+        }
+
+      switch(userTesting) {
+        case 'user-test-none':
+        case 'user-test-failure':
+          if(this.pullsByStatus.waitingResponse.includes(pd))
+            this.pullsByStatus.waitingResponse.push(pd);
+          break;
+        case 'user-test-pending':
+          this.pullsByStatus.waitingTest.push(pd);
+          break;
+        case 'user-test-success':
+          break;
+        default:
+          console.log('unexpected '+userTesting);
+        }
+
+      switch(buildState) {
+        case 'pending':
+        case 'missing':
+          this.pullsByStatus.waitingGoodBuild.push(pd);
+          break;
+        case 'failure':
+          if(this.pullsByStatus.waitingResponse.includes(pd))
+            this.pullsByStatus.waitingResponse.push(pd);
+          break;
+        case 'success':
+          break;
+        default:
+          console.log('unexpected '+buildState);
+      }
+
+      if(status == 'status-approved' && userTesting == 'user-test-success' && buildState == 'success')
+        this.pullsByStatus.readyToMerge.push(pd);
+    }
   }
 }

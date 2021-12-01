@@ -81,7 +81,7 @@
   <!-- <h1></h1> -->
 
   <div class="flex-container container-fluid {{isBetaRunning() ? 'in-beta' : 'not-in-beta'}}">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered pull-request-view-{{pullRequestView}}">
       <thead class='thead-dark'>
         <tr>
           <th id='th-platform'>Platform</th>
@@ -89,7 +89,15 @@
           <th id='th-beta' class='tier'>Beta</th>
           <th id='th-alpha' class='tier'>Alpha</th>
           <th id='th-issues'>Issues</th>
-          <th id='th-pulls'>Pull Requests</th>
+          <th id='th-pulls'>Pull Requests
+            <span class='pull-request-view-link'>
+              View by:
+              <a id='pull-request-view-link-platform' [routerLink]="" (click)="setPRView('platform')">Platform</a>
+              <a id='pull-request-view-link-project' [routerLink]="" (click)="setPRView('project')">Project</a>
+              <a id='pull-request-view-link-status' [routerLink]="" (click)="setPRView('status')">Status</a>
+              <a id='pull-request-view-link-author' [routerLink]="" (click)="setPRView('author')">Author</a>
+            </span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -178,7 +186,46 @@
             </ng-container>
           </td>
 
-          <td class="pulls">
+          <td class="pulls" *ngIf="pullRequestView == 'status' && platform.value.id == 'android'" rowspan='8'>
+            <table><tbody>
+              <tr *ngFor="let status of pullsByStatus | keyvalue">
+                <td>{{pullStatusName[status.key]}}</td>
+                <td>
+                  <span *ngFor="let pull of status.value">
+                    <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+                  </span>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+
+          <td class="pulls" *ngIf="pullRequestView == 'project' && platform.value.id == 'android'" rowspan='8'>
+            <table><tbody>
+              <tr *ngFor="let project of pullsByProject | keyvalue">
+                <td class='emoji'>{{project.key == 'other' ? '⬜' : project.key}}</td>
+                <td>
+                  <span *ngFor="let pull of project.value">
+                    <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+                  </span>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+
+          <td class="pulls" *ngIf="pullRequestView == 'author' && platform.value.id == 'android'" rowspan='8'>
+            <table><tbody>
+              <tr *ngFor="let author of pullsByAuthor | keyvalue">
+                <td><a class="author" title="{{author.value[0].pull.node.author.login}}" target="_blank" href="{{author.value[0].pull.node.author.url}}"><img class="avatar-48" src="{{author.value[0].pull.node.author.avatarUrl}}&size=48"></a></td>
+                <td>
+                  <span *ngFor="let pull of author.value">
+                    <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+                  </span>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+
+          <td class="pulls" *ngIf="pullRequestView == 'platform'">
             <div [class]="'emoji-group' + (emoji.key == '' ? '' : ' emoji-group-border')" *ngFor="let emoji of platform.value.pullsByEmoji | keyvalue">
               <span *ngIf="emoji.key != ''" class="emoji">{{emoji.key}}</span>
               <span *ngFor="let pull of emoji.value">

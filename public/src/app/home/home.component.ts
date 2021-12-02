@@ -735,7 +735,7 @@ export class HomeComponent {
       switch(userTesting) {
         case 'user-test-none':
         case 'user-test-failure':
-          if(this.pullsByStatus.waitingResponse.includes(pd))
+          if(!this.pullsByStatus.waitingResponse.includes(pd))
             this.pullsByStatus.waitingResponse.push(pd);
           break;
         case 'user-test-pending':
@@ -753,7 +753,7 @@ export class HomeComponent {
           this.pullsByStatus.waitingGoodBuild.push(pd);
           break;
         case 'failure':
-          if(this.pullsByStatus.waitingResponse.includes(pd))
+          if(!this.pullsByStatus.waitingResponse.includes(pd))
             this.pullsByStatus.waitingResponse.push(pd);
           break;
         case 'success':

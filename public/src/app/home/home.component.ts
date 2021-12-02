@@ -701,6 +701,7 @@ export class HomeComponent {
     this.pullsByStatus.waitingGoodBuild = [];
     this.pullsByStatus.waitingReview = [];
     this.pullsByStatus.waitingTest = [];
+    this.pullsByStatus.waitingResponse = [];
     for(let q in this.status.github.data.repository.pullRequests.edges) {
       let pull = this.status.github.data.repository.pullRequests.edges[q];
       let emoji = this.pullEmoji(pull) || "other";

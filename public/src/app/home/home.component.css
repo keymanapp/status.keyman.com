@@ -324,3 +324,29 @@ table#sites-and-relatives {
 #other-repos-cell:hover > #other-repos {
   display: block;
 }
+
+/* Pull Request Views */
+
+/*.pull-request-view-link { color: white; }*/
+.pull-request-view-platform #pull-request-view-link-platform { background-color: #e0e0e0; }
+.pull-request-view-project #pull-request-view-link-project { background-color: #e0e0e0; }
+.pull-request-view-status #pull-request-view-link-status { background-color: #e0e0e0; }
+.pull-request-view-author #pull-request-view-link-author { background-color: #e0e0e0; }
+.pull-request-view-link {
+  font-weight: normal;
+  font-size: 0.8em;
+  float: right;
+}
+.pull-request-view-link a {
+  padding: 2px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.pr-group-block {
+  display: block;
+}
+
+.pr-group-block > span {
+  display: table-cell !important;
+}

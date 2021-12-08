@@ -1,7 +1,7 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
-import emojiRegex from 'emoji-regex/es2015/RGI_Emoji';
+import emojiRegex from 'emoji-regex';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';

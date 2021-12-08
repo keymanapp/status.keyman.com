@@ -7,7 +7,7 @@ import { sites, siteSentryNames } from '../sites';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from '../utility/escapeHtml';
 import { DataSocket } from '../datasocket/datasocket.service';
-import emojiRegex from 'emoji-regex/es2015/RGI_Emoji';
+import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
 
 interface Status {

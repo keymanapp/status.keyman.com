@@ -259,16 +259,13 @@ export default class ManualTestParser {
       if(match.match(/^SUITE_/i)) {
         suite = protocol.findSuite(match.substring(6));
       } else if(match.match(/^GROUP_/i)) {
-        group = (suite || protocol.suites[0]).findGroup(match.substring(6));
+        group = (suite || protocol).findGroup(match.substring(6));
       } else if(match.match(/^TEST_/i)) {
-        let test = (group || protocol).findTest(match.substring(5));
-        if(test) {
+        for(let test of (group || suite || protocol).findTests(match.substring(5))) {
           test.addRun(id, true, ManualTestStatus.Open);
         }
       } else if(match == 'all') {
-        for(let test of (group ? group.tests :
-            suite ? suite.getTests() :
-            protocol.getTests())) {
+        for(let test of (group || suite || protocol).getTests()) {
           test.addRun(id, true, ManualTestStatus.Open);
         }
       }

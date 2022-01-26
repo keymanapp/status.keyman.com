@@ -134,6 +134,14 @@ export class ManualTestGroup {
     return ManualTestStatusUtil.emoji(this.status());
   }
 
+  findTests(name: string): ManualTest[] {
+    return this.tests.filter(test => test.name.toLowerCase() == name.toLowerCase());
+  }
+
+  getTests(): ManualTest[] {
+    return this.tests;
+  }
+
   tests: ManualTest[];
   constructor() {
     this.tests = [];
@@ -157,6 +165,10 @@ export class ManualTestSuite {
 
   getTests(): ManualTest[] {
     return this.groups.flatMap(group => group.tests);
+  }
+
+  findTests(name: string): ManualTest[] {
+    return this.getTests().filter(test => test.name.toLowerCase() == name.toLowerCase());
   }
 
   statusEmoji(): string {
@@ -192,14 +204,51 @@ export class ManualTestProtocol {
   userTestResults: ManualTestComment;
   suites: ManualTestSuite[];
 
+  /**
+   * @returns flat array of all tests in all groups in all suites
+   */
   getTests(): ManualTest[] {
     return this.suites.flatMap(suite => suite.groups.flatMap(group => group.tests));
   }
 
+  /**
+   * @returns flat array of all groups in all suites
+   */
+  getGroups(): ManualTestGroup[] {
+    return this.suites.flatMap(suite => suite.groups);
+  }
+
+  /**
+   * Finds first test that matches `name` in all suites and groups
+   */
   findTest(name: string): ManualTest {
     return this.getTests().find(test => test.name.toLowerCase() == name.toLowerCase());
   }
 
+  /**
+   * Finds all tests that match `name` in all suites and groups
+   */
+  findTests(name: string): ManualTest[] {
+    return this.getTests().filter(test => test.name.toLowerCase() == name.toLowerCase());
+  }
+
+  /**
+   * Finds all groups that match `name` in all suites
+   */
+  findGroups(name: string): ManualTestGroup[] {
+    return this.getGroups().filter(group => group.name.toLowerCase() == name.toLowerCase());
+  }
+
+  /**
+   * Finds first group that matches `name` in any suite
+   */
+  findGroup(name: string): ManualTestGroup {
+    return this.suites.flatMap(suite => suite.groups).find(group => group.name.toLowerCase() == name.toLowerCase());
+  }
+
+  /**
+   * Finds first suite that matches `name`
+   */
   findSuite(name: string): ManualTestSuite {
     return this.suites.find(suite => suite.name.toLowerCase() == name.toLowerCase());
   }

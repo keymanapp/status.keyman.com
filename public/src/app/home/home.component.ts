@@ -738,6 +738,10 @@ export class HomeComponent {
         case 'user-test-failure':
           if(!this.pullsByStatus.waitingResponse.includes(pd))
             this.pullsByStatus.waitingResponse.push(pd);
+
+          if(pull.node.labels.edges.find(e => e.node.name == 'user-test-required')) {
+            this.pullsByStatus.waitingTest.push(pd);
+          }
           break;
         case 'user-test-pending':
           this.pullsByStatus.waitingTest.push(pd);

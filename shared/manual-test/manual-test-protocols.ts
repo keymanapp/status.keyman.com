@@ -33,8 +33,8 @@ export class ManualTestStatusUtil {
 }
 
 export class ManualTestUtil {
-  static commentLink(owner: string, repo: string, issuenum: number, commentID: number, isPR: boolean, baseID?: number): string {
-    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#${commentID?'issuecomment':'issue'}-${commentID?commentID:baseID}`
+  static commentLink(owner: string, repo: string, issuenum: number, commentId: number, isPR: boolean, baseIssueId?: number): string {
+    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#${commentId?'issuecomment':'issue'}-${commentId?commentId:baseIssueId}`
   }
 }
 
@@ -197,7 +197,8 @@ export class ManualTestProtocol {
   owner: string;
   repo: string;
   issue: number;           // may be an issue number or pull request
-  baseId: number;          // pull request or issue id
+  baseIssueId: number;     // issue id
+  basePullId: number;      // PR id
   isPR: boolean;
   skipTesting: boolean;
   userTesting: ManualTestComment;
@@ -253,7 +254,7 @@ export class ManualTestProtocol {
     return this.suites.find(suite => suite.name.toLowerCase() == name.toLowerCase());
   }
 
-  constructor (owner: string, repo: string, issue: number, isPR: boolean, baseId: number) {
+  constructor (owner: string, repo: string, issue: number, isPR: boolean, baseIssueId: number, basePullId?: number) {
     this.suites = [];
     this.userTesting = new ManualTestComment();
     this.userTestResults = new ManualTestComment();
@@ -262,6 +263,7 @@ export class ManualTestProtocol {
     this.issue = issue;
     this.isPR = isPR;
     this.skipTesting = false;
-    this.baseId = baseId;
+    this.baseIssueId = baseIssueId;
+    this.basePullId = basePullId;
     }
 };

@@ -282,7 +282,7 @@ export default class ManualTestParser {
     let content = '# User Test Results\n\n';
 
     if(protocol.userTesting) {
-      content += `[Test specification and instructions](${ManualTestUtil.commentLink(protocol.owner, protocol.repo, protocol.issue, protocol.userTesting.id, protocol.isPR, protocol.baseId)})\n\n`;
+      content += `[Test specification and instructions](${ManualTestUtil.commentLink(protocol.owner, protocol.repo, protocol.issue, protocol.userTesting.id, protocol.isPR, protocol.baseIssueId)})\n\n`;
     }
 
     if(protocol.getTests().length == 0) {

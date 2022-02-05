@@ -38,8 +38,10 @@ const timingManager = new DataChangeTimingManager();
 /* Deployment Endpoints */
 
 const STATUS_SOURCES: StatusSource[] = [
-  StatusSource.ITunes,
-  StatusSource.PlayStore,
+  StatusSource.ITunesKeyman,
+  StatusSource.ITunesFirstVoices,
+  StatusSource.PlayStoreKeyman,
+  StatusSource.PlayStoreFirstVoices,
   StatusSource.LaunchPadAlpha,
   StatusSource.LaunchPadBeta,
   StatusSource.LaunchPadStable,

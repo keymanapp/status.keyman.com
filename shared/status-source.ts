@@ -6,8 +6,10 @@ export enum StatusSource {
   TeamCity = "teamcity",
   SentryIssues = "sentry-issues",
   // Deployment targets
-  ITunes = "itunes",
-  PlayStore = "play-store",
+  ITunesKeyman = "itunes-keyman",
+  ITunesFirstVoices = "itunes-firstvoices",
+  PlayStoreKeyman = "play-store-keyman",
+  PlayStoreFirstVoices = "play-store-firstvoices",
   LaunchPadAlpha = "launch-pad-alpha",
   LaunchPadBeta = "launch-pad-beta",
   LaunchPadStable = "launch-pad-stable",

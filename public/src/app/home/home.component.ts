@@ -169,8 +169,10 @@ export class HomeComponent {
               this.status.teamCityRunning = data.teamCityRunning;
               this.changeCounter++; // forces a rebuild
               break;
-            case StatusSource.ITunes:
-            case StatusSource.PlayStore:
+            case StatusSource.ITunesKeyman:
+            case StatusSource.ITunesFirstVoices:
+            case StatusSource.PlayStoreKeyman:
+            case StatusSource.PlayStoreFirstVoices:
             case StatusSource.SKeymanCom:
             case StatusSource.LaunchPadAlpha:
             case StatusSource.LaunchPadBeta:

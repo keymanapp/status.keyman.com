@@ -61,20 +61,32 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
 
     switch(this.platform.value.id) {
       case 'android':
-        if(this.tier == 'stable')
+        if(this.tier == 'stable') {
           this.targets.push({
-            name: 'Play Store',
+            name: 'Play Store (Keyman)',
             url: 'https://play.google.com/store/apps/details?id=com.tavultesoft.kmapro',
-            version: this.status?.deployment?.['play-store']?.version
+            version: this.status?.deployment?.[StatusSource.PlayStoreKeyman]?.version
           });
+          this.targets.push({
+            name: 'Play Store (FirstVoices)',
+            url: 'https://play.google.com/store/apps/details?id=com.firstvoices.keyboards',
+            version: this.status?.deployment?.[StatusSource.PlayStoreFirstVoices]?.version
+          });
+        }
         break;
       case 'ios':
         if(this.tier == 'stable') {
           this.targets.push({
-            name: 'App Store',
+            name: 'App Store (Keyman)',
             url: 'https://itunes.apple.com/us/app/keyman/id933676545?ls=1&mt=8',
-            version: this.status?.deployment?.['itunes']?.version,
-            date: this.status?.deployment?.['itunes']?.releaseDate?.substr(0,10)
+            version: this.status?.deployment?.[StatusSource.ITunesKeyman]?.version,
+            date: this.status?.deployment?.[StatusSource.ITunesKeyman]?.releaseDate?.substr(0,10)
+          });
+          this.targets.push({
+            name: 'App Store (FirstVoices)',
+            url: 'https://apps.apple.com/us/app/firstvoices-keyboards/id1066651145',
+            version: this.status?.deployment?.[StatusSource.ITunesFirstVoices]?.version,
+            date: this.status?.deployment?.[StatusSource.ITunesFirstVoices]?.releaseDate?.substr(0,10)
           });
         }
         this.targets.push({
@@ -100,11 +112,11 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           }, {
             name: 'packages.sil.org',
             url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman-config/',
-            version: this.status?.deployment?.['packages-sil-org']?.version
+            version: this.status?.deployment?.[StatusSource.PackagesSilOrg]?.version
           }, {
             name: 'linux.lsdev.sil.org',
             url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
-            version: this.status?.deployment?.['linux-lsdev-sil-org-stable']?.version
+            version: this.status?.deployment?.[StatusSource.LinuxLsdevSilOrgStable]?.version
           });
         } else if (this.tier == 'beta' || this.tier == 'alpha') {
           this.targets.push({
@@ -134,11 +146,11 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
         this.targets.push({
           name: '@keymanapp/lexical-model-compiler',
           url: 'https://npmjs.com/package/@keymanapp/lexical-model-compiler',
-          version: this.status?.deployment?.['npm-lexical-model-compiler']?.[this.tier]?.split('-')[0]
+          version: this.status?.deployment?.[StatusSource.NpmLexicalModelCompiler]?.[this.tier]?.split('-')[0]
         }, {
           name: '@keymanapp/models-types',
           url: 'https://npmjs.com/package/@keymanapp/models-types',
-          version: this.status?.deployment?.['npm-models-types']?.[this.tier]?.split('-')[0]
+          version: this.status?.deployment?.[StatusSource.NpmModelsTypes]?.[this.tier]?.split('-')[0]
         });
         break;
     }

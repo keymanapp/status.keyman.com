@@ -41,10 +41,21 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
   prepareData() {
     this.targets = [];
 
+    const tier = this.tier;
+    const platform = this.platform?.value?.id;
+    const version = this.status?.keyman?.[platform]?.[tier]?.version;
+
     this.targets.push({
-      name: 'downloads.keyman.com',
+      name: 'Default download from downloads.keyman.com',
       url: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.downloadUrl,
       version: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.version,
+      date: this.releaseDate
+    });
+
+    this.targets.push({
+      name: 'All downloads on downloads.keyman.com',
+      url: `https://downloads.keyman.com/${platform}/${tier}/${version}/`,
+      version: version,
       date: this.releaseDate
     });
 
@@ -58,13 +69,26 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           });
         break;
       case 'ios':
-        if(this.tier == 'stable')
+        if(this.tier == 'stable') {
           this.targets.push({
             name: 'App Store',
             url: 'https://itunes.apple.com/us/app/keyman/id933676545?ls=1&mt=8',
             version: this.status?.deployment?.['itunes']?.version,
             date: this.status?.deployment?.['itunes']?.releaseDate?.substr(0,10)
           });
+        }
+        this.targets.push({
+          name: 'iOS Simulator image (Keyman)',
+          url: `https://downloads.keyman.com/ios/${tier}/${version}/keyman-ios-simulator-${version}.app.zip`,
+          version: version,
+          date: this.releaseDate
+        });
+        this.targets.push({
+          name: 'iOS Simulator image (FirstVoices)',
+          url: `https://downloads.keyman.com/ios/${tier}/${version}/firstvoices-ios-simulator-${version}.app.zip`,
+          version: version,
+          date: this.releaseDate
+        });
         break;
       case 'linux':
         if (this.tier == 'stable') {

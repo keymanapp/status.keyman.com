@@ -7,8 +7,8 @@ import githubContributionsService from "../services/github/github-contributions"
 import sentryIssuesService from "../services/sentry/sentry-issues";
 import deepEqual from "deep-equal";
 import DataService from "../services/data-service";
-import iTunesService from "../services/deployment/itunes";
-import playStoreService from "../services/deployment/play-store";
+import { keymaniTunesService, firstVoicesiTunesService } from "../services/deployment/itunes";
+import { keymanPlayStoreService, firstVoicesPlayStoreService } from "../services/deployment/play-store";
 import sKeymanComService from "../services/deployment/s-keyman-com";
 import { launchPadAlphaService, launchPadBetaService, launchPadStableService } from "../services/deployment/launch-pad";
 import packagesSilOrgService from "../services/deployment/packages-sil-org";
@@ -17,8 +17,10 @@ import { lmcService, mtService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
 
 const services = {};
-services[StatusSource.ITunes] = iTunesService;
-services[StatusSource.PlayStore] = playStoreService;
+services[StatusSource.ITunesKeyman] = keymaniTunesService;
+services[StatusSource.ITunesFirstVoices] = firstVoicesiTunesService;
+services[StatusSource.PlayStoreKeyman] = keymanPlayStoreService;
+services[StatusSource.PlayStoreFirstVoices] = firstVoicesPlayStoreService;
 services[StatusSource.SKeymanCom] = sKeymanComService;
 services[StatusSource.LaunchPadAlpha] = launchPadAlphaService;
 services[StatusSource.LaunchPadBeta] = launchPadBetaService;

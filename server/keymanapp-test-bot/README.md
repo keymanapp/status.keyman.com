@@ -12,7 +12,8 @@
 -6. status of a test in the User Testing comment should be a link to the comment where it is reported
 -13. add a '*' if there are details for a test result
 -5. design how we would run test suites and grouped tests (SUITE / GROUP / TEST)
--   a) consider using emoji for SUITES and GROUPS so we don't confuse with checkboxes ✅ 🟧 🟥 🟩 🟦 🟨 ❎ ❌
+-   a) consider using emoji for SUITES and GROUPS so we don't confuse with checkboxes ✔️ 🟧 🟥 🟩 🟦 🟨 ❎ ❌
+       (Note we use ✔️ instead of ✅ for better visibility on Linux)
 -3. auto PRs will not be tagged by the bot. (either auto label or created by [any] bot)
 -2. icon and metadata for the bot - which orgs can install it, etc.
 -1. Deploy manual-test-bot - PEM, secret, and address.
@@ -85,9 +86,9 @@ First comment (auto-reserved by test-bot):
 * 🟥 GROUP_MACOS: the dot point is optional
   V Tests
     * 🟥 TEST_RESIZING
-    * ✅ TEST_LAYERS_SHIFT
-    * ✅ TEST_LAYERS_CAPS
-* ✅ GROUP_LINUX
+    * ✔️ TEST_LAYERS_SHIFT
+    * ✔️ TEST_LAYERS_CAPS
+* ✔️ GROUP_LINUX
 * ⬜ GROUP_CHROMEBOOK
 ```
 

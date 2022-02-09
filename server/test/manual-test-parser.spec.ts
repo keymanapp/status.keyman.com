@@ -81,7 +81,7 @@ const userTestResultsComment =
 
 [Test specification and instructions](https://github.com/keymanapp/keyman/issues/1#issuecomment-1)
 
-- ✅ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
+- ✔️ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - 🟥 **TEST_BAR ([FAILED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - ⬜ **TEST_FIZZ (OPEN)**
 - ⬜ **TEST_BAZ (OPEN)**`;
@@ -91,10 +91,10 @@ const userTestResultsAllPassedComment =
 
 [Test specification and instructions](https://github.com/keymanapp/keyman/issues/1#issuecomment-1)
 
-- ✅ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
-- ✅ **TEST_BAR ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))
-- ✅ **TEST_FIZZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))**: this went pretty well actually
-- ✅ **TEST_BAZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))`;
+- ✔️ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
+- ✔️ **TEST_BAR ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))
+- ✔️ **TEST_FIZZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))**: this went pretty well actually
+- ✔️ **TEST_BAZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))`;
 
 const nestedUserTest =
 `Follows #5619..

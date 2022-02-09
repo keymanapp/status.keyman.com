@@ -27,7 +27,7 @@ export class ManualTestStatusUtil {
     return result || ManualTestStatus.Open;
   }
   public static emoji(status: ManualTestStatus) {
-    const statusEmoji: string[] = ['⬜', '✅', '🟥', '🟧', '🟦'];
+    const statusEmoji: string[] = ['⬜', '✔️', '🟥', '🟧', '🟦'];
     return statusEmoji[status];
   }
 }

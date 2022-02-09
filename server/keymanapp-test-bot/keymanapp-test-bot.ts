@@ -105,6 +105,7 @@ async function processEvent(
     statusCounts[ManualTestStatus.Passed] = 0;
     statusCounts[ManualTestStatus.Failed] = 0;
     statusCounts[ManualTestStatus.Blocked] = 0;
+    statusCounts[ManualTestStatus.Skipped] = 0;
     statusCounts[ManualTestStatus.Unknown] = 0;
     for(let test of protocol.getTests()) {
       statusCounts[test.status()]++;
@@ -117,12 +118,13 @@ async function processEvent(
 
       (statusCounts[ManualTestStatus.Failed] ? `${statusCounts[ManualTestStatus.Failed]} failed, ` : '') +
       (statusCounts[ManualTestStatus.Blocked] ? `${statusCounts[ManualTestStatus.Blocked]} blocked, ` : '') +
+      (statusCounts[ManualTestStatus.Skipped] ? `${statusCounts[ManualTestStatus.Skipped]} skipped, ` : '') +
       `${statusCounts[ManualTestStatus.Passed]} test(s) passed of ${totalTests}`;
 
     const state =
       protocol.skipTesting ? 'success' :
       totalTests == 0 ? 'failure' : // no tests defined, this is an error
-      statusCounts[ManualTestStatus.Passed] == totalTests ? 'success' : // all passed
+      statusCounts[ManualTestStatus.Passed] + statusCounts[ManualTestStatus.Skipped] == totalTests ? 'success' : // all passed
       statusCounts[ManualTestStatus.Failed] + statusCounts[ManualTestStatus.Blocked] == 0 ? 'pending' :  // no errors, but testing unfinished
       'failure'; // at least one error
 

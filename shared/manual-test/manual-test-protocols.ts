@@ -8,7 +8,8 @@ export enum ManualTestStatus {
   Open,     // Test has not yet been run
   Passed,   // Test has been run and passed
   Failed,   // Test has been run and failed
-  Blocked,  // Was not able to run test due to external issues
+  Blocked,  // Was not able to run test due to external issues, treated as failed
+  Skipped,  // Test was not run but should be treated as passed
   Unknown,  // ???
 };
 
@@ -22,12 +23,13 @@ export class ManualTestStatusUtil {
       case 'pass': return ManualTestStatus.Passed;
       case 'fail': return ManualTestStatus.Failed;
       case 'block': return ManualTestStatus.Blocked;
+      case 'skip': return ManualTestStatus.Skipped;
     }
     const result = ManualTestStatus[(status.substr(0,1).toUpperCase() + status.substr(1)) as keyof typeof ManualTestStatus];
     return result || ManualTestStatus.Open;
   }
   public static emoji(status: ManualTestStatus) {
-    const statusEmoji: string[] = ['⬜', '✅', '🟥', '🟧', '🟦'];
+    const statusEmoji: string[] = ['⬜', '✅', '🟥', '🟧', '🟩', '🟦'];
     return statusEmoji[status];
   }
 }
@@ -117,6 +119,7 @@ export class ManualTest {
 function reduceStatus(prev: ManualTestStatus, current: ManualTestStatus): ManualTestStatus {
   return prev == ManualTestStatus.Failed || current == ManualTestStatus.Failed ? ManualTestStatus.Failed :
     prev == ManualTestStatus.Blocked || current == ManualTestStatus.Blocked ? ManualTestStatus.Blocked :
+    prev == ManualTestStatus.Skipped || current == ManualTestStatus.Skipped ? ManualTestStatus.Skipped :
     prev == ManualTestStatus.Open || current == ManualTestStatus.Open ? ManualTestStatus.Open :
     current;
 }

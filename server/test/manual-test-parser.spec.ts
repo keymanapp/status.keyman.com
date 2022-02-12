@@ -65,6 +65,10 @@ I'm not great at formatting test results.
 - Fantastic!
 `;
 
+const skippedTestRunComment = `
+**TEST_FIZZ: PASSED**
+**TEST_BAZ: SKIPPED**`;
+
 const retestComment = `@keymanapp-test-bot retest test_foo, test_baz`;
 const retestAllComment = `
 I'm not happy with the results
@@ -95,6 +99,16 @@ const userTestResultsAllPassedComment =
 - ✅ **TEST_BAR ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))
 - ✅ **TEST_FIZZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))**: this went pretty well actually
 - ✅ **TEST_BAZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-4))`;
+
+const userTestResultsSkippedComment =
+`# User Test Results
+
+[Test specification and instructions](https://github.com/keymanapp/keyman/issues/1#issuecomment-1)
+
+- ✅ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
+- ✅ **TEST_BAR ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-3))
+- ✅ **TEST_FIZZ ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-5))**
+- 🟩 **TEST_BAZ ([SKIPPED](https://github.com/keymanapp/keyman/issues/1#issuecomment-5))**`;
 
 const nestedUserTest =
 `Follows #5619..
@@ -363,16 +377,19 @@ describe('ManualTestParser', function() {
       assert.strictEqual(protocol.getTests()[3].testRuns[0].summary, '');
       assert.strictEqual(protocol.getTests()[3].testRuns[0].notes, '- Fantastic!');
       assert.strictEqual(protocol.getTests()[3].testRuns[0].status, ManualTestStatus.Passed);
-      mtp.parseComment(protocol, 5, retestComment);
+      mtp.parseComment(protocol, 5, skippedTestRunComment);
+      assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Passed);
+      assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Skipped);
+      mtp.parseComment(protocol, 6, retestComment);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[0].testRuns[1].isControl, true);
       assert.strictEqual(protocol.getTests()[0].testRuns[1].status, ManualTestStatus.Open);
-      assert.strictEqual(protocol.getTests()[3].testRuns[1].isControl, true);
-      assert.strictEqual(protocol.getTests()[3].testRuns[1].status, ManualTestStatus.Open);
-      mtp.parseComment(protocol, 6, retestAllComment);
+      assert.strictEqual(protocol.getTests()[3].testRuns[2].isControl, true);
+      assert.strictEqual(protocol.getTests()[3].testRuns[2].status, ManualTestStatus.Open);
+      mtp.parseComment(protocol, 7, retestAllComment);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
@@ -381,10 +398,10 @@ describe('ManualTestParser', function() {
       assert.strictEqual(protocol.getTests()[0].testRuns[2].status, ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].testRuns[2].isControl, true);
       assert.strictEqual(protocol.getTests()[1].testRuns[2].status, ManualTestStatus.Open);
-      assert.strictEqual(protocol.getTests()[2].testRuns[1].isControl, true);
-      assert.strictEqual(protocol.getTests()[2].testRuns[1].status, ManualTestStatus.Open);
-      assert.strictEqual(protocol.getTests()[3].testRuns[2].isControl, true);
-      assert.strictEqual(protocol.getTests()[3].testRuns[2].status, ManualTestStatus.Open);
+      assert.strictEqual(protocol.getTests()[2].testRuns[2].isControl, true);
+      assert.strictEqual(protocol.getTests()[2].testRuns[2].status, ManualTestStatus.Open);
+      assert.strictEqual(protocol.getTests()[3].testRuns[3].isControl, true);
+      assert.strictEqual(protocol.getTests()[3].testRuns[3].status, ManualTestStatus.Open);
     });
 
     it('should retest', function() {
@@ -420,6 +437,9 @@ describe('ManualTestParser', function() {
       mtp.parseComment(protocol, 4, thirdTestRunComment);
       comment = mtp.getUserTestResultsComment(protocol);
       assert.strictEqual(comment, userTestResultsAllPassedComment);
+      mtp.parseComment(protocol, 5, skippedTestRunComment);
+      comment = mtp.getUserTestResultsComment(protocol);
+      assert.strictEqual(comment, userTestResultsSkippedComment);
     });
 
     it('should parse nested results', function() {

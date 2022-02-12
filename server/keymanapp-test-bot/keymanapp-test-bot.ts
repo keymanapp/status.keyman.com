@@ -13,6 +13,7 @@ import { getArtifactLinksComment } from "./artifact-links-comment";
 
 const manualTestRequiredLabelName = 'user-test-required';
 const manualTestMissingLabelName = 'user-test-missing';
+const hasUserTestLabelName = 'has-user-test';
 
 function log(s) {
   console.log('@keymanapp-test-bot: '+s);
@@ -51,6 +52,17 @@ async function processEvent(
   });
 
   // DEBUG: console.log(JSON.stringify(protocol, null, 2));
+
+  // has-user-test label
+  const hasHasUserTestLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == hasUserTestLabelName);
+  if(protocol.userTesting.body && !hasHasUserTestLabel) {
+    // We have a user test in the issue or PR, so we add the has-user-test label
+    log(`Adding ${hasUserTestLabelName} label`);
+    await octokit.rest.issues.addLabels({...data, labels: [hasUserTestLabelName]});
+  } else if(!protocol.userTesting.body && hasHasUserTestLabel) {
+    log(`Removing ${hasUserTestLabelName} label`);
+    await octokit.rest.issues.removeLabel({...data, name: hasUserTestLabelName});
+  }
 
   // For issues, we don't make any changes unless someone has added a `# User Testing` comment
   // In the unlikely event that someone removes a `# User Testing` comment, it is up to them to remove the

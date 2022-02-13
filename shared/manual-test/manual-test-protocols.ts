@@ -36,7 +36,7 @@ export class ManualTestStatusUtil {
 
 export class ManualTestUtil {
   static commentLink(owner: string, repo: string, issuenum: number, commentId: number, isPR: boolean, baseIssueId?: number): string {
-    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#${commentId?'issuecomment':'issue'}-${commentId?commentId:baseIssueId}`
+    return `https://github.com/${owner}/${repo}/${isPR?'pull':'issues'}/${issuenum}#${commentId?('issuecomment-'+commentId):""}`
   }
 }
 

@@ -45,6 +45,10 @@ export function pullBuildState(pull) {
         // GitHub will return a QUEUED null-app check. Not sure why.
         continue;
       }
+      if(check.app?.name != "GitHub Actions") { // e.g. "Dependabot" || "GitGuardian"
+        // We don't want status reports from anything other than our Github Action
+        continue;
+      }
       if(check.status == 'COMPLETED') {
         switch(check.conclusion) {
           case 'SUCCESS':

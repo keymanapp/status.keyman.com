@@ -39,7 +39,12 @@ export async function getArtifactLinksComment(
     if(s[context].state == 'success') {
       // artifactLinks
       const u = new URL(s[context].url);
-      if(u.searchParams.has('buildTypeId')) {
+      if (u.hostname == 'jenkins.lsdev.sil.org') {
+        for (let download of artifactLinks.jenkinsTarget.downloads) {
+          if (r == '') r = '\n## Test Artifacts\n\n';
+          r += `* [${download.name}](${s[context].url}/${download.fragment})\n`;
+        }
+      } else if(u.searchParams.has('buildTypeId')) {
         // Assume TeamCity
         let buildTypeId = u.searchParams.get('buildTypeId');
         let buildId = u.searchParams.get('buildId');

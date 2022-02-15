@@ -31,7 +31,9 @@ export const artifactLinks = {
     ]},
   },
 
-  jenkinsTargets: {
-
+  jenkinsTarget: {
+    platform: 'linux', name: 'linux', icon: 'linux.png', downloads: [
+      { fragment: 'artifact/*zip*/archive.zip', name: 'Keyman for Linux', icon: 'keyman.png' }
+    ]
   }
 }

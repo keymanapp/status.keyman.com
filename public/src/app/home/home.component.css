@@ -325,6 +325,40 @@ table#sites-and-relatives {
   display: block;
 }
 
+.view-link {
+  font-weight: normal;
+  font-size: 0.8em;
+  float: right;
+  margin-top: 3px;
+}
+
+.view-link a {
+  padding: 2px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+/* Issue Views */
+
+.tr-platform .issues {
+  min-width: 200px;
+}
+
+.issue-container {
+  display: flex;
+}
+
+.issue-view-current #issue-view-link-current { background-color: #e0e0e0; }
+.issue-view-all #issue-view-link-all { background-color: #e0e0e0; }
+
+.issue-view-current .issue-count-container {
+  margin-top: 0.3em;
+}
+
+.issue-view-current .issue-count {
+  zoom: 1.25;
+}
+
 /* Pull Request Views */
 
 /*.pull-request-view-link { color: white; }*/
@@ -332,16 +366,6 @@ table#sites-and-relatives {
 .pull-request-view-project #pull-request-view-link-project { background-color: #e0e0e0; }
 .pull-request-view-status #pull-request-view-link-status { background-color: #e0e0e0; }
 .pull-request-view-author #pull-request-view-link-author { background-color: #e0e0e0; }
-.pull-request-view-link {
-  font-weight: normal;
-  font-size: 0.8em;
-  float: right;
-}
-.pull-request-view-link a {
-  padding: 2px;
-  border-radius: 4px;
-  margin-left: 4px;
-}
 
 .pr-group-block {
   display: block;

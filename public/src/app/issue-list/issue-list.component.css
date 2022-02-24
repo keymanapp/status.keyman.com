@@ -1,3 +1,17 @@
+.issue-box-view-current {
+  display: none;
+}
+
+.issue-box-view-current app-count-box {
+  zoom: 1.25;
+}
+
+.issue-box-view-current.milestone-current,
+.issue-box-view-current.milestone-other
+ {
+  display: inline;
+}
+
 .issue-box.nav {
   display: inline-flex;
 }

@@ -25,10 +25,13 @@ export class ClipboardComponent implements OnInit {
 
   copyToClipboard() {
     // async but we don't need to wait around for the answer
-    const clipText = 
+    const clipText =
       typeof this.text == 'function' ? this.text() : this.text;
     if(typeof clipText == 'object') {
-      (navigator.clipboard as Clipboard).write([new ClipboardItem({[clipText.type]: new Blob([clipText.content], {type: clipText.type}) })]);
+      let items: globalThis.ClipboardItems = [];
+      let item = new globalThis.ClipboardItem({[clipText.type]: new Blob([clipText.content], {type: clipText.type}) });
+      items.push(item);
+      navigator.clipboard.write(items);
     } else {
       navigator.clipboard.writeText(clipText);
     }

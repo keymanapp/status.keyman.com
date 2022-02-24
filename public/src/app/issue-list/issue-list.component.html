@@ -1,4 +1,4 @@
-<span class="issue-box {{isNav ? 'nav' : platform ? 'platform' : 'site'}} {{pinned ? 'pinned' : ''}}">
+<span class="issue-box {{isNav ? 'nav' : platform ? 'platform' : 'site'}} {{pinned ? 'pinned' : ''}} issue-box-view-{{view}} milestone-{{repo == '*' ? 'current' : milestone?.id}}">
   <app-count-box *ngIf="!isNav" [repo]="repo" [title]="milestone?.title" [count]="milestone?.count" [label]="platform?.value.id ? platform?.value.id+'/' : null" [class]="repo == '*' ? 'milestone-current' : 'milestone-'+milestone?.id"></app-count-box>
 
   <span *ngIf="isNav" class="navbar-new-issues">

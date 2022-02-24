@@ -6,12 +6,18 @@ import { labelColor } from '../utility/labelColor';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
 
+export enum IssueView {
+  Current = 'current',
+  All = 'all'
+};
+
 @Component({
   selector: 'app-issue-list',
   templateUrl: './issue-list.component.html',
   styleUrls: ['./issue-list.component.css']
 })
 export class IssueListComponent extends PopupComponent implements OnInit {
+  @Input() view?: IssueView;
   @Input() isNav: boolean;
   @Input() issues: any;
   @Input() repo?: any;

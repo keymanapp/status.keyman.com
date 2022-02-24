@@ -81,16 +81,22 @@
   <!-- <h1></h1> -->
 
   <div class="flex-container container-fluid {{isBetaRunning() ? 'in-beta' : 'not-in-beta'}}">
-    <table class="table table-striped table-bordered pull-request-view-{{pullRequestView}}">
+    <table class="table table-striped table-bordered issue-view-{{issueView}} pull-request-view-{{pullRequestView}}">
       <thead class='thead-dark'>
         <tr>
           <th id='th-platform'>Platform</th>
           <th id='th-stable' class='tier'>Stable</th>
           <th id='th-beta' class='tier'>Beta</th>
           <th id='th-alpha' class='tier'>Alpha</th>
-          <th id='th-issues'>Issues</th>
+          <th id='th-issues'>Issues
+            <span class='view-link issue-view-link'>
+              View:
+              <a id='issue-view-link-current' href="javascript:void(0)" (click)="setIssueView('current')">Current</a>
+              <a id='issue-view-link-all' href="javascript:void(0)" (click)="setIssueView('all')">All</a>
+            </span>
+          </th>
           <th id='th-pulls'>Pull Requests
-            <span class='pull-request-view-link'>
+            <span class='view-link pull-request-view-link'>
               View by:
               <a id='pull-request-view-link-platform' href="javascript:void(0)" (click)="setPRView('platform')">Platform</a>
               <a id='pull-request-view-link-project' href="javascript:void(0)" (click)="setPRView('project')">Project</a>
@@ -179,11 +185,16 @@
           </td>
 
           <td class="issues">
-            <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}</a>
-
-            <ng-container *ngFor="let milestone of platform.value.milestones">
-              <app-issue-list [gravityX]="'left'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
-            </ng-container>
+            <div class="issue-container">
+              <div class="issue-count-container">
+                <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}</a>
+              </div>
+              <div class="issue-box-container">
+                <ng-container *ngFor="let milestone of platform.value.milestones">
+                  <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
+                </ng-container>
+              </div>
+            </div>
           </td>
 
           <td class="pulls" *ngIf="pullRequestView == 'status' && platform.value.id == 'android'" rowspan='8'>
@@ -237,7 +248,7 @@
 
       </tbody>
     </table>
-    <table id="sites-and-relatives" class="table table-striped table-bordered table-sm">
+    <table id="sites-and-relatives" class="table table-striped table-bordered table-sm issue-view-{{issueView}}">
       <tbody>
         <tr class='tr-site'>
           <th class='th-keyboards'><a href="https://github.com/keymanapp/keyboards" target="_blank">⌨ keyboards</a></th>
@@ -292,14 +303,14 @@
           <ng-container *ngFor="let site of sites | keyvalue">
             <td class='issues'>
               <ng-container *ngFor="let milestone of site.value.milestones">
-                <app-issue-list [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+                <app-issue-list [view]="issueView" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
               </ng-container>
             </td>
           </ng-container>
           <td class='gap'></td>
           <td class='issues'>
             <ng-container *ngFor="let milestone of otherSites?.milestones">
-              <app-issue-list [gravityX]="'left'" [gravityY]="'top'" [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+              <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="'top'" [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
             </ng-container>
           </td>
         </tr>

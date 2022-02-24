@@ -1,4 +1,4 @@
-import { NgZone, Component, PlatformRef } from '@angular/core';
+import { NgZone, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from '../status/status.service';
 import { StatusSource } from '../../../../shared/status-source';
@@ -9,6 +9,7 @@ import { escapeHtml } from '../utility/escapeHtml';
 import { DataSocket } from '../datasocket/datasocket.service';
 import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
+import { IssueView } from '../issue-list/issue-list.component';
 
 interface Status {
   currentSprint: any;
@@ -88,6 +89,9 @@ export class HomeComponent {
   // Query parameters
   showContributions = false;
   sprintOverride = null;
+
+  // Issue View
+  issueView: IssueView = IssueView.Current;
 
   // Pull Request View
   pullRequestView: PullRequestView = PullRequestView.Platform;
@@ -676,6 +680,12 @@ export class HomeComponent {
 
   getContributionReviewText(user) {
     return this.getContributionText(user.contributions.reviews.nodes, 'pullRequest');
+  }
+
+  /* Multiple issue views */
+
+  setIssueView(view: string) {
+    this.issueView = view as IssueView;
   }
 
   /* Multiple PR views */

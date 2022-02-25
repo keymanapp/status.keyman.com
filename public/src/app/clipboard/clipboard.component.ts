@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-interface ClipboardItem {
+/*interface ClipboardItem {
   readonly types: string[];
   readonly presentationStyle: "unspecified" | "inline" | "attachment";
   getType(): Promise<Blob>;
@@ -13,7 +13,7 @@ interface ClipboardItemData {
 declare var ClipboardItem: {
   prototype: ClipboardItem;
   new (itemData: ClipboardItemData): ClipboardItem;
-};
+};*/
 
 @Component({
   selector: 'app-clipboard',

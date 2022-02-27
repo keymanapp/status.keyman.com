@@ -1,13 +1,19 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-// ClipboardItem and Clipboard.write are not yet in current types.d.ts
-declare class ClipboardItem {
-  constructor(data: { [mimeType: string]: Blob });
+/*interface ClipboardItem {
+  readonly types: string[];
+  readonly presentationStyle: "unspecified" | "inline" | "attachment";
+  getType(): Promise<Blob>;
 }
 
-declare class Clipboard extends globalThis.Clipboard {
-  write(items: [ClipboardItem]);
+interface ClipboardItemData {
+  [mimeType: string]: Blob | string | Promise<Blob | string>;
 }
+
+declare var ClipboardItem: {
+  prototype: ClipboardItem;
+  new (itemData: ClipboardItemData): ClipboardItem;
+};*/
 
 @Component({
   selector: 'app-clipboard',
@@ -25,10 +31,13 @@ export class ClipboardComponent implements OnInit {
 
   copyToClipboard() {
     // async but we don't need to wait around for the answer
-    const clipText = 
+    const clipText =
       typeof this.text == 'function' ? this.text() : this.text;
     if(typeof clipText == 'object') {
-      (navigator.clipboard as Clipboard).write([new ClipboardItem({[clipText.type]: new Blob([clipText.content], {type: clipText.type}) })]);
+      let items: ClipboardItems = [];
+      let item = new ClipboardItem({[clipText.type]: new Blob([clipText.content], {type: clipText.type}) });
+      items.push(item);
+      navigator.clipboard.write(items);
     } else {
       navigator.clipboard.writeText(clipText);
     }

@@ -140,7 +140,7 @@ export default class ManualTestParser {
   parseTestRunComment(protocol: ManualTestProtocol, id: number, comment: string): ManualTestProtocol {
     const lines = comment.replace(/\r/g, '').split('\n');
     const testTitleRegex = /^\s*(?:(?:[-*]|(?:#{1,4}))\s)?(?:\*\*)?(TEST|SUITE|GROUP)_([A-Z0-9_.-]+)(?:\*\*)?:?(?:\*\*)?\s*(.*?)\s*$/i;
-    const testStatusRegex = /(OPEN|PASSED|FAILED|BLOCKED|SKIPPED|UNKNOWN|PASS|FAIL|BLOCK|SKIP)(?:\)?\*\*\)?)? *(.*) *$/i;
+    const testStatusRegex = /(OPEN|PASSED|FAILED|BLOCKED|SKIPPED|UNKNOWN|PASS|FAIL|BLOCK|SKIP)(?:\)?:?\*\*\)?)? *(.*) *$/i;
 
     if(protocol.suites.length == 0) return;
     let suite: ManualTestSuite = protocol.suites[0];

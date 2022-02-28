@@ -5,6 +5,7 @@ import githubStatusService from "../services/github/github-status";
 import githubIssuesService from "../services/github/github-issues";
 import githubContributionsService from "../services/github/github-contributions";
 import sentryIssuesService from "../services/sentry/sentry-issues";
+import codeOwnersService from "../services/github/code-owners";
 import deepEqual from "deep-equal";
 import DataService from "../services/data-service";
 import { keymaniTunesService, firstVoicesiTunesService } from "../services/deployment/itunes";
@@ -45,7 +46,8 @@ export interface StatusDataCache {
       currentSprint?: any;
     };
   };
-  deployment: {}
+  deployment: {};
+  codeOwners?: {};
 };
 
 export class StatusData {
@@ -119,6 +121,15 @@ export class StatusData {
     let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
     this.cache.sentryIssues = sentryIssues;
     console.log('refreshSentryIssuesData finished');
+    return result;
+  };
+
+  refreshCodeOwnersData = async (): Promise<boolean> => {
+    console.log('refreshCodeOwnersData starting');
+    let codeOwners = await codeOwnersService.get();
+    let result = !deepEqual(codeOwners, this.cache.codeOwners);
+    this.cache.codeOwners = codeOwners;
+    console.log('refreshCodeOwnersData finished');
     return result;
   };
 

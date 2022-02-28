@@ -1,11 +1,11 @@
 require('source-map-support').install();
 
-enum Environment {
+export enum Environment {
   Development = 'development',
   Production = 'production',
   Staging = 'staging'
 };
-const environment: Environment =
+export const environment: Environment =
   process.env['NODE_ENV'] == 'production' ? Environment.Production :
   process.env['NODE_ENV'] == 'staging' ? Environment.Staging :
   Environment.Development;
@@ -60,6 +60,7 @@ function initialLoad() {
 
   if(debugTestBot) return;
 
+  respondCodeOwnersDataChange();
   respondGitHubDataChange();
   respondKeymanDataChange();
   respondTeamcityDataChange();
@@ -130,6 +131,12 @@ function respondGitHubDataChange() {
     .finally(() => timingManager.finish('github'));
 }
 
+function respondCodeOwnersDataChange() {
+  return statusData.refreshCodeOwnersData()
+    .then(hasChanged => sendWsAlert(hasChanged, 'code-owners'))
+    .catch(error => reportError(error));
+}
+
 function respondGitHubIssuesDataChange() {
   return statusData.refreshGitHubIssuesData()
     .then(hasChanged => sendWsAlert(hasChanged, 'github-issues'))
@@ -179,6 +186,7 @@ function sendInitialRefreshMessages(socket) {
     if(sprint.contributions) socket.send('github-contributions');
     if(sprint.github) socket.send('github');
   }
+  if(statusData.cache.codeOwners) socket.send('code-owners');
   if(statusData.cache.sentryIssues) socket.send('sentry-issues');
   if(statusData.cache.issues) socket.send('github-issues');
   if(statusData.cache.teamCity && statusData.cache.teamCityRunning) socket.send('teamcity');
@@ -304,6 +312,16 @@ app.get('/status/sentry-issues', (request, response) => {
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
     sentryIssues: statusData.cache.sentryIssues
+  }));
+  response.end();
+});
+
+app.get('/status/code-owners', (request, response) => {
+  console.log('GET /status/code-owners');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    codeOwners: statusData.cache.codeOwners
   }));
   response.end();
 });

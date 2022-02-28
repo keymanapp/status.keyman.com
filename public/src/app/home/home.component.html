@@ -108,7 +108,30 @@
       </thead>
       <tbody>
         <tr class='tr-platform' *ngFor="let platform of platforms | keyvalue">
-          <th><img src="assets/{{platform.value.id}}.png">&#160;&#160;<a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a></th>
+          <th>
+            <div *ngIf="!showCodeOwners">
+              <img src="assets/{{platform.value.id}}.png">&#160;&#160;
+              <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
+            </div>
+            <div *ngIf="showCodeOwners">
+              <div class="platform-row">
+                <div class="platform-icon">
+                  <img src="assets/{{platform.value.id}}.png">
+                </div>
+                <div class="platform-owner" *ngIf="status.codeOwners[platform.value.id]">
+                  <img class="avatar-22" src="https://github.com/{{status.codeOwners[platform.value.id].owner}}.png?size=22" title="Platform owner: @{{status.codeOwners[platform.value.id].owner}}">
+                </div>
+                <div class="platform-advocate" *ngIf="status.codeOwners[platform.value.id] && showCodeOwners">
+                  <img class="avatar-22" src="https://github.com/{{status.codeOwners[platform.value.id].advocate}}.png?size=22" title="Platform advocate: @{{status.codeOwners[platform.value.id].advocate}}">
+                </div>
+              </div>
+              <div class="platform-row">
+                <div class="platform-title">
+                  <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
+                </div>
+              </div>
+            </div>
+          </th>
 
           <td class="tier" id="tier-stable">
             <div class="tier-container" *ngIf="platform.value.id != 'common'">

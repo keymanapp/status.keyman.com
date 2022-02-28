@@ -57,7 +57,18 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+
+            "development": {
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": true,
+              "extractLicenses": false,
+              "vendorChunk": true,
+              "buildOptimizer": false
             }
+
           }
         },
         "serve": {
@@ -68,6 +79,9 @@
           "configurations": {
             "production": {
               "browserTarget": "public:build:production"
+            },
+            "development": {
+              "browserTarget": "public:build:development"
             }
           }
         },

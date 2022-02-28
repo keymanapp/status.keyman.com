@@ -338,6 +338,30 @@ table#sites-and-relatives {
   margin-left: 4px;
 }
 
+/* Platform Icon + Code Owner */
+
+.tr-platform th > div div.platform-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.tr-platform th div.platform-icon img {
+  width: 32px;
+  margin-right: 12px;
+}
+
+.tr-platform th div.platform-owner img,
+.tr-platform th div.platform-advocate img {
+  width: 22px;
+  margin-left: 6px;
+}
+
+.platform-title {
+  flex-grow: 1;
+  text-align: center;
+}
+
 /* Issue Views */
 
 .tr-platform .issues {

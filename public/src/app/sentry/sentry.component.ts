@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
-import { platformSentryIds } from '../platforms';
+import { platformSentryIds } from '../../../../shared/platforms';
 import { PopupComponent } from '../popup/popup.component';
 import { siteSentryIds } from '../sites';
 import { escapeHtml } from '../utility/escapeHtml';

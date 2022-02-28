@@ -2,7 +2,7 @@ import { NgZone, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from '../status/status.service';
 import { StatusSource } from '../../../../shared/status-source';
-import { platforms, PlatformSpec } from '../platforms';
+import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { sites, siteSentryNames } from '../sites';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from '../utility/escapeHtml';
@@ -16,6 +16,7 @@ interface Status {
   github: any;
   issues: any;
   contributions: any;
+  codeOwners: any;
   keyman: any[];
   sentryIssues: any;
   teamCity: any[];
@@ -49,6 +50,7 @@ export class HomeComponent {
     github: undefined,
     issues: undefined,
     contributions: undefined,
+    codeOwners: {},
     keyman: [],
     sentryIssues: {},
     teamCity: [],
@@ -88,6 +90,7 @@ export class HomeComponent {
 
   // Query parameters
   showContributions = false;
+  showCodeOwners = false;
   sprintOverride = null;
 
   // Issue View
@@ -127,6 +130,7 @@ export class HomeComponent {
         if(queryParams.keys.length == 0 && location.href.includes('?')) return;
 
         this.showContributions = queryParams.get('c') == '1';
+        this.showCodeOwners = queryParams.get('o') == '1';
         this.sprintOverride = queryParams.get('sprint');
       });
 
@@ -147,6 +151,9 @@ export class HomeComponent {
           console.log('getStatus.data for '+source);
           this.status.currentSprint = data.currentSprint;
           switch(source) {
+            case StatusSource.CodeOwners:
+              this.status.codeOwners = data.codeOwners;
+              break;
             case StatusSource.GitHub:
               this.status.github = data.github;
               this.transformPlatformStatusData();

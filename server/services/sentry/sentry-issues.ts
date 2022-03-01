@@ -116,7 +116,7 @@ export default {
         const link = typeof data.res.headers.link == 'string' ? data.res.headers.link : data.res.headers.link[0];
         const links = parseLinkHeader(link);
         if(links && links.next && links.next.results == 'true') {
-          return this.delay().then(() => this.getEnvironment(environment, project, links.next.cursor, results));
+          return this.delay().then(() => this.getEnvironmentProject(environment, project, links.next.cursor, results));
         }
       }
       return results;

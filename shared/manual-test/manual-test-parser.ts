@@ -291,24 +291,55 @@ export default class ManualTestParser {
         content+'_**ERROR:** user tests have not yet been defined_';
     }
 
+    let resultsTemplate = {suite:'', group:'', content:''};
+
     for(let suite of protocol.suites) {
       if(suite.name) {
         content += `## ${suite.statusEmoji()} SUITE_${suite.name}: ${suite.description}\n`;
+        resultsTemplate.suite = '## SUITE_${suite.name}: ${suite.description}\n\n';
+      } else {
+        resultsTemplate.suite = '';
       }
+
       for(let group of suite.groups) {
         let n = '';
         if(group.name) {
           content += `* ${group.statusEmoji()} GROUP_${group.name}: ${group.description}\n`;
+          resultsTemplate.group = `### GROUP_${group.name}: ${group.description}\n\n`;
           n = '  ';
+        } else {
+          resultsTemplate.group = '';
         }
         for(let test of group.tests) {
           content += n + test.resultText(protocol.owner, protocol.repo, protocol.issue, protocol.isPR) + '\n';
+          if(test.status() == ManualTestStatus.Open) {
+            if(resultsTemplate.suite + resultsTemplate.group != '') {
+              resultsTemplate.content += '\n';
+            }
+            resultsTemplate.content += resultsTemplate.suite + resultsTemplate.group;
+            resultsTemplate.suite = '';
+            resultsTemplate.group = '';
+            resultsTemplate.content += `* **TEST_${test.name} (STATUS):** notes\n`;
+          }
         }
         content += '\n';
       }
       content += '\n';
     }
 
+    //
+    // Add a results template for all unfinished tests
+    //
+
+    if(resultsTemplate.content != '') {
+      content +=
+        "<details><summary>Results Template</summary>\n\n" +
+        "```\n" +
+        "# User Test Results\n\n"+
+        resultsTemplate.content+
+        "```\n"+
+        "</details>\n";
+    }
     return content.trimRight();
   }
 }

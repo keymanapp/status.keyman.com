@@ -46,9 +46,9 @@ async function processEvent(
   log(`pull.id: ${pull?.data?.id} issue.id: ${issue?.data?.id} baseId: ${protocol?.baseIssueId}`);
 
   // Process all comments in the issue / PR
-  mtp.parseComment(protocol, null, issue.data.body);
+  mtp.parseComment(protocol, null, issue.data.body, issue.data.user.login);
   issue_comments.forEach((comment) => {
-    mtp.parseComment(protocol, comment.id, comment.body);
+    mtp.parseComment(protocol, comment.id, comment.body, comment.user.login);
   });
 
   // DEBUG: console.log(JSON.stringify(protocol, null, 2));

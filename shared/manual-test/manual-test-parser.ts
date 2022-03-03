@@ -10,29 +10,29 @@ export default class ManualTestParser {
   controlRegex = /@keymanapp-test-bot\b/i;
   controlRetestRegex = /@keymanapp-test-bot(?: +)retest(?: *)(.*)$/im;
   controlSkipRegex = /@keymanapp-test-bot(?: +)skip\b/im;
+  testBotLogin = 'keymanapp-test-bot';
 
-  isUserTestingComment(comment: string): boolean {
+  isUserTestingComment(comment: string, login: string): boolean {
     // Match on a User Testing header in the string (any level of header is okay)
-    return /# User Testing/i.test(comment);
+    return login != this.testBotLogin && /# User Testing/i.test(comment);
   }
 
-  isUserTestResultsComment(comment: string): boolean {
+  isUserTestResultsComment(comment: string, login: string): boolean {
     // Match on a User Test Results header in the string (any level of header is okay)
-    return /# User Test Results/i.test(comment);
+    return login == this.testBotLogin && /# User Test Results/i.test(comment);
   }
 
-  isControlComment(comment: string): boolean {
-    let result = this.controlRegex.test(comment);
-    return result;
+  isControlComment(comment: string, login: string): boolean {
+    return login != this.testBotLogin && this.controlRegex.test(comment);
   }
 
-  parseComment(protocol: ManualTestProtocol, id: number, comment: string): ManualTestProtocol {
+  parseComment(protocol: ManualTestProtocol, id: number, comment: string, login: string): ManualTestProtocol {
     return !comment ? protocol :
-      this.isUserTestingComment(comment) ?
+      this.isUserTestingComment(comment, login) ?
       this.parseUserTestingComment(protocol, id, comment) :
-      this.isUserTestResultsComment(comment) ?
+      this.isUserTestResultsComment(comment, login) ?
       this.saveUserTestResultsComment(protocol, id, comment) :
-      this.isControlComment(comment) ?
+      this.isControlComment(comment, login) ?
       this.parseControlComment(protocol, id, comment) :
       this.parseTestRunComment(protocol, id, comment);
   }

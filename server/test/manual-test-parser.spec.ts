@@ -96,8 +96,8 @@ const userTestResultsComment =
 \`\`\`
 # User Test Results
 
-* **TEST_FIZZ (STATUS):** notes
-* **TEST_BAZ (STATUS):** notes
+* **TEST_FIZZ (OPEN):** notes
+* **TEST_BAZ (OPEN):** notes
 \`\`\`
 </details>`;
 

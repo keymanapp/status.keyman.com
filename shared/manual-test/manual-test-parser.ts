@@ -10,7 +10,7 @@ export default class ManualTestParser {
   controlRegex = /@keymanapp-test-bot\b/i;
   controlRetestRegex = /@keymanapp-test-bot(?: +)retest(?: *)(.*)$/im;
   controlSkipRegex = /@keymanapp-test-bot(?: +)skip\b/im;
-  testBotLogin = 'keymanapp-test-bot';
+  testBotLogin = 'keymanapp-test-bot[bot]';
 
   isUserTestingComment(comment: string, login: string): boolean {
     // Match on a User Testing header in the string (any level of header is okay)

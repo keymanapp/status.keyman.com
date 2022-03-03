@@ -94,7 +94,7 @@ const userTestResultsComment =
 <details><summary>Results Template</summary>
 
 \`\`\`
-# User Test Results
+# Test Results
 
 * **TEST_FIZZ (OPEN):** notes
 * **TEST_BAZ (OPEN):** notes

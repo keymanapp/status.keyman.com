@@ -335,7 +335,7 @@ export default class ManualTestParser {
       content +=
         "<details><summary>Results Template</summary>\n\n" +
         "```\n" +
-        "# User Test Results\n\n"+
+        "# Test Results\n\n"+
         resultsTemplate.content.trim()+
         "\n```\n"+
         "</details>\n";

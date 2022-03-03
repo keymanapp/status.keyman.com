@@ -30,7 +30,7 @@ async function processEvent(
   data: ProcessEventData,
   is_pull_request: boolean
 ) {
-
+  log('processEvent ENTER');
   // TODO: we may just be able to use the issue data coming in
   const issue = await octokit.rest.issues.get({...data});
   const pull = is_pull_request ? await octokit.rest.pulls.get({owner: data.owner, repo: data.repo, pull_number: data.issue_number}) : null;
@@ -43,7 +43,7 @@ async function processEvent(
 
   const mtp = new ManualTestParser();
   let protocol = new ManualTestProtocol(data.owner, data.repo, data.issue_number, is_pull_request, issue.data.id, pull?.data?.id);
-  log(`pull.id: ${pull?.data?.id} issue.id: ${issue?.data?.id} baseId: ${protocol?.baseIssueId}`);
+  log(`processEvent: pull.id: ${pull?.data?.id} issue.id: ${issue?.data?.id} baseId: ${protocol?.baseIssueId}`);
 
   // Process all comments in the issue / PR
   mtp.parseComment(protocol, null, issue.data.body, issue.data.user.login);
@@ -57,10 +57,10 @@ async function processEvent(
   const hasHasUserTestLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == hasUserTestLabelName);
   if(protocol.userTesting.body && !hasHasUserTestLabel) {
     // We have a user test in the issue or PR, so we add the has-user-test label
-    log(`Adding ${hasUserTestLabelName} label`);
+    log(`processEvent: Adding ${hasUserTestLabelName} label`);
     await octokit.rest.issues.addLabels({...data, labels: [hasUserTestLabelName]});
   } else if(!protocol.userTesting.body && hasHasUserTestLabel) {
-    log(`Removing ${hasUserTestLabelName} label`);
+    log(`processEvent: Removing ${hasUserTestLabelName} label`);
     await octokit.rest.issues.removeLabel({...data, name: hasUserTestLabelName});
   }
 
@@ -68,6 +68,7 @@ async function processEvent(
   // In the unlikely event that someone removes a `# User Testing` comment, it is up to them to remove the
   // label and the `# User Test Results` comment if they wish.
   if(!is_pull_request && !protocol.userTesting.body) {
+    log('processEvent EXIT: issue has no user test');
     return null;
   }
 
@@ -77,20 +78,20 @@ async function processEvent(
   // manual-test-required label
   const hasManualTestRequiredLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestRequiredLabelName);
   if(testResult && hasManualTestRequiredLabel) {
-    log(`Removing ${manualTestRequiredLabelName} label`);
+    log(`processEvent: Removing ${manualTestRequiredLabelName} label`);
     await octokit.rest.issues.removeLabel({...data, name: manualTestRequiredLabelName});
   } else if(!testResult && !hasManualTestRequiredLabel) {
-    log(`Adding ${manualTestRequiredLabelName} label`);
+    log(`processEvent: Adding ${manualTestRequiredLabelName} label`);
     await octokit.rest.issues.addLabels({...data, labels: [manualTestRequiredLabelName]});
   }
 
   // manual-test-missing label
   const hasManualTestMissingLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestMissingLabelName);
   if(protocol.getTests().length == 0 && !protocol.skipTesting && !hasManualTestMissingLabel) {
-    log(`Adding ${manualTestMissingLabelName} label`);
+    log(`processEvent: Adding ${manualTestMissingLabelName} label`);
     await octokit.rest.issues.addLabels({...data, labels: [manualTestMissingLabelName]});
   } else if((protocol.getTests().length > 0 || protocol.skipTesting) && hasManualTestMissingLabel) {
-    log(`Removing ${manualTestMissingLabelName} label`);
+    log(`processEvent: Removing ${manualTestMissingLabelName} label`);
     await octokit.rest.issues.removeLabel({...data, name: manualTestMissingLabelName});
   }
 
@@ -150,6 +151,7 @@ async function processEvent(
       context: 'user_testing',
     });
   }
+  log('processEvent: EXIT');
 }
 
 function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
@@ -166,10 +168,13 @@ function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
 }
 
 module.exports = (app: Probot) => {
-  app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender, context.payload.pull_request.state)) return null;
+  app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], (context) => {
     log('pull_request ENTER: '+context.id+', '+context.payload.pull_request.number);
-    let result = processEvent(
+    if(!shouldProcessEvent(context.payload.sender, context.payload.pull_request.state)) {
+      log('pull_request EXIT: '+context.id+' -- skipping');
+      return null;
+    }
+    processEvent(
       context.octokit,
       {
         owner: context.payload.repository.owner.login,
@@ -179,13 +184,16 @@ module.exports = (app: Probot) => {
       true
     );
     log('pull_request EXIT: '+context.id);
-    return result;
+    return 'ok';
   });
 
-  app.on(['issues.opened', 'issues.edited'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) return null;
+  app.on(['issues.opened', 'issues.edited'], (context) => {
     log('issue ENTER: '+context.id+', '+context.payload.issue.number);
-    let result = processEvent(
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {
+      log('issue EXIT: '+context.id+' -- skipping');
+      return null;
+    }
+    processEvent(
       context.octokit,
       {
         owner: context.payload.repository.owner.login,
@@ -195,13 +203,16 @@ module.exports = (app: Probot) => {
       false
     );
     log('issue EXIT: '+context.id);
-    return result;
+    return 'ok';
   });
 
-  app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async (context) => {
-    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) return null;
+  app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], (context) => {
     log('issue_comment ENTER: '+context.id+', '+context.payload.comment.id);
-    let result = processEvent(
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {
+      log('issue_comment EXIT: '+context.id+' -- skipping');
+      return null;
+    }
+    processEvent(
       context.octokit,
       {
         owner: context.payload.repository.owner.login,
@@ -211,10 +222,10 @@ module.exports = (app: Probot) => {
       !!context.payload.issue.pull_request
     );
     log('issue_comment EXIT: '+context.id);
-    return result;
+    return 'ok';
   });
 
-  app.on(['status'], async (context) => {
+  app.on(['status'], (context) => {
     log('status ENTER: '+context.id+', '+context.payload.sha);
     if(context.payload.context == 'user_testing' || context.payload.state != 'success') {
       log('status EXIT: '+context.id+' -- ignoring event');
@@ -236,7 +247,7 @@ module.exports = (app: Probot) => {
       }
       if(commit.oid == context.payload.sha){
         log('status: found matching target url');
-        let result = processEvent(
+        processEvent(
           context.octokit,
           {
             owner: context.payload.repository.owner.login,
@@ -246,7 +257,7 @@ module.exports = (app: Probot) => {
           true // is pull request
         );
         log('status EXIT: '+context.id);
-        return result;
+        return 'ok';
       }
     }
     log('status EXIT: '+context.id+' -- no matching pull request found');

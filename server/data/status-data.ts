@@ -58,39 +58,39 @@ export class StatusData {
   };
 
   refreshKeymanVersionData = async (): Promise<boolean> => {
-    console.log('refreshKeymanVersion starting');
+    console.log('[Refresh] Keyman Version ENTER');
     let keymanVersion = await versionService.get();
     let result = !deepEqual(keymanVersion, this.cache.keymanVersion);
     this.cache.keymanVersion = keymanVersion;
-    console.log('refreshKeymanVersion finished');
+    console.log('[Refresh] Keyman Version EXIT');
     return result;
   };
 
   refreshTeamcityData = async (): Promise<boolean> => {
-    console.log('refreshTeamcityData starting');
+    console.log('[Refresh] TeamCity ENTER');
     const data = await teamcityService.get();
     let result =
       !deepEqual(data[0], this.cache.teamCity) ||
       !deepEqual(data[1], this.cache.teamCityRunning);
     this.cache.teamCity = data[0];
     this.cache.teamCityRunning = data[1];
-    console.log('refreshTeamcityData finished');
+    console.log('[Refresh] TeamCity EXIT');
     return result;
   };
 
   refreshGitHubIssuesData = async (): Promise<boolean> => {
-    console.log('refreshGitHubIssuesData starting');
+    console.log('[Refresh] GitHub Issues ENTER');
     let issues = await githubIssuesService.get(null, []);
     let result = !deepEqual(issues, this.cache.issues);
     this.cache.issues = issues;
-    console.log('refreshGitHubIssuesData finished');
+    console.log('[Refresh] GitHub Issues EXIT');
     return result;
   };
 
   // Warning: this currently returns TRUE if sprint dates have changed,
   // not if any data has changed. This is different to all the others
   refreshGitHubStatusData = async (sprintName): Promise<boolean> => {
-    console.log('refreshGitHubStatusData starting');
+    console.log('[Refresh] GitHub Status ENTER');
     const data = await githubStatusService.get(sprintName);
     this.cache.sprints[sprintName].github = data.github;
     this.cache.sprints[sprintName].phase = data.phase;
@@ -99,48 +99,48 @@ export class StatusData {
     if(result) {
       this.cache.sprints[sprintName].adjustedStart = data.adjustedStart;
     }
-    console.log('refreshGitHubStatusData finished');
+    console.log('[Refresh] GitHub Status EXIT');
     return result;
   };
 
   refreshGitHubContributionsData = async (sprintName): Promise<boolean> => {
-    console.log('refreshGitHubContributionsData starting');
+    console.log('[Refresh] GitHub Contributions ENTER');
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) return false;
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
     let contributions = await githubContributionsService.get(sprintStartDateTime);
     let result = !deepEqual(contributions, sprint.contributions);
     sprint.contributions = contributions;
-    console.log('refreshGitHubContributionsData finished');
+    console.log('[Refresh] GitHub Contributions EXIT');
     return result;
   };
 
   refreshSentryIssuesData = async (): Promise<boolean> => {
-    console.log('refreshSentryIssuesData starting');
+    console.log('[Refresh] Sentry ENTER');
     let sentryIssues = await sentryIssuesService.get();
     let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
     this.cache.sentryIssues = sentryIssues;
-    console.log('refreshSentryIssuesData finished');
+    console.log('[Refresh] Sentry EXIT');
     return result;
   };
 
   refreshCodeOwnersData = async (): Promise<boolean> => {
-    console.log('refreshCodeOwnersData starting');
+    console.log('[Refresh] CodeOwners ENTER');
     let codeOwners = await codeOwnersService.get();
     let result = !deepEqual(codeOwners, this.cache.codeOwners);
     this.cache.codeOwners = codeOwners;
-    console.log('refreshCodeOwnersData finished');
+    console.log('[Refresh] CodeOwners EXIT');
     return result;
   };
 
   // Deployment endpoints
 
   refreshService = async (id: StatusSource, service: DataService): Promise<boolean> => {
-    console.log('Refresh '+id+' starting');
+    console.log('[Refresh] '+id+' ENTER');
     let status = await service.get();
     let result = !deepEqual(status, this.cache.deployment[id]);
     this.cache.deployment[id] = status;
-    console.log('Refresh '+id+' finished');
+    console.log('[Refresh] '+id+' EXIT');
     return result;
   }
 

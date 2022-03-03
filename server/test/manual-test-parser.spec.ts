@@ -244,22 +244,24 @@ This was okay but I got a puzzle?
 
 const nestedRetestControlComment = 'SUITE_DESKTOP GROUP_MAC TEST_HARDWARE_SHIFT';
 
+const userLogin = 'user';
+
 describe('ManualTestParser', function() {
   describe('isUserTestingComment()', function() {
     it('should return true when comment includes a User Testing title', function() {
       let mtp = new ManualTestParser();
-      assert.strictEqual(mtp.isUserTestingComment(userTestingComment), true);
-      assert.strictEqual(mtp.isUserTestingComment(nestedUserTest), true);
+      assert.strictEqual(mtp.isUserTestingComment(userTestingComment, userLogin), true);
+      assert.strictEqual(mtp.isUserTestingComment(nestedUserTest, userLogin), true);
     });
   });
 
   describe('isTestControlComment()', function() {
     it('should return true when comment contains a bot handle @keymanapp-test-bot', function() {
       let mtp = new ManualTestParser();
-      assert.strictEqual(mtp.isControlComment(retestAllComment), true);
-      assert.strictEqual(mtp.isControlComment(retestComment), true);
-      assert.strictEqual(mtp.isControlComment(userTestingComment), false);
-      assert.strictEqual(mtp.isControlComment(testRunComment), false);
+      assert.strictEqual(mtp.isControlComment(retestAllComment, userLogin), true);
+      assert.strictEqual(mtp.isControlComment(retestComment, userLogin), true);
+      assert.strictEqual(mtp.isControlComment(userTestingComment, userLogin), false);
+      assert.strictEqual(mtp.isControlComment(testRunComment, userLogin), false);
     })
   });
 
@@ -348,12 +350,12 @@ describe('ManualTestParser', function() {
     it('should parse test results', function() {
       let mtp = new ManualTestParser();
       let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
-      mtp.parseComment(protocol, 1, userTestingComment);
+      mtp.parseComment(protocol, 1, userTestingComment, userLogin);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Open);
-      mtp.parseComment(protocol, 2, testRunComment);
+      mtp.parseComment(protocol, 2, testRunComment, userLogin);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Failed);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
@@ -370,13 +372,13 @@ describe('ManualTestParser', function() {
       assert.strictEqual(protocol.getTests()[1].testRuns[0].status, ManualTestStatus.Failed);
       assert.strictEqual(protocol.getTests()[2].testRuns.length, 0);
       assert.strictEqual(protocol.getTests()[3].testRuns.length, 0);
-      mtp.parseComment(protocol, 3, secondTestRunComment);
+      mtp.parseComment(protocol, 3, secondTestRunComment, userLogin);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[1].testRuns.length, 2);
       assert.strictEqual(protocol.getTests()[1].testRuns[1].commentID, 3);
       assert.strictEqual(protocol.getTests()[1].testRuns[1].notes, '- Happy');
       assert.strictEqual(protocol.getTests()[1].testRuns[1].status, ManualTestStatus.Passed);
-      mtp.parseComment(protocol, 4, thirdTestRunComment);
+      mtp.parseComment(protocol, 4, thirdTestRunComment, userLogin);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[2].testRuns.length, 1);
       assert.strictEqual(protocol.getTests()[2].testRuns[0].commentID, 4);
@@ -388,10 +390,10 @@ describe('ManualTestParser', function() {
       assert.strictEqual(protocol.getTests()[3].testRuns[0].summary, '');
       assert.strictEqual(protocol.getTests()[3].testRuns[0].notes, '- Fantastic!');
       assert.strictEqual(protocol.getTests()[3].testRuns[0].status, ManualTestStatus.Passed);
-      mtp.parseComment(protocol, 5, skippedTestRunComment);
+      mtp.parseComment(protocol, 5, skippedTestRunComment, userLogin);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Skipped);
-      mtp.parseComment(protocol, 6, retestComment);
+      mtp.parseComment(protocol, 6, retestComment, userLogin);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Passed);
@@ -400,7 +402,7 @@ describe('ManualTestParser', function() {
       assert.strictEqual(protocol.getTests()[0].testRuns[1].status, ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[3].testRuns[2].isControl, true);
       assert.strictEqual(protocol.getTests()[3].testRuns[2].status, ManualTestStatus.Open);
-      mtp.parseComment(protocol, 7, retestAllComment);
+      mtp.parseComment(protocol, 7, retestAllComment, userLogin);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
@@ -419,16 +421,16 @@ describe('ManualTestParser', function() {
       // setup
       let mtp = new ManualTestParser();
       let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
-      mtp.parseComment(protocol, 1, userTestingComment);
-      mtp.parseComment(protocol, 2, testRunComment);
+      mtp.parseComment(protocol, 1, userTestingComment, userLogin);
+      mtp.parseComment(protocol, 2, testRunComment, userLogin);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Passed);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Failed);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Open);
 
       // test
-      assert.strictEqual(mtp.isControlComment(altRetestComment), true);
-      mtp.parseComment(protocol, 3, altRetestComment);
+      assert.strictEqual(mtp.isControlComment(altRetestComment, userLogin), true);
+      mtp.parseComment(protocol, 3, altRetestComment, userLogin);
       assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
@@ -440,15 +442,15 @@ describe('ManualTestParser', function() {
     it('should set checkmarks and status correctly', function() {
       let mtp = new ManualTestParser();
       let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
-      mtp.parseComment(protocol, 1, userTestingComment);
-      mtp.parseComment(protocol, 2, testRunComment);
+      mtp.parseComment(protocol, 1, userTestingComment, userLogin);
+      mtp.parseComment(protocol, 2, testRunComment, userLogin);
       let comment = mtp.getUserTestResultsComment(protocol);
       assert.strictEqual(comment, userTestResultsComment);
-      mtp.parseComment(protocol, 3, secondTestRunComment);
-      mtp.parseComment(protocol, 4, thirdTestRunComment);
+      mtp.parseComment(protocol, 3, secondTestRunComment, userLogin);
+      mtp.parseComment(protocol, 4, thirdTestRunComment, userLogin);
       comment = mtp.getUserTestResultsComment(protocol);
       assert.strictEqual(comment, userTestResultsAllPassedComment);
-      mtp.parseComment(protocol, 5, skippedTestRunComment);
+      mtp.parseComment(protocol, 5, skippedTestRunComment, userLogin);
       comment = mtp.getUserTestResultsComment(protocol);
       assert.strictEqual(comment, userTestResultsSkippedComment);
     });
@@ -457,7 +459,7 @@ describe('ManualTestParser', function() {
       let mtp = new ManualTestParser();
       let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
       mtp.parseUserTestingComment(protocol, 1, nestedUserTest);
-      mtp.parseComment(protocol, 2, nestedResult);
+      mtp.parseComment(protocol, 2, nestedResult, userLogin);
       assert.strictEqual(protocol.suites[0].groups[1].tests[1].testRuns[0].notes, 'This was okay but I got a puzzle?');
 
       assert.strictEqual(protocol.suites[0].groups[1].tests[1].testRuns[0].status, ManualTestStatus.Passed);

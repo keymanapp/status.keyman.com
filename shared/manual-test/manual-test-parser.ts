@@ -296,7 +296,7 @@ export default class ManualTestParser {
     for(let suite of protocol.suites) {
       if(suite.name) {
         content += `## ${suite.statusEmoji()} SUITE_${suite.name}: ${suite.description}\n`;
-        resultsTemplate.suite = '## SUITE_${suite.name}: ${suite.description}\n\n';
+        resultsTemplate.suite = `## SUITE_${suite.name}: ${suite.description}\n\n`;
       } else {
         resultsTemplate.suite = '';
       }

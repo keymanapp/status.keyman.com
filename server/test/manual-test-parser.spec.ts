@@ -88,7 +88,18 @@ const userTestResultsComment =
 - ✅ **TEST_FOO ([PASSED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))**: yes great ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - 🟥 **TEST_BAR ([FAILED](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))** ([notes](https://github.com/keymanapp/keyman/issues/1#issuecomment-2))
 - ⬜ **TEST_FIZZ (OPEN)**
-- ⬜ **TEST_BAZ (OPEN)**`;
+- ⬜ **TEST_BAZ (OPEN)**
+
+
+<details><summary>Results Template</summary>
+
+\`\`\`
+# User Test Results
+
+* **TEST_FIZZ (STATUS):** notes
+* **TEST_BAZ (STATUS):** notes
+\`\`\`
+</details>`;
 
 const userTestResultsAllPassedComment =
 `# User Test Results

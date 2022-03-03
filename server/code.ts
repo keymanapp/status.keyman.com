@@ -206,13 +206,17 @@ app.use('/', express.static((environment == Environment.Development ? '' : '../'
 /* Web hooks */
 
 app.post('/webhook/github', (request, response) => {
-  respondGitHubDataChange();
-  slackLGTM(request.body);
+  (async () => {
+    respondGitHubDataChange();
+    slackLGTM(request.body);
+  })();
   response.send('ok');
 });
 
 app.post('/webhook/teamcity', (request, response) => {
-  respondTeamcityDataChange();
+  (async () => {
+    respondTeamcityDataChange();
+  })();
   response.send('ok');
 });
 
@@ -225,7 +229,9 @@ app.post('/webhook/sentry', (request, response) => {
   //       rather than per-project, but on sentry.io we don't have perms to do
   //       the org-wide query at this time.
   //console.log('webhook sentry project='+request.body?.data?.issue?.project?.id);
-  respondSentryDataChange();
+  (async () => {
+    respondSentryDataChange();
+  })();
   response.send('ok');
 });
 

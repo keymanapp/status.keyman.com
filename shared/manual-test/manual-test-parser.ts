@@ -319,7 +319,7 @@ export default class ManualTestParser {
             resultsTemplate.content += resultsTemplate.suite + resultsTemplate.group;
             resultsTemplate.suite = '';
             resultsTemplate.group = '';
-            resultsTemplate.content += `* **TEST_${test.name} (STATUS):** notes\n`;
+            resultsTemplate.content += `* **TEST_${test.name} (OPEN):** notes\n`;
           }
         }
         content += '\n';
@@ -336,8 +336,8 @@ export default class ManualTestParser {
         "<details><summary>Results Template</summary>\n\n" +
         "```\n" +
         "# User Test Results\n\n"+
-        resultsTemplate.content+
-        "```\n"+
+        resultsTemplate.content.trim()+
+        "\n```\n"+
         "</details>\n";
     }
     return content.trimRight();

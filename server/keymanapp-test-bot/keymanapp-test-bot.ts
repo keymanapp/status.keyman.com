@@ -16,7 +16,7 @@ const manualTestMissingLabelName = 'user-test-missing';
 const hasUserTestLabelName = 'has-user-test';
 
 function log(s) {
-  console.log('@keymanapp-test-bot: '+s);
+  console.log('[@keymanapp-test-bot] '+s);
 }
 
 interface ProcessEventData {
@@ -168,8 +168,8 @@ function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
 module.exports = (app: Probot) => {
   app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], async (context) => {
     if(!shouldProcessEvent(context.payload.sender, context.payload.pull_request.state)) return null;
-    log('pull_request: '+context.id+', '+context.payload.pull_request.number);
-    return processEvent(
+    log('pull_request ENTER: '+context.id+', '+context.payload.pull_request.number);
+    let result = processEvent(
       context.octokit,
       {
         owner: context.payload.repository.owner.login,
@@ -178,12 +178,14 @@ module.exports = (app: Probot) => {
       },
       true
     );
+    log('pull_request EXIT: '+context.id);
+    return result;
   });
 
   app.on(['issues.opened', 'issues.edited'], async (context) => {
     if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) return null;
-    log('issue: '+context.id+', '+context.payload.issue.number);
-    return processEvent(
+    log('issue ENTER: '+context.id+', '+context.payload.issue.number);
+    let result = processEvent(
       context.octokit,
       {
         owner: context.payload.repository.owner.login,
@@ -192,12 +194,14 @@ module.exports = (app: Probot) => {
       },
       false
     );
+    log('issue EXIT: '+context.id);
+    return result;
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async (context) => {
     if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) return null;
-    log('issue_comment: '+context.id+', '+context.payload.comment.id);
-    return processEvent(
+    log('issue_comment ENTER: '+context.id+', '+context.payload.comment.id);
+    let result = processEvent(
       context.octokit,
       {
         owner: context.payload.repository.owner.login,
@@ -206,12 +210,14 @@ module.exports = (app: Probot) => {
       },
       !!context.payload.issue.pull_request
     );
+    log('issue_comment EXIT: '+context.id);
+    return result;
   });
 
   app.on(['status'], async (context) => {
-    log('status: '+context.id+', '+context.payload.sha);
+    log('status ENTER: '+context.id+', '+context.payload.sha);
     if(context.payload.context == 'user_testing' || context.payload.state != 'success') {
-      log('status: ignoring event');
+      log('status EXIT: '+context.id+' -- ignoring event');
       return null;
     }
 
@@ -219,7 +225,7 @@ module.exports = (app: Probot) => {
     // before any check returns 'success'.
     const pulls = statusData.cache.sprints?.current?.github?.data?.repository?.pullRequests?.edges;
     if(!pulls) {
-      log('status: no pulls found -- cache may not be ready');
+      log('status EXIT: '+context.id+' -- no pulls found -- cache may not be ready');
       return null;
     }
 
@@ -230,7 +236,7 @@ module.exports = (app: Probot) => {
       }
       if(commit.oid == context.payload.sha){
         log('status: found matching target url');
-        return processEvent(
+        let result = processEvent(
           context.octokit,
           {
             owner: context.payload.repository.owner.login,
@@ -239,8 +245,10 @@ module.exports = (app: Probot) => {
           },
           true // is pull request
         );
+        log('status EXIT: '+context.id);
+        return result;
       }
     }
-    log('status: no matching pull request found');
+    log('status EXIT: '+context.id+' -- no matching pull request found');
   });
 };

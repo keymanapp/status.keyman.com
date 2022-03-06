@@ -141,6 +141,10 @@ export class HomeComponent {
     };
   }
 
+  refreshBackend() {
+    this.statusService.refreshBackend();
+  }
+
   refreshStatus(source: StatusSource) {
     // Suck in Keyman Status from code.js (server side)
     let self = this;

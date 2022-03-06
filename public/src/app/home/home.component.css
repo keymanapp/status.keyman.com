@@ -280,6 +280,21 @@ td.sentry-events {
   margin: 2px 4px;
 }
 
+/* Refresh */
+
+.navbar-header {
+  display: flex;
+  width: 100%;
+}
+
+.navbar-refresh {
+  margin-left: auto;
+  align-self: center;
+  display: inline-block;
+}
+
+/* Tables */
+
 table#sites-and-relatives {
   border: none !important;
 }

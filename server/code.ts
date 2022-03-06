@@ -332,6 +332,13 @@ app.get('/status/code-owners', (request, response) => {
   response.end();
 });
 
+app.post('/refresh', (request, response) => {
+  (async () => {
+    initialLoad();
+  });
+  response.send('ok');
+});
+
 /* Deployment endpoints */
 
 function addEndpoint(id, dataSource) {

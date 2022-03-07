@@ -5,6 +5,7 @@ import emojiRegex from 'emoji-regex';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
+import { VisibilityService } from '../visibility/visibility.service';
 
 @Component({
   selector: 'app-pull-request',
@@ -20,7 +21,9 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
   @Input() scopeValue?: string;
   contexts: any;
 
-  constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService) { super(popupCoordinator); }
+  constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
+    super(popupCoordinator, visibilityService);
+  }
 
   ngOnInit() {
     this.popupId = 'pull-'+this.pull.pull.node.number+(this.scopeValue ? '-'+this.scopeValue:'');

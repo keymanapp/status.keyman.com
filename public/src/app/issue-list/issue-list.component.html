@@ -5,8 +5,8 @@
     <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
   </span>
 
-  <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}">
-    <div class="issue-list">
+  <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+    <div class="issue-list" *ngIf="isVisible | async">
       <div class="summary">
         <span class="pin" (click)="pin()">📌</span>
         <span><app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard></span>
@@ -16,8 +16,8 @@
         <div class='clear'></div>
       </div>
       <ul>
-        <li *ngFor="let issue of issues">
-          <span class="label">
+        <li *ngFor="let issue of issues; trackBy: trackByIssue">
+            <span class="label">
             <a class="author" title="{{issue.author.login}}" target="_blank" href="{issue.author.url}}"><img class="avatar-22" src="{{issue.author.avatarUrl}}&size=22"></a>
             <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
             <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">

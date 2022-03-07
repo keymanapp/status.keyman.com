@@ -5,6 +5,7 @@ import { escapeHtml } from '../utility/escapeHtml';
 import { labelColor } from '../utility/labelColor';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
+import { VisibilityService } from '../visibility/visibility.service';
 
 export enum IssueView {
   Current = 'current',
@@ -24,8 +25,8 @@ export class IssueListComponent extends PopupComponent implements OnInit {
   @Input() milestone?: any;
   @Input() platform?: any;
 
-  constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService) {
-    super(popupCoordinator);
+  constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
+    super(popupCoordinator, visibilityService);
   }
 
   ngOnInit() {
@@ -41,6 +42,10 @@ export class IssueListComponent extends PopupComponent implements OnInit {
 
   labelName(label: string) {
     return label.replace(/-/g, '‑');
+  }
+
+  trackByIssue(index, item) {
+    return item.number;
   }
 
   getIssueListText() {

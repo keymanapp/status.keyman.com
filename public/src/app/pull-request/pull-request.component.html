@@ -7,46 +7,48 @@
   </a>
   <span class='user-testing'> </span>
 </span>
-<div class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}">
-  <span class="changes">
-    <span class="additions">+{{pull.pull.node.additions}}</span>
-    <span class="deletions">−{{pull.pull.node.deletions}}</span>
-  </span>
-  <span class="title"><span class="pin" (click)="pin()">📌</span> {{pull.pull.node.title}}</span>
-  <span class="branches">
-    <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
-    <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
-    <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
-      <a href="{{issue.subject.url}}" target="_blank">{{issue.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{issue.subject.number}}</a>
+<div class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+  <ng-container *ngIf="isVisible | async">
+    <span class="changes">
+      <span class="additions">+{{pull.pull.node.additions}}</span>
+      <span class="deletions">−{{pull.pull.node.deletions}}</span>
     </span>
-  </span>
-  <table class="table table-sm table-borderless status-table"><tbody>
-    <tr class="status {{pullClass()}}">
-      <th class="status-title">Build</th>
-      <td>{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</td>
-    </tr>
-    <tr class="review-status {{pullStatus()}}">
-      <th class="review-status-title">Code review</th>
-      <td></td>
-    </tr>
-    <tr class="user-testing-status {{pullUserTesting()}}">
-      <th class="user-testing-status-title">User testing</th>
-      <td>{{pull.userTesting ? pull.userTesting.description : ''}}</td>
-    </tr>
-    <tr *ngIf="scope == 'platform'">
-      <td class="test-builds" colspan='2'>
-        <ng-container *ngFor="let context of contexts">
-          <span *ngIf="context.downloads.length">
-            <img src="assets/{{context.icon}}" alt="{{context.name}}" title="{{context.name}}">
-            <span *ngFor="let download of context.downloads">
-              <a href='{{download.url}}' target='_blank'><img src="assets/artifacts/{{download.icon}}" title="{{download.name}}" alt="{{download.name}}" /></a>
+    <span class="title"><span class="pin" (click)="pin()">📌</span> {{pull.pull.node.title}}</span>
+    <span class="branches">
+      <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
+      <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
+      <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
+        <a href="{{issue.subject.url}}" target="_blank">{{issue.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{issue.subject.number}}</a>
+      </span>
+    </span>
+    <table class="table table-sm table-borderless status-table"><tbody>
+      <tr class="status {{pullClass()}}">
+        <th class="status-title">Build</th>
+        <td>{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</td>
+      </tr>
+      <tr class="review-status {{pullStatus()}}">
+        <th class="review-status-title">Code review</th>
+        <td></td>
+      </tr>
+      <tr class="user-testing-status {{pullUserTesting()}}">
+        <th class="user-testing-status-title">User testing</th>
+        <td>{{pull.userTesting ? pull.userTesting.description : ''}}</td>
+      </tr>
+      <tr *ngIf="scope == 'platform'">
+        <td class="test-builds" colspan='2'>
+          <ng-container *ngFor="let context of contexts">
+            <span *ngIf="context.downloads.length">
+              <img src="assets/{{context.icon}}" alt="{{context.name}}" title="{{context.name}}">
+              <span *ngFor="let download of context.downloads">
+                <a href='{{download.url}}' target='_blank'><img src="assets/artifacts/{{download.icon}}" title="{{download.name}}" alt="{{download.name}}" /></a>
+              </span>
             </span>
-          </span>
-        </ng-container>
-      </td>
-    </tr>
-  </tbody></table>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody></table>
 
-  <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>
+    <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>
+  </ng-container>
 </div>
 </span>

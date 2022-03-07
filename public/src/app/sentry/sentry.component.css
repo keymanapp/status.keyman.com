@@ -48,6 +48,9 @@
   color: black;
 }
 
+.sentry-hidden {
+  display: none;
+}
 
 .sentry-container {
   white-space: nowrap;

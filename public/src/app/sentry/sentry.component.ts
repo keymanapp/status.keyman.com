@@ -1,8 +1,10 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import { platformSentryIds } from '../../../../shared/platforms';
+import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
 import { siteSentryIds } from '../sites';
 import { escapeHtml } from '../utility/escapeHtml';
+import { VisibilityService } from '../visibility/visibility.service';
 
 @Component({
   selector: 'app-sentry',
@@ -18,6 +20,10 @@ export class SentryComponent extends PopupComponent implements OnInit, OnChanges
 
   env: any;
 
+  constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
+    super(popupCoordinator, visibilityService);
+  }
+
   ngOnInit() {
     this.popupId = 'sentry-'+this.environment+'-'+(this.platform ? this.platform : this.site);
     if(!this.gravityX) this.gravityX = 'right';
@@ -28,6 +34,10 @@ export class SentryComponent extends PopupComponent implements OnInit, OnChanges
       issues: []
     };
     super.ngOnInit();
+  }
+
+  issueTrackBy(index, item) {
+    return item.shortId;
   }
 
   ngOnChanges() {

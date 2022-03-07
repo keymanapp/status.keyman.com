@@ -14,6 +14,7 @@ import { DeployBoxComponent } from './deploy-box/deploy-box.component';
 import { ManualTestComponent } from './manual-test/manual-test.component';
 import { HomeComponent } from './home/home.component';
 import { PopupComponent } from './popup/popup.component';
+import { VisibilityService } from './visibility/visibility.service';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import { PopupComponent } from './popup/popup.component';
       {path: 'manual-test', component: ManualTestComponent},
     ]),
   ],
-  providers: [],
+  providers: [VisibilityService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

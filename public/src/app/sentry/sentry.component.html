@@ -1,4 +1,4 @@
-<span class="sentry-container {{site ? 'sentry-site' : 'sentry-platform'}}" *ngIf="platform != 'common' && (!site || env.totalEvents != 0)">
+<span class="sentry-container {{site ? 'sentry-site' : 'sentry-platform'}} {{platform != 'common' && (!site || env.totalEvents != 0) ? 'sentry-visible' : 'sentry-hidden'}}">
 
   <span class="label">
     <!--<img class="avatar-22" src="assets/{{platform}}.png" *ngIf="!site && mode != 'simple'">-->
@@ -6,8 +6,8 @@
     <span class="event-total {{env.issues.length == 0 ? 'normal' : 'error'}}" *ngIf="mode != 'simple'"><a href="https://sentry.io/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank">{{env.totalEvents}}</a></span>
   </span>
 
-  <div class="sentry-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}">
-    <div class="summary">
+  <div class="sentry-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+    <div class="summary" *ngIf="isVisible | async">
       <span class="pin" (click)="pin()">📌</span>
       <span><app-clipboard [text]="getSentryIssueText()" title="Copy HTML formatted list of sentry issues to clipboard"></app-clipboard></span>
       <span>
@@ -18,8 +18,8 @@
       </span>
       <div class='clear'></div>
     </div>
-    <ul class="issues">
-      <li *ngFor="let issue of env.issues">
+    <ul class="issues" *ngIf="isVisible | async">
+      <li *ngFor="let issue of env.issues; trackBy: issueTrackBy">
         <a href="{{issue.permalink}}" target="_blank">
           <b>{{issue.shortId}}</b>
           <span class="issue-title">{{issue.title}}</span>

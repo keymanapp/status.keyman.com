@@ -226,6 +226,10 @@ td.sentry-events {
 
 /* Contributions */
 
+.navbar-contributions {
+  align-self: flex-end;
+}
+
 .navbar-contribution {
   position: relative;
   display: inline-block;

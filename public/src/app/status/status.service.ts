@@ -16,4 +16,8 @@ export class StatusService {
       this.http.get(url, {params:{sprint:sprint}}) :
       this.http.get(url);
   }
+
+  refreshBackend() {
+    return this.http.post(environment.refreshBackendUrl, {});
+  }
 };

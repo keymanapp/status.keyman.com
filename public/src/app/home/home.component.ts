@@ -91,6 +91,7 @@ export class HomeComponent {
   // Query parameters
   showContributions = false;
   showCodeOwners = false;
+  showRefreshButton = false;
   sprintOverride = null;
 
   // Issue View
@@ -131,6 +132,7 @@ export class HomeComponent {
 
         this.showContributions = queryParams.get('c') == '1';
         this.showCodeOwners = queryParams.get('o') == '1';
+        this.showRefreshButton = queryParams.get('r') == '1';
         this.sprintOverride = queryParams.get('sprint');
       });
 

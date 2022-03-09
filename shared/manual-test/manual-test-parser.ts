@@ -297,6 +297,14 @@ export default class ManualTestParser {
       if(suite.name) {
         content += `## ${suite.statusEmoji()} SUITE_${suite.name}: ${suite.description}\n`;
         resultsTemplate.suite = `## SUITE_${suite.name}: ${suite.description}\n\n`;
+
+        if(suite.status() == ManualTestStatus.Passed) {
+          if(suite.groups?.[0]?.name == '') {
+            content += `\n\n<details><summary>${suite.getTests().length} tests PASSED</summary>\n\n`;
+          } else {
+            content += `\n\n<details><summary>${suite.getTests().length} tests in ${suite.groups.length} groups PASSED</summary>\n\n`;
+          }
+        }
       } else {
         resultsTemplate.suite = '';
       }
@@ -307,6 +315,9 @@ export default class ManualTestParser {
           content += `* ${group.statusEmoji()} GROUP_${group.name}: ${group.description}\n`;
           resultsTemplate.group = `### GROUP_${group.name}: ${group.description}\n\n`;
           n = '  ';
+          if(group.status() == ManualTestStatus.Passed) {
+            content += `\n\n  <details><summary>${group.tests.length} tests PASSED</summary>\n\n`;
+          }
         } else {
           resultsTemplate.group = '';
         }
@@ -322,8 +333,18 @@ export default class ManualTestParser {
             resultsTemplate.content += `* **TEST_${test.name} (OPEN):** notes\n`;
           }
         }
+
+        if(group.name && group.status() == ManualTestStatus.Passed) {
+          content += `\n  </details>\n`;
+        }
+
         content += '\n';
       }
+
+      if(suite.name && suite.status() == ManualTestStatus.Passed) {
+        content += '\n</details>\n';
+      }
+
       content += '\n';
     }
 

@@ -120,7 +120,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           }, {
             name: 'Debian Unstable',
             url: `https://tracker.debian.org/pkg/keyman-config`,
-            version: this.status?.deployment?.[`debian-${this.tier}`]?.version,
+            version: this.status?.deployment?.[StatusSource.DebianStable]?.version,
           });
         } else if (this.tier == 'beta' || this.tier == 'alpha') {
           this.targets.push({
@@ -137,7 +137,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             this.targets.push({
               name: 'Debian Unstable',
               url: `https://tracker.debian.org/pkg/keyman`,
-              version: this.status?.deployment?.[`debian-${this.tier}`]?.version,
+              version: this.status?.deployment?.[StatusSource.DebianBeta]?.version,
             });
           }
         }

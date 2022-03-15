@@ -17,7 +17,7 @@ const service = {
 				return null;
 			default:
 				{
-					const component: string = tier == 'stable' ? 'keyman-config' : 'keyman';
+					const component: string = tier == 'stable' ? 'keyman-config/' : 'keyman-config/';
 					return httpget(HOST, PATH_PREFIX + component).then((data) => {
 						const results = JSON.parse(data.data);
 						if (results && typeof results.versions == 'object' && results.versions.length > 0) {

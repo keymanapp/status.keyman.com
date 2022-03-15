@@ -186,6 +186,8 @@ export class HomeComponent {
               this.status.teamCityRunning = data.teamCityRunning;
               this.changeCounter++; // forces a rebuild
               break;
+            case StatusSource.DebianBeta:
+            case StatusSource.DebianStable:
             case StatusSource.ITunesKeyman:
             case StatusSource.ITunesFirstVoices:
             case StatusSource.PlayStoreKeyman:

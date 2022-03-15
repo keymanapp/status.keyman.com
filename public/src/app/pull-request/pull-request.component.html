@@ -8,7 +8,7 @@
   <span class='user-testing'> </span>
 </span>
 <div class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
-  <ng-container *ngIf="isVisible | async">
+  <ng-container *ngIf="pinned || (isVisible | async)">
     <span class="changes">
       <span class="additions">+{{pull.pull.node.additions}}</span>
       <span class="deletions">−{{pull.pull.node.deletions}}</span>

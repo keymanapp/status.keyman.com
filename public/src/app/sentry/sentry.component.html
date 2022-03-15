@@ -7,7 +7,7 @@
   </span>
 
   <div class="sentry-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
-    <div class="summary" *ngIf="isVisible | async">
+    <div class="summary">
       <span class="pin" (click)="pin()">📌</span>
       <span><app-clipboard [text]="getSentryIssueText()" title="Copy HTML formatted list of sentry issues to clipboard"></app-clipboard></span>
       <span>
@@ -18,7 +18,7 @@
       </span>
       <div class='clear'></div>
     </div>
-    <ul class="issues" *ngIf="isVisible | async">
+    <ul class="issues" *ngIf="pinned || (isVisible | async)">
       <li *ngFor="let issue of env.issues; trackBy: issueTrackBy">
         <a href="{{issue.permalink}}" target="_blank">
           <b>{{issue.shortId}}</b>

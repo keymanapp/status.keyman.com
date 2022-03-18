@@ -14,6 +14,7 @@ import sKeymanComService from "../services/deployment/s-keyman-com";
 import { launchPadAlphaService, launchPadBetaService, launchPadStableService } from "../services/deployment/launch-pad";
 import packagesSilOrgService from "../services/deployment/packages-sil-org";
 import { linuxLsdevSilOrgAlphaService, linuxLsdevSilOrgBetaService, linuxLsdevSilOrgStableService } from "../services/deployment/linux-lsdev-sil-org";
+import { debianBetaService, debianStableService } from "../services/deployment/debian";
 import { lmcService, mtService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
 
@@ -30,6 +31,8 @@ services[StatusSource.PackagesSilOrg] = packagesSilOrgService;
 services[StatusSource.LinuxLsdevSilOrgAlpha] = linuxLsdevSilOrgAlphaService;
 services[StatusSource.LinuxLsdevSilOrgBeta] = linuxLsdevSilOrgBetaService;
 services[StatusSource.LinuxLsdevSilOrgStable] = linuxLsdevSilOrgStableService;
+services[StatusSource.DebianBeta] = debianBetaService;
+services[StatusSource.DebianStable] = debianStableService;
 services[StatusSource.NpmLexicalModelCompiler] = lmcService;
 services[StatusSource.NpmModelsTypes] = mtService;
 

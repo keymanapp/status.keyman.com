@@ -117,6 +117,10 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             name: 'linux.lsdev.sil.org',
             url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
             version: this.status?.deployment?.[StatusSource.LinuxLsdevSilOrgStable]?.version
+          }, {
+            name: 'Debian Unstable',
+            url: `https://tracker.debian.org/pkg/keyman-config`,
+            version: this.status?.deployment?.[StatusSource.DebianStable]?.version,
           });
         } else if (this.tier == 'beta' || this.tier == 'alpha') {
           this.targets.push({
@@ -129,6 +133,13 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman/',
             version: this.status?.deployment?.[`linux-lsdev-sil-org-${this.tier}`]?.version
           });
+          if (this.tier == 'beta') {
+            this.targets.push({
+              name: 'Debian Unstable',
+              url: `https://tracker.debian.org/pkg/keyman`,
+              version: this.status?.deployment?.[StatusSource.DebianBeta]?.version,
+            });
+          }
         }
         break;
       case 'web':
@@ -176,7 +187,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
 
   getDownloadClass() {
     if(!this.targets.length) return 'tier-release-version-equal';
-    return this.targets.find(target => target.version != undefined && target.version != this.builtVersion) == undefined ? 'tier-release-version-equal' : 'tier-release-version-error';
+    return this.targets.find(target => target.name != 'Debian Unstable' && target.version != undefined && target.version != this.builtVersion) == undefined ? 'tier-release-version-equal' : 'tier-release-version-error';
   }
 
   getVersionClass(version) {

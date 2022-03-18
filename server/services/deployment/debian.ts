@@ -17,6 +17,7 @@ const service = {
 				return null;
 			default:
 				{
+					//TODO: after 'keyman' is accepted, update compnent to use 'keyman' for alpha and beta, and eventually stable tiers
 					const component: string = tier == 'stable' ? 'keyman-config/' : 'keyman-config/';
 					return httpget(HOST, PATH_PREFIX + component).then((data) => {
 						const results = JSON.parse(data.data);

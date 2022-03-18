@@ -187,7 +187,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
 
   getDownloadClass() {
     if(!this.targets.length) return 'tier-release-version-equal';
-    return this.targets.find(target => target.version != undefined && target.version != this.builtVersion) == undefined ? 'tier-release-version-equal' : 'tier-release-version-error';
+    return this.targets.find(target => target.name != 'Debian Unstable' && target.version != undefined && target.version != this.builtVersion) == undefined ? 'tier-release-version-equal' : 'tier-release-version-error';
   }
 
   getVersionClass(version) {

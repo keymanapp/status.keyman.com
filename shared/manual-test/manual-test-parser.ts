@@ -171,7 +171,7 @@ export default class ManualTestParser {
           console.log('group and suite not found for TEST_'+titleName);
           continue;
         }
-        let test: ManualTest = group.tests.find((value) => value.name.toUpperCase() == titleName);
+        let test: ManualTest = group.tests.find((value) => (value.name ?? '').toUpperCase() == titleName);
         let status = titleData.match(testStatusRegex);
         if(!status) {
           console.log(`test result "${titleData}" did not match`);
@@ -193,7 +193,7 @@ export default class ManualTestParser {
         break;
       case 'SUITE':
         group = null;
-        suite = protocol.suites.find(value => value.name.toUpperCase() == titleName);
+        suite = protocol.suites.find(value => (value.name ?? '').toUpperCase() == titleName);
         if(!suite) {
           console.log('suite not found: SUITE_'+titleName);
           continue;
@@ -205,7 +205,7 @@ export default class ManualTestParser {
           console.log('group not found for TEST_'+titleName);
           continue;
         }
-        group = suite.groups.find(value => value.name.toUpperCase() == titleName);
+        group = suite.groups.find(value => (value.name ?? '').toUpperCase() == titleName);
         break;
       default:
         console.log('Unexpected: '+title);

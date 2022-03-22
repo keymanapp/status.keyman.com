@@ -138,7 +138,7 @@ export class ManualTestGroup {
   }
 
   findTests(name: string): ManualTest[] {
-    return this.tests.filter(test => test.name.toLowerCase() == name.toLowerCase());
+    return this.tests.filter(test => (test.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   getTests(): ManualTest[] {
@@ -152,7 +152,7 @@ export class ManualTestGroup {
   }
 
   findTest(name: string): ManualTest {
-    return this.tests.find(test => test.name.toLowerCase() == name.toLowerCase());
+    return this.tests.find(test => (test.name ?? '').toLowerCase() == name.toLowerCase());
   }
 };
 
@@ -171,7 +171,7 @@ export class ManualTestSuite {
   }
 
   findTests(name: string): ManualTest[] {
-    return this.getTests().filter(test => test.name.toLowerCase() == name.toLowerCase());
+    return this.getTests().filter(test => (test.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   statusEmoji(): string {
@@ -179,7 +179,7 @@ export class ManualTestSuite {
   }
 
   findGroup(name: string): ManualTestGroup {
-    return this.groups.find(group => group.name.toLowerCase() == name.toLowerCase());
+    return this.groups.find(group => (group.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   testTemplates: ManualTest[];
@@ -226,35 +226,35 @@ export class ManualTestProtocol {
    * Finds first test that matches `name` in all suites and groups
    */
   findTest(name: string): ManualTest {
-    return this.getTests().find(test => test.name.toLowerCase() == name.toLowerCase());
+    return this.getTests().find(test => (test.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   /**
    * Finds all tests that match `name` in all suites and groups
    */
   findTests(name: string): ManualTest[] {
-    return this.getTests().filter(test => test.name.toLowerCase() == name.toLowerCase());
+    return this.getTests().filter(test => (test.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   /**
    * Finds all groups that match `name` in all suites
    */
   findGroups(name: string): ManualTestGroup[] {
-    return this.getGroups().filter(group => group.name.toLowerCase() == name.toLowerCase());
+    return this.getGroups().filter(group => (group.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   /**
    * Finds first group that matches `name` in any suite
    */
   findGroup(name: string): ManualTestGroup {
-    return this.suites.flatMap(suite => suite.groups).find(group => group.name.toLowerCase() == name.toLowerCase());
+    return this.suites.flatMap(suite => suite.groups).find(group => (group.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   /**
    * Finds first suite that matches `name`
    */
   findSuite(name: string): ManualTestSuite {
-    return this.suites.find(suite => suite.name.toLowerCase() == name.toLowerCase());
+    return this.suites.find(suite => (suite.name ?? '').toLowerCase() == name.toLowerCase());
   }
 
   constructor (owner: string, repo: string, issue: number, isPR: boolean, baseIssueId: number, basePullId?: number) {

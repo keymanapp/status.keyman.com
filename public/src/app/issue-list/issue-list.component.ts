@@ -70,7 +70,7 @@ export class IssueListComponent extends PopupComponent implements OnInit {
 
   issueHasLinkedPR(issue) {
     return issue && issue.timelineItems && Array.isArray(issue.timelineItems.nodes) ?
-      issue.timelineItems.nodes.find(pr=>pr.subject.url&&pr.subject.url.includes('/pull/')) != null : false;
+      issue.timelineItems.nodes.find(pr => pr.subject.url && pr.subject.url.includes('/pull/') && pr.willCloseTarget) != null : false;
   }
 
   errorClassIfNonZero(v) {

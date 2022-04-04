@@ -64,6 +64,7 @@ export default {
               nodes {
                 ... on CrossReferencedEvent {
                   __typename
+                  willCloseTarget
                   subject: source {
                     ... on PullRequest {
                       number

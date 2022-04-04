@@ -18,6 +18,10 @@
   border-radius: 3px 0 0 3px;
 }
 
+.countbox-total {
+  font-weight: normal;
+}
+
 .countbox-value {
   padding: 2px 4px;
   font-weight: bold;

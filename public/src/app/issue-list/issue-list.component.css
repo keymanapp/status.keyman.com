@@ -229,3 +229,8 @@ li {
   background: #60a060;
   border-radius: 6px;
 }
+
+.label a.will-close {
+  color: green;
+  font-weight: bold;
+}

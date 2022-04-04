@@ -48,6 +48,11 @@ export class IssueListComponent extends PopupComponent implements OnInit {
     return item.number;
   }
 
+  getUnfixedIssueCount() {
+    const fixedIssueCount = this.issues?.filter(this.issueHasLinkedPR).length ?? 0;
+    return (this.milestone?.count ?? 0) - fixedIssueCount;
+  }
+
   getIssueListText() {
     if(!this.issues) return null;
 

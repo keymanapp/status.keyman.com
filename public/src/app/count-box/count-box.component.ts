@@ -9,6 +9,7 @@ export class CountBoxComponent implements OnInit {
   @Input() repo?: string;
   @Input() title?: string;
   @Input() count?: number;
+  @Input() unfixedCount?: number;
   @Input() class?: string;
   @Input() label?: string;
   @Input() isPulls: boolean;
@@ -17,7 +18,7 @@ export class CountBoxComponent implements OnInit {
     let f = "";
     if(this.label) {
       f += "+label%3A"+encodeURIComponent(this.label);
-    } 
+    }
     if(this.class) {
       f += "+" + (this.title == 'Other' ? "no:milestone" : "milestone:"+this.title);
     }

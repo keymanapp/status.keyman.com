@@ -4,6 +4,7 @@ import teamcityService from "../services/teamcity/teamcity";
 import githubStatusService from "../services/github/github-status";
 import githubIssuesService from "../services/github/github-issues";
 import githubContributionsService from "../services/github/github-contributions";
+import githubTestContributionsService from "../services/github/github-test-contributions";
 import sentryIssuesService from "../services/sentry/sentry-issues";
 import codeOwnersService from "../services/github/code-owners";
 import deepEqual from "deep-equal";
@@ -112,6 +113,11 @@ export class StatusData {
     if(!sprint || !sprint.phase) return false;
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
     let contributions = await githubContributionsService.get(sprintStartDateTime);
+
+    for(let node of contributions?.data?.repository?.contributions?.nodes) {
+      node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], getSprintStart(), node.login)};
+    }
+
     let result = !deepEqual(contributions, sprint.contributions);
     sprint.contributions = contributions;
     console.log('[Refresh] GitHub Contributions EXIT');

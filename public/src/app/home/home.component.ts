@@ -678,8 +678,9 @@ export class HomeComponent {
       '<ul>' +
       nodes.reverse().reduce(
         (text, node) => {
-          const repo = repoShortNameFromGithubUrl(node[type].url);
-          return text + `<li>${escapeHtml(node[type].title)} (<a href='${node[type].url}'>${repo}#${node[type].number}</a>)</li>\n`
+          const url = node.url ?? node[type].url;
+          const repo = repoShortNameFromGithubUrl(url);
+          return text + `<li>${escapeHtml(node[type].title)} (<a href='${url}'>${repo}#${node[type].number}</a>)</li>\n`
         }, '') +
       '</ul>';
     return { content: text, type: 'text/html' };
@@ -695,6 +696,10 @@ export class HomeComponent {
 
   getContributionReviewText(user) {
     return this.getContributionText(user.contributions.reviews.nodes, 'pullRequest');
+  }
+
+  getContributionTestText(user) {
+    return this.getContributionText(user.contributions.tests.nodes, 'issue');
   }
 
   /* Multiple issue views */

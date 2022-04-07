@@ -119,7 +119,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             version: this.status?.deployment?.[StatusSource.LinuxLsdevSilOrgStable]?.version
           }, {
             name: 'Debian Unstable',
-            url: `https://tracker.debian.org/pkg/keyman-config`,
+            url: `https://tracker.debian.org/pkg/keyman`,
             version: this.status?.deployment?.[StatusSource.DebianStable]?.version,
           });
         } else if (this.tier == 'beta' || this.tier == 'alpha') {

@@ -5,7 +5,7 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-// https://sources.debian.org/api/src/keyman-config/
+// https://sources.debian.org/api/src/keyman/
 const HOST = 'sources.debian.org';
 const PATH_PREFIX = '/api/src/';
 
@@ -17,8 +17,7 @@ const service = {
 				return null;
 			default:
 				{
-					//TODO: after 'keyman' is accepted, update compnent to use 'keyman' for alpha and beta, and eventually stable tiers
-					const component: string = tier == 'stable' ? 'keyman-config/' : 'keyman-config/';
+					const component = 'keyman/';
 					return httpget(HOST, PATH_PREFIX + component).then((data) => {
 						const results = JSON.parse(data.data);
 						if (results && typeof results.versions == 'object' && results.versions.length > 0) {

@@ -15,12 +15,14 @@ import { ManualTestComponent } from './manual-test/manual-test.component';
 import { HomeComponent } from './home/home.component';
 import { PopupComponent } from './popup/popup.component';
 import { VisibilityService } from './visibility/visibility.service';
+import { PullRequestListComponent } from './pull-request-list/pull-request-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ClipboardComponent,
     PullRequestComponent,
+    PullRequestListComponent,
     CountBoxComponent,
     FilterObjectByDatePipe,
     SentryComponent,

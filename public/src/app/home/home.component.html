@@ -315,10 +315,23 @@
         </tr>
         <tr class='tr-site'>
           <td class='pulls'>
-            <app-count-box [repo]="'keyboards'" [isPulls]="true" [title]="'Open PRs'" [unfixedCount]="status?.github?.data.keyboards.pullRequests.totalCount"></app-count-box>
+            <app-pull-request-list
+              [view]="'all'"
+              [gravityX]="'right'"
+              [gravityY]="'top'"
+              [repo]="'keyboards'"
+              [milestone]="{title:'Open PRs',count:keyboardPRs?.length}"
+              [pullRequests]="keyboardPRs"></app-pull-request-list>
           </td>
           <td class='pulls'>
-            <app-count-box [repo]="'lexical-models'" [isPulls]="true" [title]="'Open PRs'" [unfixedCount]="status?.github?.data.lexicalModels.pullRequests.totalCount"></app-count-box>
+            <app-pull-request-list
+              [view]="'all'"
+              [gravityX]="'right'"
+              [gravityY]="'top'"
+              [repo]="'lexical-models'"
+              [milestone]="{title:'Open PRs',count:lexicalModelPRs?.length}"
+              [pullRequests]="lexicalModelPRs">
+            </app-pull-request-list>
           </td>
           <td class='gap'></td>
           <ng-container *ngFor="let site of sites | keyvalue">
@@ -337,10 +350,10 @@
         </tr>
         <tr class='tr-site'>
           <td class='issues'>
-            <app-count-box [repo]="'keyboards'" [title]="'Open issues'" [unfixedCount]="status?.github?.data.keyboards.issues.totalCount"></app-count-box>
+            <app-issue-list [view]="'all'" [gravityX]="'right'" [gravityY]="'top'" [repo]="'keyboards'" [milestone]="{title:'Open issues',count:keyboardIssues.length}" [issues]="keyboardIssues"></app-issue-list>
           </td>
           <td class='issues'>
-            <app-count-box [repo]="'lexical-models'" [title]="'Open issues'" [unfixedCount]="status?.github?.data.lexicalModels.issues.totalCount"></app-count-box>
+            <app-issue-list [view]="'all'" [gravityX]="'right'" [gravityY]="'top'" [repo]="'lexical-models'" [milestone]="{title:'Open issues',count:lexicalModelIssues.length}" [issues]="lexicalModelIssues"></app-issue-list>
           </td>
           <td class='gap'></td>
           <ng-container *ngFor="let site of sites | keyvalue">

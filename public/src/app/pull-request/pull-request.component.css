@@ -208,7 +208,10 @@
   content:'😶 ';
 }
 
-
+.scope-keyboards-lexical-models .label {
+  width: 98%;
+  white-space: nowrap;
+}
 
 .label a.pull {
   padding: 0px 6px;
@@ -222,6 +225,19 @@
 }
 
 .scope-platform .emoji {
+  display: none;
+}
+
+.scope-keyboards-lexical-models > span > .pull > .title {
+  display: inline;
+  font-size: 0.8rem;
+  font-weight: normal;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.scope-platform > span > .pull > .title,
+.scope-site > span > .pull > .title {
   display: none;
 }
 
@@ -283,11 +299,21 @@
   margin: 0 2px;
  }
 
- .changes {
-  display: block;
-  float: right;
+.title-changes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.title-changes .changes {
   font-size: 0.9em;
+  margin-right: 2px;
  }
+
+.title-changes .title {
+  font-weight: bold;
+  margin-left: 4px;
+}
 
  .additions, .deletions {
    font-weight: bold;
@@ -300,12 +326,6 @@
 
  .deletions {
    color: #cb2431;
- }
-
- .title {
-   display: block;
-   font-weight: bold;
-   margin-left: 4px;
  }
 
  .user-testing-status-title,

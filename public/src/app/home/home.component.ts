@@ -69,6 +69,10 @@ export class HomeComponent {
   sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
   labeledPulls = [];
+  keyboardIssues = [];
+  lexicalModelIssues = [];
+  keyboardPRs = [];
+  lexicalModelPRs = [];
   changeCounter: number = 0;
 
   sprintDays = [];
@@ -162,6 +166,8 @@ export class HomeComponent {
               break;
             case StatusSource.GitHub:
               this.status.github = data.github;
+              this.keyboardPRs = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='keyboards')?.pullRequests.edges;
+              this.lexicalModelPRs = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='lexical-models')?.pullRequests.edges;
               this.transformPlatformStatusData();
               this.transformSiteStatusData();
               this.extractUnlabeledPulls();
@@ -171,6 +177,7 @@ export class HomeComponent {
             case StatusSource.GitHubIssues:
               this.status.issues = data.issues;
               this.removeDuplicateTimelineItems();
+              this.extractKeyboardAndLMIssues();
               break;
             case StatusSource.GitHubContributions:
               this.status.contributions = data.contributions;
@@ -723,6 +730,11 @@ export class HomeComponent {
       }
     }
     return {pull:pull,userTesting:null,state:null};
+  }
+
+  extractKeyboardAndLMIssues() {
+    this.keyboardIssues = this.status.issues.filter(issue => issue.repository.name == 'keyboards');
+    this.lexicalModelIssues = this.status.issues.filter(issue => issue.repository.name == 'lexical-models');
   }
 
   extractPullsByAuthorProjectAndStatus() {

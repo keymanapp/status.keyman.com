@@ -9,6 +9,7 @@ export async function getArtifactLinksComment(
   pull) {
   // Only pull requests can have artifacts
   if(!pull) return '';
+
   const statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
   let s = {};
@@ -22,7 +23,6 @@ export async function getArtifactLinksComment(
     s[status.context] = o;
   });
 
-  let r = '';
   let version = null;
   let buildData = null;
 
@@ -31,8 +31,14 @@ export async function getArtifactLinksComment(
 
   let teamCityData = statusData.cache.teamCity ?? (await teamcityService.get())[0];
 
-  //console.log(version);
-  //log(version);
+  type LinkInfo = {
+    platform: string;
+    download: string;
+    url: string;
+    extra?: string
+  };
+
+  let links: {[key: string]: LinkInfo[]} = {};
 
   for(let context of Object.keys(s)) {
     if(s[context].state == 'success') {
@@ -40,8 +46,12 @@ export async function getArtifactLinksComment(
       const u = new URL(s[context].url);
       if (u.hostname == 'jenkins.lsdev.sil.org') {
         for (let download of artifactLinks.jenkinsTarget.downloads) {
-          if (r == '') r = '\n## Test Artifacts\n\n';
-          r += `* [**Linux** - ${download.name}](${s[context].url}/${download.fragment})\n`;
+          if(!links['Linux']) links['Linux'] = [];
+          links['Linux'].push({
+            platform: 'Linux',
+            download: download.name,
+            url: `${s[context].url}/${download.fragment}`,
+          });
         }
       } else if(u.searchParams.has('buildTypeId')) {
         // Assume TeamCity
@@ -57,14 +67,28 @@ export async function getArtifactLinksComment(
         if(t) {
           for(let download of t.downloads) {
             let fragment = download.fragment.replace(/\$version/g, version);
-            if(r == '') r = '\n## Test Artifacts\n\n';
-            r += `* [**${t.name}** - ${download.name}](https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment})\n`;
+            // Special cases - Keyman Developer, Test Keyboards
+            let platform =
+              download.name == '**Keyman Developer**' ? 'Developer' :
+              download.name == 'Test Keyboards' ? 'Keyboards' :
+              t.name;
+            if(!links[platform]) links[platform] = [];
+            links[platform].push({
+              platform: platform,
+              download: download.name,
+              url: `https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment}`
+            });
           }
           if(t.platform == 'ios') {
             // Special case note for TestFlight
             let buildCounter = buildData.resultingProperties.property.find(prop => prop.name == 'build.counter')?.value;
             if(buildCounter) {
-              r += `* [**${t.name}** - TestFlight internal PR build version](https://beta.itunes.apple.com/v1/app/933676545): \`${version} (0.${pull.data.number}.${buildCounter})\``;
+              links[t.name].push({
+                platform: t.name,
+                download: 'TestFlight internal PR build version',
+                url: 'https://beta.itunes.apple.com/v1/app/933676545',
+                extra: `\`${version} (0.${pull.data.number}.${buildCounter})\``
+              });
             }
           }
         }
@@ -72,6 +96,19 @@ export async function getArtifactLinksComment(
     }
   }
 
+  let platforms = Object.keys(links);
+  if(platforms.length == 0)
+    return '';
+  platforms.sort((a,b) => a.localeCompare(b, 'en', {sensitivity: 'base'}));
+
+  let r = '\n## Test Artifacts\n\n';
+  platforms.forEach(platform => {
+    let items = links[platform];
+    items.sort((a:LinkInfo,b:LinkInfo) => a.download.localeCompare(b.download));
+    r += `* **${platform}**\n` +
+      items.map<string>(link => `  * [${link.download}](${link.url})` + (link.extra ? ` - ${link.extra}` : '')).
+          join('\n') + '\n';
+  });
   return r;
 }
 

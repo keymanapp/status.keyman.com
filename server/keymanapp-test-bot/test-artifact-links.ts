@@ -13,7 +13,7 @@ export function foo() {
   let octokit = new ProbotOctokit();
   const comment = getArtifactLinksComment(octokit,
     {owner:'keymanapp',repo:'keyman'/*pull.data.head.ref*/},
-    {data:{head:{ref:'feat/web/3621-newcontext-group'}}}
+    {data:{number:6509, head:{ref:'chore/common/crowdin-pt'}}}
   );
   comment.then(data => {
     console.log(data);

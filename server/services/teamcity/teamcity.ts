@@ -12,7 +12,7 @@ export default {
       httpget(  //0
         'build.palaso.org',
         '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
-          'build(id,number,branchName,status,statusText)))',
+          'build(id,number,branchName,status,statusText,resultingProperties($locator(name:build.counter),property(name,value)))))',
         {
           Authorization: ` Bearer ${teamcity_token}`,
           Accept: 'application/json'

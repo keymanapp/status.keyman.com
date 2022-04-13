@@ -28,7 +28,13 @@ import { statusData } from './data/status-data';
 import { slackLGTM } from './services/slack/slack';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
+import { testArtifactLinks } from './keymanapp-test-bot/test-artifact-links';
+
 const debugTestBot = false;
+
+if(debugTestBot) {
+  testArtifactLinks();
+}
 
 const port = environment == Environment.Development ? 3000 : 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;
@@ -360,14 +366,15 @@ for(let s of STATUS_SOURCES) {
   addEndpoint(s, () => statusData.cache.deployment[s]);
 }
 
-console.log(`Starting app listening on ${port}`);
-const server = app.listen(port);
+if(!debugTestBot) {
+  console.log(`Starting app listening on ${port}`);
+  const server = app.listen(port);
 
-/* Upgrade any websocket connections */
+  /* Upgrade any websocket connections */
 
-server.on('upgrade', (request, socket, head) => {
-  wsServer.handleUpgrade(request, socket, head, socket => {
-    wsServer.emit('connection', socket, request);
+  server.on('upgrade', (request, socket, head) => {
+    wsServer.handleUpgrade(request, socket, head, socket => {
+      wsServer.emit('connection', socket, request);
+    });
   });
-});
-
+}

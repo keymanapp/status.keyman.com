@@ -28,7 +28,7 @@ export const artifactLinks = {
     ]},
 
     'Keymanweb_TestPullRequests': {platform: 'web', name: 'Web', icon: 'web.png', downloads: [
-      {fragment: 'index.html', name: '**KeymanWeb** Test Home', icon: 'keyman.png'} ,
+      {fragment: 'index.html', name: '**KeymanWeb Test Home**', icon: 'keyman.png'} ,
     ]},
   },
 

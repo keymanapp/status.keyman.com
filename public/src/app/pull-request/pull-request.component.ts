@@ -129,7 +129,13 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
   };
 
   getDownloads(context) {
-    let url = new URL(context.targetUrl);
+    let url;
+    try {
+      url = new URL(context.targetUrl);
+    } catch(e) {
+      console.trace(e);
+      return {};
+    }
     let result = {platform: '', downloads: [], name: '', icon: ''};
     if(url.hostname == 'build.palaso.org') {
       let buildId = url.searchParams.get('buildId');

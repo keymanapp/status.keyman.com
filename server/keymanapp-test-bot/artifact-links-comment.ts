@@ -81,7 +81,7 @@ export async function getArtifactLinksComment(
           }
           if(t.platform == 'ios') {
             // Special case note for TestFlight
-            let buildCounter = buildData.resultingProperties.property.find(prop => prop.name == 'build.counter')?.value;
+            let buildCounter = buildData?.resultingProperties?.property?.find(prop => prop.name == 'build.counter')?.value;
             if(buildCounter) {
               links[t.name].push({
                 platform: t.name,

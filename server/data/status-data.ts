@@ -63,7 +63,13 @@ export class StatusData {
 
   refreshKeymanVersionData = async (): Promise<boolean> => {
     console.log('[Refresh] Keyman Version ENTER');
-    let keymanVersion = await versionService.get();
+    let keymanVersion;
+    try {
+      keymanVersion = await versionService.get();
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     let result = !deepEqual(keymanVersion, this.cache.keymanVersion);
     this.cache.keymanVersion = keymanVersion;
     console.log('[Refresh] Keyman Version EXIT');
@@ -72,7 +78,13 @@ export class StatusData {
 
   refreshTeamcityData = async (): Promise<boolean> => {
     console.log('[Refresh] TeamCity ENTER');
-    const data = await teamcityService.get();
+    let data;
+    try {
+      data = await teamcityService.get();
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     let result =
       !deepEqual(data[0], this.cache.teamCity) ||
       !deepEqual(data[1], this.cache.teamCityRunning);
@@ -84,7 +96,13 @@ export class StatusData {
 
   refreshGitHubIssuesData = async (): Promise<boolean> => {
     console.log('[Refresh] GitHub Issues ENTER');
-    let issues = await githubIssuesService.get(null, []);
+    let issues;
+    try {
+      issues = await githubIssuesService.get(null, []);
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     let result = !deepEqual(issues, this.cache.issues);
     this.cache.issues = issues;
     console.log('[Refresh] GitHub Issues EXIT');
@@ -95,7 +113,13 @@ export class StatusData {
   // not if any data has changed. This is different to all the others
   refreshGitHubStatusData = async (sprintName): Promise<boolean> => {
     console.log('[Refresh] GitHub Status ENTER');
-    const data = await githubStatusService.get(sprintName);
+    let data;
+    try {
+      data = await githubStatusService.get(sprintName);
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     this.cache.sprints[sprintName].github = data.github;
     this.cache.sprints[sprintName].phase = data.phase;
 
@@ -112,10 +136,16 @@ export class StatusData {
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) return false;
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
-    let contributions = await githubContributionsService.get(sprintStartDateTime);
+    let contributions;
+    try {
+      contributions = await githubContributionsService.get(sprintStartDateTime);
 
-    for(let node of contributions?.data?.repository?.contributions?.nodes) {
-      node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], getSprintStart(), node.login)};
+      for(let node of contributions?.data?.repository?.contributions?.nodes) {
+        node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], getSprintStart(), node.login)};
+      }
+    } catch(e) {
+      console.log(e);
+      return false;
     }
 
     let result = !deepEqual(contributions, sprint.contributions);
@@ -126,7 +156,13 @@ export class StatusData {
 
   refreshSentryIssuesData = async (): Promise<boolean> => {
     console.log('[Refresh] Sentry ENTER');
-    let sentryIssues = await sentryIssuesService.get();
+    let sentryIssues;
+    try {
+      sentryIssues = await sentryIssuesService.get();
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
     this.cache.sentryIssues = sentryIssues;
     console.log('[Refresh] Sentry EXIT');
@@ -135,7 +171,13 @@ export class StatusData {
 
   refreshCodeOwnersData = async (): Promise<boolean> => {
     console.log('[Refresh] CodeOwners ENTER');
-    let codeOwners = await codeOwnersService.get();
+    let codeOwners;
+    try {
+      codeOwners = await codeOwnersService.get();
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     let result = !deepEqual(codeOwners, this.cache.codeOwners);
     this.cache.codeOwners = codeOwners;
     console.log('[Refresh] CodeOwners EXIT');
@@ -146,7 +188,13 @@ export class StatusData {
 
   refreshService = async (id: StatusSource, service: DataService): Promise<boolean> => {
     console.log('[Refresh] '+id+' ENTER');
-    let status = await service.get();
+    let status;
+    try {
+      status = await service.get();
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
     let result = !deepEqual(status, this.cache.deployment[id]);
     this.cache.deployment[id] = status;
     console.log('[Refresh] '+id+' EXIT');

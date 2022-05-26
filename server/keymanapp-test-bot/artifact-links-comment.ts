@@ -10,7 +10,12 @@ export async function getArtifactLinksComment(
   // Only pull requests can have artifacts
   if(!pull) return '';
 
-  const statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
+  try {
+    const statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
+  } catch(e) {
+    console.log(e);
+    return '';
+  }
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
   let s = {};
   statuses.data.statuses.forEach(status => {

@@ -197,7 +197,7 @@ function sendInitialRefreshMessages(socket) {
   if(statusData.cache.codeOwners) socket.send('code-owners');
   if(statusData.cache.sentryIssues) socket.send('sentry-issues');
   if(statusData.cache.issues) socket.send('github-issues');
-  if(statusData.cache.teamCity && statusData.cache.teamCityRunning) socket.send('teamcity');
+  if(statusData.cache.teamCity && statusData.cache.teamCityRunning && statusData.cache.teamCityAgents && statusData.cache.teamCityQueue) socket.send('teamcity');
   if(statusData.cache.keymanVersion) socket.send('keyman');
   // Deployment refreshes
   for(let s of STATUS_SOURCES) {
@@ -275,7 +275,9 @@ app.get('/status/teamcity', (request, response) => {
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
     teamCity: statusData.cache.teamCity,
-    teamCityRunning: statusData.cache.teamCityRunning
+    teamCityRunning: statusData.cache.teamCityRunning,
+    teamCityAgents: statusData.cache.teamCityAgents,
+    teamCityQueue: statusData.cache.teamCityQueue,
   }));
   response.end();
 });

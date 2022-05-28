@@ -21,6 +21,8 @@ interface Status {
   sentryIssues: any;
   teamCity: any[];
   teamCityRunning: any[];
+  teamCityAgents: any[];
+  teamCityQueue: any[];
   deployment: {
   }
 };
@@ -55,6 +57,8 @@ export class HomeComponent {
     sentryIssues: {},
     teamCity: [],
     teamCityRunning: [],
+    teamCityAgents: [],
+    teamCityQueue: [],
     deployment: {
     }
   };
@@ -96,6 +100,7 @@ export class HomeComponent {
   showContributions = false;
   showCodeOwners = false;
   showRefreshButton = false;
+  showAgents = false;
   sprintOverride = null;
 
   // Issue View
@@ -137,6 +142,7 @@ export class HomeComponent {
         this.showContributions = queryParams.get('c') == '1';
         this.showCodeOwners = queryParams.get('o') == '1';
         this.showRefreshButton = queryParams.get('r') == '1';
+        this.showAgents = queryParams.get('a') == '1';
         this.sprintOverride = queryParams.get('sprint');
       });
 
@@ -191,6 +197,8 @@ export class HomeComponent {
             case StatusSource.TeamCity:
               this.status.teamCity = data.teamCity;
               this.status.teamCityRunning = data.teamCityRunning;
+              this.status.teamCityAgents = data.teamCityAgents;
+              this.status.teamCityQueue = data.teamCityQueue;
               this.changeCounter++; // forces a rebuild
               break;
             case StatusSource.DebianBeta:
@@ -814,5 +822,37 @@ export class HomeComponent {
       if(status == 'status-approved' && userTesting == 'user-test-success' && buildState == 'success')
         this.pullsByStatus.readyToMerge.push(pd);
     }
+  }
+
+  /* Build agent status icons */
+
+  agentStatus(agent: any): { title: string, class: string } {
+    let result = { title: agent.name + ": ", class: '' };
+    if(!agent.connected) {
+      result.title += 'OFFLINE';
+      result.class = 'agent-offline';
+    } else if(!agent.enabled) {
+      result.title += 'DISABLED';
+      result.class = 'agent-offline';
+    } else {
+      if(agent.idleSinceTime) {
+        result.title += "Idle";
+        result.class = 'agent-idle';
+      } else if(agent.build) {
+        result.title += `${agent.build.buildTypeId}, ${agent.build.number} - ${agent.build.status} (${agent.build.percentageComplete}% complete)`;
+        result.class = agent.build.status == 'FAILURE' ? 'agent-failure' : 'agent-busy';
+      } else {
+        result.title += 'unknown build status';
+        result.class = 'agent-failure';
+      }
+    }
+    return result;
+  }
+
+  agentNameToPlatform(name: string): string {
+    if(name.match(/^ba-win/)) return 'windows';
+    if(name.match(/^ba-mac/)) return 'mac';
+    if(name.match(/^ba-bionic/)) return 'linux';
+    return 'common'; // unknown agent
   }
 }

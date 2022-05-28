@@ -40,6 +40,8 @@ services[StatusSource.NpmModelsTypes] = mtService;
 export interface StatusDataCache {
   teamCity?: any;
   teamCityRunning?: any;
+  teamCityAgents?: any;
+  teamCityQueue?: any;
   keymanVersion?: any;
   issues?: any;
   sentryIssues?: any;
@@ -87,10 +89,14 @@ export class StatusData {
     }
     let result =
       !deepEqual(data[0], this.cache.teamCity) ||
-      !deepEqual(data[1], this.cache.teamCityRunning);
+      !deepEqual(data[1], this.cache.teamCityRunning) ||
+      !deepEqual(data[2], this.cache.teamCityAgents) ||
+      !deepEqual(data[3], this.cache.teamCityQueue);
     this.cache.teamCity = data[0];
     this.cache.teamCityRunning = data[1];
-    console.log('[Refresh] TeamCity EXIT');
+    this.cache.teamCityAgents = data[2];
+    this.cache.teamCityQueue = data[3];
+    console.log('[Refresh] TeamCity EXIT: '+result);
     return result;
   };
 

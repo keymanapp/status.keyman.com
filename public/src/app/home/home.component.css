@@ -284,6 +284,57 @@ td.sentry-events {
   margin: 2px 4px;
 }
 
+.navbar-right {
+  margin-left: auto;
+}
+
+/* Agents */
+
+.navbar-agents {
+  margin-left: 16px;
+  align-self: center;
+}
+
+.navbar-build-queue a {
+  width: 32px;
+  height: 32px;
+  background: #668866;
+  display: inline-block;
+  border-radius: 3px;
+  align-self: center;
+  border: solid 3px #556655;
+  vertical-align: middle;
+  text-align: center;
+  color: #334433;
+}
+
+.navbar-build-queue.build-queue-empty a {
+  background: #666666;
+  border-color: #555555;
+  color: #333333;
+}
+
+.navbar-agent-icon {
+  height: 32px;
+  background: white;
+  border: solid 3px green;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+
+.agent-offline .navbar-agent-icon {
+  border-color: grey;
+  opacity: 0.5;
+}
+
+.agent-failure .navbar-agent-icon {
+  border-color: red;
+}
+
+.agent-busy .navbar-agent-icon {
+  border-color: yellow;
+}
+
 /* Refresh */
 
 .navbar-header {
@@ -292,9 +343,10 @@ td.sentry-events {
 }
 
 .navbar-refresh {
-  margin-left: auto;
+  margin-left: 16px;
   align-self: center;
   display: inline-block;
+  vertical-align: middle;
 }
 
 /* Tables */

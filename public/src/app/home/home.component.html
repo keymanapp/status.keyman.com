@@ -86,6 +86,19 @@
               </span>
             </span>
 
+            <span class="navbar-right"></span>
+
+            <span class="navbar-agents" *ngIf="showAgents">
+              <span class="navbar-build-queue {{status?.teamCityQueue?.length ? '' : 'build-queue-empty'}}">
+                <a href="https://build.palaso.org/queue" target="_blank">{{status?.teamCityQueue?.length}}</a>
+              </span>
+              <span *ngFor="let agent of status?.teamCityAgents" class="navbar-agent {{agentStatus(agent).class}}">
+                <a href="{{agent.webUrl}}" target="_blank">
+                  <img class="navbar-agent-icon" src="assets/{{agentNameToPlatform(agent.name)}}.png" title="{{agentStatus(agent).title}}" />
+                </a>
+              </span>
+            </span>
+
             <span class="navbar-refresh" *ngIf="showRefreshButton">
               <a class="btn btn-sm btn-success" id='navbar-refresh-link' href="javascript:void(0)" (click)="refreshBackend()" title="Force server-side refresh">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">

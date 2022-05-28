@@ -49,7 +49,12 @@ export async function getArtifactLinksComment(
   for(let context of Object.keys(s)) {
     if(s[context].state == 'success') {
       // artifactLinks
-      const u = new URL(s[context].url);
+      let u;
+      try {
+        u = new URL(s[context].url);
+      } catch(e) {
+        continue;
+      }
       if (u.hostname == 'jenkins.lsdev.sil.org') {
         for (let download of artifactLinks.jenkinsTarget.downloads) {
           if(!links['Linux']) links['Linux'] = [];

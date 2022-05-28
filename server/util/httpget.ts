@@ -16,25 +16,30 @@ export default function httpget(hostname, path, headers?, head?: boolean, httpOn
 
     let chunk = '';
 
-    const req = (httpOnly ? http : https).request(options, res => {
-      if(res.statusCode != 200) {
-        console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
-        //Sentry.captureMessage(`statusCode for ${hostname}${path}: ${res.statusCode}`);
-      }
+    try {
+      const req = (httpOnly ? http : https).request(options, res => {
+        if(res.statusCode != 200) {
+          console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+          //Sentry.captureMessage(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+        }
 
-      res.on('data', d => {
-        chunk += d;
+        res.on('data', d => {
+          chunk += d;
+          });
+
+        res.on('end', () => {
+          resolve({data: chunk, res: res});
         });
-
-      res.on('end', () => {
-        resolve({data: chunk, res: res});
       });
-    });
 
-    req.on('error', error => {
-      reject(error);
-    });
+      req.on('error', error => {
+        reject(error);
+      });
 
-    req.end();
+      req.end();
+    } catch(e) {
+      console.log(e);
+      reject(e);
+    }
   });
 };

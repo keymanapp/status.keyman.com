@@ -18,26 +18,31 @@ export default function httppost(hostname, path, headers, data) {
 
     let chunk = '';
 
-    const req = https.request(options, res => {
-      if(res.statusCode != 200) {
-        console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
-      }
+    try {
+      const req = https.request(options, res => {
+        if(res.statusCode != 200) {
+          console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+        }
 
-      res.on('data', d => {
-        chunk += d;
+        res.on('data', d => {
+          chunk += d;
+          });
+
+        res.on('end', () => {
+          //console.log(chunk);
+          resolve(chunk);
         });
-
-      res.on('end', () => {
-        //console.log(chunk);
-        resolve(chunk);
       });
-    });
 
-    req.on('error', error => {
-      reject(error);
-    });
+      req.on('error', error => {
+        reject(error);
+      });
 
-    req.write(data);
-    req.end();
+      req.write(data);
+      req.end();
+    } catch(e) {
+      console.log(e);
+      reject(e);
+    }
   });
 };

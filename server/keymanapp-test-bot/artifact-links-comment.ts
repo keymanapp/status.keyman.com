@@ -10,8 +10,9 @@ export async function getArtifactLinksComment(
   // Only pull requests can have artifacts
   if(!pull) return '';
 
+  let statuses;
   try {
-    const statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
+    statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
   } catch(e) {
     console.log(e);
     return '';

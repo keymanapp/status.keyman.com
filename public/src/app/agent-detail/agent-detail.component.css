@@ -1,0 +1,90 @@
+/* Icon formatting */
+
+.agent {
+  position: relative;
+}
+
+.agent-icon {
+  height: 32px;
+  background: white;
+  border: solid 3px green;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+
+.agent-offline .agent-icon {
+  border-color: grey;
+  opacity: 0.5;
+}
+
+.agent-failure .agent-icon {
+  border-color: red;
+}
+
+.agent-busy .agent-icon {
+  border-color: yellow;
+}
+
+/* Popup box and header formatting */
+
+.agent-detail {
+  display: block;
+  position: absolute;
+  margin: 29px 4px 24px 4px;
+  text-align: left;
+  z-index: 10;
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  width: max-content;
+  max-width: 720px;
+  font-size: 10pt;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
+}
+
+.agent:hover > .agent-detail,
+.agent > .agent-detail.pinned {
+  visibility: visible;
+  opacity: 1;
+}
+
+.summary {
+  background: #e0e0e8;
+  padding: 4px;
+  font-size: 8pt;
+  border-bottom: solid 1px #4c4c30;
+  text-align: right;
+}
+
+.summary .summary-label {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+/* Table formatting */
+
+.status-table {
+  margin-bottom: 0;
+}
+
+.status-table tbody tr td,
+.status-table tbody tr th {
+  padding: 0 4px;
+}

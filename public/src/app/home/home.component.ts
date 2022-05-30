@@ -823,36 +823,4 @@ export class HomeComponent {
         this.pullsByStatus.readyToMerge.push(pd);
     }
   }
-
-  /* Build agent status icons */
-
-  agentStatus(agent: any): { title: string, class: string } {
-    let result = { title: agent.name + ": ", class: '' };
-    if(!agent.connected) {
-      result.title += 'OFFLINE';
-      result.class = 'agent-offline';
-    } else if(!agent.enabled) {
-      result.title += 'DISABLED';
-      result.class = 'agent-offline';
-    } else {
-      if(agent.idleSinceTime) {
-        result.title += "Idle";
-        result.class = 'agent-idle';
-      } else if(agent.build) {
-        result.title += `${agent.build.buildTypeId}, ${agent.build.number} - ${agent.build.status} (${agent.build.percentageComplete}% complete)`;
-        result.class = agent.build.status == 'FAILURE' ? 'agent-failure' : 'agent-busy';
-      } else {
-        result.title += 'unknown build status';
-        result.class = 'agent-failure';
-      }
-    }
-    return result;
-  }
-
-  agentNameToPlatform(name: string): string {
-    if(name.match(/^ba-win/)) return 'windows';
-    if(name.match(/^ba-mac/)) return 'mac';
-    if(name.match(/^ba-bionic/)) return 'linux';
-    return 'common'; // unknown agent
-  }
 }

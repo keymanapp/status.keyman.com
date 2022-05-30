@@ -1,0 +1,53 @@
+<span class="agent">
+  <span class="build-agent {{agentStatus(agent).class}}">
+    <a href="{{agent.webUrl}}" target="_blank">
+      <img class="agent-icon" src="assets/{{agentNameToPlatform(agent.name)}}.png" />
+    </a>
+  </span>
+
+  <div class="agent-detail {{pinned ? 'pinned':''}} gravity-left gravity-bottom" #wrapper>
+    <ng-container *ngIf="pinned || (isVisible | async)">
+      <div class="summary">
+        <span class="summary-label">{{agent.name}}</span>
+        <span class="pin" (click)="pin()">📌</span>
+      </div>
+      <table class="table table-sm table-borderless status-table"><tbody>
+        <tr class="">
+          <th class="">Status</th>
+          <td>{{agentStatus(agent).title}}</td>
+        </tr>
+        <ng-container *ngIf="agent.build">
+          <tr *ngIf="pullRequest">
+            <th class="">Pull Request</th>
+            <td><a href="https://github.com/keymanapp/keyman/pull/{{pullRequest}}" target="_blank"><b>#{{pullRequest.number}}:</b> {{pullRequest.title}}</a></td>
+          </tr>
+          <tr *ngIf="branch">
+            <th class="">Branch</th>
+            <td>{{branch}}</td>
+          </tr>
+          <tr>
+            <th class="">Version String</th>
+            <td>{{agent.build.number}}</td>
+          </tr>
+          <tr>
+            <th class="status-title">Platform</th>
+            <td>{{platform.name}}</td>
+          </tr>
+          <tr>
+            <th class="status-title">Build Type</th>
+            <td>{{buildType}}</td>
+          </tr>
+          <tr>
+            <th class="">Status</th>
+            <td>{{agent.build.status}}</td>
+          </tr>
+          <tr>
+            <th>Progress</th>
+            <td>{{agent.build.percentageComplete}}% complete</td>
+          </tr>
+        </ng-container>
+      </tbody></table>
+
+    </ng-container>
+  </div>
+  </span>

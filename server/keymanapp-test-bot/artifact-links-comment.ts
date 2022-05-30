@@ -127,7 +127,12 @@ function findBuildData(s, buildTypeId, teamCity) {
   for(let context of Object.keys(s)) {
     if(s[context].state == 'success') {
       // artifactLinks
-      const u = new URL(s[context].url);
+      let u;
+      try {
+        u = new URL(s[context].url);
+      } catch(e) {
+        continue;
+      }
       if(u.searchParams.has('buildTypeId')) {
         // Assume TeamCity
         if(u.searchParams.get('buildTypeId') == buildTypeId) {

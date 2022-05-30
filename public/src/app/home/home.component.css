@@ -227,7 +227,7 @@ td.sentry-events {
 /* Contributions */
 
 .navbar-contributions {
-  align-self: flex-end;
+  margin-left: 4px;
 }
 
 .navbar-contribution {
@@ -236,7 +236,7 @@ td.sentry-events {
 }
 
 .navbar-contribution > span > img {
-  margin: -8px 4px 0;
+  margin: 0 4px 0;
 }
 
 .navbar-contribution-data {
@@ -297,9 +297,12 @@ td.sentry-events {
 
 .navbar-refresh {
   margin-left: 16px;
-  align-self: center;
   display: inline-block;
   vertical-align: middle;
+}
+
+.navbar-header > * {
+  align-self: center;
 }
 
 /* Tables */

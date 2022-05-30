@@ -16,6 +16,8 @@ import { HomeComponent } from './home/home.component';
 import { PopupComponent } from './popup/popup.component';
 import { VisibilityService } from './visibility/visibility.service';
 import { PullRequestListComponent } from './pull-request-list/pull-request-list.component';
+import { AgentDetailComponent } from './agent-detail/agent-detail.component';
+import { BuildQueueComponent } from './build-queue/build-queue.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import { PullRequestListComponent } from './pull-request-list/pull-request-list.
     ManualTestComponent,
     HomeComponent,
     PopupComponent,
+    AgentDetailComponent,
+    BuildQueueComponent,
   ],
   imports: [
     BrowserModule,

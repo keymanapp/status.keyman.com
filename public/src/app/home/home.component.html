@@ -89,14 +89,10 @@
             <span class="navbar-right"></span>
 
             <span class="navbar-agents" *ngIf="showAgents">
-              <span class="navbar-build-queue {{status?.teamCityQueue?.length ? '' : 'build-queue-empty'}}">
-                <a href="https://build.palaso.org/queue" target="_blank">{{status?.teamCityQueue?.length}}</a>
-              </span>
-              <span *ngFor="let agent of status?.teamCityAgents" class="navbar-agent {{agentStatus(agent).class}}">
-                <a href="{{agent.webUrl}}" target="_blank">
-                  <img class="navbar-agent-icon" src="assets/{{agentNameToPlatform(agent.name)}}.png" title="{{agentStatus(agent).title}}" />
-                </a>
-              </span>
+              <app-build-queue [status]="status" [queue]="status?.teamCityQueue"></app-build-queue>
+              <ng-container *ngFor="let agent of status?.teamCityAgents">
+                <app-agent-detail [status]="status" [agent]="agent"></app-agent-detail>
+              </ng-container>
             </span>
 
             <span class="navbar-refresh" *ngIf="showRefreshButton">

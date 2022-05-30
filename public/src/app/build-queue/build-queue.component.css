@@ -1,0 +1,86 @@
+.build-queue {
+  position: relative
+}
+
+.build-queue > a {
+  width: 32px;
+  height: 32px;
+  background: #668866;
+  display: inline-block;
+  border-radius: 3px;
+  align-self: center;
+  border: solid 3px #556655;
+  vertical-align: middle;
+  text-align: center;
+  color: #334433;
+}
+
+.build-queue.build-queue-empty > a {
+  background: #666666;
+  border-color: #555555;
+  color: #333333;
+}
+
+/* Popup box and header formatting */
+
+.build-queue-detail {
+  display: block;
+  position: absolute;
+  margin: 29px 4px 24px 4px;
+  text-align: left;
+  z-index: 10;
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  width: max-content;
+  max-width: 720px;
+  font-size: 10pt;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
+}
+
+.build-queue:hover > .build-queue-detail,
+.build-queue > .build-queue-detail.pinned {
+  visibility: visible;
+  opacity: 1;
+}
+
+.summary {
+  background: #e0e0e8;
+  padding: 4px;
+  font-size: 8pt;
+  border-bottom: solid 1px #4c4c30;
+  text-align: right;
+}
+
+.summary .summary-label {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+/* Table formatting */
+
+.status-table {
+  margin-bottom: 0;
+}
+
+.status-table tbody tr td,
+.status-table tbody tr th {
+  padding: 0 4px;
+}

@@ -25,7 +25,7 @@ export class BuildQueueComponent extends PopupComponent implements OnInit {
   }
 
   isPullRequest(build) {
-    return build.branchName.match(/^\d+$/);
+    return !!build.branchName?.match(/^\d+$/);
   }
 
   getPlatformSpec(build) {

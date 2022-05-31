@@ -42,7 +42,7 @@ export class AgentDetailComponent extends PopupComponent implements OnInit {
         this.platform = pspec;
         this.buildType = this.buildTypeFromConfig(this.agent.build.buildTypeId, this.platform);
       }
-      if(this.agent.build.branchName.match(/^\d+$/)) {
+      if(this.agent.build.branchName?.match(/^\d+$/)) {
         const prNumber = parseInt(this.agent.build.branchName, 10);
         this.pullRequest = this.status.github?.data?.repository?.pullRequests?.edges?.find(pr => pr.node?.number == prNumber)?.node;
         if(!this.pullRequest) {

@@ -9,9 +9,9 @@ export class DataChangeTimingManager {
 
       //if(process.env['NODE_ENV'] != 'production') {
         if(this.isRunning(id))
-          console.log(`Data change for ${id} is still underway; waiting ${minInterval} milliseconds`);
+          console.log(`DataChangeTimingManager: Data change for ${id} is still underway; waiting ${minInterval} milliseconds`);
         else
-          console.log(`Data change for ${id} is too soon; waiting ${minInterval} milliseconds`);
+          console.log(`DataChangeTimingManager: Data change for ${id} is too soon; waiting ${minInterval} milliseconds`);
       //}
 
       if (this.dataChangeTimeout[id]) {
@@ -38,4 +38,12 @@ export class DataChangeTimingManager {
     this.started[id] = false;
     this.lastRun[id] = new Date();
   };
+
+  reset = (): void => {
+    console.log('DataChangeTimingManager: Resetting all timeouts');
+    this.started = [];
+    this.lastRun = [];
+    this.dataChangeTimeout.forEach(t => clearTimeout(t));
+    this.dataChangeTimeout = [];
+  }
 }

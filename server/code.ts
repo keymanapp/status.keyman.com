@@ -343,6 +343,7 @@ app.get('/status/code-owners', (request, response) => {
 });
 
 app.post('/refresh', (request, response) => {
+  timingManager.reset();
   (async () => {
     initialLoad();
   });

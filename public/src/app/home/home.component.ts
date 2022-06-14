@@ -154,6 +154,7 @@ export class HomeComponent {
   }
 
   refreshBackend() {
+    console.log('Connecting to status service for refresh');
     this.statusService.refreshBackend();
   }
 

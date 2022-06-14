@@ -124,6 +124,11 @@ export class StatusData {
       data = await githubStatusService.get(sprintName);
     } catch(e) {
       console.log(e);
+      console.log('[Refresh] GitHub Status EXIT -- error');
+      return false;
+    }
+    if(data == null) {
+      console.log('[Refresh] GitHub Status EXIT -- null data');
       return false;
     }
     this.cache.sprints[sprintName].github = data.github;

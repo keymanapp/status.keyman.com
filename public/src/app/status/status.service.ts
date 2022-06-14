@@ -18,6 +18,10 @@ export class StatusService {
   }
 
   refreshBackend() {
-    return this.http.post(environment.refreshBackendUrl, {});
+    const o = this.http.post(environment.refreshBackendUrl, {});
+    o.subscribe( (data: any) => {
+      console.log(data);
+    });
+    return o;
   }
 };

@@ -3,64 +3,11 @@ import httppost from '../../util/httppost';
 import { github_token } from '../../identity/github';
 import { getCurrentSprint } from '../../current-sprint';
 
-export default {
-  get: function(sprint): Promise<{github, phase, adjustedStart}> {
-    const ghStatusQuery = this.queryString(sprint);
-    return httppost('api.github.com', '/graphql',  //3
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
+const Sentry = require("@sentry/node");
 
-      // Lists all open pull requests in keyman repos
-      // and all open pull requests + status for keymanapp repo
-      // Gather the contributions for each recent user
+const queryStrings = {
 
-      // Current rate limit cost is 60 points. We have 5000 points/hour.
-      // https://developer.github.com/v4/guides/resource-limitations/
-
-      JSON.stringify({query: ghStatusQuery})
-    ).then(data => {
-      let githubPullsData = JSON.parse(data);
-      const phase = getCurrentSprint(githubPullsData.data);
-
-      let d = new Date(phase.start);
-      d.setDate(d.getDate()-2);
-      let adjustedStart = d;
-
-      // TODO: is this correct now?
-      // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
-      if(adjustedStart > new Date()) adjustedStart = new Date();
-      return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
-    });
-  },
-  queryString: function(sprint) {
-    let search = '';
-    if(sprint != 'current') {
-      // GH search appears to have a bug where it returns issues from another milestone if we don't include 'is:closed'...
-      // we can probably safely assume is:closed because we are always looking at past milestones
-      search = `
-      milestoneDueOn: search(first: 1, type:ISSUE, query:"is:issue is:closed org:keymanapp repo:keyman milestone:${sprint}") {
-        edges {
-          node {
-            ... on Issue {
-              title
-              number
-              milestone {
-                title
-                dueOn
-              }
-            }
-          }
-        }
-      }
-      `;
-    }
-
-    return `
-  {
-    ${search}
-
+  keyboards: `
     keyboards: repository(owner: "keymanapp", name: "keyboards") {
       issues(filterBy: {states: OPEN}) {
         totalCount
@@ -69,7 +16,9 @@ export default {
         totalCount
       }
     }
+  `,
 
+  lexicalModels: `
     lexicalModels: repository(owner: "keymanapp", name: "lexical-models") {
       issues(filterBy: {states: OPEN}) {
         totalCount
@@ -78,7 +27,9 @@ export default {
         totalCount
       }
     }
+  `,
 
+  unlabeledIssues: `
     unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open -label:windows/ -label:web/ -label:developer/ -label:mac/ -label:ios/ -label:android/ -label:linux/ -label:common/") {
       issueCount
       nodes {
@@ -100,7 +51,9 @@ export default {
         }
       }
     }
+  `,
 
+  repository: `
     repository(owner: "keymanapp", name: "keyman") {
       refs(first:100, refPrefix: "refs/heads/") {
         nodes {
@@ -237,6 +190,9 @@ export default {
         }
       }
     }
+   `,
+
+   organization: `
     organization(login: "keymanapp") {
       repositories(first: 30) {
         nodes {
@@ -300,14 +256,67 @@ export default {
         }
       }
     }
+  `,
 
+  rateLimit: `
     rateLimit {
       limit
       cost
       remaining
       resetAt
     }
-  }
+  `
+};
+
+// Lists all open pull requests in keyman repos
+// and all open pull requests + status for keymanapp repo
+// Gather the contributions for each recent user
+
+// Current rate limit cost is 60 points. We have 5000 points/hour.
+// https://developer.github.com/v4/guides/resource-limitations/
+
+function httppostgh(query) {
+  return httppost('api.github.com', '/graphql',  //3
+    {
+      Authorization: ` Bearer ${github_token}`,
+      Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+    },
+    JSON.stringify({query: '{' + query + '}'})
+  );
+}
+
+export default {
+  get: function(sprint): Promise<{github, phase, adjustedStart}> {
+    const keys = Object.keys(queryStrings);
+    return Promise.all( keys.map(v => httppostgh(queryStrings[v])) ).then(values => {
+      try {
+        let data = keys.reduce((pv, cv, ix) => {pv[cv] = JSON.parse(values[ix]).data[cv]; return pv}, {});
+        let githubPullsData = { data: data };
+
+        const phase = getCurrentSprint(githubPullsData.data);
+
+        let d = new Date(phase.start);
+        d.setDate(d.getDate()-2);
+        let adjustedStart = d;
+
+        // TODO: is this correct now?
+        // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
+        if(adjustedStart > new Date()) adjustedStart = new Date();
+        return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
+      } catch(e) {
+        console.debug(e);
+        Sentry.addBreadcrumb({
+          category: "JSON",
+          message: values
+        });
+        Sentry.captureException(e);
+        return null;
+      }
+    });
+  },
+  queryString: function() {
+    return `
+
   `
   }
 

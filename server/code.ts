@@ -16,6 +16,8 @@ Sentry.init({
   environment: environment
 });
 
+console.log(`Running in ${environment} environment`);
+
 import { StatusSource } from '../shared/status-source';
 
 const express = require('express');
@@ -342,12 +344,29 @@ app.get('/status/code-owners', (request, response) => {
   response.end();
 });
 
+if(environment == Environment.Development) {
+  // Allow CORS for POST
+  app.options('/refresh', (request, response) => {
+    console.log('OPTIONS /refresh');
+    response.writeHead(200, {
+      "Access-Control-Allow-Origin": '*',
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Max-Age": "1000",
+      "Access-Control-Allow-Headers": "Content-Type"
+    });
+    response.end();
+  });
+}
+
 app.post('/refresh', (request, response) => {
+  console.log('POST /refresh');
+  statusHead(request, response);
   timingManager.reset();
   (async () => {
     initialLoad();
-  });
-  response.send('ok');
+  })();
+  response.write(JSON.stringify({"status":"ok"}));
+  response.end();
 });
 
 /* Deployment endpoints */

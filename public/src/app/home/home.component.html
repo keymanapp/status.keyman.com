@@ -141,6 +141,10 @@
             <div *ngIf="!showCodeOwners">
               <img src="assets/{{platform.value.id}}.png">&#160;&#160;
               <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
+              <span class="new-issue-links">
+                <a title="Create new bug report issue for {{platform.value.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=bug,{{platform.value.id}}/&template=bug_report.md&title=bug({{platform.value.id}})%3A+" target="_blank">🐛</a>
+                <a title="Create new feature request issue for {{platform.value.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=feat,{{platform.value.id}}/&template=feature_request.md&title=feat({{platform.value.id}})%3A+" target="_blank">➕</a>
+              </span>
             </div>
             <div *ngIf="showCodeOwners">
               <div class="platform-row">
@@ -309,7 +313,7 @@
           <th *ngFor="let site of sites | keyvalue"><a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id}}</a>
             <span class='nodeping'></span>
             <app-sentry [environment]="'production'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
-          </th>
+        </th>
           <th class='gap'></th>
           <th id='other-repos-cell'>
             <span id='other-repos-title'>other repos</span>
@@ -367,6 +371,9 @@
           <td class='gap'></td>
           <ng-container *ngFor="let site of sites | keyvalue">
             <td class='issues'>
+              <span class="new-issue-links">
+                <a title="Create new issue for {{site.key}}" href="https://github.com/keymanapp/{{site.key}}/issues/new" target="_blank">➕</a>
+              </span>
               <ng-container *ngFor="let milestone of site.value.milestones">
                 <app-issue-list [view]="issueView" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
               </ng-container>

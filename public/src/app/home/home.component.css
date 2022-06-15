@@ -425,3 +425,34 @@ table#sites-and-relatives {
 .pr-group-block > span {
   display: table-cell !important;
 }
+
+.new-issue-links {
+  font-size: 0.5em;
+  padding-left: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+#sites-and-relatives td.issues {
+  padding-right: 20px;
+  position: relative;
+}
+
+#sites-and-relatives .new-issue-links {
+  float: right;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  margin-top: -5px;
+}
+
+.new-issue-links a {
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.new-issue-links a:hover {
+  background-color: #c0c0c0;
+  text-decoration: none;
+}

@@ -261,6 +261,16 @@
                   <span *ngFor="let pull of status.value">
                     <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
                   </span>
+                  <span *ngIf="status.key =='waitingTest'">
+                    <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-required'">
+                      <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
+                    </span>
+                  </span>
+                  <span *ngIf="status.key =='waitingResponse'">
+                    <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-failed'">
+                      <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
+                    </span>
+                  </span>
                 </td>
               </tr>
             </tbody></table>

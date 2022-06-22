@@ -13,6 +13,7 @@ import { getArtifactLinksComment } from "./artifact-links-comment";
 
 const manualTestRequiredLabelName = 'user-test-required';
 const manualTestMissingLabelName = 'user-test-missing';
+const manualTestFailedLabelName = 'user-test-failed';
 const hasUserTestLabelName = 'has-user-test';
 
 function log(s) {
@@ -73,19 +74,22 @@ async function processEvent(
   }
 
   // Determine if all tests have a non-'Open' status
-  let testResult = protocol.getTests().reduce((previous, test) => test.status() != ManualTestStatus.Open ? previous : false, true);
+  const testComplete = protocol.getTests().reduce((previous, test) => test.status() != ManualTestStatus.Open ? previous : false, true);
+  // Determine if any tests have failed or been blocked
+  const testFailed = protocol.getTests().reduce((previous, test) =>
+    test.status() == ManualTestStatus.Failed || test.status() == ManualTestStatus.Blocked ? true : previous, false);
 
-  // manual-test-required label
+  // user-test-required label
   const hasManualTestRequiredLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestRequiredLabelName);
-  if(testResult && hasManualTestRequiredLabel) {
+  if(testComplete && hasManualTestRequiredLabel) {
     log(`processEvent: Removing ${manualTestRequiredLabelName} label`);
     await octokit.rest.issues.removeLabel({...data, name: manualTestRequiredLabelName});
-  } else if(!testResult && !hasManualTestRequiredLabel) {
+  } else if(!testComplete && !hasManualTestRequiredLabel) {
     log(`processEvent: Adding ${manualTestRequiredLabelName} label`);
     await octokit.rest.issues.addLabels({...data, labels: [manualTestRequiredLabelName]});
   }
 
-  // manual-test-missing label
+  // user-test-missing label
   const hasManualTestMissingLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestMissingLabelName);
   if(protocol.getTests().length == 0 && !protocol.skipTesting && !hasManualTestMissingLabel) {
     log(`processEvent: Adding ${manualTestMissingLabelName} label`);
@@ -94,6 +98,17 @@ async function processEvent(
     log(`processEvent: Removing ${manualTestMissingLabelName} label`);
     await octokit.rest.issues.removeLabel({...data, name: manualTestMissingLabelName});
   }
+
+  // user-test-failed label
+  const hasManualTestFailedLabel = issue.data.labels.find(label => (typeof label == 'string' ? label : label.name) == manualTestFailedLabelName);
+  if(testFailed && !hasManualTestFailedLabel) {
+    log(`processEvent: Adding ${manualTestFailedLabelName} label`);
+    await octokit.rest.issues.addLabels({...data, labels: [manualTestFailedLabelName]});
+  } else if(!testFailed && hasManualTestFailedLabel) {
+    log(`processEvent: Removing ${manualTestFailedLabelName} label`);
+    await octokit.rest.issues.removeLabel({...data, name: manualTestFailedLabelName});
+  }
+
 
   // Update the `# User Test Results` comment
   let comment = (mtp.getUserTestResultsComment(protocol) + '\n' +

@@ -1,0 +1,253 @@
+.label {
+  margin: 2px 4px;
+  border-radius: 4px;
+  display: inline-block;
+  background: #c0c0c0;
+  box-shadow: 3px 3px rgba(40,40,40,0.2);
+  border: solid 2px rgb(224,229,233);
+}
+
+.label a.author img.avatar-32 {
+  border-radius: 4px 0 0 4px;
+}
+
+/* Background of issue and build status */
+
+.label.success {
+  background: rgb(68, 204, 17);
+}
+
+.label.failure {
+  background: rgb(255, 24, 48);
+}
+
+.label.pending {
+  background: rgb(240,240,100);
+}
+
+.label.missing {
+  /* missing CI, or draft PR */
+  background: rgb(224,229,233);
+}
+
+.label.success a,
+.label.failure a {
+  color: white;
+}
+
+.label a,
+.label.pending a,
+.label.missing a {
+  color: black;
+}
+
+/* Future issues */
+
+.future {
+  opacity: 0.3;
+}
+
+.status-table {
+  margin-bottom: 0;
+}
+
+.status-table tbody tr {
+  /*background-color: rgba(0,0,0,0)*/
+}
+
+.status-table tbody tr td,
+.status-table tbody tr th {
+  padding: 0 4px;
+}
+
+/* User Testing formatting */
+
+.label.user-test-failure {
+  border: solid 2px rgb(255, 24, 48);
+}
+
+.user-test-failure .user-testing-status-value::after {
+  content: 'Failure';
+}
+
+.label.user-test-pending {
+  border: solid 2px rgb(255,255,32);
+}
+
+.user-test-pending .user-testing-status-value::after {
+  content: 'Pending';
+}
+
+.label.user-test-success {
+  border: solid 2px rgb(68,204,17);
+}
+
+.user-test-success .user-testing-status-value::after {
+  content: 'Success';
+}
+
+.user-test-failure.user-testing-status {
+  color: #A01624;
+}
+
+.user-test-pending.user-testing-status {
+  color: #A0A024;
+}
+
+.user-test-success.user-testing-status {
+  color: #206f24;
+}
+
+.user-test-failure td::before {
+  content:'😡 ';
+}
+
+.user-test-success td::before {
+  content:'✔️ ';
+}
+
+.user-test-pending td::before {
+  content:'😶 ';
+}
+
+.label a.issue {
+  padding: 0px 6px;
+  font-size: 0.8rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.emoji {
+  font-family: "Noto Color Emoji";
+}
+
+.scope-platform .emoji {
+  display: none;
+}
+
+.scope-platform > span > .issue > .title,
+.scope-site > span > .issue > .title {
+  display: none;
+}
+
+.cherry-pick, .emoji {
+  color: rgba(0,0,0,0.5);
+}
+
+.issue {
+  position: relative;
+}
+
+.issue-detail {
+  display: block;
+  position: absolute;
+  margin: 29px 4px 24px 4px;
+  text-align: left;
+  z-index: 10;
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  padding: 3px;
+  width: max-content;
+  max-width: 720px;
+  font-size: 10pt;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
+}
+
+.gravity-top.issue-detail {
+  border-radius: 4px 4px 0 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.gravity-bottom.issue-detail {
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.issue:hover > .issue-detail,
+.issue > .issue-detail.pinned {
+  visibility: visible;
+  opacity: 1;
+}
+
+.title-changes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.title-changes .changes {
+  font-size: 0.9em;
+  margin-right: 2px;
+ }
+
+.title-changes .title {
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+ .additions, .deletions {
+   font-weight: bold;
+   margin-left: 4px;
+ }
+
+ .additions {
+   color: #22863a;
+ }
+
+ .deletions {
+   color: #cb2431;
+ }
+
+ .user-testing-status-title,
+ .status-title,
+ .review-status-title {
+   font-weight: normal;
+ }
+
+ .issue-label {
+  margin-top: 2px;
+  margin-left: 3px;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-weight: 500;
+  font-size: 8pt;
+  word-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  display: inline-block;
+}
+
+.related-issue {
+  padding: 0 4px;
+  margin: 0 4px;
+}
+
+.related-issue:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
+}
+
+.related-issue a {
+    white-space: nowrap;
+}
+
+/* Pin */
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+  font-size: 8pt;
+}

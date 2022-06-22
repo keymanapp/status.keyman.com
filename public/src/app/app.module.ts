@@ -18,6 +18,8 @@ import { VisibilityService } from './visibility/visibility.service';
 import { PullRequestListComponent } from './pull-request-list/pull-request-list.component';
 import { AgentDetailComponent } from './agent-detail/agent-detail.component';
 import { BuildQueueComponent } from './build-queue/build-queue.component';
+import { IssueComponent } from './issue/issue.component';
+import { FilterIssueByLabelPipe } from './pipes/filter-issue-by-label.pipe';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,7 @@ import { BuildQueueComponent } from './build-queue/build-queue.component';
     PullRequestListComponent,
     CountBoxComponent,
     FilterObjectByDatePipe,
+    FilterIssueByLabelPipe,
     SentryComponent,
     IssueListComponent,
     DeployBoxComponent,
@@ -35,6 +38,7 @@ import { BuildQueueComponent } from './build-queue/build-queue.component';
     PopupComponent,
     AgentDetailComponent,
     BuildQueueComponent,
+    IssueComponent,
   ],
   imports: [
     BrowserModule,

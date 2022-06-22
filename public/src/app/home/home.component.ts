@@ -75,6 +75,7 @@ export class HomeComponent {
   labeledPulls = [];
   keyboardIssues = [];
   lexicalModelIssues = [];
+  userTestIssues = [];
   keyboardPRs = [];
   lexicalModelPRs = [];
   changeCounter: number = 0;
@@ -185,6 +186,7 @@ export class HomeComponent {
               this.status.issues = data.issues;
               this.removeDuplicateTimelineItems();
               this.extractKeyboardAndLMIssues();
+              this.extractUserTestIssues();
               break;
             case StatusSource.GitHubContributions:
               this.status.contributions = data.contributions;
@@ -744,6 +746,10 @@ export class HomeComponent {
   extractKeyboardAndLMIssues() {
     this.keyboardIssues = this.status.issues.filter(issue => issue.repository.name == 'keyboards');
     this.lexicalModelIssues = this.status.issues.filter(issue => issue.repository.name == 'lexical-models');
+  }
+
+  extractUserTestIssues() {
+    this.userTestIssues = this.status.issues.filter(issue => issue.repository.name == 'keyman' && issue.labels.nodes.find(node => node.name=='has-user-test'));
   }
 
   extractPullsByAuthorProjectAndStatus() {

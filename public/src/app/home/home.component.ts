@@ -76,6 +76,7 @@ export class HomeComponent {
   keyboardIssues = [];
   lexicalModelIssues = [];
   userTestIssues = [];
+  userTestIssuesPassed = [];
   keyboardPRs = [];
   lexicalModelPRs = [];
   changeCounter: number = 0;
@@ -750,6 +751,10 @@ export class HomeComponent {
 
   extractUserTestIssues() {
     this.userTestIssues = this.status.issues.filter(issue => issue.repository.name == 'keyman' && issue.labels.nodes.find(node => node.name=='has-user-test'));
+    this.userTestIssuesPassed = this.status.issues.filter(issue => issue.repository.name == 'keyman' &&
+      issue.labels.nodes.find(node => node.name=='has-user-test') &&
+      !issue.labels.nodes.find(node => node.name=='user-test-required') &&
+      !issue.labels.nodes.find(node => node.name=='user-test-failed'));
   }
 
   extractPullsByAuthorProjectAndStatus() {

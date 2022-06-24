@@ -284,7 +284,9 @@ export class HomeComponent {
     }
 
     build = this.getFirstBuild(b, tier);
-    if(!build) return 'Unreported';
+    if(!build) {
+      return 'Unreported';
+    }
     return build.number;
   }
 
@@ -301,8 +303,13 @@ export class HomeComponent {
   }
 
   statusLink(platformId: string, tier: string): string {
-    let b = this.getStatus(platformId, tier);
-    let build = this.getFirstBuild(b, tier);
+    let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
+    let build = this.getFirstBuild(br, tier);
+    if(build) {
+      return `https://build.palaso.org/viewLog.html?buildId=${build.id}&buildTypeId=${b.id}`;
+    }
+
+    build = this.getFirstBuild(b, tier);
     if(!build) return '';
     return `https://build.palaso.org/viewLog.html?buildId=${build.id}&buildTypeId=${b.id}`;
 

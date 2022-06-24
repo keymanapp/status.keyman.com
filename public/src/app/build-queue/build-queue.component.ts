@@ -21,7 +21,14 @@ export class BuildQueueComponent extends PopupComponent implements OnInit {
     if(!pspec.configs) {
       return undefined;
     }
-    return Object.getOwnPropertyNames(pspec.configs).find(c => pspec.configs[c] == buildTypeId);
+    let config = Object.getOwnPropertyNames(pspec.configs).find(c => pspec.configs[c] == buildTypeId);
+    switch(config) {
+      case 'alpha':
+      case 'beta':
+      case 'stable':
+        return 'release';
+    }
+    return config;
   }
 
   isPullRequest(build) {

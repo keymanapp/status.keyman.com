@@ -32,6 +32,7 @@ export const platforms: PlatformSpec[] = [
       beta: "Keyman_iOS_Master",
       stable: "Keyman_iOS_Master",
       test: "Keyman_iOS_TestPullRequests",
+      testSamples: "Keyman_iOS_TestSamplesAndTestProjects",
     },
     context: "Keyman - iOS",
     sentry: "keyman-ios",
@@ -103,7 +104,14 @@ export const platforms: PlatformSpec[] = [
   {
     id: "common",
     name: "Common",
-    configs: { testLMLayer: "Keyman_Common_LMLayer_TestPullRequests" },
+    configs: {
+      testLMLayer: "Keyman_Common_LMLayer_TestPullRequests",
+      testKeyboards: "Keyboards_TestPullRequests",
+      triggerTests: "Keyman_Test",
+      triggerAlpha: "Keyman_TriggerReleaseBuildsMaster",
+      triggerBeta: "Keyman_TriggerReleaseBuildsStable",
+      triggerStable: "Keyman_TriggerReleaseBuildsBeta",
+    },
     context: "Common",
   },
 ];

@@ -72,6 +72,11 @@ export async function getArtifactLinksComment(
 
         if(buildData) version = findBuildVersion(buildData);
         if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+        if(!version) {
+          console.log('[@keymanapp-test-bot] Failed to find version information for artifact links; buildData:');
+          console.log(JSON.stringify(buildData));
+          continue;
+        }
 
         let buildId = u.searchParams.get('buildId');
         let t = artifactLinks.teamCityTargets[buildTypeId];

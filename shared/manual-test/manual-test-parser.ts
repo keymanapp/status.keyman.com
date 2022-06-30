@@ -291,7 +291,7 @@ export default class ManualTestParser {
         content+'_**ERROR:** user tests have not yet been defined_';
     }
 
-    let resultsTemplate = {suite:'', group:'', content:''};
+    let resultsTemplate = {suite:'', group:'', content:'', retest:''};
 
     for(let suite of protocol.suites) {
       if(suite.name) {
@@ -361,6 +361,36 @@ export default class ManualTestParser {
         "\n```\n"+
         "</details>\n";
     }
+
+    //
+    // Build up a template for retesting failed/blocked tests
+    //
+
+    for(let suite of protocol.suites) {
+      resultsTemplate.suite = suite.name ? `SUITE_${suite.name}` : '';
+
+      for(let group of suite.groups) {
+        resultsTemplate.group = group.name ? `GROUP_${group.name}` : '';
+
+        for(let test of group.tests) {
+          if(test.status() == ManualTestStatus.Failed || test.status() == ManualTestStatus.Blocked) {
+            resultsTemplate.retest += ' ' + `${resultsTemplate.suite} ${resultsTemplate.group} TEST_${test.name}`.trim();
+            resultsTemplate.suite = '';
+            resultsTemplate.group = '';
+          }
+        }
+      }
+    }
+
+    if(resultsTemplate.retest != '') {
+      content +=
+        "<details><summary>Retesting Template</summary>\n\n" +
+        "```\n" +
+        `@keymanapp-test-bot retest ${resultsTemplate.retest.trim()}\n`+
+        "```\n"+
+        "</details>\n";
+    }
+
     return content.trimRight();
   }
 }

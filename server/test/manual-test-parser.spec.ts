@@ -99,6 +99,12 @@ const userTestResultsComment =
 * **TEST_FIZZ (OPEN):** notes
 * **TEST_BAZ (OPEN):** notes
 \`\`\`
+</details>
+<details><summary>Retesting Template</summary>
+
+\`\`\`
+@keymanapp-test-bot retest TEST_BAR
+\`\`\`
 </details>`;
 
 const userTestResultsAllPassedComment =

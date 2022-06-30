@@ -30,12 +30,12 @@ import { statusData } from './data/status-data';
 import { slackLGTM } from './services/slack/slack';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
-import { testArtifactLinks } from './keymanapp-test-bot/test-artifact-links';
+import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment';
 
 const debugTestBot = false;
 
 if(debugTestBot) {
-  testArtifactLinks();
+  testUserTestComment();
 }
 
 const port = environment == Environment.Development ? 3000 : 80;

@@ -288,6 +288,21 @@ td.sentry-events {
   margin-left: auto;
 }
 
+.navbar-contribution-data td {
+  position: relative;
+}
+
+.navbar-contribution-data td .contribution-cell-clipboard {
+  display: none;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+}
+
+.navbar-contribution-data td:hover .contribution-cell-clipboard {
+  display: block;
+}
+
 /* Refresh */
 
 .navbar-header {

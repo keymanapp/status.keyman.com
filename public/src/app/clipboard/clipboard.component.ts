@@ -23,6 +23,7 @@ declare var ClipboardItem: {
 export class ClipboardComponent implements OnInit {
   @Input() text: any;
   @Input() title: any;
+  @Input() context: any;
 
   loading: boolean = false;
 
@@ -39,7 +40,7 @@ export class ClipboardComponent implements OnInit {
     this.loading = true;
     // async but we don't need to wait around for the answer
     const clipText =
-      typeof this.text == 'function' ? this.text() : this.text;
+      typeof this.text == 'function' ? this.text(this.context) : this.text;
     if(typeof clipText == 'object') {
       let items: ClipboardItems = [];
       let item = new ClipboardItem({[clipText.type]: new Blob([clipText.content], {type: clipText.type}) });

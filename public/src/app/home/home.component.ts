@@ -10,6 +10,7 @@ import { DataSocket } from '../datasocket/datasocket.service';
 import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
 import { IssueView } from '../issue-list/issue-list.component';
+import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 
 interface Status {
   currentSprint: any;
@@ -699,10 +700,14 @@ export class HomeComponent {
     return build ? `https://build.palaso.org/viewLog.html?buildId=${build.id}` : null;
   }
 
-  getContributionText(nodes, type) {
+  getContributionText(nodes, type, day?) {
+    let n = nodes.reverse();
+    if(day) {
+      n = (new FilterObjectByDatePipe()).transform(n, day.date);
+    }
     const text =
       '<ul>' +
-      nodes.reverse().reduce(
+      n.reduce(
         (text, node) => {
           const url = node.url ?? node[type].url;
           const repo = repoShortNameFromGithubUrl(url);
@@ -712,20 +717,20 @@ export class HomeComponent {
     return { content: text, type: 'text/html' };
   }
 
-  getContributionPRText(user) {
-    return this.getContributionText(user.contributions.pullRequests.nodes, 'pullRequest');
+  getContributionPRText = (context) => {
+    return this.getContributionText(context.user.contributions.pullRequests.nodes, 'pullRequest', context.day);
   }
 
-  getContributionIssueText(user) {
-    return this.getContributionText(user.contributions.issues.nodes, 'issue');
+  getContributionIssueText = (context) => {
+    return this.getContributionText(context.user.contributions.issues.nodes, 'issue', context.day);
   }
 
-  getContributionReviewText(user) {
-    return this.getContributionText(user.contributions.reviews.nodes, 'pullRequest');
+  getContributionReviewText = (context) => {
+    return this.getContributionText(context.user.contributions.reviews.nodes, 'pullRequest', context.day);
   }
 
-  getContributionTestText(user) {
-    return this.getContributionText(user.contributions.tests.nodes, 'issue');
+  getContributionTestText = (context) => {
+    return this.getContributionText(context.user.contributions.tests.nodes, 'issue', context.day);
   }
 
   /* Multiple issue views */

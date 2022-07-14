@@ -27,6 +27,8 @@ export const artifactLinks = {
 
     'Keyman_Developer_Test': {platform: 'developer', name: 'Developer', icon: 'developer.png', downloads: [
       {fragment: 'release/$version/keymandeveloper-$version.exe', name: '**Keyman Developer**', icon: 'developer.png'} ,
+      {fragment: 'release/$version/kmcomp-$version.zip', name: 'kmcomp.zip', icon: 'developer.png'},
+      {fragment: 'keyboard-regression/', name: 'Compiler Regression Tests', icon: 'developer.png'},
       {fragment: 'keyboards/index.html', name: 'Test Keyboards', icon: 'developer.png'} ,
     ]},
 

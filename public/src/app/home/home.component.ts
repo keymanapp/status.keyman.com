@@ -846,5 +846,62 @@ export class HomeComponent {
       if(status == 'status-approved' && userTesting == 'user-test-success' && buildState == 'success')
         this.pullsByStatus.readyToMerge.push(pd);
     }
+    this.sortPullGroupByTreeAndNumber(this.pullsByProject);
+    this.sortPullGroupByTreeAndNumber(this.pullsByStatus);
+    this.sortPullGroupByTreeAndNumber(this.pullsByAuthor);
+  }
+
+  /**
+   * Sort our pull arrays to make the dependency order clear, as it may not be
+   * the same as the PR number order.
+   */
+  sortPullsByTreeAndNumber(pulls): void {
+    function TreeNode(data) {
+      this.data = data;
+      this.parent = null;
+      this.children = [];
+    }
+
+    TreeNode.comparer = function (a, b) {
+      return a.data.pull.node.number - b.data.pull.node.number;
+    };
+
+    TreeNode.prototype.sortRecursive = function () {
+      this.children.sort(TreeNode.comparer);
+      for (var i=0, l=this.children.length; i<l; i++) {
+        this.children[i].sortRecursive();
+      }
+      return this;
+    };
+
+    TreeNode.prototype.walk = function(f, recursive) {
+      for (var i=0, l=this.children.length; i<l; i++) {
+        var child = this.children[i];
+        f.apply(child, Array.prototype.slice.call(arguments, 2));
+        if (recursive) child.walk.apply(child, arguments);
+      }
+    }
+
+    const refs = {};
+    const root = new TreeNode(undefined);
+    pulls.forEach(pull => { refs[pull.pull.node.headRefName] = new TreeNode(pull); });
+    pulls.forEach(pull => {
+      const node = refs[pull.pull.node.headRefName];
+      node.parent = refs[pull.pull.node.baseRefName] || root;
+      node.parent.children.push(node);
+    });
+
+    root.sortRecursive();
+
+    // Replace pulls array with root treewalk
+    let newPulls = [];
+    root.walk(function() { if(this.data) newPulls.push(this.data) }, true);
+    pulls.splice(0, pulls.length, ...newPulls);
+  }
+
+  sortPullGroupByTreeAndNumber(pullGroup): void {
+    for(let key of Object.keys(pullGroup)) {
+      this.sortPullsByTreeAndNumber(pullGroup[key]);
+    }
   }
 }

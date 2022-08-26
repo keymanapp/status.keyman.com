@@ -71,6 +71,7 @@ export const platforms: PlatformSpec[] = [
       beta: "Keymanweb_Build",
       stable: "Keymanweb_Build",
       test: "Keymanweb_TestPullRequests",
+      testCore: "Keyman_Common_KPAPI_TestPullRequests_WASM"
     },
     context: "Keyman - Web",
     sentry: "keyman-web",

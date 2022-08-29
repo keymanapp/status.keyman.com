@@ -40,35 +40,13 @@
   background: rgb(255, 24, 48);
 }
 
-.label {
-  font-size: 1rem;
-  padding: 4px;
-  margin: 0 4px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.label.hide-if-zero {
-  display: none;
-}
-
-.label.hide-if-zero.failure {
-  display: inline-block;
-}
-
 .not-in-beta th#th-beta {
   color: #606060;
 }
 
-.not-in-beta #tier-beta .tier-build-state,
+.not-in-beta #tier-beta ::ng-deep .tier-build-state,
 .not-in-beta #tier-beta ::ng-deep .tier-release-version a {
   filter: brightness(1.25) saturate(0.25);
-}
-
-.tier app-sentry {
-  vertical-align: middle;
-  display: inline-block;
-  margin-left: 8px;
 }
 
 .emoji-group.emoji-group-border {
@@ -93,68 +71,6 @@
   margin-left: 4px;
 }
 
-/* Background of pull request and build status */
-
-.label {
-  background: #c0c0c0;
-  color: black;
-}
-
-a.label.success {
-  color: white;
-  background: rgb(68, 204, 17);
-}
-
-a.label.failure {
-  color: white;
-  background: rgb(255, 24, 48);
-}
-
-a.label.pending {
-  color: black;
-  background: rgb(240,240,100);
-}
-
-a.label.missing {
-  color: white;
-  background: rgb(12, 24, 48);
-}
-
-/* Tier Test Status */
-
-div.tier-test {
-  padding: 4px;
-  display: inline-block;
-  height: 32px;
-  vertical-align: top;
-  margin-left: 10px;
-  border-radius: 12px;
-  width: 26px;
-  font-size: 10pt;
-  text-align: center;
-  padding-top: 5px;
-}
-
-div.tier-test a,
-div.tier-test a:hover {
-  text-decoration: none;
-}
-
-div.tier-test-success {
-  color: white;
-  background-color: rgb(68, 204, 17);
-}
-
-div.tier-test-failure {
-  color: white;
-  background-color: rgb(255, 24, 48);
-}
-
-div.tier-test-pending {
-  color: black;
-  background: rgb(240,240,100);
-}
-
 /* Issue total */
 
 a.issue-count {
@@ -171,30 +87,6 @@ td.tier {
 }
 
 td, th {
-  vertical-align: middle;
-}
-
-.tier-container {
-  display: inline-block;
-}
-
-.tier-release-date {
-  text-align: center;
-  font-size: 12px;
-}
-
-.tier-build-state a.label {
-  margin-right: 0;
-  border-radius: 4px 0 0 4px;
-  min-height: 32px;
-  max-height: 32px;
-  height: 32px;
-  padding-right: 8px;
-}
-
-.tier-build-state {
-  display: inline-block;
-  margin-left: 0px;
   vertical-align: middle;
 }
 
@@ -386,6 +278,10 @@ table#sites-and-relatives {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+}
+
+.tr-platform > th img {
+  width: 42px;
 }
 
 .tr-platform th div.platform-icon img {

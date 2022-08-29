@@ -161,7 +161,7 @@
             <div *ngIf="showCodeOwners">
               <div class="platform-row">
                 <div class="platform-icon">
-                  <img src="assets/{{platform.value.id}}.png">
+                  <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank"><img src="assets/{{platform.value.id}}.png"></a>
                 </div>
                 <div class="platform-owner" *ngIf="status.codeOwners[platform.value.id]">
                   <img class="avatar-22" src="https://github.com/{{status.codeOwners[platform.value.id].owner}}.png?size=22" title="Platform owner: @{{status.codeOwners[platform.value.id].owner}}">
@@ -170,86 +170,24 @@
                   <img class="avatar-22" src="https://github.com/{{status.codeOwners[platform.value.id].advocate}}.png?size=22" title="Platform advocate: @{{status.codeOwners[platform.value.id].advocate}}">
                 </div>
               </div>
-              <div class="platform-row">
+              <!--div class="platform-row">
                 <div class="platform-title">
                   <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
                 </div>
-              </div>
+              </div>-->
             </div>
           </th>
 
           <td class="tier" id="tier-stable">
-            <div class="tier-container" *ngIf="platform.value.id != 'common'">
-              <div class="tier-build-state" title="{{statusTip(platform.value.id,'stable')}}">
-                <a class="label {{statusClass(platform.value.id,'stable')}}" href="{{statusLink(platform.value.id,'stable')}}" target="_blank">{{statusText(platform.value.id,'stable')}}</a>
-              </div>
-
-              <app-deploy-box
-                [changeCounter]="changeCounter"
-                [tier]="'stable'"
-                [status]="status"
-                [builtVersion]="statusText(platform.value.id,'stable')"
-                [platform]="platform"
-                [downloadClass]="downloadClass(platform.value.id,'stable')"
-                [releaseDate]="releaseDate(platform.value.id,'stable')">
-              </app-deploy-box>
-
-              <div class="tier-test {{tierTestClass(platform.value.id,'stable')}}" title="{{tierTestTitle(platform.value.id,'stable')}}">
-                <a href="{{tierTestLink(platform.value.id,'stable')}}" target="_blank">🧪</a>
-              </div>
-
-              <app-sentry [environment]="'stable'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
-
-            </div>
+            <app-platform-tier-box [platforms]="platforms" [platform]="platform.value" [status]="status" [changeCounter]="changeCounter" [tier]="'stable'"></app-platform-tier-box>
           </td>
 
           <td class="tier" id="tier-beta">
-            <div class="tier-container" *ngIf="platform.value.id != 'common'">
-              <div class="tier-build-state" title="{{statusTip(platform.value.id,'beta')}}">
-                <a class="label {{statusClass(platform.value.id,'beta')}}" href="{{statusLink(platform.value.id,'beta')}}" target="_blank">{{statusText(platform.value.id,'beta')}}</a>
-              </div>
-
-              <app-deploy-box
-                [changeCounter]="changeCounter"
-                [tier]="'beta'"
-                [status]="status"
-                [builtVersion]="statusText(platform.value.id,'beta')"
-                [platform]="platform"
-                [downloadClass]="downloadClass(platform.value.id,'beta')"
-                [releaseDate]="releaseDate(platform.value.id,'beta')">
-              </app-deploy-box>
-
-              <div class="tier-test {{tierTestClass(platform.value.id,'beta')}}" title="{{tierTestTitle(platform.value.id,'beta')}}">
-                <a href="{{tierTestLink(platform.value.id,'beta')}}" target="_blank">🧪</a>
-              </div>
-
-              <app-sentry [mode]="'simple'" [environment]="'beta'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
-
-            </div>
+            <app-platform-tier-box [platforms]="platforms" [platform]="platform.value" [status]="status" [changeCounter]="changeCounter" [tier]="'beta'"></app-platform-tier-box>
           </td>
 
           <td class="tier" id="tier-alpha">
-            <div class="tier-container" *ngIf="platform.value.id != 'common'">
-              <div class="tier-build-state" title="{{statusTip(platform.value.id,'alpha')}}">
-                <a class="label {{statusClass(platform.value.id,'alpha')}}" href="{{statusLink(platform.value.id,'alpha')}}" target="_blank">{{statusText(platform.value.id,'alpha')}}</a>
-              </div>
-
-              <app-deploy-box
-                [changeCounter]="changeCounter"
-                [tier]="'alpha'"
-                [status]="status"
-                [builtVersion]="statusText(platform.value.id,'alpha')"
-                [platform]="platform"
-                [downloadClass]="downloadClass(platform.value.id,'alpha')"
-                [releaseDate]="releaseDate(platform.value.id,'alpha')">
-              </app-deploy-box>
-
-              <div class="tier-test {{tierTestClass(platform.value.id,'alpha')}}" title="{{tierTestTitle(platform.value.id,'alpha')}}">
-                <a href="{{tierTestLink(platform.value.id,'alpha')}}" target="_blank">🧪</a>
-              </div>
-
-              <app-sentry [mode]="'simple'" [environment]="'alpha'" [gravityX]="'right'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [platform]="platform.value.id" [issues]="status?.sentryIssues[platform.value.id]"></app-sentry>
-            </div>
+            <app-platform-tier-box [platforms]="platforms" [platform]="platform.value" [status]="status" [changeCounter]="changeCounter" [tier]="'alpha'"></app-platform-tier-box>
           </td>
 
           <td class="issues">
@@ -259,7 +197,7 @@
               </div>
               <div class="issue-box-container">
                 <ng-container *ngFor="let milestone of platform.value.milestones">
-                  <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.value.id == 'developer' || platform.value.id == 'common' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
+                  <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.value.id == 'developer' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
                 </ng-container>
               </div>
             </div>

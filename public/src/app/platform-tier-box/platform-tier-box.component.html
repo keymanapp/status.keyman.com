@@ -1,0 +1,36 @@
+<div class="tier-container" *ngIf="platform.id == 'common'">
+  <span class="tier-test">🧪</span>
+  <div class="tier-test platform-{{platform.id}} {{tierTestClass(platform.id,tier,'testLMLayer')}}" title="{{tierTestTitle(platform.id,tier,'testLMLayer')}}">
+    <a href="{{tierTestLink(platform.id,tier,'testLMLayer')}}" target="_blank"><img src='/assets/web.png'></a>
+  </div>
+</div>
+<div class="tier-container" *ngIf="platform.id == 'core'">
+  <span class="tier-test">🧪</span>
+  <ng-container *ngFor="let tierId of ['linux', 'mac', 'web', 'windows']">
+    <div class="tier-test platform-{{platform.id}} {{tierTestClass(platform.id,tier,platformToTierId(tierId))}}" title="{{tierTestTitle(platform.id,tier,platformToTierId(tierId))}}">
+      <!--TODO: core-wasm, core-win, core-mac, core-linux -->
+      <a href="{{tierTestLink(platform.id,tier,platformToTierId(tierId))}}" target="_blank"><img src='/assets/{{tierId}}.png'></a>
+    </div>
+  </ng-container>
+</div>
+<div class="tier-container" *ngIf="hasReleaseBuild(platform)">
+  <div class="tier-build-state" title="{{statusTip(platform.id,tier)}}">
+    <a class="label {{statusClass(platform.id,tier)}}" href="{{statusLink(platform.id,tier)}}" target="_blank">{{statusText(platform.id,tier)}}</a>
+  </div>
+
+  <app-deploy-box
+    [changeCounter]="changeCounter"
+    [tier]="tier"
+    [status]="status"
+    [builtVersion]="statusText(platform.id,tier)"
+    [platform]="platform"
+    [downloadClass]="downloadClass(platform.id,tier)"
+    [releaseDate]="releaseDate(platform.id,tier)">
+  </app-deploy-box>
+
+  <div class="tier-test {{tierTestClass(platform.id,tier)}}" title="{{tierTestTitle(platform.id,tier)}}">
+    <a href="{{tierTestLink(platform.id,tier)}}" target="_blank">🧪</a>
+  </div>
+
+  <app-sentry [mode]="tier == 'stable' ? '' : 'simple'" [environment]="tier" [gravityX]="'right'" [gravityY]="(platform.id == 'developer' ? 'top' : 'bottom')" [platform]="platform.id" [issues]="status?.sentryIssues[platform.id]"></app-sentry>
+</div>

@@ -20,6 +20,7 @@ import { AgentDetailComponent } from './agent-detail/agent-detail.component';
 import { BuildQueueComponent } from './build-queue/build-queue.component';
 import { IssueComponent } from './issue/issue.component';
 import { FilterIssueByLabelPipe } from './pipes/filter-issue-by-label.pipe';
+import { PlatformTierBoxComponent } from './platform-tier-box/platform-tier-box.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { FilterIssueByLabelPipe } from './pipes/filter-issue-by-label.pipe';
     AgentDetailComponent,
     BuildQueueComponent,
     IssueComponent,
+    PlatformTierBoxComponent,
   ],
   imports: [
     BrowserModule,

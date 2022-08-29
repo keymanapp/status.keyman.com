@@ -9,7 +9,7 @@
     [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
 
   <span *ngIf="isNav" class="navbar-new-issues">
-    <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
+    <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/+-label%3Acore/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
   </span>
 
   <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>

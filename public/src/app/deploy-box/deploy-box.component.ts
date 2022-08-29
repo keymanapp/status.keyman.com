@@ -27,7 +27,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
   targets: DeployTarget[] = [];
 
   ngOnInit() {
-    this.popupId = 'deploy-box-'+this.platform?.value?.id+'-'+this.tier;
+    this.popupId = 'deploy-box-'+this.platform?.id+'-'+this.tier;
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
     this.prepareData();
@@ -42,13 +42,13 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
     this.targets = [];
 
     const tier = this.tier;
-    const platform = this.platform?.value?.id;
+    const platform = this.platform?.id;
     const version = this.status?.keyman?.[platform]?.[tier]?.version;
 
     this.targets.push({
       name: 'Default download from downloads.keyman.com',
-      url: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.downloadUrl,
-      version: this.status?.keyman?.[this.platform?.value?.id]?.[this.tier]?.version,
+      url: this.status?.keyman?.[this.platform?.id]?.[this.tier]?.downloadUrl,
+      version: this.status?.keyman?.[this.platform?.id]?.[this.tier]?.version,
       date: this.releaseDate
     });
 
@@ -59,7 +59,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
       date: this.releaseDate
     });
 
-    switch(this.platform.value.id) {
+    switch(this.platform.id) {
       case 'android':
         if(this.tier == 'stable') {
           this.targets.push({

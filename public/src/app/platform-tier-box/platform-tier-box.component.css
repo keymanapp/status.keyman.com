@@ -1,0 +1,127 @@
+/* Tier containers */
+
+.tier-container {
+  display: inline-block;
+}
+
+.tier-release-date {
+  text-align: center;
+  font-size: 12px;
+}
+
+.tier-build-state a.label {
+  margin-right: 0;
+  border-radius: 4px 0 0 4px;
+  min-height: 32px;
+  max-height: 32px;
+  height: 32px;
+  padding-right: 8px;
+}
+
+.tier-build-state {
+  display: inline-block;
+  margin-left: 0px;
+  vertical-align: middle;
+}
+
+.label {
+  font-size: 1rem;
+  padding: 4px;
+  margin: 0 4px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.label.hide-if-zero {
+  display: none;
+}
+
+.label.hide-if-zero.failure {
+  display: inline-block;
+}
+
+/* Background of pull request and build status */
+
+.label {
+  background: #c0c0c0;
+  color: black;
+}
+
+a.label.success {
+  color: white;
+  background: rgb(68, 204, 17);
+}
+
+a.label.failure {
+  color: white;
+  background: rgb(255, 24, 48);
+}
+
+a.label.pending {
+  color: black;
+  background: rgb(240,240,100);
+}
+
+a.label.missing {
+  color: white;
+  background: rgb(12, 24, 48);
+}
+
+/* Tier Test Status */
+
+span.tier-test {
+  font-size: 10pt;
+  vertical-align: middle;
+}
+
+div.tier-test {
+  padding: 4px;
+  display: inline-block;
+  height: 32px;
+  vertical-align: top;
+  margin-left: 6px;
+  margin-right: 6px;
+  border-radius: 12px;
+  width: 26px;
+  font-size: 10pt;
+  text-align: center;
+  padding-top: 5px;
+}
+
+div.tier-test.platform-core {
+  width: auto;
+  margin-right: 0;
+}
+
+div.tier-test.platform-core img,
+div.tier-test.platform-common img {
+  width: 16px;
+}
+
+div.tier-test a,
+div.tier-test a:hover {
+  text-decoration: none;
+}
+
+div.tier-test-success {
+  color: white;
+  background-color: rgb(68, 204, 17);
+}
+
+div.tier-test-failure {
+  color: white;
+  background-color: rgb(255, 24, 48);
+}
+
+div.tier-test-pending {
+  color: black;
+  background: rgb(240,240,100);
+}
+
+/* Sentry box */
+
+app-sentry {
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 0px;
+}

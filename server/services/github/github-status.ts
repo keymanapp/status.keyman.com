@@ -30,7 +30,7 @@ const queryStrings = {
   `,
 
   unlabeledIssues: `
-    unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open -label:windows/ -label:web/ -label:developer/ -label:mac/ -label:ios/ -label:android/ -label:linux/ -label:common/") {
+    unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open -label:windows/ -label:web/ -label:developer/ -label:mac/ -label:ios/ -label:android/ -label:linux/ -label:common/ -label:core/") {
       issueCount
       nodes {
         ... on Issue {
@@ -63,7 +63,7 @@ const queryStrings = {
       issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
         totalCount
       }
-      issuesByLabelAndMilestone: labels(first: 100, query: "windows/ web/ developer/ mac/ ios/ android/ linux/ common/") {
+      issuesByLabelAndMilestone: labels(first: 100, query: "windows/ web/ developer/ mac/ ios/ android/ linux/ common/ core/") {
         edges {
           node {
             name

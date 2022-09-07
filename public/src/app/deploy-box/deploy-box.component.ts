@@ -115,7 +115,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             version: this.status?.deployment?.[StatusSource.PackagesSilOrg]?.version
           }, {
             name: 'linux.lsdev.sil.org',
-            url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
+            url: '',  // Disabled, see #250 url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
             version: this.status?.deployment?.[StatusSource.LinuxLsdevSilOrgStable]?.version
           }, {
             name: 'Debian Unstable',
@@ -130,7 +130,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             date: this.status?.deployment?.[`launch-pad-${this.tier}`]?.date_published.substr(0, 10)
           }, {
             name: 'linux.lsdev.sil.org',
-            url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman/',
+            url: '', // Disabled, see #250 url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman/',
             version: this.status?.deployment?.[`linux-lsdev-sil-org-${this.tier}`]?.version
           });
           if (this.tier == 'beta') {

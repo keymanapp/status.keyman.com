@@ -17,7 +17,10 @@
     <table class="tier-release-items table table-sm">
       <tbody>
         <tr *ngFor="let target of targets">
-          <th><a href="{{target.url}}" target="_blank">{{target.name}}</a></th>
+          <th>
+            <a *ngIf="target.url != ''" href="{{target.url}}" target="_blank">{{target.name}}</a>
+            <span *ngIf="target.url == ''">{{target.name}}</span>
+          </th>
           <td class="{{getVersionClass(target.version)}}">{{target.version}}</td>
           <td>{{target.date}}</td>
         </tr>

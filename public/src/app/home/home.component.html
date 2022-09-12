@@ -204,66 +204,22 @@
           </td>
 
           <td class="pulls" *ngIf="pullRequestView == 'status' && platform.value.id == 'android'" rowspan='8'>
-            <table><tbody>
-              <tr *ngFor="let status of pullsByStatus | keyvalue">
-                <td>{{pullStatusName[status.key]}}</td>
-                <td>
-                  <span *ngFor="let pull of status.value">
-                    <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-                  </span>
-                  <span *ngIf="status.key =='readyToMerge'">
-                    <span *ngFor="let issue of userTestIssuesPassed">
-                      <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
-                    </span>
-                  </span>
-                  <span *ngIf="status.key =='waitingTest'">
-                    <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-required'">
-                      <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
-                    </span>
-                  </span>
-                  <span *ngIf="status.key =='waitingResponse'">
-                    <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-failed'">
-                      <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
-                    </span>
-                  </span>
-                </td>
-              </tr>
-            </tbody></table>
+            <app-box-pr-status
+              [status]="status" [userTestIssues]="userTestIssues" [userTestIssuesPassed]="userTestIssuesPassed"
+              [pullsByStatus]="pullsByStatus" [changeCounter]="changeCounter" [pullStatusName]="pullStatusName">
+            </app-box-pr-status>
           </td>
 
           <td class="pulls" *ngIf="pullRequestView == 'project' && platform.value.id == 'android'" rowspan='8'>
-            <table><tbody>
-              <tr *ngFor="let project of pullsByProject | keyvalue">
-                <td class='emoji'>{{project.key == 'other' ? '⬜' : project.key}}</td>
-                <td>
-                  <span *ngFor="let pull of project.value">
-                    <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-                  </span>
-                </td>
-              </tr>
-            </tbody></table>
+            <app-box-pr-project [status]="status" [pullsByProject]="pullsByProject" [changeCounter]="changeCounter"></app-box-pr-project>
           </td>
 
           <td class="pulls" *ngIf="pullRequestView == 'author' && platform.value.id == 'android'" rowspan='8'>
-            <table><tbody>
-              <tr *ngFor="let author of pullsByAuthor | keyvalue">
-                <td><a class="author" title="{{author.value[0].pull.node.author.login}}" target="_blank" href="{{author.value[0].pull.node.author.url}}"><img class="avatar-48" src="{{author.value[0].pull.node.author.avatarUrl}}&size=48"></a></td>
-                <td>
-                  <span *ngFor="let pull of author.value">
-                    <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-                  </span>
-                </td>
-              </tr>
-            </tbody></table>
+            <app-box-pr-author [status]="status" [pullsByAuthor]="pullsByAuthor" [changeCounter]="changeCounter"></app-box-pr-author>
           </td>
 
           <td class="pulls" *ngIf="pullRequestView == 'platform'">
-            <div [class]="'emoji-group' + (emoji.key == '' ? '' : ' emoji-group-border')" *ngFor="let emoji of platform.value.pullsByEmoji | keyvalue">
-              <span *ngIf="emoji.key != ''" class="emoji">{{emoji.key}}</span>
-              <span *ngFor="let pull of emoji.value">
-                <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="platform.value.id" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-              </span>
-              </div>
+            <app-box-pr-platform [status]="status" [platform]="platform" [changeCounter]="changeCounter"></app-box-pr-platform>
           </td>
         </tr>
 

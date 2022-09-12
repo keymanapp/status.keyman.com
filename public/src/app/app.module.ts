@@ -21,6 +21,11 @@ import { BuildQueueComponent } from './build-queue/build-queue.component';
 import { IssueComponent } from './issue/issue.component';
 import { FilterIssueByLabelPipe } from './pipes/filter-issue-by-label.pipe';
 import { PlatformTierBoxComponent } from './platform-tier-box/platform-tier-box.component';
+import { BoxPrStatusComponent } from './box-pr-status/box-pr-status.component';
+import { BoxPrProjectComponent } from './box-pr-project/box-pr-project.component';
+import { BoxPrAuthorComponent } from './box-pr-author/box-pr-author.component';
+import { BoxPrPlatformComponent } from './box-pr-platform/box-pr-platform.component';
+import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +46,11 @@ import { PlatformTierBoxComponent } from './platform-tier-box/platform-tier-box.
     BuildQueueComponent,
     IssueComponent,
     PlatformTierBoxComponent,
+    BoxPrStatusComponent,
+    BoxPrProjectComponent,
+    BoxPrAuthorComponent,
+    BoxPrPlatformComponent,
+    BoxPrBaseComponent,
   ],
   imports: [
     BrowserModule,

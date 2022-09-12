@@ -306,6 +306,7 @@ table#sites-and-relatives {
 .pull-request-view-project #pull-request-view-link-project { background-color: #e0e0e0; }
 .pull-request-view-status #pull-request-view-link-status { background-color: #e0e0e0; }
 .pull-request-view-author #pull-request-view-link-author { background-color: #e0e0e0; }
+.pull-request-view-base #pull-request-view-link-base { background-color: #e0e0e0; }
 
 .pr-group-block {
   display: block;

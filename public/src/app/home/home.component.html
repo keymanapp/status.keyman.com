@@ -143,6 +143,7 @@
               <a id='pull-request-view-link-project' href="javascript:void(0)" (click)="setPRView('project')">Project</a>
               <a id='pull-request-view-link-status' href="javascript:void(0)" (click)="setPRView('status')">Status</a>
               <a id='pull-request-view-link-author' href="javascript:void(0)" (click)="setPRView('author')">Author</a>
+              <a id='pull-request-view-link-base' href="javascript:void(0)" (click)="setPRView('base')">Base</a>
             </span>
           </th>
         </tr>
@@ -220,6 +221,10 @@
 
           <td class="pulls" *ngIf="pullRequestView == 'platform'">
             <app-box-pr-platform [status]="status" [platform]="platform" [changeCounter]="changeCounter"></app-box-pr-platform>
+          </td>
+
+          <td class="pulls" *ngIf="pullRequestView == 'base' && platform.value.id == 'android'" rowspan="8">
+            <app-box-pr-base [status]="status" [pullsByBase]="pullsByBase" [changeCounter]="changeCounter"></app-box-pr-base>
           </td>
         </tr>
 

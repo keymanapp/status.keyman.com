@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-box-pr-base',
@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./box-pr-base.component.css']
 })
 export class BoxPrBaseComponent implements OnInit {
+  @Input() pullsByBase: any;
+  @Input() changeCounter: number;
+  @Input() status: any;
 
   constructor() { }
 

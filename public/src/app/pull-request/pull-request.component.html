@@ -3,7 +3,8 @@
   <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{pull.pull.node.author.avatarUrl}}&size=32"></a>
   <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
     <span class="title" *ngIf="scope == 'keyboards-lexical-models'">{{pull.pull.node.title}}</span>
-    <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>
+    <span *ngIf='pullIsForStableBranch()' class='stable'>{{pullStableBranchNumber()}}</span>
+    <!--<span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>-->
     <span class='emoji'>{{pullEmoji()}}</span>{{pull.pull.node.number}}
   </a>
   <span class='user-testing'> </span>

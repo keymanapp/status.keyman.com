@@ -38,7 +38,8 @@ enum PullRequestView {
   Platform = 'platform',
   Project = 'project',
   Status = 'status',
-  Author = 'author'
+  Author = 'author',
+  Base = 'base'
 };
 
 @Component({
@@ -129,6 +130,7 @@ export class HomeComponent {
   };
   pullsByProject = {};
   pullsByAuthor = {};
+  pullsByBase = {};
 
   constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
     this.JSON = JSON;
@@ -622,6 +624,7 @@ export class HomeComponent {
     for(let p of this.platforms) {
       for(let q of p.pulls) {
         if(q.pull.node.number == pull.node.number) {
+          q.pull.node.ultimateBaseRefName = pull.node.ultimateBaseRefName;
           return q;
         }
       }
@@ -645,6 +648,7 @@ export class HomeComponent {
   extractPullsByAuthorProjectAndStatus() {
     this.pullsByAuthor = {};
     this.pullsByProject = {};
+    this.pullsByBase = {'master':[]}; // always show 'master' base
     this.pullsByStatus.draft = [];
     this.pullsByStatus.readyToMerge = [];
     this.pullsByStatus.waitingGoodBuild = [];
@@ -658,6 +662,10 @@ export class HomeComponent {
 
       let pd = this.getPlatformPullData(pull);
       this.pullsByProject[emoji].push(pd);
+
+      let base = this.getPullUltimateBase(pull);
+      if(!this.pullsByBase[base]) this.pullsByBase[base] = [];
+      this.pullsByBase[base].push(pd);
 
       if(!this.pullsByAuthor[pull.node.author.login]) this.pullsByAuthor[pull.node.author.login] = [];
       this.pullsByAuthor[pull.node.author.login].push(pd);
@@ -776,5 +784,23 @@ export class HomeComponent {
     for(let key of Object.keys(pullGroup)) {
       this.sortPullsByTreeAndNumber(pullGroup[key]);
     }
+  }
+
+  getPullUltimateBase(pull): string {
+    let input = pull;
+    const ultimateBaseRef = /^(master|beta|stable-\d+\.\d+|feature-.+)$/;
+    if(pull.node.headRefName.match(ultimateBaseRef)) {
+      // probably top of a feature branch
+      pull.node.ultimateBaseRefName = pull.node.headRefName;
+      return pull.node.headRefName;
+    }
+
+    while(pull && !pull.node.baseRefName.match(ultimateBaseRef)) {
+      pull = this.status.github.data.repository.pullRequests.edges.find(e => e.node.headRefName == pull.node.baseRefName);
+    }
+
+    input.node.ultimateBaseRefName = pull ? pull.node.baseRefName : 'unknown';
+
+    return input.node.ultimateBaseRefName;
   }
 }

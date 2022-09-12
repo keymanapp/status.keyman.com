@@ -74,6 +74,15 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     return this.pull.pull.node.labels.edges.reduce( (f, e) => f || e.node.name == 'cherry-pick', false);
   }
 
+  pullIsForStableBranch() {
+    return this.pull.pull?.node?.ultimateBaseRefName?.match(/^stable-(\d+\.\d+)$/);
+  }
+
+  pullStableBranchNumber() {
+    let m = /^stable-(\d+\.\d+)$/.exec(this.pull?.pull?.node?.ultimateBaseRefName);
+    return m ? m[1] : '?';
+  }
+
   pullStatus() {
     return pullStatus(this.pull);
   }

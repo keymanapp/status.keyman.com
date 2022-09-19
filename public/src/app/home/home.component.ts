@@ -730,6 +730,7 @@ export class HomeComponent {
     this.sortPullGroupByTreeAndNumber(this.pullsByProject);
     this.sortPullGroupByTreeAndNumber(this.pullsByStatus);
     this.sortPullGroupByTreeAndNumber(this.pullsByAuthor);
+    this.sortPullGroupByTreeAndNumber(this.pullsByBase);
   }
 
   /**

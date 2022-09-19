@@ -61,7 +61,7 @@ export class IssueListComponent extends PopupComponent implements OnInit {
       this.issues.reduce(
         (text, node) => {
           const repo = repoShortNameFromGithubUrl(node.url);
-          const check = node.timelineItems && node.timelineItems.nodes.length ? '✔ ' : '';
+          const check = this.issueHasLinkedPR(node) ? '✔ ' : '';
           const prs = check
             ? node.timelineItems.nodes.reduce(
                 (current, pr) => `${current} <a href='${pr.subject.url}'>#${pr.subject.number}</a>`, ' 🔗 '

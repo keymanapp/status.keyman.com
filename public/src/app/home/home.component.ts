@@ -17,6 +17,7 @@ interface Status {
   github: any;
   issues: any;
   contributions: any;
+  communitySite: any;
   codeOwners: any;
   keyman: any[];
   sentryIssues: any;
@@ -54,6 +55,7 @@ export class HomeComponent {
     github: undefined,
     issues: undefined,
     contributions: undefined,
+    communitySite: undefined,
     codeOwners: {},
     keyman: [],
     sentryIssues: {},
@@ -194,6 +196,9 @@ export class HomeComponent {
               break;
             case StatusSource.GitHubContributions:
               this.status.contributions = data.contributions;
+              break;
+            case StatusSource.CommunitySite:
+              this.status.communitySite = this.transformCommunitySiteData(data.contributions);
               break;
             case StatusSource.Keyman:
               this.status.keyman = data.keyman;
@@ -606,6 +611,39 @@ export class HomeComponent {
 
   getContributionTestText = (context) => {
     return this.getContributionText(context.user.contributions.tests.nodes, 'issue', context.day);
+  }
+
+  /* Community Site Post Contributions */
+
+  getContributionPostText = (context) => {
+    let n = this.status.communitySite?.[context.user.login];
+    if(!n) return { context: '', type: 'text/html' };
+
+    if(context.day) {
+      n = (new FilterObjectByDatePipe()).transform(n, context.day.date);
+    }
+
+    const text =
+      '<ul>' +
+      n.reduce((text, node) => text + `<li>${escapeHtml(node.title)} (<a href='${node.url}'>${node.topic_id}#${node.post_number}</a>)</li>\n`, '') +
+      '</ul>';
+    return { content: text, type: 'text/html' };
+  }
+
+  transformCommunitySiteData(data) {
+    let result = {};
+    Object.keys(data).forEach(user => {
+      result[user] = data[user].map(post => {
+        return {
+          // Top three are provided for consistency with github issue node data
+          title: post.title,
+          url: `https://community.software.sil.org/t/${post.slug}/${post.topic_id}/${post.post_number}`,
+          occurredAt: post.created_at,
+          ...post
+        }
+      });
+    });
+    return result;
   }
 
   /* Multiple issue views */

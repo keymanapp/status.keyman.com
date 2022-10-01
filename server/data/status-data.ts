@@ -18,6 +18,7 @@ import { linuxLsdevSilOrgAlphaService, linuxLsdevSilOrgBetaService, linuxLsdevSi
 import { debianBetaService, debianStableService } from "../services/deployment/debian";
 import { lmcService, mtService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
+import discourseService from "../services/discourse/discourse";
 
 const services = {};
 services[StatusSource.ITunesKeyman] = keymaniTunesService;
@@ -36,6 +37,7 @@ services[StatusSource.DebianBeta] = debianBetaService;
 services[StatusSource.DebianStable] = debianStableService;
 services[StatusSource.NpmLexicalModelCompiler] = lmcService;
 services[StatusSource.NpmModelsTypes] = mtService;
+services[StatusSource.CommunitySite] = discourseService;
 
 export interface StatusDataCache {
   teamCity?: any;
@@ -54,6 +56,7 @@ export interface StatusDataCache {
   };
   deployment: {};
   codeOwners?: {};
+  communitySite?: any;
 };
 
 export class StatusData {
@@ -216,6 +219,49 @@ export class StatusData {
     if(!services[source]) return Promise.resolve(false);
     return this.refreshService(source, services[source]);
   }
+
+  // Discourse
+
+  refreshCommunitySiteData = async (sprintName: string, user?: string): Promise<boolean> => {
+    console.log('[Refresh] Community-Site ENTER');
+
+    const sprint = this.cache.sprints[sprintName];
+    if(!sprint || !sprint.phase) {
+      console.error(`[Refresh] Community-Site: invalid sprint ${sprint}`);
+      return false;
+    }
+    const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart) : getSprintStart();
+
+    if(!this.cache.communitySite) {
+      // If we get a webhook notification for a user before
+      // the first load, then refresh all users anyway
+      user = undefined;
+    }
+
+    let posts;
+    try {
+      if(user) {
+        posts = await discourseService.getUser(sprintStartDateTime, user);
+      } else {
+        posts = await discourseService.get(sprintStartDateTime);
+      }
+    } catch(e) {
+      console.error(e);
+      return false;
+    }
+
+    let result;
+    if(user) {
+      result = !deepEqual(posts, this.cache.communitySite[user]);
+      this.cache.communitySite[user] = posts;
+    } else {
+      result = !deepEqual(posts, this.cache.communitySite);
+      this.cache.communitySite = posts;
+    }
+    console.log('[Refresh] Community-Site EXIT');
+    return result;
+  };
+
 };
 
 export const statusData = new StatusData();

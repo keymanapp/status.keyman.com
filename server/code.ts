@@ -135,6 +135,7 @@ function respondGitHubDataChange() {
 
   return statusData.refreshGitHubStatusData('current')
     .then(hasChanged => sendWsAlert(hasChanged, 'github'))
+    .then(doDiscourseDataChange)
     .then(respondGitHubContributionsDataChange)
     .then(respondGitHubIssuesDataChange)
     .catch(error => reportError(error))
@@ -157,6 +158,18 @@ function respondGitHubContributionsDataChange() {
   return statusData.refreshGitHubContributionsData('current')
     .then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'))
     .catch(error => reportError(error));
+}
+
+function doDiscourseDataChange(user?) {
+  if(!statusData.cache.communitySite) {
+    return statusData.refreshCommunitySiteData('current')
+      .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
+      .catch(error => reportError(error));
+  } else {
+    statusData.refreshCommunitySiteData('current', user)
+    .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
+    .catch(error => reportError(error));
+}
 }
 
 function respondTeamcityDataChange() {
@@ -193,6 +206,7 @@ function respondPolledEndpoints() {
 function sendInitialRefreshMessages(socket) {
   const sprint = statusData.cache.sprints['current'];
   if(sprint) {
+    if(statusData.cache.communitySite) socket.send(StatusSource.CommunitySite);
     if(sprint.contributions) socket.send('github-contributions');
     if(sprint.github) socket.send('github');
   }
@@ -241,6 +255,14 @@ app.post('/webhook/sentry', (request, response) => {
   //console.log('webhook sentry project='+request.body?.data?.issue?.project?.id);
   (async () => {
     respondSentryDataChange();
+  })();
+  response.send('ok');
+});
+
+app.post('/webhook/discourse', (request, response) => {
+  // TODO: use webhook data to refresh only affected user
+  (async () => {
+    doDiscourseDataChange(undefined);
   })();
   response.send('ok');
 });
@@ -320,6 +342,16 @@ app.get('/status/github-contributions', (request, response) => {
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
     contributions: statusData.cache.sprints[sprint].contributions
+  }));
+  response.end();
+});
+
+app.get('/status/community-site', (request, response) => {
+  console.log('GET /status/community-site');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    contributions: statusData.cache.communitySite
   }));
   response.end();
 });

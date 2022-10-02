@@ -87,7 +87,6 @@ export class HomeComponent {
 
   sprintDays = [];
 
-  selectedContribution = null;
 
   // Phase data, grabbing from github's milestones for the keyman repo
   milestones = {};
@@ -574,60 +573,6 @@ export class HomeComponent {
         this.unlabeledPulls.push({pull:pull});
       }
     }
-  }
-
-  selectUser(login) {
-    this.selectedContribution = login == this.selectedContribution ? null : login;
-  }
-
-  getContributionText(nodes, type, day?) {
-    let n = nodes.reverse();
-    if(day) {
-      n = (new FilterObjectByDatePipe()).transform(n, day.date);
-    }
-    const text =
-      '<ul>' +
-      n.reduce(
-        (text, node) => {
-          const url = node.url ?? node[type].url;
-          const repo = repoShortNameFromGithubUrl(url);
-          return text + `<li>${escapeHtml(node[type].title)} (<a href='${url}'>${repo}#${node[type].number}</a>)</li>\n`
-        }, '') +
-      '</ul>';
-    return { content: text, type: 'text/html' };
-  }
-
-  getContributionPRText = (context) => {
-    return this.getContributionText(context.user.contributions.pullRequests.nodes, 'pullRequest', context.day);
-  }
-
-  getContributionIssueText = (context) => {
-    return this.getContributionText(context.user.contributions.issues.nodes, 'issue', context.day);
-  }
-
-  getContributionReviewText = (context) => {
-    return this.getContributionText(context.user.contributions.reviews.nodes, 'pullRequest', context.day);
-  }
-
-  getContributionTestText = (context) => {
-    return this.getContributionText(context.user.contributions.tests.nodes, 'issue', context.day);
-  }
-
-  /* Community Site Post Contributions */
-
-  getContributionPostText = (context) => {
-    let n = this.status.communitySite?.[context.user.login];
-    if(!n) return { context: '', type: 'text/html' };
-
-    if(context.day) {
-      n = (new FilterObjectByDatePipe()).transform(n, context.day.date);
-    }
-
-    const text =
-      '<ul>' +
-      n.reduce((text, node) => text + `<li>${escapeHtml(node.title)} (<a href='${node.url}'>${node.topic_id}#${node.post_number}</a>)</li>\n`, '') +
-      '</ul>';
-    return { content: text, type: 'text/html' };
   }
 
   transformCommunitySiteData(data) {

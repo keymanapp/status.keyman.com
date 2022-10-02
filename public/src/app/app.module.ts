@@ -26,6 +26,7 @@ import { BoxPrProjectComponent } from './box-pr-project/box-pr-project.component
 import { BoxPrAuthorComponent } from './box-pr-author/box-pr-author.component';
 import { BoxPrPlatformComponent } from './box-pr-platform/box-pr-platform.component';
 import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
+import { ContributionsComponent } from './contributions/contributions.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
     BoxPrAuthorComponent,
     BoxPrPlatformComponent,
     BoxPrBaseComponent,
+    ContributionsComponent,
   ],
   imports: [
     BrowserModule,

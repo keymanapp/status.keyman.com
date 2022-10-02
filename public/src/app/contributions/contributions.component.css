@@ -72,3 +72,38 @@
 .navbar-contribution-data td:hover .contribution-cell-clipboard {
   display: block;
 }
+
+/* Contribution detail */
+
+.contribution-detail {
+  display: none;
+  position: absolute;
+  background: white;
+  border: solid 1px grey;
+  border-radius: 5px;
+  padding: 4px;
+  margin-top: 35px;
+  z-index: 10;
+
+  grid-template-columns: max-content max-content;
+  color: black;
+}
+
+.contribution-issue:hover .contribution-detail {
+  display: grid;
+}
+
+.contribution-detail {
+  /* We'll make the popup pull left, so that it doesn't go off screen */
+  right: -8px;
+}
+
+.detail-title {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.detail-detail {
+  width: fit-content;
+  max-width: 400px;
+}

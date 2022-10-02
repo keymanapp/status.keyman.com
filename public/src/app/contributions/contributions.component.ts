@@ -14,14 +14,34 @@ export class ContributionsComponent implements OnInit {
   @Input() sprintDays: any;
 
   selectedContribution = null;
+  hoveredContribution = null;
 
   constructor() { }
 
+  stringify(o: any) {
+    return JSON.stringify(o);
+  }
   ngOnInit(): void {
+  }
+
+  shouldDisplay(user) {
+    return user.contributions.tests.nodes.length +
+      user.contributions.pullRequests.nodes.length +
+      user.contributions.reviews.nodes.length +
+      user.contributions.issues.nodes.length +
+      (this.status?.communitySite?.[user.login]?.length ?? 0) > 0;
   }
 
   selectUser(login) {
     this.selectedContribution = login == this.selectedContribution ? null : login;
+  }
+
+  hoverUser(event,login) {
+    if(event.type == 'mouseenter' || event.currentTarget.parentElement.contains(event.relatedTarget)) {
+      this.hoveredContribution = login;
+    } else {
+      this.hoveredContribution = null;
+    }
   }
 
   getContributionText(nodes, type, day?) {

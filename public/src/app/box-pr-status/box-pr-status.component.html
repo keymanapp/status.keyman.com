@@ -1,9 +1,9 @@
 <table><tbody>
   <tr *ngFor="let status of pullsByStatus | keyvalue">
     <td>
-      <a *ngIf="status.key == 'draft'" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+is%3Adraft">{{pullStatusName[status.key]}}</a>
-      <a *ngIf="status.key == 'waitingTest'" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+label%3Auser-test-required">{{pullStatusName[status.key]}}</a>
-      <a *ngIf="status.key == 'waitingReview'" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+review%3Arequired+-is%3Adraft">{{pullStatusName[status.key]}}</a>
+      <a *ngIf="status.key == 'draft'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+is%3Adraft">{{pullStatusName[status.key]}}</a>
+      <a *ngIf="status.key == 'waitingTest'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+label%3Auser-test-required">{{pullStatusName[status.key]}}</a>
+      <a *ngIf="status.key == 'waitingReview'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+review%3Arequired+-is%3Adraft">{{pullStatusName[status.key]}}</a>
       <span *ngIf="status.key != 'waitingReview' && status.key != 'draft' && status.key != 'waitingTest'">{{pullStatusName[status.key]}}</span>
     </td>
     <td>

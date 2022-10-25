@@ -13,6 +13,7 @@ export class CountBoxComponent implements OnInit {
   @Input() class?: string;
   @Input() label?: string;
   @Input() isPulls: boolean;
+  @Input() alwaysShow: boolean;
 
   filter() {
     let f = "";

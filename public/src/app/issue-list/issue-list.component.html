@@ -6,6 +6,7 @@
     [unfixedCount]="getUnfixedIssueCount()"
     [count]="milestone?.count"
     [label]="platform?.value.id ? platform?.value.id+'/' : null"
+    [alwaysShow]="view == 'all'"
     [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
 
   <span *ngIf="isNav" class="navbar-new-issues">

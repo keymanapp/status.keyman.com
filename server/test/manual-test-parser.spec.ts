@@ -442,6 +442,44 @@ describe('ManualTestParser', function() {
       assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
       assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Open);
     });
+
+    it('should retest a group with an inferred "all" control', function() {
+      // setup
+      let mtp = new ManualTestParser();
+      let protocol = new ManualTestProtocol('keymanapp', 'keyman', 1, false, 0);
+      mtp.parseComment(protocol, 1, `
+# User Testing
+
+GROUP_COLOUR
+GROUP_MONO
+TEST_SPELLING: test spelling
+TEST_GRAMMAR: test grammar
+`, userLogin);
+      mtp.parseComment(protocol, 2, `
+### GROUP_COLOUR:
+
+* **TEST_SPELLING (PASS):**
+* **TEST_GRAMMAR (PASS):**
+
+### GROUP_MONO:
+
+* **TEST_SPELLING (PASS):**
+* **TEST_GRAMMAR (PASS):**
+`, userLogin);
+      assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Passed);
+      assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Passed);
+      assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Passed);
+      assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Passed);
+
+      // test
+      assert.strictEqual(mtp.isControlComment(`@keymanapp-test-bot retest GROUP_MONO`, userLogin), true);
+      mtp.parseComment(protocol, 3, `@keymanapp-test-bot retest GROUP_MONO`, userLogin);
+      assert.strictEqual(protocol.getTests()[0].status(), ManualTestStatus.Passed);
+      assert.strictEqual(protocol.getTests()[1].status(), ManualTestStatus.Passed);
+      assert.strictEqual(protocol.getTests()[2].status(), ManualTestStatus.Open);
+      assert.strictEqual(protocol.getTests()[3].status(), ManualTestStatus.Open);
+    });
+
   });
 
   describe('getUserTestResultsComment()', function() {

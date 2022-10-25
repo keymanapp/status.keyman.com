@@ -254,8 +254,9 @@ export default class ManualTestParser {
 
     let suite: ManualTestSuite = null;
     let group: ManualTestGroup = null;
-
+    let isCollection = false;
     for(let match of matches) {
+      isCollection = !!match.match(/^(SUITE|GROUP)_/i);
       if(match.match(/^SUITE_/i)) {
         suite = protocol.findSuite(match.substring(6));
       } else if(match.match(/^GROUP_/i)) {
@@ -270,6 +271,14 @@ export default class ManualTestParser {
         }
       }
     }
+
+    if(isCollection) {
+      // We've got an inferred 'all' on the end of the test spec
+      for(let test of (group || suite).getTests()) {
+        test.addRun(id, true, ManualTestStatus.Open);
+      }
+    }
+
     return protocol;
   }
 

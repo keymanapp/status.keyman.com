@@ -1,5 +1,5 @@
 <a target='_blank' href='{{repo == "*" ?
-  "https://github.com/keymanapp/" : "https://github.com/keymanapp/"+repo+"/"+modeUri()+"?utf8=%E2%9C%93&q=is%3Aopen+"+modeFilter()+filter()}}' *ngIf="unfixedCount > 0">
+  "https://github.com/keymanapp/" : "https://github.com/keymanapp/"+repo+"/"+modeUri()+"?utf8=%E2%9C%93&q=is%3Aopen+"+modeFilter()+filter()}}' *ngIf="unfixedCount > 0 || (count > 0 && alwaysShow)">
   <span class='countbox {{class}}'>
     <span class='countbox-title'>{{title}}</span>
     <span class='countbox-value'>{{unfixedCount}} <span class='countbox-total' *ngIf="unfixedCount < count">({{count}})</span></span>

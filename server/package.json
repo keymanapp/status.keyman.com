@@ -33,7 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",
-    "mocha": "^9.0.3",
+    "mocha": "^9.2.2",
     "run-script-os": "^1.1.6",
     "tsc-watch": "^4.2.9",
     "typescript": "^4.2.3"

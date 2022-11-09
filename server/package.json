@@ -19,7 +19,7 @@
     "deep-equal": "^2.0.5",
     "express": "^4.17.1",
     "parse-link-header": "^2.0.0",
-    "probot": "^12.1.0",
+    "probot": "^12.2.8",
     "source-map-support": "^0.5.19",
     "ws": "^7.4.6"
   },

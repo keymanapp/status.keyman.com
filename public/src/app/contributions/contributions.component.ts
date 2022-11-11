@@ -51,7 +51,8 @@ export class ContributionsComponent implements OnInit {
     }
     const text =
       '<ul>' +
-      n.reduce(
+      n.sort((a,b)=>a[type].title.localeCompare(b[type].title))
+       .reduce(
         (text, node) => {
           const url = node.url ?? node[type].url;
           const repo = repoShortNameFromGithubUrl(url);
@@ -87,10 +88,19 @@ export class ContributionsComponent implements OnInit {
       n = (new FilterObjectByDatePipe()).transform(n, context.day.date);
     }
 
-    const text =
-      '<ul>' +
-      n.reduce((text, node) => text + `<li>${escapeHtml(node.title)} (<a href='${node.url}'>${node.topic_id}#${node.post_number}</a>)</li>\n`, '') +
-      '</ul>';
+    // Merge posts on same topic
+    const topics = {};
+    n.forEach((node) => {
+      topics[node.topic_id] = topics[node.topic_id] || [];
+      topics[node.topic_id].push(node);
+    });
+    const list = Object.keys(topics).reduce((text, node) => {
+      const t: Array<any> = topics[node];
+      const links = t.sort((a,b)=>a.post_number-b.post_number).map(node => `<a href='${node.url}'>${node.topic_id}#${node.post_number}</a>`).join(', ');
+      return text + `<li>✉ ${escapeHtml(t[0].title)} (${links})</li>\n`
+    }, '');
+
+    const text = `<ul>${list}</ul>`;
     return { content: text, type: 'text/html' };
   }
 }

@@ -23,6 +23,7 @@ export enum StatusSource {
   LinuxLsdevSilOrgStable = "linux-lsdev-sil-org-stable",
   DebianBeta = "debian-beta",
   DebianStable = "debian-stable",
-  CommunitySite = "community-site"
+  CommunitySite = "community-site",
+  GitHubMilestones = 'github-milestones',
 };
 

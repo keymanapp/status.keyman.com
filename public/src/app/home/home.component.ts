@@ -11,23 +11,8 @@ import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
 import { IssueView } from '../issue-list/issue-list.component';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
+import { EMPTY_STATUS, Status } from '../status/status.interface';
 
-interface Status {
-  currentSprint: any;
-  github: any;
-  issues: any;
-  contributions: any;
-  communitySite: any;
-  codeOwners: any;
-  keyman: any[];
-  sentryIssues: any;
-  teamCity: any[];
-  teamCityRunning: any[];
-  teamCityAgents: any[];
-  teamCityQueue: any[];
-  deployment: {
-  }
-};
 
 interface OtherSites {
   repos: string[];
@@ -50,22 +35,7 @@ enum PullRequestView {
   providers: [ StatusService ],
 })
 export class HomeComponent {
-  status: Status = {
-    currentSprint: undefined,
-    github: undefined,
-    issues: undefined,
-    contributions: undefined,
-    communitySite: undefined,
-    codeOwners: {},
-    keyman: [],
-    sentryIssues: {},
-    teamCity: [],
-    teamCityRunning: [],
-    teamCityAgents: [],
-    teamCityQueue: [],
-    deployment: {
-    }
-  };
+  status: Status = EMPTY_STATUS;
   error: any;
   JSON: any;
   timer: any;

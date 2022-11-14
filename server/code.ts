@@ -30,6 +30,11 @@ import { statusData } from './data/status-data';
 import { slackLGTM } from './services/slack/slack';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager';
 
+import githubContributionsService from "./services/github/github-contributions";
+import discourseService from "./services/discourse/discourse";
+import githubTestContributionsService from "./services/github/github-test-contributions";
+import gitHubMilestonesService from './services/github/github-milestones';
+
 import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment';
 
 const debugTestBot = false;
@@ -336,22 +341,56 @@ app.get('/status/github-issues', (request, response) => {
   response.end();
 });
 
-app.get('/status/github-contributions', (request, response) => {
+app.get('/status/github-contributions', async (request, response) => {
   console.log('GET /status/github-contributions');
   const sprint = statusHead(request, response);
-  response.write(JSON.stringify({
-    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
-    contributions: statusData.cache.sprints[sprint].contributions
-  }));
+  if(sprint != 'current') {
+    // load the data for the sprint
+    let sprintStartDateTime = new Date(request.query.sprintStartDate).toISOString();
+    let contributions = await githubContributionsService.get(sprintStartDateTime);
+
+    for(let node of contributions?.data?.repository?.contributions?.nodes) {
+      node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], sprintStartDateTime, node.login)};
+    }
+
+    response.write(JSON.stringify({
+      contributions: contributions
+    }));
+  } else {
+    response.write(JSON.stringify({
+      currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+      contributions: statusData.cache.sprints[sprint].contributions
+    }));
+  }
   response.end();
 });
 
-app.get('/status/community-site', (request, response) => {
+app.get('/status/community-site', async (request, response) => {
   console.log('GET /status/community-site');
   const sprint = statusHead(request, response);
+  if(sprint != 'current') {
+    // load the data for the sprint
+    let sprintStartDateTime = new Date(request.query.sprintStartDate);
+    let contributions = await discourseService.get(sprintStartDateTime);
+    response.write(JSON.stringify({
+      // currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+      contributions: contributions
+    }));
+  } else {
+    response.write(JSON.stringify({
+      currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+      contributions: statusData.cache.communitySite
+    }));
+  }
+  response.end();
+});
+
+app.get('/status/github-milestones', async (request, response) => {
+  console.log('GET /status/github-milestones');
+  statusHead(request, response);
+  const milestones = await gitHubMilestonesService.get();
   response.write(JSON.stringify({
-    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
-    contributions: statusData.cache.communitySite
+    milestones: milestones
   }));
   response.end();
 });

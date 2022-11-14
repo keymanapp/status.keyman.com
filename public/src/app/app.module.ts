@@ -27,6 +27,7 @@ import { BoxPrAuthorComponent } from './box-pr-author/box-pr-author.component';
 import { BoxPrPlatformComponent } from './box-pr-platform/box-pr-platform.component';
 import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
 import { ContributionsComponent } from './contributions/contributions.component';
+import { ContributionsHomeComponent } from './contributions-home/contributions-home.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { ContributionsComponent } from './contributions/contributions.component'
     BoxPrPlatformComponent,
     BoxPrBaseComponent,
     ContributionsComponent,
+    ContributionsHomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +64,7 @@ import { ContributionsComponent } from './contributions/contributions.component'
     RouterModule.forRoot([
       {path: '', component: HomeComponent},
       {path: 'manual-test', component: ManualTestComponent},
+      {path: 'contributions', component: ContributionsHomeComponent}
     ]),
   ],
   providers: [VisibilityService],

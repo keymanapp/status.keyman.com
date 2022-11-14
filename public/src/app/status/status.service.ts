@@ -10,11 +10,12 @@ export class StatusService {
 
   constructor(private http: HttpClient) { }
 
-  getStatus(source: StatusSource, sprint?: string) {
+  getStatus(source: StatusSource, sprint?: string, sprintStartDate?: Date) {
     const url = this.statusUrl + '/' + source;
-    return sprint ?
-      this.http.get(url, {params:{sprint:sprint}}) :
-      this.http.get(url);
+    let params:any = {};
+    if(sprint) params.sprint = sprint;
+    if(sprintStartDate) params.sprintStartDate = sprintStartDate.toISOString();
+    return this.http.get(url, {params: params});
   }
 
   refreshBackend() {

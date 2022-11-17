@@ -459,6 +459,10 @@ for(let s of STATUS_SOURCES) {
   addEndpoint(s, () => statusData.cache.deployment[s]);
 }
 
+app.all('*', (request, response) => {
+  response.status(200).sendFile('/public/dist/public/index.html', {root: environment == Environment.Development ? '../' : '../../'});
+});
+
 if(!debugTestBot) {
   console.log(`Starting app listening on ${port}`);
   const server = app.listen(port);

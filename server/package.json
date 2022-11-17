@@ -17,6 +17,7 @@
     "@octokit/rest": "^19.0.5",
     "@sentry/node": "^6.2.3",
     "@sentry/tracing": "^6.2.3",
+    "application-config-path": "^0.1.0",
     "deep-equal": "^2.0.5",
     "express": "^4.17.1",
     "parse-link-header": "^2.0.0",

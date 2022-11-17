@@ -20,6 +20,10 @@ console.log(`Running in ${environment} environment`);
 
 import { StatusSource } from '../shared/status-source';
 
+import { SprintCache } from './data/sprint-cache';
+
+const sprintCache = new SprintCache();
+
 const express = require('express');
 const app = express();
 const ws = require('ws');
@@ -346,16 +350,27 @@ app.get('/status/github-contributions', async (request, response) => {
   const sprint = statusHead(request, response);
   if(sprint != 'current') {
     // load the data for the sprint
-    let sprintStartDateTime = new Date(request.query.sprintStartDate).toISOString();
-    let contributions = await githubContributionsService.get(sprintStartDateTime);
+    let data = sprintCache.getFileFromCache(sprint, 'contributions');
+    if(data) {
+      response.write(data);
+    } else {
+      let sprintStartDateTime = new Date(request.query.sprintStartDate);
+      let contributions = await githubContributionsService.get(sprintStartDateTime.toISOString());
 
-    for(let node of contributions?.data?.repository?.contributions?.nodes) {
-      node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], sprintStartDateTime, node.login)};
+      for(let node of contributions?.data?.repository?.contributions?.nodes) {
+        node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], sprintStartDateTime.toISOString(), node.login)};
+      }
+
+      const json = JSON.stringify({
+        contributions: contributions
+      });
+
+      if(sprintCache.shouldCache(sprintStartDateTime)) {
+        sprintCache.saveToCache(sprint, 'contributions', json);
+      }
+
+      response.write(json);
     }
-
-    response.write(JSON.stringify({
-      contributions: contributions
-    }));
   } else {
     response.write(JSON.stringify({
       currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -370,12 +385,24 @@ app.get('/status/community-site', async (request, response) => {
   const sprint = statusHead(request, response);
   if(sprint != 'current') {
     // load the data for the sprint
-    let sprintStartDateTime = new Date(request.query.sprintStartDate);
-    let contributions = await discourseService.get(sprintStartDateTime);
-    response.write(JSON.stringify({
-      // currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
-      contributions: contributions
-    }));
+    let data = sprintCache.getFileFromCache(sprint, 'community-site');
+    if(data) {
+      response.write(data);
+    } else {
+      let sprintStartDateTime = new Date(request.query.sprintStartDate);
+      let contributions = await discourseService.get(sprintStartDateTime);
+
+      const json = JSON.stringify({
+        // currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+        contributions: contributions
+      });
+
+      if(sprintCache.shouldCache(sprintStartDateTime)) {
+        sprintCache.saveToCache(sprint, 'community-site', json);
+      }
+
+      response.write(json);
+    }
   } else {
     response.write(JSON.stringify({
       currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),

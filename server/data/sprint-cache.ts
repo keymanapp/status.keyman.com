@@ -2,12 +2,17 @@ import fs from 'fs';
 import path from 'path';
 
 import applicationConfigPath from 'application-config-path';
+import { Environment } from '../environment';
 
 export class SprintCache {
   private readonly cachePath: string;
 
-  constructor() {
-    this.cachePath = applicationConfigPath('status.keyman.com');
+  constructor(environment: Environment) {
+    if(environment != Environment.Production) {
+      this.cachePath = applicationConfigPath('status.keyman.com');
+    } else {
+      this.cachePath = '/home/site/data';
+    }
     fs.mkdirSync(this.cachePath, {recursive: true});
   }
 

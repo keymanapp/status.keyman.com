@@ -487,7 +487,7 @@ for(let s of STATUS_SOURCES) {
 }
 
 app.all('*', (request, response) => {
-  response.status(200).sendFile('/public/dist/public/index.html', {root: environment == Environment.Development ? '../' : '../../'});
+  response.status(200).sendFile('/public/dist/public/index.html', {root: environment == Environment.Development ? '../' : '../../../'});
 });
 
 if(!debugTestBot) {

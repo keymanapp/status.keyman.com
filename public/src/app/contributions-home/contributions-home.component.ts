@@ -98,4 +98,8 @@ export class ContributionsHomeComponent implements OnInit {
     return result;
   }
 
+  shouldIncludeMilestone(milestone) {
+    return !!milestone?.title?.match(/^[AB]\d+S\d+$/);
+  }
+
 }

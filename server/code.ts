@@ -1,10 +1,7 @@
 require('source-map-support').install();
 
-export enum Environment {
-  Development = 'development',
-  Production = 'production',
-  Staging = 'staging'
-};
+import { Environment } from './environment';
+
 export const environment: Environment =
   process.env['NODE_ENV'] == 'production' ? Environment.Production :
   process.env['NODE_ENV'] == 'staging' ? Environment.Staging :
@@ -22,7 +19,7 @@ import { StatusSource } from '../shared/status-source';
 
 import { SprintCache } from './data/sprint-cache';
 
-const sprintCache = new SprintCache();
+const sprintCache = new SprintCache(environment);
 
 const express = require('express');
 const app = express();

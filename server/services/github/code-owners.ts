@@ -4,7 +4,8 @@
 
 import httpget from "../../util/httpget";
 import { platforms } from "../../../shared/platforms";
-import { environment, Environment } from "../../code";
+import { environment } from "../../code";
+import { Environment } from "../../environment";
 import fs from "fs";
 
 export default {

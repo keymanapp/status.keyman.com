@@ -12,25 +12,25 @@ export const userIds = {
 };
 
 export function getAvatarUrl(id) {
-  if(userIds[id]?.avatar) {
-    return `/assets/avatars/${userIds[id].avatar}`;
-  } else {
+  // if(userIds[id]?.avatar) {
+    // return `/assets/avatars/${userIds[id].avatar}`;
+  // } else {
     return `https://github.com/${id}.png?size=22`;
-  }
+  // }
 }
 
 export function getUserAvatarUrl(user, size?) {
-  if(userIds[user.login]?.avatar) {
-    return `/assets/avatars/${userIds[user.login].avatar}`;
-  } else {
+  // if(userIds[user.login]?.avatar) {
+    // return `/assets/avatars/${userIds[user.login].avatar}`;
+  // } else {
     return user.avatarUrl + (size ? `&size=${size}` : '');
-  }
+  // }
 }
 
 export function getAuthorAvatarUrl(author, size?) {
-  if(userIds[author.login]?.avatar) {
-    return `/assets/avatars/${userIds[author.login].avatar}`;
-  } else {
+  // if(userIds[author.login]?.avatar) {
+    // return `/assets/avatars/${userIds[author.login].avatar}`;
+  // } else {
     return author.avatarUrl + (size ? `&size=${size}` : '');
-  }
+  // }
 }

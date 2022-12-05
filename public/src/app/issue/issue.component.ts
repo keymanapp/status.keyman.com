@@ -7,6 +7,7 @@ import { PopupCoordinatorService } from '../popup-coordinator.service';
 //import { issueStatus, issueUserTesting, issueBuildState } from '../utility/issueStatus';
 import { VisibilityService } from '../visibility/visibility.service';
 import { ThisReceiver } from '@angular/compiler';
+import { getAuthorAvatarUrl } from '../../../../shared/users';
 
 @Component({
   selector: 'app-issue',
@@ -66,4 +67,9 @@ export class IssueComponent extends PopupComponent implements OnInit {
   labelName(label: string) {
     return label.replace(/-/g, '‑');
   }
+
+  getAuthorAvatar(author, size) {
+    return getAuthorAvatarUrl(author, size);
+  }
+
 }

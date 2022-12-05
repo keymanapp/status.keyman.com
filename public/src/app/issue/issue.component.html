@@ -1,6 +1,6 @@
 <span class="issue scope-{{scope}}">
   <span class="label {{class || issueClass()}} {{issueUserTesting()}}">
-    <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-32" src="{{issue.author.avatarUrl}}&size=32"></a>
+    <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-32" src="{{getAuthorAvatar(issue.author, 32)}}"></a>
     <a class="issue" target="_blank" href="{{issue.url}}">
       <span class="title" *ngIf="scope == 'keyboards-lexical-models'">{{issue.title}}</span>
       <span class='emoji'>{{issueEmoji()}}</span>{{issue.number}}

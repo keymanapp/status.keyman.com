@@ -1,13 +1,13 @@
 <span class="navbar-contributions">
   <span class="navbar-contribution {{selectedContribution == user.login ? 'fixed' : ''}}" *ngFor="let user of status?.contributions?.data.repository.contributions.nodes">
     <span (mouseenter)="hoverUser($event,user.login)" (mouseleave)="hoverUser($event,user.login)" *ngIf="shouldDisplay(user)">
-      <img class="avatar-40" src="{{user.avatarUrl}}&size=40" (click)="selectUser(user.login)">
+      <img class="avatar-40" src="{{getUserAvatar(user, 40)}}" (click)="selectUser(user.login)">
       <span class="navbar-contribution-data dropdown-menu-right" *ngIf="selectedContribution == user.login || hoveredContribution == user.login">
         <table class="table table-striped table-bordered">
           <thead>
             <tr>
               <th style='width:9%'>
-                <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0]?.ghdate}}&to={{sprintDays[13]?.ghdate}}' target='_blank'><img class="avatar-48" src="{{user.avatarUrl}}&size=48">
+                <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0]?.ghdate}}&to={{sprintDays[13]?.ghdate}}' target='_blank'><img class="avatar-48" src="{{getUserAvatar(user, 48)}}">
                 {{user.login}}</a>
               </th>
               <th style='width:6.5%' *ngFor="let day of sprintDays">

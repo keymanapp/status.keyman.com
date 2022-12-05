@@ -12,7 +12,7 @@ import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStat
 import { IssueView } from '../issue-list/issue-list.component';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { EMPTY_STATUS, Status } from '../status/status.interface';
-
+import { getAvatarUrl, userIds } from '../../../../shared/users';
 
 interface OtherSites {
   repos: string[];
@@ -756,5 +756,9 @@ export class HomeComponent {
     input.node.ultimateBaseRefName = pull ? pull.node.baseRefName : 'unknown';
 
     return input.node.ultimateBaseRefName;
+  }
+
+  getAvatar(name) {
+    return getAvatarUrl(name);
   }
 }

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { getAuthorAvatarUrl } from '../../../../shared/users';
 
 @Component({
   selector: 'app-box-pr-author',
@@ -13,6 +14,10 @@ export class BoxPrAuthorComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  getAuthorAvatar(author, size) {
+    return getAuthorAvatarUrl(author, size);
   }
 
 }

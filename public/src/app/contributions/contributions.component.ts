@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { getUserAvatarUrl } from '../../../../shared/users';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { escapeHtml } from '../utility/escapeHtml';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
@@ -31,6 +32,11 @@ export class ContributionsComponent implements OnInit {
       user.contributions.issues.nodes.length +
       (this.status?.communitySite?.[user.login]?.length ?? 0) > 0;
   }
+
+  getUserAvatar(user, size) {
+    return getUserAvatarUrl(user, size);
+  }
+
 
   selectUser(login) {
     this.selectedContribution = login == this.selectedContribution ? null : login;

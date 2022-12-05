@@ -6,6 +6,7 @@ import { labelColor } from '../utility/labelColor';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
 import { VisibilityService } from '../visibility/visibility.service';
+import { getAuthorAvatarUrl } from '../../../../shared/users';
 
 export enum IssueView {
   Current = 'current',
@@ -81,6 +82,10 @@ export class IssueListComponent extends PopupComponent implements OnInit {
   errorClassIfNonZero(v) {
     if(v !== null && v != 0) return "failure";
     return "";
+  }
+
+  getAuthorAvatar(author, size) {
+    return getAuthorAvatarUrl(author, size);
   }
 
 }

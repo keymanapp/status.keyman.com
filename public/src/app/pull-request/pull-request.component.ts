@@ -6,6 +6,7 @@ import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
 import { VisibilityService } from '../visibility/visibility.service';
+import { getAuthorAvatarUrl } from '../../../../shared/users';
 
 @Component({
   selector: 'app-pull-request',
@@ -192,5 +193,9 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
       //https://jenkins.lsdev.sil.org/job/pipeline-keyman-packaging/job/PR-5883/9/
     }
     return result;
+  }
+
+  getAuthorAvatar(author, size) {
+    return getAuthorAvatarUrl(author, size);
   }
 }

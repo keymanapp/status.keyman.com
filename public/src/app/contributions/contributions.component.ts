@@ -50,6 +50,47 @@ export class ContributionsComponent implements OnInit {
     }
   }
 
+  getAllContributions = () => {
+    let text = '';
+    for(let user of this.status?.contributions?.data.repository.contributions.nodes) {
+      let userContributions = this.getUserContributions({user: user}).content;
+      if(userContributions) {
+        text += `
+          <h2><img style="width:32px; height:32px" src="${this.getUserAvatar(user, 32)}"> ${user.login}</h2>
+          ${userContributions}
+          <hr>
+        `;
+      }
+    }
+    return { content: text, type: 'text/html' };
+  }
+
+  getUserContributions = (context) => {
+    let text = '';
+
+    if(context.user.contributions.issues.nodes.length) {
+      text += `<h3>Issues</h3>${this.getContributionIssueText(context).content}`;
+    }
+
+    if(context.user.contributions.pullRequests.nodes.length) {
+      text += `<h3>Pull Requests</h3>${this.getContributionPRText(context).content}`;
+    }
+
+    if(context.user.contributions.reviews.nodes.length) {
+      text += `<h3>Reviews</h3>${this.getContributionReviewText(context).content}`;
+    }
+
+    if(context.user.contributions.tests.nodes.length) {
+      text += `<h3>User Tests</h3>${this.getContributionTestText(context).content}`;
+    }
+
+    if(this.getContributionPosts(context).length) {
+      text += `<h3>Topic Posts</h3>${this.getContributionPostText(context).content}`;
+    }
+
+    return { content: text, type: 'text/html' };
+    }
+
   getContributionText(nodes, type, day?) {
     let n = nodes.reverse();
     if(day) {
@@ -86,12 +127,18 @@ export class ContributionsComponent implements OnInit {
 
   /* Community Site Post Contributions */
 
-  getContributionPostText = (context) => {
+  getContributionPosts(context) {
     let n = this.status.communitySite?.[context.user.login];
-    if(!n) return { context: '', type: 'text/html' };
-
-    if(context.day) {
+    if(n && context.day) {
       n = (new FilterObjectByDatePipe()).transform(n, context.day.date);
+    }
+    return n || [];
+  }
+
+  getContributionPostText = (context) => {
+    let n = this.getContributionPosts(context);
+    if(!n || !n.length) {
+      return { content: '', type: 'text/html' };
     }
 
     // Merge posts on same topic

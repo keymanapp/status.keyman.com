@@ -9,6 +9,7 @@
               <th style='width:9%'>
                 <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0]?.ghdate}}&to={{sprintDays[13]?.ghdate}}' target='_blank'><img class="avatar-48" src="{{getUserAvatar(user, 48)}}">
                 {{user.login}}</a>
+                <app-clipboard [text]="getUserContributions" [context]="{user:user}" title="Copy HTML formatted list of all user contributions to clipboard"></app-clipboard>
               </th>
               <th style='width:6.5%' *ngFor="let day of sprintDays">
                 <a href='https://github.com/{{user.login}}?tab=overview&from={{day?.ghdate}}&to={{day?.ghdate}}' target='_blank'>{{day?.dayText}}<br>{{day?.monthText}} {{day?.dateText}}</a>
@@ -116,5 +117,8 @@
         </table>
       </span>
     </span>
+  </span>
+  <span class="navbar-contribution">
+    <app-clipboard [text]="getAllContributions" title="Copy HTML formatted list of all contributions to clipboard"></app-clipboard>
   </span>
 </span>

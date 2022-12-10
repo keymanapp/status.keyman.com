@@ -4,15 +4,13 @@ import { StatusService } from '../status/status.service';
 import { StatusSource } from '../../../../shared/status-source';
 import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { sites, siteSentryNames } from '../sites';
-import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
-import { escapeHtml } from '../utility/escapeHtml';
 import { DataSocket } from '../datasocket/datasocket.service';
 import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
 import { IssueView } from '../issue-list/issue-list.component';
-import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { EMPTY_STATUS, Status } from '../status/status.interface';
-import { getAvatarUrl, userIds } from '../../../../shared/users';
+import { getAvatarUrl } from '../../../../shared/users';
+import { IssueClipboard } from '../utility/issue-clipboard';
 
 interface OtherSites {
   repos: string[];
@@ -760,5 +758,38 @@ export class HomeComponent {
 
   getAvatar(name) {
     return getAvatarUrl(name);
+  }
+
+  clipboardAllIssues = () => {
+    // We want issues for current sprint only at this point. These should be
+    // copied after we rotate milestones for planning purposes, so we have the
+    // full list of issues allocated to the current sprint.
+
+    let text = '<ul>';
+
+    for(let platform of this.platforms) {
+      const issues = platform.milestones.reduce(
+        (prev,m) => m.nodes && (m.id == 'current' || m.id == 'other') ? [].concat(prev, m.nodes) : prev,
+        []
+      );
+      if(issues.length) {
+        text += `<li>${platform.name}${IssueClipboard.getIssueListText(issues).content}</li>`;
+      }
+    }
+
+    for(let siteName of Object.keys(this.sites)) {
+      let site = this.sites[siteName];
+      const issues = site.milestones.reduce(
+        (prev,m) => m.nodes && (m.id == 'current' || m.id == 'other') ? [].concat(prev, m.nodes) : prev,
+        []
+      );
+      if(issues.length) {
+        text += `<li>${siteName}${IssueClipboard.getIssueListText(issues).content}</li>`;
+      }
+    }
+
+    text += `</ul>`;
+
+    return { content: text, type: 'text/html' };
   }
 }

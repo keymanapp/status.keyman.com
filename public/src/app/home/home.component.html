@@ -56,6 +56,7 @@
               <a id='issue-view-link-current' href="javascript:void(0)" (click)="setIssueView('current')">Current</a>
               <a id='issue-view-link-all' href="javascript:void(0)" (click)="setIssueView('all')">All</a>
             </span>
+            <app-clipboard [text]="clipboardAllIssues" title="Copy HTML formatted list of all current issues to clipboard"></app-clipboard>
           </th>
           <th id='th-pulls'>Pull Requests
             <span class='view-link pull-request-view-link'>

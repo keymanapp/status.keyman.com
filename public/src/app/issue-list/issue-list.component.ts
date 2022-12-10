@@ -1,12 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
-import { escapeHtml } from '../utility/escapeHtml';
 import { labelColor } from '../utility/labelColor';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
 import { VisibilityService } from '../visibility/visibility.service';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
+import { IssueClipboard } from '../utility/issue-clipboard';
 
 export enum IssueView {
   Current = 'current',
@@ -56,21 +55,7 @@ export class IssueListComponent extends PopupComponent implements OnInit {
 
   getIssueListText() {
     if(!this.issues) return null;
-
-    const text =
-      '<ul>' +
-      this.issues.reduce(
-        (text, node) => {
-          const repo = repoShortNameFromGithubUrl(node.url);
-          const check = this.issueHasLinkedPR(node) ? '✔ ' : '';
-          const prs = check
-            ? node.timelineItems.nodes.reduce(
-                (current, pr) => `${current} <a href='${pr.subject.url}'>#${pr.subject.number}</a>`, ' 🔗 '
-              )
-            : '';
-          return text + `<li>${check}${escapeHtml(node.title)} (<a href='${node.url}'>${repo}#${node.number}</a>)${prs}</li>\n`
-        }, '') +
-      '</ul>';
+    const text = IssueClipboard.getIssueListText(this.issues);
     return { content: text, type: 'text/html' };
   }
 

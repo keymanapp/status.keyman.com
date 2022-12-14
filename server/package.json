@@ -19,7 +19,7 @@
     "@sentry/tracing": "^6.2.3",
     "application-config-path": "^0.1.0",
     "deep-equal": "^2.0.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "parse-link-header": "^2.0.0",
     "probot": "^12.2.8",
     "source-map-support": "^0.5.19",

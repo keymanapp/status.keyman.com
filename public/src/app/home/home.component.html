@@ -59,6 +59,7 @@
             <app-clipboard [text]="clipboardAllIssues" title="Copy HTML formatted list of all current issues to clipboard"></app-clipboard>
           </th>
           <th id='th-pulls'>Pull Requests
+            <app-clipboard [text]="clipboardAllPullRequests" title="Copy HTML formatted list of all current PRs to clipboard"></app-clipboard>
             <span class='view-link pull-request-view-link'>
               View by:
               <a id='pull-request-view-link-platform' href="javascript:void(0)" (click)="setPRView('platform')">Platform</a>

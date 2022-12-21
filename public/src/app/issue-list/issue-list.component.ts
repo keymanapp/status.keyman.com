@@ -55,8 +55,7 @@ export class IssueListComponent extends PopupComponent implements OnInit {
 
   getIssueListText() {
     if(!this.issues) return null;
-    const text = IssueClipboard.getIssueListText(this.issues);
-    return { content: text, type: 'text/html' };
+    return IssueClipboard.getIssueListText(this.issues);
   }
 
   issueHasLinkedPR(issue) {

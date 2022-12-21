@@ -792,4 +792,61 @@ export class HomeComponent {
 
     return { content: text, type: 'text/html' };
   }
+
+  clipboardAllPullRequests = () => {
+    // We want PRs for current sprint only at this point. We will group
+    // by base and status (draft vs open)?
+
+    let text = ``; //'<ul>';
+
+    const bases = Object.keys(this.pullsByBase).sort();
+
+    for(let base of bases) {
+      const pulls = this.pullsByBase[base];
+      const baseEmoji = pulls.length ?  this.pullEmoji(pulls[0].pull) : '';
+      text += `<h3>${base} ${baseEmoji}</h3>`;
+      // text += `<li>${base} ${baseEmoji}`;
+      if(pulls.length) {
+        text += `<ul>`;
+        let pullEmoji = baseEmoji;
+        for(let pull of pulls) {
+          let emoji = this.pullEmoji(pull.pull);
+          if(emoji != pullEmoji) {
+            if(pullEmoji.length) {
+              text += `</ul></li>`;
+            }
+            if(emoji.length) {
+              text += `<li>${emoji}<ul>`;
+            }
+            pullEmoji = emoji;
+          }
+          const title = pull.pull.node.title.replace(emoji, '');
+          const style = pull.pull.node.isDraft ? ` style='color: #aaaaaa'` : '';
+          text += `<li${style}>${title} (<a href='${pull.pull.node.url}'>#${pull.pull.node.number}</a>)</li>`;
+        }
+        if(pullEmoji != baseEmoji) {
+          text += `</ul></li>`;
+        }
+        text += `</ul>`;
+      }
+      // text += `</li>`;
+    }
+
+    for(let siteName of Object.keys(this.sites)) {
+      let site = this.sites[siteName];
+      if(site.pulls.length) {
+        // text += `<li>${siteName}<ul>`;
+        text += `<h3>${siteName}</h3><ul>`;
+        for(let pull of site.pulls) {
+          text += `<li>${pull.pull.node.title} (<a href='${pull.pull.node.url}'>#${pull.pull.node.number}</a>)</li>`;
+        }
+        text += '</ul>';
+        // text += '</ul></li>';
+      }
+    }
+
+    text += `</ul>`;
+
+    return { content: text, type: 'text/html' };
+  }
 }

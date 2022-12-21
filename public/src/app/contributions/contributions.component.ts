@@ -129,10 +129,26 @@ export class ContributionsComponent implements OnInit {
 
   getContributionPosts(context) {
     let n = this.status.communitySite?.[context.user.login];
-    if(n && context.day) {
-      n = (new FilterObjectByDatePipe()).transform(n, context.day.date);
+
+    if(!n) {
+      return [];
     }
-    return n || [];
+
+    if(context.day) {
+      return (new FilterObjectByDatePipe()).transform(n, context.day.date);
+    }
+
+    // Filter to contributions in this sprint only
+    let min = this.sprintDays[0].date;
+    let max = this.sprintDays[13].date;
+    max.setDate(max.getDate()+1);
+
+    return n.filter(item => {
+      let od = new Date(item.occurredAt);
+      return od >= min && od < max;
+    }).sort(
+      (a,b) => new Date(a.occurredAt).valueOf() - new Date(b.occurredAt).valueOf()
+    );
   }
 
   getContributionPostText = (context) => {

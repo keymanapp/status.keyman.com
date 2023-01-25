@@ -1,4 +1,3 @@
-
 import versionService from "../services/downloads.keyman.com/version";
 import teamcityService from "../services/teamcity/teamcity";
 import githubStatusService from "../services/github/github-status";
@@ -19,6 +18,7 @@ import { debianBetaService, debianStableService } from "../services/deployment/d
 import { lmcService, mtService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
 import discourseService from "../services/discourse/discourse";
+import { performanceLog } from "../performance-log";
 
 const services = {};
 services[StatusSource.ITunesKeyman] = keymaniTunesService;
@@ -59,6 +59,15 @@ export interface StatusDataCache {
   communitySite?: any;
 };
 
+const { performance } = require('perf_hooks');
+
+function logAsync(event, method: () => Promise<any>): Promise<any> {
+  let dt = performance.now();
+  let v = method();
+  performanceLog(dt, event);
+  return v;
+}
+
 export class StatusData {
   cache: StatusDataCache;
 
@@ -67,25 +76,25 @@ export class StatusData {
   };
 
   refreshKeymanVersionData = async (): Promise<boolean> => {
-    console.log('[Refresh] Keyman Version ENTER');
+    // console.log('[Refresh] Keyman Version ENTER');
     let keymanVersion;
     try {
-      keymanVersion = await versionService.get();
+      keymanVersion = await logAsync('refreshKeymanVersionData', () => versionService.get());
     } catch(e) {
       console.log(e);
       return false;
     }
     let result = !deepEqual(keymanVersion, this.cache.keymanVersion);
     this.cache.keymanVersion = keymanVersion;
-    console.log('[Refresh] Keyman Version EXIT');
+    // console.log('[Refresh] Keyman Version EXIT');
     return result;
   };
 
   refreshTeamcityData = async (): Promise<boolean> => {
-    console.log('[Refresh] TeamCity ENTER');
+    // console.log('[Refresh] TeamCity ENTER');
     let data;
     try {
-      data = await teamcityService.get();
+      data = await logAsync('refreshTeamcityData', () => teamcityService.get());
     } catch(e) {
       console.log(e);
       return false;
@@ -99,32 +108,32 @@ export class StatusData {
     this.cache.teamCityRunning = data[1];
     this.cache.teamCityAgents = data[2];
     this.cache.teamCityQueue = data[3];
-    console.log('[Refresh] TeamCity EXIT: '+result);
+    // console.log('[Refresh] TeamCity EXIT: '+result);
     return result;
   };
 
   refreshGitHubIssuesData = async (): Promise<boolean> => {
-    console.log('[Refresh] GitHub Issues ENTER');
+    // console.log('[Refresh] GitHub Issues ENTER');
     let issues;
     try {
-      issues = await githubIssuesService.get(null, []);
+      issues = await logAsync('refreshGitHubIssuesData', () => githubIssuesService.get(null, []));
     } catch(e) {
       console.log(e);
       return false;
     }
     let result = !deepEqual(issues, this.cache.issues);
     this.cache.issues = issues;
-    console.log('[Refresh] GitHub Issues EXIT');
+    // console.log('[Refresh] GitHub Issues EXIT');
     return result;
   };
 
   // Warning: this currently returns TRUE if sprint dates have changed,
   // not if any data has changed. This is different to all the others
   refreshGitHubStatusData = async (sprintName): Promise<boolean> => {
-    console.log('[Refresh] GitHub Status ENTER');
+    // console.log('[Refresh] GitHub Status ENTER');
     let data;
     try {
-      data = await githubStatusService.get(sprintName);
+      data = await logAsync('refreshGitHubStatusData', () => githubStatusService.get(sprintName));
     } catch(e) {
       console.log(e);
       console.log('[Refresh] GitHub Status EXIT -- error');
@@ -141,21 +150,21 @@ export class StatusData {
     if(result) {
       this.cache.sprints[sprintName].adjustedStart = data.adjustedStart;
     }
-    console.log('[Refresh] GitHub Status EXIT');
+    // console.log('[Refresh] GitHub Status EXIT');
     return result;
   };
 
   refreshGitHubContributionsData = async (sprintName): Promise<boolean> => {
-    console.log('[Refresh] GitHub Contributions ENTER');
+    // console.log('[Refresh] GitHub Contributions ENTER');
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) return false;
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
     let contributions;
     try {
-      contributions = await githubContributionsService.get(sprintStartDateTime);
+      contributions = await logAsync('refreshGitHubContributionsData', () => githubContributionsService.get(sprintStartDateTime));
 
       for(let node of contributions?.data?.repository?.contributions?.nodes) {
-        node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], getSprintStart(), node.login)};
+        node.contributions.tests = {nodes: await logAsync('refreshGitHubContributionsData[n]', () => githubTestContributionsService.get(null, [], getSprintStart(), node.login))};
       }
     } catch(e) {
       console.log(e);
@@ -164,54 +173,54 @@ export class StatusData {
 
     let result = !deepEqual(contributions, sprint.contributions);
     sprint.contributions = contributions;
-    console.log('[Refresh] GitHub Contributions EXIT');
+    // console.log('[Refresh] GitHub Contributions EXIT');
     return result;
   };
 
   refreshSentryIssuesData = async (): Promise<boolean> => {
-    console.log('[Refresh] Sentry ENTER');
+    // console.log('[Refresh] Sentry ENTER');
     let sentryIssues;
     try {
-      sentryIssues = await sentryIssuesService.get();
+      sentryIssues = await logAsync('refreshSentryIssuesData', () => sentryIssuesService.get());
     } catch(e) {
       console.log(e);
       return false;
     }
     let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
     this.cache.sentryIssues = sentryIssues;
-    console.log('[Refresh] Sentry EXIT');
+    // console.log('[Refresh] Sentry EXIT');
     return result;
   };
 
   refreshCodeOwnersData = async (): Promise<boolean> => {
-    console.log('[Refresh] CodeOwners ENTER');
+    // console.log('[Refresh] CodeOwners ENTER');
     let codeOwners;
     try {
-      codeOwners = await codeOwnersService.get();
+      codeOwners = await logAsync('refreshCodeOwnersData', () => codeOwnersService.get());
     } catch(e) {
       console.log(e);
       return false;
     }
     let result = !deepEqual(codeOwners, this.cache.codeOwners);
     this.cache.codeOwners = codeOwners;
-    console.log('[Refresh] CodeOwners EXIT');
+    // console.log('[Refresh] CodeOwners EXIT');
     return result;
   };
 
   // Deployment endpoints
 
   refreshService = async (id: StatusSource, service: DataService): Promise<boolean> => {
-    console.log('[Refresh] '+id+' ENTER');
+    // console.log('[Refresh] '+id+' ENTER');
     let status;
     try {
-      status = await service.get();
+      status = await logAsync(`refreshService:${id}`, () => service.get());
     } catch(e) {
       console.log(e);
       return false;
     }
     let result = !deepEqual(status, this.cache.deployment[id]);
     this.cache.deployment[id] = status;
-    console.log('[Refresh] '+id+' EXIT');
+    // console.log('[Refresh] '+id+' EXIT');
     return result;
   }
 
@@ -223,7 +232,7 @@ export class StatusData {
   // Discourse
 
   refreshCommunitySiteData = async (sprintName: string, user?: string): Promise<boolean> => {
-    console.log('[Refresh] Community-Site ENTER');
+    // console.log('[Refresh] Community-Site ENTER');
 
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) {
@@ -241,9 +250,9 @@ export class StatusData {
     let posts;
     try {
       if(user) {
-        posts = await discourseService.getUser(sprintStartDateTime, user);
+        posts = await logAsync('refreshCommunitySiteData', () => discourseService.getUser(sprintStartDateTime, user));
       } else {
-        posts = await discourseService.get(sprintStartDateTime);
+        posts = await logAsync('refreshCommunitySiteData', () => discourseService.get(sprintStartDateTime));
       }
     } catch(e) {
       console.error(e);
@@ -258,7 +267,7 @@ export class StatusData {
       result = !deepEqual(posts, this.cache.communitySite);
       this.cache.communitySite = posts;
     }
-    console.log('[Refresh] Community-Site EXIT');
+    // console.log('[Refresh] Community-Site EXIT');
     return result;
   };
 

@@ -23,6 +23,10 @@ const sprintCache = new SprintCache(environment);
 
 const express = require('express');
 const app = express();
+
+// The Sentry request handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
+
 const ws = require('ws');
 const keymanAppTestBotMiddleware = require('./keymanapp-test-bot/keymanapp-test-bot-middleware');
 const currentSprint = require('./current-sprint');
@@ -37,6 +41,9 @@ import githubTestContributionsService from "./services/github/github-test-contri
 import gitHubMilestonesService from './services/github/github-milestones';
 
 import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment';
+import { performanceLog } from './performance-log';
+
+const { performance } = require('perf_hooks');
 
 const debugTestBot = false;
 
@@ -48,6 +55,21 @@ const port = environment == Environment.Development ? 3000 : 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;
 
 const timingManager = new DataChangeTimingManager();
+
+/* Logging all requests and responses */
+
+const requestLoggerMiddleware = ({ logger }) => (req, res, next) => {
+  let dt = performance.now();
+  // dt.valueOf();
+  // let tm = Date.now();
+  // logger(`RECV ${new Date().toISOString()} <<<`, req.method, req.url, req.hostname);
+  res.on("finish", () => {
+    performanceLog(dt, `<<< ${req.method} ${req.url} >>> ${res.statusCode}`);
+  });
+  next();
+};
+
+app.use(requestLoggerMiddleware({ logger: console.log }));
 
 /* Deployment Endpoints */
 
@@ -300,7 +322,7 @@ function statusHead(request, response) {
 }
 
 app.get('/status/teamcity', (request, response) => {
-  console.log('GET /status/teamcity');
+  // console.log('GET /status/teamcity');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -313,7 +335,7 @@ app.get('/status/teamcity', (request, response) => {
 });
 
 app.get('/status/keyman', (request, response) => {
-  console.log('GET /status/keyman');
+  // console.log('GET /status/keyman');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -323,7 +345,7 @@ app.get('/status/keyman', (request, response) => {
 });
 
 app.get('/status/github', (request, response) => {
-  console.log('GET /status/github');
+  // console.log('GET /status/github');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -333,7 +355,7 @@ app.get('/status/github', (request, response) => {
 });
 
 app.get('/status/github-issues', (request, response) => {
-  console.log('GET /status/github-issues');
+  // console.log('GET /status/github-issues');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -343,7 +365,7 @@ app.get('/status/github-issues', (request, response) => {
 });
 
 app.get('/status/github-contributions', async (request, response) => {
-  console.log('GET /status/github-contributions');
+  // console.log('GET /status/github-contributions');
   const sprint = statusHead(request, response);
   if(sprint != 'current') {
     // load the data for the sprint
@@ -378,7 +400,7 @@ app.get('/status/github-contributions', async (request, response) => {
 });
 
 app.get('/status/community-site', async (request, response) => {
-  console.log('GET /status/community-site');
+  // console.log('GET /status/community-site');
   const sprint = statusHead(request, response);
   if(sprint != 'current') {
     // load the data for the sprint
@@ -410,7 +432,7 @@ app.get('/status/community-site', async (request, response) => {
 });
 
 app.get('/status/github-milestones', async (request, response) => {
-  console.log('GET /status/github-milestones');
+  // console.log('GET /status/github-milestones');
   statusHead(request, response);
   const milestones = await gitHubMilestonesService.get();
   response.write(JSON.stringify({
@@ -420,7 +442,7 @@ app.get('/status/github-milestones', async (request, response) => {
 });
 
 app.get('/status/sentry-issues', (request, response) => {
-  console.log('GET /status/sentry-issues');
+  // console.log('GET /status/sentry-issues');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -430,7 +452,7 @@ app.get('/status/sentry-issues', (request, response) => {
 });
 
 app.get('/status/code-owners', (request, response) => {
-  console.log('GET /status/code-owners');
+  // console.log('GET /status/code-owners');
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -442,7 +464,7 @@ app.get('/status/code-owners', (request, response) => {
 if(environment == Environment.Development) {
   // Allow CORS for POST
   app.options('/refresh', (request, response) => {
-    console.log('OPTIONS /refresh');
+    // console.log('OPTIONS /refresh');
     response.writeHead(200, {
       "Access-Control-Allow-Origin": '*',
       "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -454,7 +476,7 @@ if(environment == Environment.Development) {
 }
 
 app.post('/refresh', (request, response) => {
-  console.log('POST /refresh');
+  // console.log('POST /refresh');
   statusHead(request, response);
   timingManager.reset();
   (async () => {
@@ -468,7 +490,7 @@ app.post('/refresh', (request, response) => {
 
 function addEndpoint(id, dataSource) {
   app.get('/status/'+id, (request, response) => {
-    console.log('GET /status/'+id);
+    // console.log('GET /status/'+id);
     const sprint = statusHead(request, response);
     const data = {
       currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
@@ -483,9 +505,18 @@ for(let s of STATUS_SOURCES) {
   addEndpoint(s, () => statusData.cache.deployment[s]);
 }
 
+// Sentry debug endpoint
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
+
 app.all('*', (request, response) => {
   response.status(200).sendFile('/public/dist/public/index.html', {root: environment == Environment.Development ? '../' : '../../../'});
 });
+
+
+// The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
 
 if(!debugTestBot) {
   console.log(`Starting app listening on ${port}`);

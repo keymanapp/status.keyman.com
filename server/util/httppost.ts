@@ -21,7 +21,9 @@ export default function httppost(hostname, path, headers, data) {
     try {
       const req = https.request(options, res => {
         if(res.statusCode != 200) {
-          console.error(`statusCode for ${hostname}${path}: ${res.statusCode}`);
+          console.error(`statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
+          reject(`statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
+          return;
         }
 
         res.on('data', d => {

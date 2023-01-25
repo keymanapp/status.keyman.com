@@ -8,10 +8,7 @@ export const environment: Environment =
   Environment.Development;
 
 const Sentry = require("@sentry/node");
-Sentry.init({
-  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@o1005580.ingest.sentry.io/5983526",
-  environment: environment
-});
+const Tracing = require("@sentry/tracing");
 
 console.log(`Running in ${environment} environment`);
 
@@ -24,8 +21,32 @@ const sprintCache = new SprintCache(environment);
 const express = require('express');
 const app = express();
 
-// The Sentry request handler must be the first middleware on the app
+Sentry.init({
+  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@o1005580.ingest.sentry.io/5983526",
+  environment: environment,
+  integrations: [
+    // enable HTTP calls tracing
+    new Sentry.Integrations.Http({ tracing: true }),
+    // enable Express.js middleware tracing
+    new Tracing.Integrations.Express({
+      // to trace all requests to the default router
+      app,
+      // alternatively, you can specify the routes you want to trace:
+      // router: someRouter,
+    }),
+  ],
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 0.2,
+});
+
+
+// RequestHandler creates a separate execution context using domains, so that every
+// transaction/span/breadcrumb is attached to its own Hub instance
 app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
 
 const ws = require('ws');
 const keymanAppTestBotMiddleware = require('./keymanapp-test-bot/keymanapp-test-bot-middleware');

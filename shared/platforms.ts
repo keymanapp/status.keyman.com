@@ -92,7 +92,7 @@ export const platforms: PlatformSpec[] = [
     configs: {
       alpha: "Keyman_Developer_Release",
       beta: "Keyman_Developer_Release",
-      stable: "Keyman_Build", // TODO: move to Keyman_Developer_Release with 16.0 release
+      stable: "Keyman_Developer_Release",
       test: "Keyman_Developer_Test",
     },
     context: "Keyman - Windows \\(Desktop\\/Developer\\)",

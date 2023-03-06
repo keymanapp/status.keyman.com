@@ -57,12 +57,38 @@ export async function getArtifactLinksComment(
       }
       if (u.hostname == 'jenkins.lsdev.sil.org') {
         for (let download of artifactLinks.jenkinsTarget.downloads) {
-          if(!links['Linux']) links['Linux'] = [];
+          if (!links['Linux']) links['Linux'] = [];
           links['Linux'].push({
             platform: 'Linux',
             download: download.name,
             url: `${s[context].url}/${download.fragment}`,
           });
+        }
+      } else if (context == 'Debian Packaging') {
+        // https://github.com/keymanapp/keyman/actions/runs/4294449810
+        const matches = s[context].url.match(/.+\/runs\/(\d+)/)
+        if (matches.length <= 0) {
+          console.log(`Can't find workflow run in url ${s[context].url}`)
+          return ''
+        }
+        const run_id = matches[0]
+        try {
+          const artifacts = await octokit.rest.actions.listWorkflowRunArtifacts({ ...data, run_id });
+          for (const artifact in artifacts.data.artifacts) {
+            if (artifact != 'keyman-binarypkgs') {
+              continue
+            }
+            const binary_artifact = await octokit.rest.actions.getArtifact({ ...data, artifact_id: artifact })
+            if (!links['Linux']) links['Linux'] = [];
+            links['Linux'].push({
+              platform: 'Linux',
+              download: 'Keyman for Linux',
+              url: binary_artifact.url,
+            });
+          }
+        } catch (e) {
+          console.log(e);
+          return '';
         }
       } else if(u.searchParams.has('buildTypeId')) {
         // Assume TeamCity

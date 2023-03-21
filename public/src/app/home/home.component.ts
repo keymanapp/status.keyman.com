@@ -426,11 +426,12 @@ export class HomeComponent {
       }
     }
 
-    // For the current milestone, Waiting-external and Future, we want to report. Other milestones, we'll ignore for now.
+    // For the current milestone, Waiting-external, Tests, and Future, we want to report. Other milestones, we'll ignore for now.
     this.milestones = {
       Future: { title: "Future", count: 0 },
       Current: { title: this.phase.title, count: 0 },
       Waiting: { title: "Waiting-external", count: 0 },
+      Tests: { title: "Tests", count: 0 },
       Other: { title: "Other", count: 0 }
     };
 
@@ -455,17 +456,19 @@ export class HomeComponent {
         { id: 'current', title: this.phase.title, count: 0, nodes: [] },
         { id: 'future', title: "Future", count: 0, nodes: [] },
         { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+        { id: 'tests', title: "Tests", count: 0, nodes: [] },
         { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
       this.status.issues
         .filter(issue => issue.repository.name === 'keyman' && issue.labels.nodes.some(l=>l.name === label.node.name))
         .forEach(issue => {
         let m = null;
-        if(!issue.milestone) m = platform.milestones[3];
+        if(!issue.milestone) m = platform.milestones[4];
         else switch(issue.milestone.title) {
           case this.phase.title: m = platform.milestones[0]; break;
           case "Future": m = platform.milestones[1]; break;
           case "Waiting-external": m = platform.milestones[2]; break;
+          case "Tests": m = platform.milestones[3]; break;
           default:
             m = platform.milestones.find(element => {return element.title == issue.milestone.title});
             if(!m) {
@@ -487,6 +490,7 @@ export class HomeComponent {
       { id: 'current', title: this.phase.title, count: 0, nodes: [] },
       { id: 'future', title: "Future", count: 0, nodes: [] },
       { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+      { id: 'tests', title: "Tests", count: 0, nodes: [] },
       { id: 'other', title: "Other", count: 0, nodes: [] }
     ];
     this.otherSites.repos = [];
@@ -503,17 +507,19 @@ export class HomeComponent {
         { id: 'current', title: this.phase.title, count: 0, nodes: [] },
         { id: 'future', title: "Future", count: 0, nodes: [] },
         { id: 'waiting', title: "Waiting-external", count: 0, nodes: [] },
+        { id: 'tests', title: "Tests", count: 0, nodes: [] },
         { id: 'other', title: "Other", count: 0, nodes: [] }
       ];
       this.status.issues
         .filter(issue => issue.repository.name === repo.name)
         .forEach(issue => {
         let m = null;
-        if(!issue.milestone) m = site.milestones[3];
+        if(!issue.milestone) m = site.milestones[4];
         else switch(issue.milestone.title) {
           case this.phase.title: m = site.milestones[0]; break;
           case "Future": m = site.milestones[1]; break;
           case "Waiting-external": m = site.milestones[2]; break;
+          case "Tests": m = site.milestones[3]; break;
           default:
             m = site.milestones.find(element => {return element.title == issue.milestone.title});
             if(!m) {

@@ -7,6 +7,7 @@
 }
 
 .issue-box-view-current.milestone-current,
+.issue-box-view-current.milestone-tests,
 .issue-box-view-current.milestone-other
  {
   display: inline;

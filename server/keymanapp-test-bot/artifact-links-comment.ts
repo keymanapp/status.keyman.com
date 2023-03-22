@@ -66,24 +66,24 @@ export async function getArtifactLinksComment(
         }
       } else if (context == 'Debian Packaging') {
         // https://github.com/keymanapp/keyman/actions/runs/4294449810
-        const matches = s[context].url.match(/.+\/runs\/(\d+)/)
-        if (matches.length <= 0) {
-          console.log(`Can't find workflow run in url ${s[context].url}`)
-          return ''
+        const matches = s[context].url.match(/.+\/runs\/(\d+)/);
+        if (!matches) {
+          console.log(`Can't find workflow run in url ${s[context].url}`);
+          return '';
         }
-        const run_id = matches[0]
+        const run_id = matches[1];
         try {
+          const run = await octokit.rest.actions.getWorkflowRun({...data, run_id});
           const artifacts = await octokit.rest.actions.listWorkflowRunArtifacts({ ...data, run_id });
-          for (const artifact in artifacts.data.artifacts) {
-            if (artifact != 'keyman-binarypkgs') {
-              continue
+          for (const artifact of artifacts.data.artifacts) {
+            if (artifact.name != 'keyman-binarypkgs') {
+              continue;
             }
-            const binary_artifact = await octokit.rest.actions.getArtifact({ ...data, artifact_id: artifact })
             if (!links['Linux']) links['Linux'] = [];
             links['Linux'].push({
               platform: 'Linux',
-              download: 'Keyman for Linux',
-              url: binary_artifact.url,
+              download: '**Keyman for Linux**',
+              url: `https://github.com/keymanapp/keyman/suites/${run.data.check_suite_id}/artifacts/${artifact.id}`
             });
           }
         } catch (e) {

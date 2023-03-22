@@ -191,6 +191,15 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
       };
       //https://jenkins.lsdev.sil.org/job/pipeline-keyman-packaging/job/PR-5883/9/artifact/*zip*/archive.zip
       //https://jenkins.lsdev.sil.org/job/pipeline-keyman-packaging/job/PR-5883/9/
+    } else if (context.context == 'Debian Packaging') {
+      result = {
+        platform: 'linux',
+        downloads: [
+          { url: context.targetUrl, name: 'Keyman for Linux', icon: 'keyman.png' }
+        ],
+        name: 'Keyman for Linux',
+        icon: 'linux.png'
+      };
     }
     return result;
   }

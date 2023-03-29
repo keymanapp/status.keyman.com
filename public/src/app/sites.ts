@@ -1,6 +1,5 @@
 export const sites = [
   'api.keyman.com',
-  'donate.keyman.com',
   'downloads.keyman.com',
   'help.keyman.com',
   'keyman.com',
@@ -15,7 +14,6 @@ export const sites = [
 export const siteSentryIds = {
   'api.keyman.com': 5983517,
   'developer.keyman.com': 5983527,
-  'donate.keyman.com': 5983528,
   'downloads.keyman.com': 5983529,
   'help.keyman.com': 5983515,
   'keyman.com': 5983516,
@@ -27,7 +25,6 @@ export const siteSentryIds = {
 export const siteSentryNames = {
   'api-keyman-com': 'api.keyman.com',
   'developer-keyman-com': 'developer.keyman.com',
-  'donate-keyman-com': 'donate.keyman.com',
   'downloads-keyman-com': 'downloads.keyman.com',
   'help-keyman-com': 'help.keyman.com',
   'keyman-com': 'keyman.com',

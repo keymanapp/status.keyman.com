@@ -37,7 +37,6 @@ export default {
     const siteProjects = [
       5983530, // s-keyman-com
       5983529, // downloads-keyman-com
-      5983528, // donate-keyman-com
       5983527, // developer-keyman-com
       5983526, // status-keyman-com
       5983523, // keymanweb-com

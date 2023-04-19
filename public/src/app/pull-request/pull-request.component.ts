@@ -116,6 +116,7 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     'KeymanAndroid_TestSamplesAndTestProjects': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
       {fragment: 'Samples/KMSample1/app-debug.apk', name: 'KMSample1 apk', icon: 'kmsample1.png'} ,
       {fragment: 'Samples/KMSample2/app-debug.apk', name: 'KMSample2 apk', icon: 'kmsample2.png'} ,
+      {fragment: 'Tests/KeyboardHarness/app-debug.apk', name: 'KeyboardHarness apk', icon: 'keyboardharness.png'} ,
     ]},
 
     'Keyman_iOS_TestPullRequests': {platform: 'ios', name: 'iOS', icon: 'ios.png', downloads: [

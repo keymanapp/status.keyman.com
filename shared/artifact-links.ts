@@ -3,8 +3,12 @@
 export const artifactLinks = {
   teamCityTargets: {
     'KeymanAndroid_TestPullRequests': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
-      {fragment: 'release/kMAPro-debug.apk', name: '**Keyman for Android** apk', icon: 'keyman.png'} ,
-      {fragment: 'release/FirstVoices/app-debug.apk', name: 'FirstVoices Keyboards for Android apk', icon: 'firstvoices.png'} ,
+      {fragment: 'release/keyman-$version.apk', name: '**Keyman for Android** apk', icon: 'keyman.png'} ,
+      {fragment: 'release/FirstVoices/firstvoices-$version.apk', name: 'FirstVoices Keyboards for Android apk', icon: 'firstvoices.png'} ,
+
+      // TODO: Remove 16.0 links when 17.0 released
+      {fragment: 'release/kMAPro-debug.apk', name: 'Keyman for Android 16.0 apk', icon: 'keyman.png'} ,
+      {fragment: 'release/FirstVoices/app-debug.apk', name: 'FirstVoices for Android 16.0 apk', icon: 'firstvoices.png'} ,
     ]},
     'KeymanAndroid_TestSamplesAndTestProjects': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
       {fragment: 'Samples/KMSample1/app-debug.apk', name: 'KMSample1 apk', icon: 'kmsample1.png'} ,

@@ -155,9 +155,9 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
         break;
       case 'developer':
         this.targets.push({
-          name: '@keymanapp/lexical-model-compiler',
-          url: 'https://npmjs.com/package/@keymanapp/lexical-model-compiler',
-          version: this.status?.deployment?.[StatusSource.NpmLexicalModelCompiler]?.[this.tier]?.split('-')[0]
+          name: '@keymanapp/kmc',
+          url: 'https://npmjs.com/package/@keymanapp/kmc',
+          version: this.status?.deployment?.[StatusSource.NpmKeymanCompiler]?.[this.tier]?.split('-')[0]
         }, {
           name: '@keymanapp/models-types',
           url: 'https://npmjs.com/package/@keymanapp/models-types',

@@ -104,7 +104,7 @@ const STATUS_SOURCES: StatusSource[] = [
   StatusSource.LaunchPadStable,
   StatusSource.DebianBeta,
   StatusSource.DebianStable,
-  StatusSource.NpmLexicalModelCompiler,
+  StatusSource.NpmKeymanCompiler,
   StatusSource.NpmModelsTypes,
   StatusSource.SKeymanCom,
   StatusSource.PackagesSilOrg,

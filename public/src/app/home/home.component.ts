@@ -194,7 +194,7 @@ export class HomeComponent {
             case StatusSource.LinuxLsdevSilOrgAlpha:
             case StatusSource.LinuxLsdevSilOrgBeta:
             case StatusSource.LinuxLsdevSilOrgStable:
-            case StatusSource.NpmLexicalModelCompiler:
+            case StatusSource.NpmKeymanCompiler:
             case StatusSource.NpmModelsTypes:
               this.status.deployment[source] = data.data;
               this.changeCounter++; // forces a rebuild

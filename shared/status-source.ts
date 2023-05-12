@@ -14,7 +14,7 @@ export enum StatusSource {
   LaunchPadAlpha = "launch-pad-alpha",
   LaunchPadBeta = "launch-pad-beta",
   LaunchPadStable = "launch-pad-stable",
-  NpmLexicalModelCompiler = "npm-lexical-model-compiler",
+  NpmKeymanCompiler = "npm-kmc",
   NpmModelsTypes = "npm-models-types",
   SKeymanCom = "s-keyman-com",
   PackagesSilOrg = "packages-sil-org",

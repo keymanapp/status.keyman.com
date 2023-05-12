@@ -2,7 +2,7 @@
  Service to collect version info from npmjs
 
 {
-  "name": "@keymanapp/lexical-model-compiler",
+  "name": "@keymanapp/kmc",
   "dist-tags": {
     "dev": "0.0.0",
     "latest": "14.0.273",
@@ -15,7 +15,7 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-// curl -H "Accept: application/vnd.npm.install-v1+json" https://registry.npmjs.org/@keymanapp/lexical-model-compiler
+// curl -H "Accept: application/vnd.npm.install-v1+json" https://registry.npmjs.org/@keymanapp/kmc
 const HOST='registry.npmjs.org';
 
 const service = {
@@ -31,9 +31,7 @@ const service = {
         if(results && typeof results['dist-tags'] == 'object') {
           // We only want three fields from the results
           const d = results['dist-tags'];
-          if(d.latest && d.alpha && d.beta) {
-            return { etag: etag, data: { stable: d.latest, beta: d.beta, alpha: d.alpha } };
-          }
+          return { etag: etag, data: { stable: d.latest ?? null, beta: d.beta ?? null, alpha: d.alpha ?? null } };
         }
         return null;
       });
@@ -41,7 +39,7 @@ const service = {
   }
 };
 
-const LMC_PATH='/@keymanapp/lexical-model-compiler';
+const KMC_PATH='/@keymanapp/kmc';
 const MT_PATH='/@keymanapp/models-types';
 
 class ServiceClass implements DataService {
@@ -61,5 +59,5 @@ class ServiceClass implements DataService {
   }
 };
 
-export const lmcService: DataService = new ServiceClass(LMC_PATH);
+export const kmcService: DataService = new ServiceClass(KMC_PATH);
 export const mtService: DataService = new ServiceClass(MT_PATH);

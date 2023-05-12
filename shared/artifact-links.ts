@@ -27,6 +27,8 @@ export const artifactLinks = {
 
     'KeymanDesktop_TestPullRequests': {platform: 'windows', name: 'Windows', icon: 'windows.png', downloads: [
       {fragment: 'release/$version/keyman-$version.exe', name: '**Keyman for Windows**', icon: 'keyman.png'} ,
+      {fragment: 'support/editor32.exe', name: 'Text Editor (32 bit)', icon: 'tool.png'} ,
+      {fragment: 'support/editor64.exe', name: 'Text Editor (64 bit)', icon: 'tool.png'} ,
       {fragment: 'release/$version/firstvoices-$version.exe', name: 'FirstVoices Keyboards for Windows', icon: 'firstvoices.png'} ,
     ]},
 

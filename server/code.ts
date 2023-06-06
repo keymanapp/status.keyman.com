@@ -446,7 +446,7 @@ app.get('/status/community-site', async (request, response) => {
   } else {
     response.write(JSON.stringify({
       currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
-      contributions: statusData.cache.communitySite
+      communitySite: statusData.cache.communitySite
     }));
   }
   response.end();

@@ -1,0 +1,39 @@
+<span class="issue-box {{pinned ? 'pinned' : ''}}">
+
+  <app-count-box
+    [link]="'https://community.software.sil.org/c/keyman'"
+    [title]="'Open Topics'"
+    [unfixedCount]="queue?.length"
+    [count]="queue?.length"
+    [label]="'Open Topics'"
+    [class]="'milestone-all'"></app-count-box>
+
+  <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+    <div class="issue-list">
+      <div class="summary">
+        <span class="pin" (click)="pin()">📌</span>
+        <span><app-clipboard [text]="getQueueTopics()" title="Copy list of topics to clipboard"></app-clipboard></span>
+        <span>
+          <span class="summary-label">Open Community Topics</span><span>{{queue?.length}}</span>
+        </span>
+        <div class='clear'></div>
+      </div>
+
+      <ul>
+        <li *ngFor="let topic of queue">
+          <span class="label">
+            <a class="author" target="_blank" title="{{topic.last_post?.username}}"
+              href="https://community.software.sil.org/t/{{topic.slug}}/{{topic.id}}/{{topic.highest_post_number}}">
+              <img class="avatar-22" src="https://community.software.sil.org{{topic.last_post.avatar_template.replace('{size}', '22')}}" />
+            </a>
+            <a class="issue" target="_blank" title="{{topic.title}}"
+               href="https://community.software.sil.org/t/{{topic.slug}}/{{topic.id}}/{{topic.highest_post_number}}"><b>{{topic.id}}</b> {{topic.title}}</a>
+            <span class="issue-label" style="{{topic.posts_count > 1 ? 'background: #f0f0f0' : 'background: #f08080'}}" title="Created">{{topic.created_at | date: "medium"}}</span>
+            <span *ngIf="topic.posts_count > 1" class="issue-label" style="background: #c0cfcf" title="Last Update">{{topic.last_posted_at | date: "medium"}}</span>
+          </span>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</span>

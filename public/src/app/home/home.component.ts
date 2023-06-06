@@ -165,7 +165,8 @@ export class HomeComponent {
               this.status.contributions = data.contributions;
               break;
             case StatusSource.CommunitySite:
-              this.status.communitySite = this.transformCommunitySiteData(data.contributions);
+              this.status.communitySite = this.transformCommunitySiteData(data.communitySite.contributions);
+              this.status.communitySiteQueue = data.communitySite.queue;
               break;
             case StatusSource.Keyman:
               this.status.keyman = data.keyman;

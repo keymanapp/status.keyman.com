@@ -14,6 +14,7 @@ export class CountBoxComponent implements OnInit {
   @Input() label?: string;
   @Input() isPulls: boolean;
   @Input() alwaysShow: boolean;
+  @Input() link?: string;
 
   filter() {
     let f = "";

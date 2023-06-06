@@ -4,6 +4,7 @@ export interface Status {
   issues: any;
   contributions: any;
   communitySite: any;
+  communitySiteQueue: any;
   codeOwners: any;
   keyman: any[];
   sentryIssues: any;
@@ -21,6 +22,7 @@ export const EMPTY_STATUS: Status = {
   issues: undefined,
   contributions: undefined,
   communitySite: undefined,
+  communitySiteQueue: undefined,
   codeOwners: {},
   keyman: [],
   sentryIssues: {},

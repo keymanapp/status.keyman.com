@@ -3,10 +3,14 @@ import { userIds } from '../../../shared/users';
 
 export default {
   get: async function(startDate) {
-    let result = {};
+    let result = {
+      queue: await this.getQueue(),
+      contributions: {}
+    };
     for(let user of Object.keys(userIds)) {
-      result[user] = await this.getUser(startDate, userIds[user].community);
+      result.contributions[user] = await this.getUser(startDate, userIds[user].community);
     }
+
     return result;
   },
 
@@ -43,5 +47,38 @@ export default {
       }
       return [];
     });
+  },
+
+  getQueue: async function(posts?, cursor?) {
+    cursor = cursor ?? 0;
+    posts = posts ?? [];
+
+    const url =
+      `/search.json`+
+      `?q=-tags:done,resolved+%23keyman+after:2022-12-01+status:open+order:latest`;
+
+    const host = 'community.software.sil.org';
+
+    let discourseQuery = httpget(host, url);
+
+    return discourseQuery.then((data) => {
+      let json = JSON.parse(data.data);
+      if(!json?.topics?.length) {
+        return posts;
+      }
+
+      let results = [].concat(posts, json.topics.filter(topic =>
+        !topic.has_accepted_answer &&
+        !topic.tags.includes('closed') &&
+        !topic.tags.includes('resolved') &&
+        !topic.tags.includes('announcement') &&
+        !topic.tags.includes('done')
+      ));
+
+      // todo: pagination?
+
+      return results;
+    });
   }
+
 };

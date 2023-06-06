@@ -261,8 +261,8 @@ export class StatusData {
 
     let result;
     if(user) {
-      result = !deepEqual(posts, this.cache.communitySite[user]);
-      this.cache.communitySite[user] = posts;
+      result = !deepEqual(posts, this.cache.communitySite.contributions[user]);
+      this.cache.communitySite.contributions[user] = posts;
     } else {
       result = !deepEqual(posts, this.cache.communitySite);
       this.cache.communitySite = posts;

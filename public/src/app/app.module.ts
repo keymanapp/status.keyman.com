@@ -28,6 +28,7 @@ import { BoxPrPlatformComponent } from './box-pr-platform/box-pr-platform.compon
 import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
 import { ContributionsComponent } from './contributions/contributions.component';
 import { ContributionsHomeComponent } from './contributions-home/contributions-home.component';
+import { CommunityQueueComponent } from './community-queue/community-queue.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { ContributionsHomeComponent } from './contributions-home/contributions-h
     BoxPrBaseComponent,
     ContributionsComponent,
     ContributionsHomeComponent,
+    CommunityQueueComponent,
   ],
   imports: [
     BrowserModule,

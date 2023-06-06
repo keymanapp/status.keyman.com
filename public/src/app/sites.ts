@@ -6,14 +6,14 @@ export const sites = [
   'keymanweb.com',
   //'s.keyman.com', now under other repos
   'status.keyman.com', // ooh self referential!
-  'developer.keyman.com'
+  //'developer.keyman.com' now under other repos
 ];
 
 // TODO: this could be consolidated above
 // TODO: consolidate with list in sentry-issues.ts
 export const siteSentryIds = {
   'api.keyman.com': 5983517,
-  'developer.keyman.com': 5983527,
+  // 'developer.keyman.com': 5983527,
   'downloads.keyman.com': 5983529,
   'help.keyman.com': 5983515,
   'keyman.com': 5983516,
@@ -24,7 +24,7 @@ export const siteSentryIds = {
 
 export const siteSentryNames = {
   'api-keyman-com': 'api.keyman.com',
-  'developer-keyman-com': 'developer.keyman.com',
+  // 'developer-keyman-com': 'developer.keyman.com',
   'downloads-keyman-com': 'downloads.keyman.com',
   'help-keyman-com': 'help.keyman.com',
   'keyman-com': 'keyman.com',

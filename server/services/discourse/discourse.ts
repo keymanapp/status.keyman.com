@@ -49,9 +49,9 @@ export default {
     });
   },
 
-  getQueue: async function(posts?, cursor?) {
+  getQueue: async function(topics?, cursor?) {
     cursor = cursor ?? 0;
-    posts = posts ?? [];
+    topics = topics ?? [];
 
     const url =
       `/search.json`+
@@ -64,16 +64,20 @@ export default {
     return discourseQuery.then((data) => {
       let json = JSON.parse(data.data);
       if(!json?.topics?.length) {
-        return posts;
+        return topics;
       }
 
-      let results = [].concat(posts, json.topics.filter(topic =>
+      let filteredTopics = json.topics.filter(topic =>
         !topic.has_accepted_answer &&
         !topic.tags.includes('closed') &&
         !topic.tags.includes('resolved') &&
         !topic.tags.includes('announcement') &&
         !topic.tags.includes('done')
-      ));
+      );
+
+      filteredTopics.forEach(topic => topic.last_post = json.posts.find(post => post.topic_id == topic.id));
+
+      let results = [].concat(topics, filteredTopics);
 
       // todo: pagination?
 

@@ -166,7 +166,7 @@ export class HomeComponent {
               break;
             case StatusSource.CommunitySite:
               this.status.communitySite = this.transformCommunitySiteData(data.communitySite.contributions);
-              // this.status.communitySiteQueue = data.communitySite.queue;
+              this.status.communitySiteQueue = data.communitySite.queue;
               break;
             case StatusSource.Keyman:
               this.status.keyman = data.keyman;

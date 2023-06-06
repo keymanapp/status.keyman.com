@@ -159,10 +159,12 @@
           <th class='th-keyboards'><a href="https://github.com/keymanapp/keyboards" target="_blank">⌨ keyboards</a></th>
           <th class='th-lexical-models'><a href="https://github.com/keymanapp/lexical-models" target="_blank">📔 lexical-models</a></th>
           <th class='gap'></th>
+          <th class='th-discourse'><a href="https://community.software.sil.org/c/keyman" target="_blank">🗨 community</a></th>
+          <th class='gap'></th>
           <th *ngFor="let site of sites | keyvalue"><a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id}}</a>
             <span class='nodeping'></span>
             <app-sentry [environment]="'production'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
-        </th>
+          </th>
           <th class='gap'></th>
           <th id='other-repos-cell'>
             <span id='other-repos-title'>other repos</span>
@@ -196,6 +198,10 @@
             </app-pull-request-list>
           </td>
           <td class='gap'></td>
+          <td class="community">
+            <app-community-queue [queue]="status.communitySiteQueue"></app-community-queue>
+          </td>
+          <td class='gap'></td>
           <ng-container *ngFor="let site of sites | keyvalue">
           <td class='pulls'>
             <span *ngFor="let pull of site.value.pulls">
@@ -216,6 +222,10 @@
           </td>
           <td class='issues'>
             <app-issue-list [view]="'all'" [gravityX]="'right'" [gravityY]="'top'" [repo]="'lexical-models'" [milestone]="{title:'Open issues',count:lexicalModelIssues.length}" [issues]="lexicalModelIssues"></app-issue-list>
+          </td>
+          <td class='gap'></td>
+          <td class="community">
+            <!-- <app-community-queue></app-community-queue> -->
           </td>
           <td class='gap'></td>
           <ng-container *ngFor="let site of sites | keyvalue">

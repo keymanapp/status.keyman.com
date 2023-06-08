@@ -5,6 +5,7 @@ import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
 import { escapeHtml } from '../utility/escapeHtml';
 import { VisibilityService } from '../visibility/visibility.service';
+import { communityUserIds } from '../../../../shared/users';
 
 @Component({
   selector: 'app-community-queue',
@@ -42,6 +43,26 @@ export class CommunityQueueComponent extends PopupComponent implements OnInit {
         }, '') +
       '</ul>';
     return { content: text, type: 'text/html' };
+  }
+
+  isNewTopic(topic) {
+    return topic.posts_count == 1;
+  }
+
+  hasNewPost(topic) {
+    return !communityUserIds.includes(topic.last_post?.username);
+  }
+
+  hasNewTopics() {
+    return !!this.queue?.find(this.isNewTopic);
+  }
+
+  hasNewPosts() {
+    return !!this.queue?.find(this.hasNewPost);
+  }
+
+  countOfNewPosts() {
+    return this.queue?.filter(this.hasNewPost).length;
   }
 
 }

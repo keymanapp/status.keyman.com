@@ -747,7 +747,7 @@ export class HomeComponent {
 
   getPullUltimateBase(pull): string {
     let input = pull;
-    const ultimateBaseRef = /^(master|beta|stable-\d+\.\d+|feature-.+)$/;
+    const ultimateBaseRef = /^(master|beta|stable-\d+\.\d+|feature-.+|epic\/.+)$/;
     if(pull.node.headRefName.match(ultimateBaseRef)) {
       // probably top of a feature branch
       pull.node.ultimateBaseRefName = pull.node.headRefName;

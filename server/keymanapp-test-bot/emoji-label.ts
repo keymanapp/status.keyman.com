@@ -35,6 +35,7 @@ export async function processEpicLabelsEmoji(
 
   const getEmojiFromRef = async (ref: string): Promise<string> => {
     const prs = await octokit.rest.pulls.list({owner: data.owner, repo: data.repo, head: ref});
+    console.log(`[@keymanapp-pr-bot] checked ref ${ref}, found ${prs?.data?.length}, #${prs?.data?.[0]?.number}: '${prs?.data?.[0]?.title}'`);
     if(prs?.data?.length) {
       return extractEmojiFromTitle(prs.data[0].title);
     } else {

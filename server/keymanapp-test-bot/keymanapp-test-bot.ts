@@ -220,6 +220,25 @@ module.exports = (app: Probot) => {
     return 'ok';
   });
 
+  app.on(['issues.labeled'], (context) => {
+    log('issues.labeled ENTER: '+context.id+', '+context.payload.issue.number);
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {
+      log('issues.labeled EXIT: '+context.id+' -- skipping');
+      return null;
+    }
+    processEvent(
+      context.octokit,
+      {
+        owner: context.payload.repository.owner.login,
+        repo: context.payload.repository.name,
+        issue_number: context.payload.issue.number
+      },
+      false
+    );
+    log('issues.labeled EXIT: '+context.id);
+    return 'ok';
+  });
+
   app.on(['issues.opened', 'issues.edited'], (context) => {
     log('issue ENTER: '+context.id+', '+context.payload.issue.number);
     if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {

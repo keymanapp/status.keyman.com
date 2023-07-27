@@ -18,6 +18,10 @@ const extractEmojiFromTitle = (title: string) => {
 const epicRefSubstring = (ref: string) => ref.match(/^epic\//) ? ref.substring('epic/'.length) : ref.substring('feature-'.length);
 const epicRefToLabel = (ref: string) => 'epic-'+epicRefSubstring(ref);
 
+function log(issue, s) {
+  console.log(`[@keymanapp-pr-bot] #${issue.data.number}: ${s}`);
+}
+
 export async function processEpicLabelsEmoji(
   octokit: InstanceType<typeof ProbotOctokit>,
   data: ProcessEventData,
@@ -26,7 +30,7 @@ export async function processEpicLabelsEmoji(
   pull: GetResponseTypeFromEndpointMethod<typeof octokit.rest.pulls.get>,
   /*issue_comments: GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.issues.listComments>*/) {
 
-  console.log(`[@keymanapp-pr-bot] Checking #${issue.data.number} emoji and epic label`);
+  log(issue, `Checking emoji and epic label`);
   let emoji = '';
 
   const getEmojiFromRef = async (ref: string): Promise<string> => {
@@ -60,7 +64,7 @@ export async function processEpicLabelsEmoji(
     if(isEpicRef(pull.data.head.ref)) {
       // If the PR is the start of an epic branch, then we can apply an `epic-` label but nothing else
       const epicLabelName = epicRefToLabel(pull.data.head.ref);
-      console.log(`[@keymanapp-pr-bot] Applying ${epicLabelName} label to PR #${pull.data.number}`);
+      log(issue, `Applying ${epicLabelName} label to PR`);
       await octokit.rest.issues.addLabels({...data, labels: [epicLabelName]});
       return;
     }
@@ -85,17 +89,20 @@ export async function processEpicLabelsEmoji(
     const epicLabel = issue.data.labels.find(label => typeof label != 'string' ? label.name.match(/^epic-/) : false);
     if(epicLabel && typeof epicLabel != 'string') {
       // Look for the emoji from the epic's base PR
-      console.log('checking ')
-      emoji = await getEmojiFromRef('epic/'+epicLabel);
+      log(issue, 'Searching for emoji on epic/'+epicLabel.name.substring(5));
+      emoji = await getEmojiFromRef('epic/'+epicLabel.name.substring(5));
       if(!emoji) {
-        emoji = await getEmojiFromRef('feature-'+epicLabel);
+        log(issue, 'Searching for emoji on feature-'+epicLabel.name.substring(5));
+        emoji = await getEmojiFromRef('feature-'+epicLabel.name.substring(5));
       }
     }
   }
 
   if(emoji != '') {
+    log(issue, `Found emoji ${emoji}`);
     // We'll update the title to add the emoji, if it isn't already there
     if(!issue.data.title.includes(emoji)) {
+      log(issue, `Applying emoji ${emoji}`);
       const title = issue.data.title + ' ' + emoji;
       await octokit.rest.issues.update({owner: data.owner, repo: data.repo, issue_number: issue.data.number, title});
     }

@@ -85,6 +85,11 @@ export async function processEpicLabelsEmoji(
       // Retrieve the PR emoji title
       emoji = await getEmojiFromRef(topRef);
     } else if(isStableRef(topRef)) {
+      // Apply the stable label
+      if(!issue.data.labels.find(label => typeof label != 'string' ? label.name : label == 'stable')) {
+        await octokit.rest.issues.addLabels({...data, labels: ['stable']});
+      }
+
       emoji = '🏠';
     }
   } else {

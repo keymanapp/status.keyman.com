@@ -39,6 +39,7 @@ export async function processEpicLabelsEmoji(
     if(prs?.data?.length) {
       let result = extractEmojiFromTitle(prs.data[0].title);
       log(issue, `Result of '${prs.data[0].title}', found = ${result}`);
+      return result;
     } else {
       return '';
     }

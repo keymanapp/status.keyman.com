@@ -3,7 +3,7 @@ import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMetho
 import { ProcessEventData } from "./keymanapp-test-bot";
 import emojiRegex from 'emoji-regex';
 
-const isEpicRef = (ref: string) => !!ref.match(/^epic\//);
+const isEpicRef = (ref: string) => !!ref.match(/^epic\//) || !!ref.match(/^feature-/);
 const isStableRef = (ref: string) => !!ref.match(/^stable-/);
 //const iseRef = (ref: string) => !!ref.match(/^epic\//);
 const extractEmojiFromTitle = (title: string) => {
@@ -14,6 +14,9 @@ const extractEmojiFromTitle = (title: string) => {
   }
   return "";
 }
+
+const epicRefSubstring = (ref: string) => ref.match(/^epic\//) ? ref.substring('epic/'.length) : ref.substring('feature-'.length);
+const epicRefToLabel = (ref: string) => 'epic-'+epicRefSubstring(ref);
 
 export async function processEpicLabelsEmoji(
   octokit: InstanceType<typeof ProbotOctokit>,
@@ -56,7 +59,7 @@ export async function processEpicLabelsEmoji(
 
     if(isEpicRef(pull.data.head.ref)) {
       // If the PR is the start of an epic branch, then we can apply an `epic-` label but nothing else
-      const epicLabelName = 'epic-' + pull.data.head.ref.substring(5);
+      const epicLabelName = epicRefToLabel(pull.data.head.ref);
       console.log(`[@keymanapp-pr-bot] Applying ${epicLabelName} label to PR #${pull.data.number}`);
       await octokit.rest.issues.addLabels({...data, labels: [epicLabelName]});
       return;
@@ -66,7 +69,7 @@ export async function processEpicLabelsEmoji(
     const topRef = await getPullTop(pull.data.base.ref);
     if(isEpicRef(topRef)) {
       // Apply the epic- label
-      const epicLabelName = 'epic-' + topRef.substring(5);
+      const epicLabelName = epicRefToLabel(topRef);
 
       if(!issue.data.labels.find(label => typeof label != 'string' ? label.name : label == epicLabelName)) {
         await octokit.rest.issues.addLabels({...data, labels: [epicLabelName]});
@@ -82,7 +85,11 @@ export async function processEpicLabelsEmoji(
     const epicLabel = issue.data.labels.find(label => typeof label != 'string' ? label.name.match(/^epic-/) : false);
     if(epicLabel && typeof epicLabel != 'string') {
       // Look for the emoji from the epic's base PR
-      emoji = await getEmojiFromRef('epic/'+epicLabel.name.substring(5));
+      console.log('checking ')
+      emoji = await getEmojiFromRef('epic/'+epicLabel);
+      if(!emoji) {
+        emoji = await getEmojiFromRef('feature-'+epicLabel);
+      }
     }
   }
 

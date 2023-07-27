@@ -85,9 +85,10 @@ export async function processEpicLabelsEmoji(
     const epicLabel = issue.data.labels.find(label => typeof label != 'string' ? label.name.match(/^epic-/) : false);
     if(epicLabel && typeof epicLabel != 'string') {
       // Look for the emoji from the epic's base PR
-      emoji = await getEmojiFromRef('epic/'+epicLabel.name.substring(5));
+      console.log('checking ')
+      emoji = await getEmojiFromRef('epic/'+epicLabel);
       if(!emoji) {
-        emoji = await getEmojiFromRef('feature-'+epicLabel.name.substring(5));
+        emoji = await getEmojiFromRef('feature-'+epicLabel);
       }
     }
   }

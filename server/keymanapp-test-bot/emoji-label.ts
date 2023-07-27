@@ -34,9 +34,10 @@ export async function processEpicLabelsEmoji(
   let emoji = '';
 
   const getEmojiFromRef = async (ref: string): Promise<string> => {
-    const prs = await octokit.rest.pulls.list({owner: data.owner, repo: data.repo, head: ref});
+    const prs = await octokit.rest.pulls.list({owner: data.owner, repo: data.repo, head: 'keymanapp:'+ref});
     console.log(`[@keymanapp-pr-bot] checked ref ${ref}, found ${prs?.data?.length}, #${prs?.data?.[0]?.number}: '${prs?.data?.[0]?.title}'`);
     if(prs?.data?.length) {
+      console.dir(prs.data);
       return extractEmojiFromTitle(prs.data[0].title);
     } else {
       return '';
@@ -47,7 +48,7 @@ export async function processEpicLabelsEmoji(
     if(isEpicRef(base) || isStableRef(base) || base == 'master') {
       return base;
     }
-    let prs = await octokit.rest.pulls.list({owner: data.owner, repo: data.repo, head: base});
+    let prs = await octokit.rest.pulls.list({owner: data.owner, repo: data.repo, head: 'keymanapp:'+base});
     if(prs?.data?.length) {
       return await getPullTop(prs.data[0].base.ref);
     } else {

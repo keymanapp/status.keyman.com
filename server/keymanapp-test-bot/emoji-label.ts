@@ -67,8 +67,11 @@ export async function processEpicLabelsEmoji(
     if(isEpicRef(pull.data.head.ref)) {
       // If the PR is the start of an epic branch, then we can apply an `epic-` label but nothing else
       const epicLabelName = epicRefToLabel(pull.data.head.ref);
-      log(issue, `Applying ${epicLabelName} label to PR`);
-      await octokit.rest.issues.addLabels({...data, labels: [epicLabelName]});
+      log(issue, `This is the top of an epic branch. Do we need to apply ${epicLabelName} label to PR?`);
+      if(!issue.data.labels.find(label => (typeof label != 'string' ? label.name : label) == epicLabelName)) {
+        log(issue, `Label '${epicLabelName}' is being applied.`);
+        await octokit.rest.issues.addLabels({...data, labels: [epicLabelName]});
+      }
       return;
     }
 
@@ -77,8 +80,10 @@ export async function processEpicLabelsEmoji(
     if(isEpicRef(topRef)) {
       // Apply the epic- label
       const epicLabelName = epicRefToLabel(topRef);
+      log(issue, `This is a PR based on epic ${topRef}. Does label '${epicLabelName}' need to be applied?`);
 
-      if(!issue.data.labels.find(label => typeof label != 'string' ? label.name : label == epicLabelName)) {
+      if(!issue.data.labels.find(label => (typeof label != 'string' ? label.name : label) == epicLabelName)) {
+        log(issue, `Label '${epicLabelName}' is being applied.`);
         await octokit.rest.issues.addLabels({...data, labels: [epicLabelName]});
       }
 
@@ -86,7 +91,10 @@ export async function processEpicLabelsEmoji(
       emoji = await getEmojiFromRef(topRef);
     } else if(isStableRef(topRef)) {
       // Apply the stable label
-      if(!issue.data.labels.find(label => typeof label != 'string' ? label.name : label == 'stable')) {
+      log(issue, `This is a PR based on stable branch ${topRef}. Does label 'stable' need to be applied?`);
+
+      if(!issue.data.labels.find(label => (typeof label != 'string' ? label.name : label) == 'stable')) {
+        log(issue, `Label 'stable' is being applied.`);
         await octokit.rest.issues.addLabels({...data, labels: ['stable']});
       }
 
@@ -94,7 +102,7 @@ export async function processEpicLabelsEmoji(
     }
   } else {
     // For issues, we can determine the emoji from the epic label
-    const epicLabel = issue.data.labels.find(label => typeof label != 'string' ? label.name.match(/^epic-/) : false);
+    const epicLabel = issue.data.labels.find(label => (typeof label != 'string' ? label.name.match(/^epic-/) : false));
     if(epicLabel && typeof epicLabel != 'string') {
       // Look for the emoji from the epic's base PR
       log(issue, 'Searching for emoji on epic/'+epicLabel.name.substring(5));

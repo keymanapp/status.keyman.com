@@ -10,6 +10,9 @@ import { User } from "@octokit/webhooks-types";
 import { Probot, ProbotOctokit } from "probot";
 import { statusData } from '../data/status-data';
 import { getArtifactLinksComment } from "./artifact-links-comment";
+import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
+import { processEpicLabelsEmoji } from './emoji-label';
+import { processPRMilestone } from './pull-request-milestone';
 
 const manualTestRequiredLabelName = 'user-test-required';
 const manualTestMissingLabelName = 'user-test-missing';
@@ -20,7 +23,7 @@ function log(s) {
   console.log('[@keymanapp-test-bot] '+s);
 }
 
-interface ProcessEventData {
+export interface ProcessEventData {
   owner: string;
   repo: string;
   issue_number: number;
@@ -41,6 +44,21 @@ async function processEvent(
     {...data, per_page: 100},
     response => response.data
   );
+
+  await processUserTest(octokit, data, is_pull_request, issue, pull, issue_comments);
+  await processEpicLabelsEmoji(octokit, data, is_pull_request, issue, pull);
+  if(is_pull_request) {
+    await processPRMilestone(octokit, data, issue, pull);
+  }
+}
+
+async function processUserTest(
+  octokit: InstanceType<typeof ProbotOctokit>,
+  data: ProcessEventData,
+  is_pull_request: boolean,
+  issue: GetResponseTypeFromEndpointMethod<typeof octokit.rest.issues.get>,
+  pull: GetResponseTypeFromEndpointMethod<typeof octokit.rest.pulls.get>,
+  issue_comments: GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.issues.listComments>) {
 
   const mtp = new ManualTestParser();
   let protocol = new ManualTestProtocol(data.owner, data.repo, data.issue_number, is_pull_request, issue.data.id, pull?.data?.id);

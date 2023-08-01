@@ -53,6 +53,7 @@ export async function processEpicLabelsEmoji(
     if(prs?.data?.length) {
       return await getPullTop(prs.data[0].base.ref);
     } else {
+      log(issue, `failed to get pull top for ${base}: ${prs}`);
       return null;
     }
   }
@@ -77,6 +78,10 @@ export async function processEpicLabelsEmoji(
 
 
     const topRef = await getPullTop(pull.data.base.ref);
+    if(!topRef) {
+      log(issue, 'aborting, no top ref found');
+      return;
+    }
     if(isEpicRef(topRef)) {
       // Apply the epic- label
       const epicLabelName = epicRefToLabel(topRef);

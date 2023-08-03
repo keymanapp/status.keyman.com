@@ -43,6 +43,16 @@
 
 /* Future PRs */
 
+.label.epic {
+  opacity: 1.0 !important;
+  background: #e0f4ff !important;
+  color: #2044ff !important;
+  border-color: #2044ff !important;
+}
+.label.epic a {
+  color: #2044ff !important;
+}
+
 .label.status-draft {
   opacity: 0.5;
 }
@@ -243,6 +253,29 @@
 
 .cherry-pick, .emoji {
   color: rgba(0,0,0,0.5);
+}
+
+.epic-icon {
+  display: none;
+
+}
+.epic .author {
+  display: none;
+}
+
+.epic .epic-icon {
+  display: inline-block;
+  max-width: 32px;
+  max-height: 32px;
+  width: 32px;
+  height: 32px;
+  background: #e0f4ff;
+  line-height: 16px;
+  padding-top: 6px;
+  font-size:24px;
+  text-align: center;
+  vertical-align: middle;
+  /* color: white; */
 }
 
 .stable {

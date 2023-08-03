@@ -1,6 +1,7 @@
 <span class="pull-request scope-{{scope}}">
 <span class="label {{class || pullClass()}} {{pullStatus()}} {{pullUserTesting()}}">
   <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{getAuthorAvatar(pull.pull.node.author, 32)}}"></a>
+  <span class="epic-icon">{{pullEmoji()}}</span>
   <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
     <span class="title" *ngIf="scope == 'keyboards-lexical-models'">{{pull.pull.node.title}}</span>
     <span *ngIf='pullIsForStableBranch()' class='stable'>{{pullStableBranchNumber()}}</span>

@@ -63,8 +63,9 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     const base = pr.milestone ? pr.milestone.title == 'Future' ? 'future ' : '' : '';
     //if(this.pull.pull.node.commits?.nodes[0]?.commit?.checkSuites?.nodes[0]?.status == 'COMPLETED') {
     //One day, with optional chaining (nearly here)
-    let buildState = pullBuildState(this.pull);
-    return base + buildState;
+    const buildState = pullBuildState(this.pull);
+    const epic = pr.headRefName.match(/^(epic\/|feature-)/) ? 'epic ' : '';
+    return base + epic + buildState;
   }
 
   pullUserTesting() {

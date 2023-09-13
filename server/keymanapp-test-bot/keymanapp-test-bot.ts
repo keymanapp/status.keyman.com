@@ -13,6 +13,7 @@ import { getArtifactLinksComment } from "./artifact-links-comment";
 import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
 import { processEpicLabelsEmoji } from './emoji-label';
 import { processPRMilestone } from './pull-request-milestone';
+import { updateIssueMilestoneWhenIssueClosed } from "./issue-milestone";
 
 const manualTestRequiredLabelName = 'user-test-required';
 const manualTestMissingLabelName = 'user-test-missing';
@@ -255,6 +256,26 @@ module.exports = (app: Probot) => {
       false
     );
     log('issue EXIT: '+context.id);
+    return 'ok';
+  });
+
+  app.on(['issues.closed'], async (context) => {
+    log('issues.closed ENTER: '+context.id+', '+context.payload.issue.number);
+    // Note: we _do_ want to process the issue close event even though that
+    // means the issue is closed, so we fake out our gatekeeper here
+    if(!shouldProcessEvent(context.payload.sender, "open")) {
+      log('issue.closed EXIT: '+context.id+' -- skipping');
+      return null;
+    }
+
+    // We only run this process
+    await updateIssueMilestoneWhenIssueClosed(context.octokit, {
+      owner: context.payload.repository.owner.login,
+      repo: context.payload.repository.name,
+      issue_number: context.payload.issue.number
+    }, context.payload.issue);
+
+    log('issues.closed EXIT: '+context.id);
     return 'ok';
   });
 

@@ -1,22 +1,22 @@
-import { ProbotOctokit } from "probot";
-import { GetResponseTypeFromEndpointMethod } from "@octokit/types";
+import { Probot, ProbotOctokit } from "probot";
+import { Issue } from "@octokit/webhooks-types";
 import { ProcessEventData } from "./keymanapp-test-bot";
 import { getCurrentSprint } from "../current-sprint";
 import { statusData } from '../data/status-data';
 
 /**
- * Apply the current milestone to the PR if no milestone has been set
+ * Apply the current milestone to the issue when it is closed,
+ * even if a milestone was previously set.
  */
-export async function processPRMilestone(
+export async function updateIssueMilestoneWhenIssueClosed(
   octokit: InstanceType<typeof ProbotOctokit>,
   data: ProcessEventData,
-  issue: GetResponseTypeFromEndpointMethod<typeof octokit.rest.issues.get>,
-  pull: GetResponseTypeFromEndpointMethod<typeof octokit.rest.pulls.get>,
+  issue: Issue
 ): Promise<void> {
-  console.log(`[@keymanapp-pr-bot] Checking PR #${pull.data.number} milestone`);
+  console.log(`[@keymanapp-pr-bot] Updating issue #${issue.number} milestone`);
   const currentSprint = getCurrentSprint(statusData.cache.sprints?.current?.github?.data);
-  if(currentSprint && !pull.data.milestone) {
-    console.log(`[@keymanapp-pr-bot] Applying milestone ${currentSprint.title} to PR #${pull.data.number}`);
+  if(currentSprint) {
+    console.log(`[@keymanapp-pr-bot] Applying milestone ${currentSprint.title} to issue #${issue.number}`);
     const milestones = await octokit.rest.issues.listMilestones({...data, state: "open", per_page: 100});
     const milestone = milestones.data.find(m => m.title == currentSprint.title);
     if(!milestone) {
@@ -24,7 +24,7 @@ export async function processPRMilestone(
       return;
     }
     await octokit.rest.issues.update({
-      owner: data.owner, repo: data.repo, issue_number: issue.data.number,
+      owner: data.owner, repo: data.repo, issue_number: issue.number,
       milestone: milestone.number
     });
   }

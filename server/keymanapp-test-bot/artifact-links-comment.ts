@@ -38,6 +38,7 @@ export async function getArtifactLinksComment(
   let teamCityData = statusData.cache.teamCity ?? (await teamcityService.get())[0];
 
   type LinkInfo = {
+    state: string;
     platform: string;
     download: string;
     url: string;
@@ -47,91 +48,93 @@ export async function getArtifactLinksComment(
   let links: {[key: string]: LinkInfo[]} = {};
 
   for(let context of Object.keys(s)) {
-    if(s[context].state == 'success') {
-      // artifactLinks
-      let u;
-      try {
-        u = new URL(s[context].url);
-      } catch(e) {
-        continue;
+    // artifactLinks
+    let u;
+    try {
+      u = new URL(s[context].url);
+    } catch(e) {
+      continue;
+    }
+    if (u.hostname == 'jenkins.lsdev.sil.org') {
+      for (let download of artifactLinks.jenkinsTarget.downloads) {
+        if (!links['Linux']) links['Linux'] = [];
+        links['Linux'].push({
+          state: s[context].state,
+          platform: 'Linux',
+          download: download.name,
+          url: `${s[context].url}/${download.fragment}`,
+        });
       }
-      if (u.hostname == 'jenkins.lsdev.sil.org') {
-        for (let download of artifactLinks.jenkinsTarget.downloads) {
+    } else if (context == 'Debian Packaging') {
+      // https://github.com/keymanapp/keyman/actions/runs/4294449810
+      const matches = s[context].url.match(/.+\/runs\/(\d+)/);
+      if (!matches) {
+        console.log(`Can't find workflow run in url ${s[context].url}`);
+        return '';
+      }
+      const run_id = matches[1];
+      try {
+        const run = await octokit.rest.actions.getWorkflowRun({...data, run_id});
+        const artifacts = await octokit.rest.actions.listWorkflowRunArtifacts({ ...data, run_id });
+        for (const artifact of artifacts.data.artifacts) {
+          if (artifact.name != 'keyman-binarypkgs') {
+            continue;
+          }
           if (!links['Linux']) links['Linux'] = [];
           links['Linux'].push({
+            state: s[context].state,
             platform: 'Linux',
-            download: download.name,
-            url: `${s[context].url}/${download.fragment}`,
+            download: '**Keyman for Linux**',
+            url: `https://github.com/keymanapp/keyman/suites/${run.data.check_suite_id}/artifacts/${artifact.id}`
           });
         }
-      } else if (context == 'Debian Packaging') {
-        // https://github.com/keymanapp/keyman/actions/runs/4294449810
-        const matches = s[context].url.match(/.+\/runs\/(\d+)/);
-        if (!matches) {
-          console.log(`Can't find workflow run in url ${s[context].url}`);
-          return '';
+      } catch (e) {
+        console.log(e);
+        return '';
+      }
+    } else if(u.searchParams.has('buildTypeId')) {
+      // Assume TeamCity
+      let buildTypeId = u.searchParams.get('buildTypeId');
+
+      buildData = findBuildData(s, buildTypeId, teamCityData);
+
+      if(buildData) version = findBuildVersion(buildData);
+      if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+      if(!version) {
+        console.log('[@keymanapp-test-bot] Failed to find version information for artifact links; buildData:');
+        console.log(JSON.stringify(buildData));
+        continue;
+      }
+
+      let buildId = u.searchParams.get('buildId');
+      let t = artifactLinks.teamCityTargets[buildTypeId];
+      if(t) {
+        for(let download of t.downloads) {
+          let fragment = download.fragment.replace(/\$version/g, version);
+          // Special cases - Keyman Developer, Test Keyboards
+          let platform =
+            download.name == '**Keyman Developer**' ? 'Developer' :
+            download.name == 'Test Keyboards' ? 'Keyboards' :
+            t.name;
+          if(!links[platform]) links[platform] = [];
+          links[platform].push({
+            state: s[context].state,
+            platform: platform,
+            download: download.name,
+            url: `https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment}`
+          });
         }
-        const run_id = matches[1];
-        try {
-          const run = await octokit.rest.actions.getWorkflowRun({...data, run_id});
-          const artifacts = await octokit.rest.actions.listWorkflowRunArtifacts({ ...data, run_id });
-          for (const artifact of artifacts.data.artifacts) {
-            if (artifact.name != 'keyman-binarypkgs') {
-              continue;
-            }
-            if (!links['Linux']) links['Linux'] = [];
-            links['Linux'].push({
-              platform: 'Linux',
-              download: '**Keyman for Linux**',
-              url: `https://github.com/keymanapp/keyman/suites/${run.data.check_suite_id}/artifacts/${artifact.id}`
+        if(t.platform == 'ios') {
+          // Special case note for TestFlight
+          let buildCounter = buildData?.resultingProperties?.property?.find(prop => prop.name == 'build.counter')?.value;
+          if(buildCounter) {
+            links[t.name].push({
+              state: s[context].state,
+              platform: t.name,
+              download: 'TestFlight internal PR build version',
+              url: 'https://beta.itunes.apple.com/v1/app/933676545',
+              extra: `\`${version} (0.${pull.data.number}.${buildCounter})\``
             });
-          }
-        } catch (e) {
-          console.log(e);
-          return '';
-        }
-      } else if(u.searchParams.has('buildTypeId')) {
-        // Assume TeamCity
-        let buildTypeId = u.searchParams.get('buildTypeId');
-
-        buildData = findBuildData(s, buildTypeId, teamCityData);
-
-        if(buildData) version = findBuildVersion(buildData);
-        if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
-        if(!version) {
-          console.log('[@keymanapp-test-bot] Failed to find version information for artifact links; buildData:');
-          console.log(JSON.stringify(buildData));
-          continue;
-        }
-
-        let buildId = u.searchParams.get('buildId');
-        let t = artifactLinks.teamCityTargets[buildTypeId];
-        if(t) {
-          for(let download of t.downloads) {
-            let fragment = download.fragment.replace(/\$version/g, version);
-            // Special cases - Keyman Developer, Test Keyboards
-            let platform =
-              download.name == '**Keyman Developer**' ? 'Developer' :
-              download.name == 'Test Keyboards' ? 'Keyboards' :
-              t.name;
-            if(!links[platform]) links[platform] = [];
-            links[platform].push({
-              platform: platform,
-              download: download.name,
-              url: `https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment}`
-            });
-          }
-          if(t.platform == 'ios') {
-            // Special case note for TestFlight
-            let buildCounter = buildData?.resultingProperties?.property?.find(prop => prop.name == 'build.counter')?.value;
-            if(buildCounter) {
-              links[t.name].push({
-                platform: t.name,
-                download: 'TestFlight internal PR build version',
-                url: 'https://beta.itunes.apple.com/v1/app/933676545',
-                extra: `\`${version} (0.${pull.data.number}.${buildCounter})\``
-              });
-            }
           }
         }
       }
@@ -148,8 +151,12 @@ export async function getArtifactLinksComment(
     let items = links[platform];
     items.sort((a:LinkInfo,b:LinkInfo) => a.download.localeCompare(b.download));
     r += `* **${platform}**\n` +
-      items.map<string>(link => `  * [${link.download}](${link.url})` + (link.extra ? ` - ${link.extra}` : '')).
-          join('\n') + '\n';
+      items.map<string>(link =>
+        (link.state == 'success'
+          ? `  * [${link.download}](${link.url})`
+          : `  * ${link.download} - build ${link.state}`)
+        + (link.extra ? ` - ${link.extra}` : '')
+      ).join('\n') + '\n';
   });
   return r;
 }

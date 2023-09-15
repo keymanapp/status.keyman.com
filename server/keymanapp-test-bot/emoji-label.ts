@@ -3,6 +3,10 @@ import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMetho
 import { ProcessEventData } from "./keymanapp-test-bot";
 import emojiRegex from 'emoji-regex';
 
+const titleRegex=/^(auto|bug|chore|docs|feat|refactor|spec|test)(?:\([a-z, ]+\))?:/;
+const validTypeLabels = ['auto','bug','bug','chore','docs','feat','refactor','spec','test'];
+const validScopeLabels = ['android/','common/','core/','developer/','ios/','linux/','mac/','web/','windows/'];
+
 const isEpicRef = (ref: string) => !!ref.match(/^epic\//) || !!ref.match(/^feature-/);
 const isStableRef = (ref: string) => !!ref.match(/^stable-/);
 //const iseRef = (ref: string) => !!ref.match(/^epic\//);
@@ -30,7 +34,7 @@ export async function processEpicLabelsEmoji(
   pull: GetResponseTypeFromEndpointMethod<typeof octokit.rest.pulls.get>,
   /*issue_comments: GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.issues.listComments>*/) {
 
-  log(issue, `Checking emoji and epic label`);
+  log(issue, `Checking emoji and epic label, and issue title`);
   let emoji = '';
 
   const getEmojiFromRef = async (ref: string): Promise<string> => {
@@ -117,6 +121,8 @@ export async function processEpicLabelsEmoji(
         emoji = await getEmojiFromRef('feature-'+epicLabel.name.substring(5));
       }
     }
+
+    await applyIssueLabels(octokit, data, issue);
   }
 
   if(emoji != '') {
@@ -127,5 +133,55 @@ export async function processEpicLabelsEmoji(
       const title = issue.data.title + ' ' + emoji;
       await octokit.rest.issues.update({owner: data.owner, repo: data.repo, issue_number: issue.data.number, title});
     }
+  }
+}
+
+// Attempt to automatically add labels corresponding to issue title
+//
+// type(scope[,scope...]): title [emoji]
+// type: auto|bug|chore|docs|feat|refactor|spec|test
+// scope: android|common|core|developer|ios|linux|mac|web|windows
+//
+async function applyIssueLabels(
+  octokit: InstanceType<typeof ProbotOctokit>,
+  data: ProcessEventData,
+  issue: GetResponseTypeFromEndpointMethod<typeof octokit.rest.issues.get>
+) {
+  const matches = titleRegex.exec(issue.data.title);
+  if(!matches) {
+    // This is not a title format that we recognise for automatic labelling
+    return;
+  }
+  const existingLabels = issue.data.labels
+    .map(label => typeof label == 'string' ? label : label.name);
+
+  const labelsToAdd =
+    // add any scopes
+    (matches[2] ?? '')
+    .split(',')
+    .map(label => label.trim() + '/')
+    .filter(label => validScopeLabels.includes(label))
+    // also add title
+    .concat([matches[1]]);
+
+  // We'll remove our known top-level scopes that don't match, and 'type'
+  // labels that are not in the title. Sub-scopes will remain, as we don't
+  // generally put those into the title
+  const labelsToRemove = existingLabels
+    .filter(name =>
+      (validScopeLabels.includes(name) || validTypeLabels.includes(name))
+      // Obviously don't remove labels that we are trying to add
+      && !labelsToAdd.includes(name));
+
+  // Remove the old labels
+  for(let name of labelsToRemove) {
+    await octokit.rest.issues.removeLabel({...data, name});
+  }
+
+  // Don't add labels that are already present
+  const newLabelsToAdd = labelsToAdd.filter(name => !existingLabels.includes(name));
+  if(newLabelsToAdd.length) {
+    // Then add the actually new labels
+    await octokit.rest.issues.addLabels({...data, labels: newLabelsToAdd});
   }
 }

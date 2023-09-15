@@ -3,7 +3,7 @@ import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMetho
 import { ProcessEventData } from "./keymanapp-test-bot";
 import emojiRegex from 'emoji-regex';
 
-const titleRegex=/^(auto|bug|chore|docs|feat|refactor|spec|test)(?:\([a-z, ]+\))?:/;
+const titleRegex=/^(auto|bug|chore|docs|feat|refactor|spec|test)(?:\(([a-z, ]+)\))?:/;
 const validTypeLabels = ['auto','bug','bug','chore','docs','feat','refactor','spec','test'];
 const validScopeLabels = ['android/','common/','core/','developer/','ios/','linux/','mac/','web/','windows/'];
 
@@ -159,8 +159,8 @@ async function applyIssueLabels(
     // add any scopes
     (matches[2] ?? '')
     .split(',')
-    .map(label => label.trim() + '/')
-    .filter(label => validScopeLabels.includes(label))
+    .map(name => name.trim().toLowerCase() + '/')
+    .filter(name => validScopeLabels.includes(name))
     // also add title
     .concat([matches[1]]);
 
@@ -174,6 +174,7 @@ async function applyIssueLabels(
       && !labelsToAdd.includes(name));
 
   // Remove the old labels
+  log(issue, `Removing labels ${labelsToRemove.join(',')}`);
   for(let name of labelsToRemove) {
     await octokit.rest.issues.removeLabel({...data, name});
   }
@@ -182,6 +183,7 @@ async function applyIssueLabels(
   const newLabelsToAdd = labelsToAdd.filter(name => !existingLabels.includes(name));
   if(newLabelsToAdd.length) {
     // Then add the actually new labels
+    log(issue, `Adding labels ${newLabelsToAdd.join(',')}`);
     await octokit.rest.issues.addLabels({...data, labels: newLabelsToAdd});
   }
 }

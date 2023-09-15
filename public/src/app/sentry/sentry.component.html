@@ -2,8 +2,8 @@
 
   <span class="label">
     <!--<img class="avatar-22" src="assets/{{platform}}.png" *ngIf="!site && mode != 'simple'">-->
-    <span class="issue-total {{env.issues.length == 0 ? 'normal' : 'error'}}"><a href="https://sentry.io/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank">{{env.issues.length}}</a></span>
-    <span class="event-total {{env.issues.length == 0 ? 'normal' : 'error'}}" *ngIf="mode != 'simple'"><a href="https://sentry.io/organizations/keyman/issues/?project={{projectIndex()}}" target="_blank">{{env.totalEvents}}</a></span>
+    <span class="issue-total {{env.issues.length == 0 ? 'normal' : 'error'}}"><a href="https://keyman.sentry.io/issues/?project={{projectIndex()}}" target="_blank">{{env.issues.length}}</a></span>
+    <span class="event-total {{env.issues.length == 0 ? 'normal' : 'error'}}" *ngIf="mode != 'simple'"><a href="https://keyman.sentry.io/issues/?project={{projectIndex()}}" target="_blank">{{env.totalEvents}}</a></span>
   </span>
 
   <div class="sentry-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>

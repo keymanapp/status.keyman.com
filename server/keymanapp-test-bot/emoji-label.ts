@@ -156,8 +156,8 @@ async function applyIssueLabels(
     .map(label => typeof label == 'string' ? label : label.name);
 
   const labelsToAdd =
-    // add any scopes
-    (matches[2] ?? '')
+    // add any scopes -- if no scope defined, the issue goes under 'common'
+    (matches[2] || 'common')
     .split(',')
     .map(name => name.trim().toLowerCase() + '/')
     .filter(name => validScopeLabels.includes(name))

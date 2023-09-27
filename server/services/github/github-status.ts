@@ -194,7 +194,7 @@ const queryStrings = {
 
    organization: `
     organization(login: "keymanapp") {
-      repositories(first: 30) {
+      repositories(first: 50) {
         nodes {
           name
           pullRequests(last: 50, states: OPEN) {

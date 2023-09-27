@@ -6,6 +6,7 @@ export const sites = [
   'keymanweb.com',
   //'s.keyman.com', now under other repos
   'status.keyman.com', // ooh self referential!
+  'shared-sites',
   //'developer.keyman.com' now under other repos
 ];
 

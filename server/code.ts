@@ -250,6 +250,7 @@ function respondPolledEndpoints() {
   for(let s of STATUS_SOURCES) {
     statusData.refreshEndpointData(s).then(hasChanged => sendWsAlert(hasChanged, s));
   }
+  doDiscourseDataChange();
 }
 
 function sendInitialRefreshMessages(socket) {

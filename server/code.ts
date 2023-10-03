@@ -210,15 +210,15 @@ function respondGitHubContributionsDataChange() {
 }
 
 function doDiscourseDataChange(user?) {
-  if(!statusData.cache.communitySite) {
+  //if(!statusData.cache.communitySite) {
     return statusData.refreshCommunitySiteData('current')
       .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
       .catch(error => reportError(error));
-  } else {
-    statusData.refreshCommunitySiteData('current', user)
-    .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
-    .catch(error => reportError(error));
-}
+  /*} else {
+    return statusData.refreshCommunitySiteData('current', user)
+      .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
+      .catch(error => reportError(error));
+  }*/
 }
 
 function respondTeamcityDataChange() {

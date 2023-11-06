@@ -8,6 +8,7 @@
     <!--<span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>-->
     <span class='emoji'>{{pullEmoji()}}</span>{{pull.pull.node.number}}
   </a>
+  <span class="file-size-failure-icon" title="{{pull.pull.node.fileSizeFailureText}}">💥</span>
   <span class='user-testing'> </span>
 </span>
 <div *ngIf="scope != 'keyboards-lexical-models'" class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
@@ -29,7 +30,11 @@
     <table class="table table-sm table-borderless status-table"><tbody>
       <tr class="status {{pullClass()}}">
         <th class="status-title">Build</th>
-        <td>{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</td>
+        <td>{{pullStateSummary()}}</td>
+      </tr>
+      <tr class="status" *ngIf="pull.pull.node.fileSizeFailureText">
+        <th class="status-title">File Size</th>
+        <td>{{pull.pull.node.fileSizeFailureText}}</td>
       </tr>
       <tr class="review-status {{pullStatus()}}">
         <th class="review-status-title">Code review</th>

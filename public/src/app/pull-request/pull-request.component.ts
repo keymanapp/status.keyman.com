@@ -4,7 +4,7 @@ import { labelColor } from '../utility/labelColor';
 import emojiRegex from 'emoji-regex';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
-import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
+import { pullStatus, pullUserTesting, pullBuildState, pullBuildStateEx } from '../utility/pullStatus';
 import { VisibilityService } from '../visibility/visibility.service';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
 
@@ -63,9 +63,48 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     const base = pr.milestone ? pr.milestone.title == 'Future' ? 'future ' : '' : '';
     //if(this.pull.pull.node.commits?.nodes[0]?.commit?.checkSuites?.nodes[0]?.status == 'COMPLETED') {
     //One day, with optional chaining (nearly here)
-    const buildState = pullBuildState(this.pull);
+    const buildState = pullBuildStateEx(this.pull);// pullBuildState(this.pull);
     const epic = pr.headRefName.match(/^(epic\/|feature-)/) ? 'epic ' : '';
     return base + epic + buildState;
+  }
+
+  pullStateSummary() {
+    const pr = this.pull.pull.node;
+    let check = null;
+    let queued = 0, passed = 0, failed = 0;
+    for(let c of pr.checkSummary) {
+      if(c.context == 'check/web/file-size' || c.context == 'user_testing') {
+        continue;
+      }
+      switch(c.state) {
+        case 'SUCCESS':
+          passed++;
+          if(!check) {
+            check = c;
+          }
+          break;
+        case 'PENDING':
+        case 'EXPECTED':
+          queued++;
+          if(!check || check.state == 'SUCCESS') {
+            check = c;
+          }
+          break;
+        case 'ERROR':
+        case 'FAILURE':
+          failed++;
+          if(!check || check.state != 'ERROR' || check.state != 'FAILURE') {
+            check = c;
+          }
+          break;
+      }
+    }
+    let result = (check ? (check.context + ': ' + check.description) : 'Unknown build state') + ' —';
+    if(queued > 0) result += ` ${queued} queued`;
+    if(failed > 0) result += `${queued?',':''} ${failed} failed`;
+    if(passed > 0) result += `${queued+failed?',':''} ${passed} passed`;
+    result += ` of ${passed+queued+failed} checks`;
+    return result;
   }
 
   pullUserTesting() {

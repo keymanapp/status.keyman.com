@@ -6,7 +6,7 @@ import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { sites, siteSentryNames } from '../sites';
 import { DataSocket } from '../datasocket/datasocket.service';
 import emojiRegex from 'emoji-regex';
-import { pullStatus, pullUserTesting, pullBuildState } from '../utility/pullStatus';
+import { pullStatus, pullUserTesting, pullBuildState, pullChecks } from '../utility/pullStatus';
 import { IssueView } from '../issue-list/issue-list.component';
 import { EMPTY_STATUS, Status } from '../status/status.interface';
 import { getAvatarUrl } from '../../../../shared/users';
@@ -240,6 +240,7 @@ export class HomeComponent {
       //console.log(this.status.github.data.repository.pullRequests.edges);
       for(let pull of this.status.github.data.repository.pullRequests.edges) {
         //console.log(pull);
+        pull.node.checkSummary = pullChecks(pull);
         let labels = pull.node.labels.edges;
         let status = pull.node.commits.edges[0].node.commit.status;
         let contexts = status ? status.contexts : null;

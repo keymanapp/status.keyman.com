@@ -218,6 +218,16 @@
   content:'😶 ';
 }
 
+.file-size-failure-icon {
+  display: none;
+}
+
+.file-size-failure .file-size-failure-icon {
+  display: inline;
+  font-size: 0.9em;
+  cursor: default;
+}
+
 .scope-keyboards-lexical-models .label {
   width: 98%;
   white-space: nowrap;

@@ -72,6 +72,9 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     const pr = this.pull.pull.node;
     let check = null;
     let queued = 0, passed = 0, failed = 0;
+
+    if(!pr.checkSummary) return 'missing';
+
     for(let c of pr.checkSummary) {
       if(c.context == 'check/web/file-size' || c.context == 'user_testing') {
         continue;

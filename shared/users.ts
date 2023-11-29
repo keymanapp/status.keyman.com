@@ -8,7 +8,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string}} = {
   "rc-swag": { community: "ross", avatar: 'bg+RC.png'},
   "SabineSIL": { community: "", avatar: 'bg+SAB.png'},
   "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png'},
-  "srl295": { community: "srl295", avatar: 'bg+SRL.png'},
+  "srl295": { community: "", avatar: 'bg+SRL.png'},
   "bharanidharanj": { community: "", avatar: 'bg+BJ.png'},
   "LornaSIL": { community: "Lorna" },
   "DavidLRowe": { community: "drowe" },

@@ -1,0 +1,159 @@
+.issue-list {
+  /* width: max-content; */
+  display: flex;
+  flex-direction: column;
+}
+
+ul {
+  margin: 0;
+  padding: 0 3px 3px 3px;
+}
+
+li {
+  margin: 2px 0 2px 0;
+  list-style: none;
+  font-size: 9pt;
+  overflow: hidden;
+  /* max-height: 26px; */
+}
+
+.repo.repo-first {
+  border-top: none;
+  margin: 0 4px 0;
+}
+
+.repo {
+  border-top: solid 1px black;
+  margin: 6px 4px 0;
+  font-weight: bold;
+}
+
+.label {
+  display: block;
+  text-indent: 0;
+  margin-left: 4px;
+}
+
+.issue {
+  display: inline-block;
+  height: 22px;
+  padding: 4px 8px 0px 4px;
+  margin-top: 2px;
+}
+
+.issue:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
+}
+
+.label a,
+.label a:visited {
+  color: black;
+}
+
+.issue-count {
+  background: darkred;
+  border-radius: 16px;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+}
+
+.issue-label {
+  margin-left: 3px;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-weight: 500;
+  word-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  display: inline-block;
+}
+
+.author {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-top: 4px;
+  margin-right: 4px;
+}
+
+.related-pr {
+  padding: 0 4px;
+  margin: 0 2px;
+}
+
+.related-pr a {
+  white-space: nowrap;
+}
+
+.related-pr:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
+}
+
+.summary {
+  background: #e0e0e8;
+  padding: 4px;
+  font-size: 8pt;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.summary .summary-label {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.gravity-left .summary > span {
+  float: right;
+  margin: 0 2px;
+}
+
+.gravity-left .summary > .clear {
+  float: none;
+  clear: right;
+}
+
+.label a.will-close {
+  color: green;
+  font-weight: bold;
+}
+
+.navbar-sub-item-block {
+  border-bottom: solid 1px #404044;
+  border-left: solid 1px #404044;
+  border-right: solid 1px #404044;
+}
+
+.navbar-sub-item-block {
+  display: block;
+  position: fixed;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  /* padding: 12px 16px; */
+  z-index: 1;
+  left: 60px;
+  right: 60px;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
+  max-height: 80%;
+  overflow-y: auto;
+  visibility: visible;
+  opacity: 1;
+}

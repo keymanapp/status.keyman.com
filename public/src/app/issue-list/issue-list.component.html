@@ -26,7 +26,15 @@
       <ul *ngIf="pinned || (isVisible | async)">
         <li *ngFor="let issue of issues; trackBy: trackByIssue">
             <span class="label">
-            <a class="author" title="{{issue.author.login}}" target="_blank" href="{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>
+            <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>
+            <span class="assignee" title="Unassigned" *ngIf="!issue.assignees?.nodes?.length">
+              <img class="avatar-assignee-22" src="assets/unassigned.png">
+            </span>
+            <ng-template [ngIf]="issue?.assignees?.nodes">
+              <a *ngFor="let assignee of issue.assignees.nodes" class="assignee" title="{{assignee.login}}" target="_blank" href="{{assignee.url}}" >
+                <img class="avatar-assignee-22" src="{{getAuthorAvatar(assignee, 22)}}">
+              </a>
+            </ng-template>
             <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
             <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">
               <a href="{{pr.subject.url}}" class="{{pr.willCloseTarget ? 'will-close' : ''}}" target="_blank">{{pr.subject.url && pr.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{pr.subject.number}}</a>

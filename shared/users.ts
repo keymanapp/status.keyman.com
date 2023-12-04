@@ -1,18 +1,19 @@
 // github ids / community ids / avatars currently unused
 export const userIds: {[index:string]: {community:string, avatar?: string}} = {
   "darcywong00": { community: "darcy", avatar: 'bg+DW.png'},
-  "ermshiperete": { community: "EberhardBeilharz"},
+  "ermshiperete": { community: "EberhardBeilharz" },
   "jahorton": { community: "joshua_horton", avatar: 'bg+JH.png'},
   "MakaraSok": { community: "makara", avatar: 'bg+MS.png'},
   "mcdurdin": { community: "Marc", avatar: 'bg+MD.png'},
   "rc-swag": { community: "ross", avatar: 'bg+RC.png'},
   "SabineSIL": { community: "", avatar: 'bg+SAB.png'},
   "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png'},
-  "srl295": { community: "", avatar: 'bg+SRL.png'},
+  "srl295": { community: "srl295", avatar: 'bg+SRL.png'},
   "bharanidharanj": { community: "", avatar: 'bg+BJ.png'},
   "LornaSIL": { community: "Lorna" },
   "DavidLRowe": { community: "drowe" },
-
+  "Nnyny": { community: "Nguonnyny_Tan" },
+  "Meng-Heng": { community: "mengheng" },
 };
 
 function getCommunityUserIds() {

@@ -31,7 +31,7 @@ export default {
     after = JSON.stringify(after);
     return `
     {
-      search(first: 100, after:${after} type: ISSUE, query:"org:keymanapp is:open is:issue") {
+      search(first: 100, after:${after} type: ISSUE, query:"org:keymanapp is:open is:issue -repo:keymanapp/legacy-issues") {
         issueCount
         pageInfo {
           hasNextPage
@@ -41,6 +41,14 @@ export default {
           ... on Issue {
             repository {
               name
+            }
+
+            assignees(first:10) {
+              nodes {
+                login
+                avatarUrl
+                url
+              }
             }
 
             author {

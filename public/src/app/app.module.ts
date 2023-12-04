@@ -29,6 +29,7 @@ import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
 import { ContributionsComponent } from './contributions/contributions.component';
 import { ContributionsHomeComponent } from './contributions-home/contributions-home.component';
 import { CommunityQueueComponent } from './community-queue/community-queue.component';
+import { AssignedIssuesComponent } from './assigned-issues/assigned-issues.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { CommunityQueueComponent } from './community-queue/community-queue.compo
     ContributionsComponent,
     ContributionsHomeComponent,
     CommunityQueueComponent,
+    AssignedIssuesComponent,
   ],
   imports: [
     BrowserModule,

@@ -130,7 +130,7 @@ li {
 .issue {
   display: inline-block;
   height: 22px;
-  padding: 0px 8px 0px 4px;
+  padding: 4px 8px 0px 4px;
   margin-top: 2px;
 }
 
@@ -155,7 +155,8 @@ li {
   display: inline-block;
 }
 
-.author {
+.author,
+.assignee {
   display: inline-block;
   vertical-align: bottom;
   margin-top: 4px;

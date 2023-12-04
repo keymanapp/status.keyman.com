@@ -80,7 +80,7 @@ export class HomeComponent {
   issueView: IssueView = IssueView.Current;
 
   // Pull Request View
-  pullRequestView: PullRequestView = PullRequestView.Platform;
+  pullRequestView: PullRequestView = PullRequestView.Status;
   pullsByStatus = {
     draft: [],
     waitingReview: [],

@@ -1,0 +1,29 @@
+<span *ngIf="user.login != ''">Assigned Issues <span class="issue-count">{{issues().length}}</span></span>
+<span *ngIf="user.login == ''">Unassigned Issues <span class="issue-count">{{issues().length}}</span></span>
+<span class="navbar-sub-item-block" *ngIf="selectedView == 0">
+
+  <div class="issue-list">
+    <div class="summary">
+      <span><app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard></span>
+      <span>
+        <span *ngIf="user.login != ''" class="summary-label">Issues assigned to <a href="https://github.com/{{user.login}}" target="_blank">@{{user.login}}</a> in {{status.currentSprint?.title}}</span>
+        <span *ngIf="user.login == ''" class="summary-label">Unassigned issues in {{status.currentSprint?.title}}</span>
+      </span>
+      <div class='clear'></div>
+    </div>
+    <ul >
+      <li *ngFor="let issue of issues()">
+          <div *ngIf="issueIsDifferentRepo(issue)" class="repo {{issueIsFirst(issue) ? 'repo-first' : ''}}">{{issue.repository.name}}</div>
+          <span class="label">
+          <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>
+          <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
+          <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">
+            <a href="{{pr.subject.url}}" class="{{pr.willCloseTarget ? 'will-close' : ''}}" target="_blank">{{pr.subject.url && pr.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{pr.subject.number}}</a>
+          </span>
+          <span *ngFor="let label of issue.labels?.nodes"><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
+        </span>
+      </li>
+    </ul>
+  </div>
+
+</span>

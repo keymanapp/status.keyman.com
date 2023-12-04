@@ -2,10 +2,11 @@ import { ProbotOctokit } from "probot";
 import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
 import { ProcessEventData } from "./keymanapp-test-bot";
 import emojiRegex from 'emoji-regex';
+import { issueLabelTypes, issueLabelScopes, issueValidTitleRegex } from "../../shared/issue-labels";
 
-const titleRegex=/^(auto|bug|chore|docs|feat|refactor|spec|test)(?:\(([a-z, ]+)\))?:/;
-const validTypeLabels = ['auto','bug','bug','chore','docs','feat','refactor','spec','test'];
-const validScopeLabels = ['android/','common/','core/','developer/','ios/','linux/','mac/','web/','windows/'];
+const titleRegex = issueValidTitleRegex;
+const validTypeLabels = issueLabelTypes;
+const validScopeLabels = issueLabelScopes;
 
 const isEpicRef = (ref: string) => !!ref.match(/^epic\//) || !!ref.match(/^feature-/);
 const isStableRef = (ref: string) => !!ref.match(/^stable-/);

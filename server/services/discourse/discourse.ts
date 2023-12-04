@@ -35,13 +35,12 @@ export default {
     let discourseQuery = httpget(host, url);
 
     return discourseQuery.then((data) => {
-      // console.log(data.data);
       let json = JSON.parse(data.data);
       if(json?.user_actions) {
         const actions = json.user_actions.filter(a => new Date(a.created_at) >= startDate);
         const results = [].concat(posts, actions);
-        if(actions.length == json.user_actions.length) {
-          return this.getUser(startDate, user, posts, cursor + this.PAGE_SIZE);
+        if(actions.length == json.user_actions.length && actions.length > 0) {
+          return this.getUser(startDate, user, results, cursor + this.PAGE_SIZE);
         }
         return results;
       }

@@ -2,6 +2,7 @@
 import httppost from '../../util/httppost';
 import { github_token } from '../../identity/github';
 import { getCurrentSprint } from '../../current-sprint';
+import { issueLabelScopes } from '../../../shared/issue-labels';
 
 const Sentry = require("@sentry/node");
 
@@ -30,7 +31,7 @@ const queryStrings = {
   `,
 
   unlabeledIssues: `
-    unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open -label:windows/ -label:web/ -label:developer/ -label:mac/ -label:ios/ -label:android/ -label:linux/ -label:common/ -label:core/") {
+    unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open ${issueLabelScopes.map(scope=>`-label:${scope}`).join(' ')}") {
       issueCount
       nodes {
         ... on Issue {
@@ -63,7 +64,7 @@ const queryStrings = {
       issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
         totalCount
       }
-      issuesByLabelAndMilestone: labels(first: 100, query: "windows/ web/ developer/ mac/ ios/ android/ linux/ common/ core/") {
+      issuesByLabelAndMilestone: labels(first: 100, query: "${issueLabelScopes.join(' ')}") {
         edges {
           node {
             name

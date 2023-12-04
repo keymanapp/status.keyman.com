@@ -83,6 +83,7 @@ export class AgentDetailComponent extends PopupComponent implements OnInit {
     if(name.match(/^ba-win/)) return 'windows';
     if(name.match(/^ba-mac/)) return 'mac';
     if(name.match(/^ba-bionic/)) return 'linux';
+    if(name.match(/^ba-jammy/)) return 'linux';
     return 'common'; // unknown agent
   }
 

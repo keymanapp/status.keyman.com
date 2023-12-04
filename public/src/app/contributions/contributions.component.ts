@@ -14,37 +14,72 @@ export class ContributionsComponent implements OnInit {
   @Input() status: any;
   @Input() sprintDays: any;
 
+  selectedView = 0;
   selectedContribution = null;
   hoveredContribution = null;
+
+  nullUser = { login:'', avatarUrl: null, contributions: {
+    issues: { nodes: [] },
+    pullRequests: { nodes: [] },
+    reviews: { nodes: [] },
+    tests: { nodes: [] },
+  } };
 
   constructor() { }
 
   stringify(o: any) {
     return JSON.stringify(o);
   }
+
+  users() {
+    let users = [];
+    if(this.status?.contributions?.data.repository.contributions.nodes) {
+      users = [].concat([this.nullUser],this.status?.contributions?.data.repository.contributions.nodes);
+    }
+    return users;
+  }
+
   ngOnInit(): void {
   }
 
   shouldDisplay(user) {
-    return user.contributions.tests.nodes.length +
-      user.contributions.pullRequests.nodes.length +
-      user.contributions.reviews.nodes.length +
-      user.contributions.issues.nodes.length +
-      (this.status?.communitySite?.[user.login]?.length ?? 0) > 0;
+    if(user.login == '') {
+      // unassigned
+      return this.status?.issues?.find(issue =>
+        issue.milestone?.title == this.status.currentSprint?.title &&
+        issue.assignees.nodes.length == 0
+      ) !== undefined;
+    }
+    return this.contributionCount(user) > 0 ||
+      this.status?.issues?.find(issue =>
+        issue.milestone?.title == this.status.currentSprint?.title &&
+        issue.assignees.nodes.find(assignee => assignee.login == user.login) !== undefined) !== undefined;
   }
 
   getUserAvatar(user, size) {
     return getUserAvatarUrl(user, size);
   }
 
+  contributionCount(user) {
+    return user.contributions.tests.nodes.length +
+      user.contributions.pullRequests.nodes.length +
+      user.contributions.reviews.nodes.length +
+      user.contributions.issues.nodes.length +
+      (this.status?.communitySite?.[user.login]?.length ?? 0);
+  }
 
   selectUser(login) {
     this.selectedContribution = login == this.selectedContribution ? null : login;
   }
 
+  hoverSubItem(event,login,item) {
+    this.selectedView = item;
+  }
+
   hoverUser(event,login) {
     if(event.type == 'mouseenter' || event.currentTarget.parentElement.contains(event.relatedTarget)) {
       this.hoveredContribution = login;
+      if(login == '') this.selectedView = 0;
     } else {
       this.hoveredContribution = null;
     }

@@ -14,6 +14,9 @@ export class ContributionsComponent implements OnInit {
   @Input() status: any;
   @Input() sprintDays: any;
 
+  @Input() pullsByBase: any;
+  @Input() sites: any;
+
   selectedView = 0;
   selectedContribution = null;
   hoveredContribution = null;

@@ -5,6 +5,7 @@ import { issueLabelScopes } from "../../../../shared/issue-labels";
 
 import { IssueClipboard } from '../utility/issue-clipboard';
 import { labelColor } from '../utility/labelColor';
+import { PullRequestClipboard } from '../utility/pull-request-clipboard';
 
 @Component({
   selector: 'app-assigned-issues',
@@ -15,6 +16,9 @@ export class AssignedIssuesComponent implements OnInit, OnChanges {
   @Input() status: any;
   @Input() user: any;
   @Input() selectedView: any;
+
+  @Input() pullsByBase: any;
+  @Input() sites: any;
 
   _issues = null;
 
@@ -32,7 +36,24 @@ export class AssignedIssuesComponent implements OnInit, OnChanges {
   }
 
   getIssueListText() {
-    return IssueClipboard.getIssueListText(this.issues());
+    if(!this.status.currentSprint) return { content: '', type: 'text/html' };
+
+    const release = this.status.currentSprint.title.substring(0,4);
+    const sprintNumber = Number.parseInt(this.status.currentSprint.title.substring(4));
+    // If we are collecting triaged issues near the end of the current sprint then we
+    // want next sprint's issues too
+    const offset = Date.now() >= new Date(this.status.currentSprint.start).valueOf() + 8*24*60*60*1000 ? 1 : 0;
+    const issues = this.status.issues.filter(issue =>
+      (
+        !issue.milestone || // for keyboards repo or untriaged issues
+        (issue.milestone.title.startsWith(release) && Number.parseInt(issue.milestone.title.substring(4)) <= sprintNumber+offset) // matches sprint milestones
+      ) &&
+      issue.assignees.nodes.find(assignee => assignee.login == this.user.login) !== undefined
+    ).sort(this.issueSort);
+    const issuesList = IssueClipboard.getIssueListText(issues, true).content;
+    const prList = PullRequestClipboard.getPullRequestListForAuthor(this.pullsByBase, this.sites, this.user.login).content;
+    const text = `<ul><li><b>Current Pull Requests</b>\n${prList}</li><li><b>Assigned Issues</b>\n${issuesList}</li></ul>`;
+    return { content: text, type: 'text/html' };
   }
 
   issueSort(a,b) {

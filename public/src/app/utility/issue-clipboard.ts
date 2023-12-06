@@ -8,7 +8,7 @@ export class IssueClipboard {
       issue.timelineItems.nodes.find(pr => pr.subject.url && pr.subject.url.includes('/pull/') && pr.willCloseTarget) != null : false;
   }
 
-  public static getIssueListText(issues) {
+  public static getIssueListText(issues, showMilestone?) {
     const text =
       '<ul>' +
       issues.reduce(
@@ -20,7 +20,9 @@ export class IssueClipboard {
                 (current, pr) => `${current} <a href='${pr.subject.url}'>#${pr.subject.number}</a>`, ' 🔗 '
               )
             : '';
-          return text + `<li>${check}${escapeHtml(node.title)} (<a href='${node.url}'>${repo}#${node.number}</a>)${prs}</li>\n`
+          return text +
+            `<li>${check}${escapeHtml(node.title)} ${showMilestone ? ('<b>'+(node.milestone?.title ?? '')+'</b> ') : ''}`+
+            `(<a href='${node.url}'>${repo}#${node.number}</a>)${prs}</li>\n`
         }, '') +
       '</ul>';
     return { content: text, type: 'text/html' };

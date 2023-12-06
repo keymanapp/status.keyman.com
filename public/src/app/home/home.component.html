@@ -17,7 +17,7 @@
                 <app-pull-request [class]="'failure'" [pull]="pull"></app-pull-request>
               </span>
             </span>
-            <app-contributions *ngIf="showContributions" [sprintDays]="sprintDays" [status]="status"></app-contributions>
+            <app-contributions *ngIf="showContributions" [pullsByBase]="pullsByBase" [sites]="sites" [sprintDays]="sprintDays" [status]="status"></app-contributions>
 
             <span class="navbar-right"></span>
 

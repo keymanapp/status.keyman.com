@@ -11,6 +11,8 @@ import { IssueView } from '../issue-list/issue-list.component';
 import { EMPTY_STATUS, Status } from '../status/status.interface';
 import { getAvatarUrl } from '../../../../shared/users';
 import { IssueClipboard } from '../utility/issue-clipboard';
+import { pullEmoji } from '../utility/pullEmoji';
+import { PullRequestClipboard } from '../utility/pull-request-clipboard';
 
 interface OtherSites {
   repos: string[];
@@ -221,16 +223,6 @@ export class HomeComponent {
     return this.status ? this.status.teamCityRunning[this.getPlatform(platformId).configs[tier]] : null;
   }
 
-  pullEmoji(pull) {
-    let title: string = pull.node.title;
-    let regex = emojiRegex(), match;
-    while(match = regex.exec(title)) {
-      const emoji = match[0];
-      if(emoji != '🍒') return emoji;
-    }
-    return "";
-  }
-
   transformPlatformStatusData() {
     this.labeledPulls = [];
 
@@ -271,7 +263,7 @@ export class HomeComponent {
             }
             platform.pulls.push({pull: pull, state: foundContext, userTesting: userTestingContext});
             this.labeledPulls.push(pull);
-            let emoji = this.pullEmoji(pull);
+            let emoji = pullEmoji(pull);
             if(!platform.pullsByEmoji[emoji]) {
               platform.pullsByEmoji[emoji] = [];
             }
@@ -616,7 +608,7 @@ export class HomeComponent {
     this.pullsByStatus.waitingResponse = [];
     for(let q in this.status.github.data.repository.pullRequests.edges) {
       let pull = this.status.github.data.repository.pullRequests.edges[q];
-      let emoji = this.pullEmoji(pull) || "other";
+      let emoji = pullEmoji(pull) || "other";
       if(!this.pullsByProject[emoji]) this.pullsByProject[emoji] = [];
 
       let pd = this.getPlatformPullData(pull);
@@ -802,59 +794,6 @@ export class HomeComponent {
   }
 
   clipboardAllPullRequests = () => {
-    // We want PRs for current sprint only at this point. We will group
-    // by base and status (draft vs open)?
-
-    let text = ``; //'<ul>';
-
-    const bases = Object.keys(this.pullsByBase).sort();
-
-    for(let base of bases) {
-      const pulls = this.pullsByBase[base];
-      const baseEmoji = pulls.length ?  this.pullEmoji(pulls[0].pull) : '';
-      text += `<h3>${base} ${baseEmoji}</h3>`;
-      // text += `<li>${base} ${baseEmoji}`;
-      if(pulls.length) {
-        text += `<ul>`;
-        let pullEmoji = baseEmoji;
-        for(let pull of pulls) {
-          let emoji = this.pullEmoji(pull.pull);
-          if(emoji != pullEmoji) {
-            if(pullEmoji.length) {
-              text += `</ul></li>`;
-            }
-            if(emoji.length) {
-              text += `<li>${emoji}<ul>`;
-            }
-            pullEmoji = emoji;
-          }
-          const title = pull.pull.node.title.replace(emoji, '');
-          const style = pull.pull.node.isDraft ? ` style='color: #aaaaaa'` : '';
-          text += `<li${style}>${title} (<a href='${pull.pull.node.url}'>#${pull.pull.node.number}</a>)</li>`;
-        }
-        if(pullEmoji != baseEmoji) {
-          text += `</ul></li>`;
-        }
-        text += `</ul>`;
-      }
-      // text += `</li>`;
-    }
-
-    for(let siteName of Object.keys(this.sites)) {
-      let site = this.sites[siteName];
-      if(site.pulls.length) {
-        // text += `<li>${siteName}<ul>`;
-        text += `<h3>${siteName}</h3><ul>`;
-        for(let pull of site.pulls) {
-          text += `<li>${pull.pull.node.title} (<a href='${pull.pull.node.url}'>#${pull.pull.node.number}</a>)</li>`;
-        }
-        text += '</ul>';
-        // text += '</ul></li>';
-      }
-    }
-
-    text += `</ul>`;
-
-    return { content: text, type: 'text/html' };
+    return PullRequestClipboard.getPullRequestListByArea(this.pullsByBase, this.sites);
   }
 }

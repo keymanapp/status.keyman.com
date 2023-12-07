@@ -7,6 +7,7 @@ import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { pullStatus, pullUserTesting, pullBuildState, pullBuildStateEx } from '../utility/pullStatus';
 import { VisibilityService } from '../visibility/visibility.service';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
+import { pullEmoji } from '../utility/pullEmoji';
 
 @Component({
   selector: 'app-pull-request',
@@ -132,13 +133,14 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
   }
 
   pullEmoji() {
-    let title: string = this.pull.pull.node.title;
+    return pullEmoji(this.pull.pull);
+    /*let title: string = this.pull.pull.node.title;
     let regex = emojiRegex(), match;
     while(match = regex.exec(title)) {
       const emoji = match[0];
       if(emoji != '🍒') return emoji + ' ';
     }
-    return '';
+    return '';*/
   }
 
   labelColor(label) {

@@ -720,7 +720,7 @@ export class HomeComponent {
     pulls.forEach(pull => { refs[pull.pull.node.headRefName] = new TreeNode(pull); });
     pulls.forEach(pull => {
       const node = refs[pull.pull.node.headRefName];
-      node.parent = refs[pull.pull.node.baseRefName] || root;
+      node.parent = (refs[pull.pull.node.baseRefName] == node ? root : refs[pull.pull.node.baseRefName]) || root;
       node.parent.children.push(node);
     });
 

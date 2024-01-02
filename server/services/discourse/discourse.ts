@@ -28,6 +28,7 @@ export default {
       `/user_actions.json`+
       `?offset=${cursor}`+
       `&username=${user}`+
+      '&limit=60'+
       `&filter=4,5`;
 
     const host = 'community.software.sil.org';
@@ -40,6 +41,8 @@ export default {
         const actions = json.user_actions.filter(a => new Date(a.created_at) >= startDate);
         const results = [].concat(posts, actions);
         if(actions.length == json.user_actions.length && actions.length > 0) {
+          // Because we filter out-of-range contributions, we avoid retrieving
+          // the entire history of contributions
           return this.getUser(startDate, user, results, cursor + this.PAGE_SIZE);
         }
         return results;

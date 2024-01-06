@@ -164,7 +164,7 @@ export class StatusData {
       contributions = await logAsync('refreshGitHubContributionsData', () => githubContributionsService.get(sprintStartDateTime));
 
       for(let node of contributions?.data?.repository?.contributions?.nodes) {
-        node.contributions.tests = {nodes: await logAsync('refreshGitHubContributionsData[n]', () => githubTestContributionsService.get(null, [], getSprintStart(), node.login))};
+        node.contributions.tests = {nodes: await logAsync('refreshGitHubContributionsData[n]', () => githubTestContributionsService.get(null, [], sprintStartDateTime, node.login))};
       }
     } catch(e) {
       console.log(e);

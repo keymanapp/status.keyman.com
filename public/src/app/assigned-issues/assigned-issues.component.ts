@@ -43,16 +43,25 @@ export class AssignedIssuesComponent implements OnInit, OnChanges {
     // If we are collecting triaged issues near the end of the current sprint then we
     // want next sprint's issues too
     const offset = Date.now() >= new Date(this.status.currentSprint.start).valueOf() + 8*24*60*60*1000 ? 1 : 0;
+    if(!this.status.issues) {
+      return '';
+    }
     const issues = this.status.issues.filter(issue =>
       (
         !issue.milestone || // for keyboards repo or untriaged issues
         (issue.milestone.title.startsWith(release) && Number.parseInt(issue.milestone.title.substring(4)) <= sprintNumber+offset) // matches sprint milestones
       ) &&
-      issue.assignees.nodes.find(assignee => assignee.login == this.user.login) !== undefined
+      (
+        (this.user.login == "" && !issue.assignees.nodes.length && issue.milestone?.title == this.status.currentSprint?.title) ||
+        (this.user.login != "" && issue.assignees.nodes.find(assignee => assignee.login == this.user.login) !== undefined)
+      )
+
     ).sort(this.issueSort);
     const issuesList = IssueClipboard.getIssueListText(issues, true).content;
     const prList = PullRequestClipboard.getPullRequestListForAuthor(this.pullsByBase, this.sites, this.user.login).content;
-    const text = `<ul><li><b>Current Pull Requests</b>\n${prList}</li><li><b>Assigned Issues</b>\n${issuesList}</li></ul>`;
+    const text = this.user.login == ''
+      ? issuesList
+      : `<ul><li><b>Current Pull Requests</b>\n${prList}</li><li><b>Assigned Issues</b>\n${issuesList}</li></ul>`;
     return { content: text, type: 'text/html' };
   }
 

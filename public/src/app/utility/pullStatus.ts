@@ -168,6 +168,10 @@ export function pullBuildState(pull) {
   if(commitNode?.commit?.status?.contexts?.[0]) {
     let conclusion = '';
     for(let context of commitNode.commit.status.contexts) {
+      if(context.context == 'user_testing') {
+        continue;
+      }
+
       switch(context.state) {
         case 'SUCCESS':
           if(conclusion == '') conclusion = 'SUCCESS';

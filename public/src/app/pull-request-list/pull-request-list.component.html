@@ -19,7 +19,7 @@
       </div>
 
       <span *ngFor="let pull of pullRequests">
-        <app-pull-request [scope]="'keyboards-lexical-models'" [gravityX]="'right'" [gravityY]="'top'" [class]="" [pull]="{pull:pull}"></app-pull-request>
+        <app-pull-request [status]="status" [scope]="'keyboards-lexical-models'" [gravityX]="'right'" [gravityY]="'top'" [class]="" [pull]="{pull:pull}"></app-pull-request>
       </span>
 
     </div>

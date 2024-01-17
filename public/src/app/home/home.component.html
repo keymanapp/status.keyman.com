@@ -14,7 +14,7 @@
 
             <span class="navbar-new-pulls">
               <span *ngFor="let pull of unlabeledPulls">
-                <app-pull-request [class]="'failure'" [pull]="pull"></app-pull-request>
+                <app-pull-request [status]="status" [class]="'failure'" [pull]="pull"></app-pull-request>
               </span>
             </span>
             <app-contributions *ngIf="showContributions" [pullsByBase]="pullsByBase" [sites]="sites" [sprintDays]="sprintDays" [status]="status"></app-contributions>
@@ -180,6 +180,7 @@
         <tr class='tr-site'>
           <td class='pulls'>
             <app-pull-request-list
+              [status]="status"
               [view]="'all'"
               [gravityX]="'right'"
               [gravityY]="'top'"
@@ -189,6 +190,7 @@
           </td>
           <td class='pulls'>
             <app-pull-request-list
+             [status]="status"
               [view]="'all'"
               [gravityX]="'right'"
               [gravityY]="'top'"
@@ -205,14 +207,14 @@
           <ng-container *ngFor="let site of sites | keyvalue">
           <td class='pulls'>
             <span *ngFor="let pull of site.value.pulls">
-              <app-pull-request [scope]="'site'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
+              <app-pull-request [status]="status" [scope]="'site'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
             </span>
           </td>
           </ng-container>
           <td class='gap'></td>
           <td class='pulls'>
             <span *ngFor="let pull of otherSites?.pulls">
-              <app-pull-request [scope]="'site'" [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
+              <app-pull-request [status]="status" [scope]="'site'" [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
             </span>
           </td>
         </tr>

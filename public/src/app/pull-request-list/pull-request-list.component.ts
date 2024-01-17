@@ -23,6 +23,7 @@ export class PullRequestListComponent extends PopupComponent implements OnInit {
   @Input() repo?: any;
   @Input() milestone?: any;
   @Input() platform?: any;
+  @Input() status: any;
 
   constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
     super(popupCoordinator, visibilityService);

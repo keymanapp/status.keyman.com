@@ -21,6 +21,7 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
   @Input() class?: string;
   @Input() scope?: string;
   @Input() scopeValue?: string;
+  @Input() status: any;
   contexts: any;
 
   constructor(private sanitizer: DomSanitizer, popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
@@ -61,7 +62,7 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
 
   pullClass() {
     const pr = this.pull.pull.node;
-    const base = pr.milestone ? pr.milestone.title == 'Future' ? 'future ' : '' : '';
+    const base = pr.milestone?.title == this.status?.currentSprint?.title ? '' : 'future ';
     //if(this.pull.pull.node.commits?.nodes[0]?.commit?.checkSuites?.nodes[0]?.status == 'COMPLETED') {
     //One day, with optional chaining (nearly here)
     const buildState = pullBuildStateEx(this.pull);// pullBuildState(this.pull);

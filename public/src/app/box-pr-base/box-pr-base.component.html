@@ -3,7 +3,7 @@
     <td class='base'>{{base.key == 'other' ? '⬜' : base.key}}</td>
     <td>
       <span *ngFor="let pull of base.value">
-        <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
       </span>
     </td>
   </tr>

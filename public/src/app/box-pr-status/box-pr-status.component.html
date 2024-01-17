@@ -1,26 +1,26 @@
 <table><tbody>
-  <tr *ngFor="let status of pullsByStatus | keyvalue">
+  <tr *ngFor="let pullStatus of pullsByStatus | keyvalue">
     <td>
-      <a *ngIf="status.key == 'draft'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+is%3Adraft">{{pullStatusName[status.key]}}</a>
-      <a *ngIf="status.key == 'waitingTest'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+label%3Auser-test-required">{{pullStatusName[status.key]}}</a>
-      <a *ngIf="status.key == 'waitingReview'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+review%3Arequired+-is%3Adraft">{{pullStatusName[status.key]}}</a>
-      <span *ngIf="status.key != 'waitingReview' && status.key != 'draft' && status.key != 'waitingTest'">{{pullStatusName[status.key]}}</span>
+      <a *ngIf="pullStatus.key == 'draft'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+is%3Adraft">{{pullStatusName[pullStatus.key]}}</a>
+      <a *ngIf="pullStatus.key == 'waitingTest'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+label%3Auser-test-required">{{pullStatusName[pullStatus.key]}}</a>
+      <a *ngIf="pullStatus.key == 'waitingReview'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+review%3Arequired+-is%3Adraft">{{pullStatusName[pullStatus.key]}}</a>
+      <span *ngIf="pullStatus.key != 'waitingReview' && pullStatus.key != 'draft' && pullStatus.key != 'waitingTest'">{{pullStatusName[pullStatus.key]}}</span>
     </td>
     <td>
-      <span *ngFor="let pull of status.value">
-        <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+      <span *ngFor="let pull of pullStatus.value">
+        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
       </span>
-      <span *ngIf="status.key =='readyToMerge'">
+      <span *ngIf="pullStatus.key =='readyToMerge'">
         <span *ngFor="let issue of userTestIssuesPassed">
           <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
         </span>
       </span>
-      <span *ngIf="status.key =='waitingTest'">
+      <span *ngIf="pullStatus.key =='waitingTest'">
         <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-required'">
           <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
         </span>
       </span>
-      <span *ngIf="status.key =='waitingResponse'">
+      <span *ngIf="pullStatus.key =='waitingResponse'">
         <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-failed'">
           <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
         </span>

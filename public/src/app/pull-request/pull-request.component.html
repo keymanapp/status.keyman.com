@@ -14,7 +14,7 @@
 <div *ngIf="scope != 'keyboards-lexical-models'" class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
   <ng-container *ngIf="pinned || (isVisible | async)">
     <span class="title-changes">
-      <span class="title"><span class="pin" (click)="pin()">📌</span> {{pull.pull.node.title}}</span>
+      <span class="title"><span class="pin" (click)="pin()">📌</span>{{pull.pull.node.title}}</span>
       <span class="changes">
         <span class="additions">+{{pull.pull.node.additions}}</span>
         <span class="deletions">−{{pull.pull.node.deletions}}</span>
@@ -38,7 +38,7 @@
       </tr>
       <tr class="review-status {{pullStatus()}}">
         <th class="review-status-title">Code review</th>
-        <td></td>
+        <td><span class="sprint" *ngIf="pull.pull.node.milestone?.title != status?.currentSprint?.title">{{pull.pull.node.milestone?.title}}</span></td>
       </tr>
       <tr class="user-testing-status {{pullUserTesting()}}">
         <th class="user-testing-status-title">User testing</th>

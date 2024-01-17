@@ -54,11 +54,16 @@
 }
 
 .label.status-draft {
-  opacity: 0.5;
+  opacity: 0.3;
+}
+
+.draft {
+  opacity: 0.3;
 }
 
 .future {
-  opacity: 0.3;
+  filter: saturate(0.1)
+  /* opacity: 0.3; */
 }
 
 /* Pull Request Review Status */
@@ -456,3 +461,11 @@
   margin-right: 2px;
   font-size: 8pt;
 }
+
+.sprint {
+  color: red;
+  padding-right: 8px;
+}
+
+.sprint::before { content: "["; }
+.sprint::after { content: "]"; }

@@ -3,7 +3,7 @@
     <td><a class="author" title="{{author.value[0].pull.node.author.login}}" target="_blank" href="{{author.value[0].pull.node.author.url}}"><img class="avatar-48" src="{{getAuthorAvatar(author.value[0].pull.node.author, 48)}}"></a></td>
     <td>
       <span *ngFor="let pull of author.value">
-        <app-pull-request [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
       </span>
     </td>
   </tr>

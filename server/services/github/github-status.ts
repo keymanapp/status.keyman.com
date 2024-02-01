@@ -308,7 +308,7 @@ export default {
         console.debug(e);
         Sentry.addBreadcrumb({
           category: "JSON",
-          message: values
+          message: JSON.stringify(values)
         });
         Sentry.captureException(e);
         return null;

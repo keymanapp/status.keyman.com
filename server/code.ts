@@ -371,7 +371,7 @@ app.get('/status/github', (request, response) => {
   const sprint = statusHead(request, response);
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
-    github: statusData.cache.sprints[sprint].github
+    github: statusData.cache.sprints[sprint]?.github
   }));
   response.end();
 });
@@ -396,7 +396,17 @@ app.get('/status/github-contributions', async (request, response) => {
       response.write(data);
     } else {
       let sprintStartDateTime = new Date(request.query.sprintStartDate);
-      let contributions = await githubContributionsService.get(sprintStartDateTime.toISOString());
+      let contributions = null;
+      try {
+        contributions = await githubContributionsService.get(sprintStartDateTime.toISOString());
+      } catch(e) {
+        console.debug(e);
+        Sentry.addBreadcrumb({
+          category: "Request",
+          message: JSON.stringify(request.query)
+        });
+        Sentry.captureException(e);
+      }
 
       for(let node of contributions?.data?.repository?.contributions?.nodes) {
         node.contributions.tests = {nodes: await githubTestContributionsService.get(null, [], sprintStartDateTime.toISOString(), node.login)};

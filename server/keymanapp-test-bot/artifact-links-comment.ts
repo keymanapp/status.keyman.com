@@ -77,14 +77,20 @@ export async function getArtifactLinksComment(
         const run = await octokit.rest.actions.getWorkflowRun({...data, run_id});
         const artifacts = await octokit.rest.actions.listWorkflowRunArtifacts({ ...data, run_id });
         for (const artifact of artifacts.data.artifacts) {
-          if (artifact.name != 'keyman-binarypkgs') {
+          if (!artifact.name.startsWith('keyman-binarypkgs')) {
             continue;
+          }
+          // "keyman-binarypkgs-focal_amd64"
+          const distroMatches = artifact.name.match(/keyman-binarypkgs-(.+)_amd64/);
+          if (!distroMatches) {
+            console.log(`Can't find distribution in artifact name ${artifact.name}`);
+            return '';
           }
           if (!links['Linux']) links['Linux'] = [];
           links['Linux'].push({
             state: s[context].state,
             platform: 'Linux',
-            download: '**Keyman for Linux**',
+            download: `**Keyman for Linux**: ${distroMatches[1]}`,
             url: `https://github.com/keymanapp/keyman/suites/${run.data.check_suite_id}/artifacts/${artifact.id}`
           });
         }

@@ -4,7 +4,7 @@
   <span class="epic-icon">{{pullEmoji()}}</span>
   <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
     <span class="title" *ngIf="scope == 'keyboards-lexical-models'">{{pull.pull.node.title}}</span>
-    <span *ngIf='pullIsForStableBranch()' class='stable'>{{pullStableBranchNumber()}}</span>
+    <span *ngIf='pullIsForStableOrBetaBranch()' class='{{pullStableOrBetaClassName()}}'>{{pullStableOrBetaBranchIdentifier()}}</span>
     <!--<span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>-->
     <span class='emoji'>{{pullEmoji()}}</span>{{pull.pull.node.number}}
   </a>

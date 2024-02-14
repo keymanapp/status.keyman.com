@@ -6,6 +6,7 @@ export interface Status {
   communitySite: any;
   communitySiteQueue: any;
   codeOwners: any;
+  siteLiveliness: any;
   keyman: any[];
   sentryIssues: any;
   teamCity: any[];
@@ -24,6 +25,7 @@ export const EMPTY_STATUS: Status = {
   communitySite: undefined,
   communitySiteQueue: undefined,
   codeOwners: {},
+  siteLiveliness: {},
   keyman: [],
   sentryIssues: {},
   teamCity: [],

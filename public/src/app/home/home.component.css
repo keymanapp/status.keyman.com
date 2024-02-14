@@ -272,3 +272,31 @@ table#sites-and-relatives {
   background-color: #c0c0c0;
   text-decoration: none;
 }
+
+/* Liveliness */
+
+.liveliness {
+  display: inline-block;
+  border: solid 1px black;
+  background: rgb(224,229,233);
+  border-radius: 12px;
+  width: 16px;
+  height: 16px;
+  margin: 0 4px 0 0;
+}
+
+.liveliness.liveliness-ready {
+  background: rgb(68, 204, 17);
+}
+
+.liveliness.liveliness-alive {
+  background: rgb(240,240,100);
+}
+
+.liveliness.liveliness-dead {
+  background: rgb(255, 24, 48);
+}
+
+.liveliness.liveliness-error {
+  background: orange;
+}

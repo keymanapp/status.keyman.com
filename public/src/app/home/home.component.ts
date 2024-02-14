@@ -4,6 +4,7 @@ import { StatusService } from '../status/status.service';
 import { StatusSource } from '../../../../shared/status-source';
 import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { sites, siteSentryNames } from '../sites';
+import { sitesWithState } from "../../../../shared/sites";
 import { DataSocket } from '../datasocket/datasocket.service';
 import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState, pullChecks } from '../utility/pullStatus';
@@ -44,7 +45,7 @@ export class HomeComponent {
 
   TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
-  sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[]}}))); // make an object map of 'url.com': {pulls:[]}
+  sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[], hasState: sitesWithState.includes(v)}}))); // make an object map of 'url.com': {pulls:[]}
   unlabeledPulls = [];
   labeledPulls = [];
   keyboardIssues = [];
@@ -146,6 +147,9 @@ export class HomeComponent {
           switch(source) {
             case StatusSource.CodeOwners:
               this.status.codeOwners = data.codeOwners;
+              break;
+            case StatusSource.SiteLiveliness:
+              this.status.siteLiveliness = data.siteLiveliness;
               break;
             case StatusSource.GitHub:
               this.status.github = data.github;
@@ -795,5 +799,9 @@ export class HomeComponent {
 
   clipboardAllPullRequests = () => {
     return PullRequestClipboard.getPullRequestListByArea(this.pullsByBase, this.sites);
+  }
+
+  getSiteLivelinessClass = (site) => {
+    return this.status.siteLiveliness?.find?.(item => item.site == site)?.state ?? 'unknown'; // 'dead'; // | 'alive' | 'ready'
   }
 }

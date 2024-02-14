@@ -120,6 +120,7 @@ function initialLoad() {
   if(debugTestBot) return;
 
   respondCodeOwnersDataChange();
+  respondSiteLivelinessDataChange();
   respondGitHubDataChange();
   respondKeymanDataChange();
   respondTeamcityDataChange();
@@ -136,6 +137,7 @@ setInterval(() => {
 
   respondKeymanDataChange();
   respondPolledEndpoints();
+  respondSiteLivelinessDataChange();
   if(environment != Environment.Production || true) {
     // NOTE: using polling in production as webhook stopped working on 6 July 2021?
     // We have a webhook running on production so no need to poll the server
@@ -194,6 +196,12 @@ function respondGitHubDataChange() {
 function respondCodeOwnersDataChange() {
   return statusData.refreshCodeOwnersData()
     .then(hasChanged => sendWsAlert(hasChanged, 'code-owners'))
+    .catch(error => reportError(error));
+}
+
+function respondSiteLivelinessDataChange() {
+  return statusData.refreshSiteLivelinessData()
+    .then(hasChanged => sendWsAlert(hasChanged, 'site-liveliness'))
     .catch(error => reportError(error));
 }
 
@@ -261,6 +269,7 @@ function sendInitialRefreshMessages(socket) {
     if(sprint.github) socket.send('github');
   }
   if(statusData.cache.codeOwners) socket.send('code-owners');
+  if(statusData.cache.siteLiveliness) socket.send('site-liveliness');
   if(statusData.cache.sentryIssues) socket.send('sentry-issues');
   if(statusData.cache.issues) socket.send('github-issues');
   if(statusData.cache.teamCity && statusData.cache.teamCityRunning && statusData.cache.teamCityAgents && statusData.cache.teamCityQueue) socket.send('teamcity');
@@ -489,6 +498,16 @@ app.get('/status/code-owners', (request, response) => {
   response.write(JSON.stringify({
     currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
     codeOwners: statusData.cache.codeOwners
+  }));
+  response.end();
+});
+
+app.get('/status/site-liveliness', (request, response) => {
+  // console.log('GET /status/code-owners');
+  const sprint = statusHead(request, response);
+  response.write(JSON.stringify({
+    currentSprint: currentSprint.getCurrentSprint(statusData.cache.sprints[sprint]?.github?.data),
+    siteLiveliness: statusData.cache.siteLiveliness
   }));
   response.end();
 });

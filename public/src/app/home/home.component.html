@@ -161,8 +161,12 @@
           <th class='gap'></th>
           <th class='th-discourse'><a href="https://community.software.sil.org/c/keyman" target="_blank">🗨 community</a></th>
           <th class='gap'></th>
-          <th *ngFor="let site of sites | keyvalue"><a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id}}</a>
-            <span class='nodeping'></span>
+          <th *ngFor="let site of sites | keyvalue">
+            <a target="_blank" href="https://{{site.key}}/_control/info">
+              <span *ngIf="site.value.hasState" class='liveliness liveliness-{{getSiteLivelinessClass(site.key)}}'></span>
+            </a>
+            <span *ngIf="!site.value.hasState" class='liveliness liveliness-unknown'></span>
+            <a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id == 'keymanweb' ? 'kmw' : site.value.id}}</a>
             <app-sentry [environment]="'production'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
           </th>
           <th class='gap'></th>

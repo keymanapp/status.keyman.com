@@ -19,6 +19,7 @@ import { kmcService, mtService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
 import discourseService from "../services/discourse/discourse";
 import { performanceLog } from "../performance-log";
+import siteLivelinessService from "../services/keyman/site-liveliness";
 
 const services = {};
 services[StatusSource.ITunesKeyman] = keymaniTunesService;
@@ -56,6 +57,7 @@ export interface StatusDataCache {
   };
   deployment: {};
   codeOwners?: {};
+  siteLiveliness?: any;
   communitySite?: any;
 };
 
@@ -204,6 +206,19 @@ export class StatusData {
     let result = !deepEqual(codeOwners, this.cache.codeOwners);
     this.cache.codeOwners = codeOwners;
     // console.log('[Refresh] CodeOwners EXIT');
+    return result;
+  };
+
+  refreshSiteLivelinessData = async (): Promise<boolean> => {
+    let siteLiveliness;
+    try {
+      siteLiveliness = await logAsync('refreshSiteLivelinessData', async () => await siteLivelinessService.get());
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
+    let result = !deepEqual(siteLiveliness, this.cache.siteLiveliness);
+    this.cache.siteLiveliness = siteLiveliness;
     return result;
   };
 

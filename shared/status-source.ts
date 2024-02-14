@@ -6,6 +6,7 @@ export enum StatusSource {
   TeamCity = "teamcity",
   SentryIssues = "sentry-issues",
   CodeOwners = "code-owners",
+  SiteLiveliness = "site-liveliness",
   // Deployment targets
   ITunesKeyman = "itunes-keyman",
   ITunesFirstVoices = "itunes-firstvoices",

@@ -5,7 +5,7 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-const HOST='s-keyman-com.azurewebsites.net';
+const HOST='com-keyman-s.languagetechnology.org';
 const PATH='/api/kmwversion.php';
 
 /*let debug_count = 275;

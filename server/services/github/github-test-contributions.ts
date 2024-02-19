@@ -1,6 +1,7 @@
 
 import httppost from '../../util/httppost';
 import { github_token } from '../../identity/github';
+import { logGitHubRateLimit } from '../../util/github-rate-limit';
 
 export default {
 
@@ -17,6 +18,8 @@ export default {
     ).then(data => {
       let obj = JSON.parse(data);
       if(!obj.data || !obj.data.user) return [];
+
+      logGitHubRateLimit(obj?.data?.rateLimit, 'github-test-contributions');
 
       let targetDate = new Date(startDate);
       let results = obj.data.user.issueComments.nodes.filter(result => new Date(result.createdAt) >= targetDate);
@@ -50,6 +53,13 @@ export default {
     after = JSON.stringify(after);
     return `
     {
+      rateLimit {
+        limit
+        cost
+        remaining
+        resetAt
+      }
+
       user(login: "${user}") {
 
         # Collect test result contributions

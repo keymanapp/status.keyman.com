@@ -3,12 +3,19 @@ import httppost from '../../util/httppost';
 import { github_token } from '../../identity/github';
 import { getCurrentSprint } from '../../current-sprint';
 import { issueLabelScopes } from '../../../shared/issue-labels';
+import { logGitHubRateLimit } from '../../util/github-rate-limit';
 
 const Sentry = require("@sentry/node");
 
 const queryStrings = {
 
   keyboards: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     keyboards: repository(owner: "keymanapp", name: "keyboards") {
       issues(filterBy: {states: OPEN}) {
         totalCount
@@ -20,6 +27,12 @@ const queryStrings = {
   `,
 
   lexicalModels: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     lexicalModels: repository(owner: "keymanapp", name: "lexical-models") {
       issues(filterBy: {states: OPEN}) {
         totalCount
@@ -31,6 +44,12 @@ const queryStrings = {
   `,
 
   unlabeledIssues: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open ${issueLabelScopes.map(scope=>`-label:${scope}`).join(' ')}") {
       issueCount
       nodes {
@@ -55,6 +74,12 @@ const queryStrings = {
   `,
 
   repository: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     repository(owner: "keymanapp", name: "keyman") {
       refs(first:100, refPrefix: "refs/heads/") {
         nodes {
@@ -194,11 +219,17 @@ const queryStrings = {
    `,
 
    organization: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     organization(login: "keymanapp") {
-      repositories(first: 50) {
+      repositories(first: 60) {
         nodes {
           name
-          pullRequests(last: 50, states: OPEN) {
+          pullRequests(last: 20, states: OPEN) {
             edges {
               node {
                 title
@@ -257,15 +288,6 @@ const queryStrings = {
         }
       }
     }
-  `,
-
-  rateLimit: `
-    rateLimit {
-      limit
-      cost
-      remaining
-      resetAt
-    }
   `
 };
 
@@ -291,8 +313,17 @@ export default {
     const keys = Object.keys(queryStrings);
     return Promise.all( keys.map(v => httppostgh(queryStrings[v])) ).then(values => {
       try {
-        let data = keys.reduce((pv, cv, ix) => {pv[cv] = JSON.parse(values[ix]).data[cv]; return pv}, {});
+        let data = keys.reduce((pv, cv, ix) => {
+          const j = JSON.parse(values[ix]);
+          pv[cv] = j.data[cv];
+          pv[cv].rateLimit = j.data.rateLimit;
+          return pv;
+        }, {});
         let githubPullsData = { data: data };
+
+        for(let item of Object.keys(data)) {
+          logGitHubRateLimit(data[item]?.rateLimit, 'github-status-'+item);
+        }
 
         const phase = getCurrentSprint(githubPullsData.data);
 

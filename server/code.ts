@@ -21,6 +21,28 @@ const sprintCache = new SprintCache(environment);
 const express = require('express');
 const app = express();
 
+// Issue #420: We currently have a GitHub rate cost of 139 per refresh. We have
+// a limit of 5000 req/hour, so if we ensure that we don't refresh more
+// frequently than 36 times an hour, we will be okay for now. This is not an
+// ideal fix -- we need to start caching data instead but that will take a major
+// refactor.
+//
+// GH cost breakdown:
+//
+    // status-organization: 48
+    // test-contributions: 18
+    // issues: 10
+    // status-repository: 5
+    // contributions: 3
+    // status-keyboards: 1
+    // status-lexicalModels: 1
+    // status-unlabeledIssues: 1
+
+const GitHubMaxCostPerRefresh = 87;
+// Note, we can reduce the refresh to the calculation above, but starting by reducing
+// the cost of status-organization from 100 to 48
+const GitHubRefreshRate = 5000; // Math.round(60 /*minutes*/ / (60/GitHubMaxCostPerRefresh) /* requests/hour */ * 60 /*sec*/ * 1000 /* msec */);
+
 Sentry.init({
   dsn: "https://4ed13a2db1294bb695765ebe2f98171d@o1005580.ingest.sentry.io/5983526",
   environment: environment,
@@ -178,7 +200,7 @@ function respondKeymanDataChange() {
 }
 
 function respondGitHubDataChange() {
-  if(timingManager.isTooSoon('github', 5000, respondGitHubDataChange)) {
+  if(timingManager.isTooSoon('github', GitHubRefreshRate, respondGitHubDataChange)) {
     return;
   }
 

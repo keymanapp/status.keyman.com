@@ -1,6 +1,7 @@
 
 import httppost from '../../util/httppost';
 import { github_token } from '../../identity/github';
+import { logGitHubRateLimit } from '../../util/github-rate-limit';
 // import { getCurrentSprint } from '../../current-sprint';
 
 export default {
@@ -17,6 +18,8 @@ export default {
       JSON.stringify({query: ghIssuesQuery})
     ).then(data => {
       let obj = JSON.parse(data);
+
+      logGitHubRateLimit(obj?.data?.rateLimit, 'github-issues');
       //console.log(data);
       if(!obj.data || !obj.data.search) return [];
       const newIssues = [].concat(issues, obj.data.search.nodes);
@@ -113,7 +116,10 @@ export default {
       }
 
       rateLimit {
+        limit
         cost
+        remaining
+        resetAt
       }
     }
     `

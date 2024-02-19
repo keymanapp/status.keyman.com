@@ -29,7 +29,7 @@ const app = express();
 //
 // GH cost breakdown:
 //
-    // status-organization: 48
+    // status-organization: 32
     // test-contributions: 18
     // issues: 10
     // status-repository: 5
@@ -38,9 +38,9 @@ const app = express();
     // status-lexicalModels: 1
     // status-unlabeledIssues: 1
 
-const GitHubMaxCostPerRefresh = 87;
+const GitHubMaxCostPerRefresh = 71;
 // Note, we can reduce the refresh to the calculation above, but starting by reducing
-// the cost of status-organization from 100 to 48
+// the cost of status-organization from 100 to 32
 const GitHubRefreshRate = 5000; // Math.round(60 /*minutes*/ / (60/GitHubMaxCostPerRefresh) /* requests/hour */ * 60 /*sec*/ * 1000 /* msec */);
 
 Sentry.init({

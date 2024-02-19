@@ -226,7 +226,7 @@ const queryStrings = {
       resetAt
     }
     organization(login: "keymanapp") {
-      repositories(first: 60) {
+      repositories(isArchived:false, first: 42) {
         nodes {
           name
           pullRequests(last: 20, states: OPEN) {

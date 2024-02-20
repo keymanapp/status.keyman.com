@@ -313,7 +313,7 @@
   /* background: purple; */
   padding: 0 4px 3px 4px;
   margin: 0 4px 0 0;
-  box-shadow: 0 0 5px 2px rgb(128 0 128 / 50%);
+  /* box-shadow: 0 0 5px 2px rgb(128 0 128 / 50%); */
 }
 
 .pull-request {

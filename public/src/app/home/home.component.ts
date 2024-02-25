@@ -6,27 +6,19 @@ import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { sites, siteSentryNames } from '../sites';
 import { sitesWithState } from "../../../../shared/sites";
 import { DataSocket } from '../datasocket/datasocket.service';
-import emojiRegex from 'emoji-regex';
 import { pullStatus, pullUserTesting, pullBuildState, pullChecks } from '../utility/pullStatus';
-import { IssueView } from '../issue-list/issue-list.component';
 import { EMPTY_STATUS, Status } from '../status/status.interface';
-import { getAvatarUrl } from '../../../../shared/users';
+import { getAvatarUrl, getUserAvatarUrl } from '../../../../shared/users';
 import { IssueClipboard } from '../utility/issue-clipboard';
 import { pullEmoji } from '../utility/pullEmoji';
 import { PullRequestClipboard } from '../utility/pull-request-clipboard';
+import { ContributionCollection } from '../contributions/contribution-collection';
+import { appState, IssueView, PullRequestView } from '../../state';
 
 interface OtherSites {
   repos: string[];
   pulls: any[];
   milestones: any[];
-};
-
-enum PullRequestView {
-  Platform = 'platform',
-  Project = 'project',
-  Status = 'status',
-  Author = 'author',
-  Base = 'base'
 };
 
 @Component({
@@ -42,6 +34,8 @@ export class HomeComponent {
   timer: any;
   ws: DataSocket;
   title = 'Keyman Status';
+
+  activeTab = 'overview';
 
   TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
@@ -106,6 +100,9 @@ export class HomeComponent {
 
   constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
     this.JSON = JSON;
+    this.pullRequestView = appState.homePullRequestView;
+    this.issueView = appState.homeIssueView;
+    this.activeTab = appState.homeActiveTab;
   };
 
   ngOnInit() {
@@ -567,12 +564,14 @@ export class HomeComponent {
 
   setIssueView(view: string) {
     this.issueView = view as IssueView;
+    appState.homeIssueView = this.issueView;
   }
 
   /* Multiple PR views */
 
   setPRView(view: string) {
     this.pullRequestView = view as PullRequestView;
+    appState.homePullRequestView = this.pullRequestView;
   }
 
   getPlatformPullData(pull) {
@@ -803,5 +802,42 @@ export class HomeComponent {
 
   getSiteLivelinessClass = (site) => {
     return this.status.siteLiveliness?.find?.(item => item.site == site)?.state ?? 'unknown'; // 'dead'; // | 'alive' | 'ready'
+  }
+
+  // Tab View
+
+  nullUser = { login:'', avatarUrl: null, contributions: {
+    issues: { nodes: [] },
+    pullRequests: { nodes: [] },
+    reviews: { nodes: [] },
+    tests: { nodes: [] },
+  } };
+
+  contributionUsers() {
+    let users = [];
+    if(this.status?.contributions?.data.repository.contributions.nodes) {
+      users = [].concat([this.nullUser],this.status?.contributions?.data.repository.contributions.nodes);
+    }
+    return users;
+  }
+
+  getAllContributions = () => {
+    let text = '';
+    for(let user of this.status?.contributions?.data.repository.contributions.nodes) {
+      let userContributions = ContributionCollection.getUserContributions(this.sprintDays, this.status, {user: user}).content;
+      if(userContributions) {
+        text += `
+          <h2><img style="width:32px; height:32px" src="${getUserAvatarUrl(user, 32)}"> ${user.login}</h2>
+          ${userContributions}
+          <hr>
+        `;
+      }
+    }
+    return { content: text, type: 'text/html' };
+  }
+
+  selectTab(tab) {
+    this.activeTab = tab;
+    appState.homeActiveTab = this.activeTab;
   }
 }

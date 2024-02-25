@@ -1,0 +1,126 @@
+<div class="container-fluid" style="padding-left: 4px; padding-top: 4px">
+  <span class="navbar-sub-item {{currentView() == 'assigned-issues' ? 'fixed' : ''}}" (mouseenter)="hoverSubItem('assigned-issues')">
+    <span *ngIf="user.login != ''">Assigned Issues <span class="issue-count">{{issues().length}}</span></span>
+    <span *ngIf="user.login == ''">Unassigned Issues <span class="issue-count">{{issues().length}}</span></span>
+  </span>
+  <span *ngIf="user.login != ''" class="navbar-sub-item {{currentView() == 'contributions' ? 'fixed' : ''}}" (mouseenter)="hoverSubItem('contributions')">
+    Contributions <span class="issue-count">{{contributionCount(user)}}</span>
+  </span>
+</div>
+
+<app-assigned-issues *ngIf="currentView() == 'assigned-issues'" [pullsByBase]="pullsByBase" [sites]="sites" [status]="status" [issues]="issues()" [user]="user"></app-assigned-issues>
+
+<span class="navbar-sub-item-block" *ngIf="currentView() == 'contributions'">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th style='width:9%'>
+          <a href='https://github.com/{{user.login}}?tab=overview&from={{sprintDays[0]?.ghdate}}&to={{sprintDays[13]?.ghdate}}' target='_blank'><img class="avatar-48" src="{{getUserAvatar(user, 48)}}">
+          {{user.login}}</a>
+          <app-clipboard [text]="getUserContributions" [context]="{user:user}" title="Copy HTML formatted list of all user contributions to clipboard"></app-clipboard>
+        </th>
+        <th style='width:6.5%' *ngFor="let day of sprintDays">
+          <a href='https://github.com/{{user.login}}?tab=overview&from={{day?.ghdate}}&to={{day?.ghdate}}' target='_blank'>{{day?.dayText}}<br>{{day?.monthText}} {{day?.dateText}}</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>
+          Issues
+          <app-clipboard [text]="getContributionIssueText" [context]="{user:user}" title="Copy HTML formatted list of issues to clipboard"></app-clipboard>
+        </th>
+        <td  *ngFor="let day of sprintDays">
+          <span *ngFor="let issue of user.contributions.issues.nodes | filterObjectByDate: day.date">
+            <a class='contribution-issue' href='{{issue.issue.url}}' target='_blank'>{{issue.issue.number}}
+              <div class="contribution-detail">
+                <span class="detail-title">Number:</span><span class="detail-detail">{{issue.issue.number}}</span>
+                <span class="detail-title">Title:</span><span class="detail-detail">{{issue.issue.title}}</span>
+              </div>
+            </a>
+          </span>
+          <span class="contribution-cell-clipboard">
+            <app-clipboard [text]="getContributionIssueText" [context]="{user:user, day:day}" title="Copy HTML formatted list of issues to clipboard"></app-clipboard>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          PRs
+          <app-clipboard [text]="getContributionPRText" [context]="{user:user}" title="Copy HTML formatted list of pull requests to clipboard"></app-clipboard>
+        </th>
+        <td *ngFor="let day of sprintDays">
+          <span *ngFor="let pr of user.contributions.pullRequests.nodes | filterObjectByDate: day.date">
+            <a class='contribution-issue' href='{{pr.pullRequest.url}}' target='_blank'>{{pr.pullRequest.number}}
+              <div class="contribution-detail">
+                <span class="detail-title">Number:</span><span class="detail-detail">{{pr.pullRequest.number}}</span>
+                <span class="detail-title">Title:</span><span class="detail-detail">{{pr.pullRequest.title}}</span>
+              </div>
+            </a>
+          </span>
+          <span class="contribution-cell-clipboard">
+            <app-clipboard [text]="getContributionPRText" [context]="{user:user, day:day}" title="Copy HTML formatted list of pull requests to clipboard"></app-clipboard>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Reviews
+          <app-clipboard [text]="getContributionReviewText" [context]="{user:user}" title="Copy HTML formatted list of reviews to clipboard"></app-clipboard>
+        </th>
+        <td *ngFor="let day of sprintDays">
+          <span *ngFor="let review of user.contributions.reviews.nodes | filterObjectByDate: day.date">
+            <a class='contribution-issue' href='{{review.pullRequest.url}}' target='_blank'>{{review.pullRequest.number}}
+              <div class="contribution-detail">
+                <span class="detail-title">Number:</span><span class="detail-detail">{{review.pullRequest.number}}</span>
+                <span class="detail-title">Title:</span><span class="detail-detail">{{review.pullRequest.title}}</span>
+              </div>
+            </a>
+          </span>
+          <span class="contribution-cell-clipboard">
+            <app-clipboard [text]="getContributionReviewText" [context]="{user:user, day:day}" title="Copy HTML formatted list of reviews to clipboard"></app-clipboard>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Tests
+          <app-clipboard [text]="getContributionTestText" [context]="{user:user}" title="Copy HTML formatted list of test references to clipboard"></app-clipboard>
+        </th>
+        <td *ngFor="let day of sprintDays">
+          <span *ngFor="let test of user.contributions.tests.nodes | filterObjectByDate: day.date">
+            <a class='contribution-issue' href='{{test.url}}' target='_blank'>{{test.issue.number}}
+              <div class="contribution-detail">
+                <span class="detail-title">Number:</span><span class="detail-detail">{{test.issue.number}}</span>
+                <span class="detail-title">Title:</span><span class="detail-detail">{{test.issue.title}}</span>
+              </div>
+            </a>
+          </span>
+          <span class="contribution-cell-clipboard">
+            <app-clipboard [text]="getContributionTestText" [context]="{user:user, day:day}" title="Copy HTML formatted list of test references to clipboard"></app-clipboard>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Posts
+          <app-clipboard [text]="getContributionPostText" [context]="{user:user}" title="Copy HTML formatted list of community site posts to clipboard"></app-clipboard>
+        </th>
+        <td *ngFor="let day of sprintDays">
+          <span *ngFor="let post of status?.communitySite?.[user.login] | filterObjectByDate: day.date">
+            <a class='contribution-issue' href='{{post.url}}' target='_blank'>{{post.topic_id}}#{{post.post_number}}
+              <div class="contribution-detail">
+                <span class="detail-title">Number:</span><span class="detail-detail">{{post.topic_id}}#{{post.post_number}}</span>
+                <span class="detail-title">Title:</span><span class="detail-detail">{{post.title}}</span>
+                <span class="detail-title">Excerpt:</span><span class="detail-detail" [innerHTML]="post.excerpt"></span>
+              </div>
+            </a>
+          </span>
+          <span class="contribution-cell-clipboard">
+            <app-clipboard [text]="getContributionPostText" [context]="{user:user, day:day}" title="Copy HTML formatted list of community site posts to clipboard"></app-clipboard>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</span>

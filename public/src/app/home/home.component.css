@@ -300,3 +300,19 @@ table#sites-and-relatives {
 .liveliness.liveliness-error {
   background: orange;
 }
+
+#tabs {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#tabs > div {
+  display: none;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+#tabs > div.tab-active {
+  display: block;
+}

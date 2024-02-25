@@ -1,6 +1,4 @@
-<span *ngIf="user.login != ''">Assigned Issues <span class="issue-count">{{issues().length}}</span></span>
-<span *ngIf="user.login == ''">Unassigned Issues <span class="issue-count">{{issues().length}}</span></span>
-<span class="navbar-sub-item-block" *ngIf="selectedView == 0">
+<span class="navbar-sub-item-block">
 
   <div class="issue-list">
     <div class="summary">
@@ -12,7 +10,7 @@
       <div class='clear'></div>
     </div>
     <ul >
-      <li *ngFor="let issue of issues()">
+      <li *ngFor="let issue of issues">
           <div *ngIf="issueIsDifferentRepo(issue)" class="repo {{issueIsFirst(issue) ? 'repo-first' : ''}}">{{issue.repository.name}}</div>
           <span class="label">
           <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>

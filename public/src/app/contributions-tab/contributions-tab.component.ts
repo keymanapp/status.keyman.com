@@ -24,27 +24,12 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
     return ContributionCollection.currentView;
   }
 
-  nullUser = { login:'', avatarUrl: null, contributions: {
-    issues: { nodes: [] },
-    pullRequests: { nodes: [] },
-    reviews: { nodes: [] },
-    tests: { nodes: [] },
-  } };
-
   _issues = null;
 
   constructor() { }
 
   stringify(o: any) {
     return JSON.stringify(o);
-  }
-
-  users() {
-    let users = [];
-    if(this.status?.contributions?.data.repository.contributions.nodes) {
-      users = [].concat([this.nullUser],this.status?.contributions?.data.repository.contributions.nodes);
-    }
-    return users;
   }
 
   ngOnInit(): void {
@@ -70,6 +55,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   }
 
   getUserAvatar(user, size) {
+    if(user.login == '') return null;
     return getUserAvatarUrl(user, size);
   }
 
@@ -83,21 +69,6 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
 
   hoverSubItem(item) {
     ContributionCollection.currentView = item;
-  }
-
-  getAllContributions = () => {
-    let text = '';
-    for(let user of this.status?.contributions?.data.repository.contributions.nodes) {
-      let userContributions = this.getUserContributions({user: user}).content;
-      if(userContributions) {
-        text += `
-          <h2><img style="width:32px; height:32px" src="${this.getUserAvatar(user, 32)}"> ${user.login}</h2>
-          ${userContributions}
-          <hr>
-        `;
-      }
-    }
-    return { content: text, type: 'text/html' };
   }
 
   getUserContributions = (context) => {
@@ -124,7 +95,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
     }
 
     return { content: text, type: 'text/html' };
-    }
+  }
 
   getContributionText(nodes, type, day?) {
     let n = nodes.reverse();

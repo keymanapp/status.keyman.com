@@ -73,6 +73,13 @@ class AppState {
   public set homeActiveTab(value: string) {
     this.setItem('home.activeTab', value);
   }
+
+  //
+  showContributions = false;
+  showCodeOwners = false;
+  showRefreshButton = false;
+  showAgents = false;
+  sprintOverride = null;
 }
 
 export const appState = new AppState();

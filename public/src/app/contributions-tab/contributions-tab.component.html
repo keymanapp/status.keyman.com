@@ -8,7 +8,7 @@
   </span>
 </div>
 
-<app-assigned-issues *ngIf="currentView() == 'assigned-issues'" [pullsByBase]="pullsByBase" [sites]="sites" [status]="status" [issues]="issues()" [user]="user"></app-assigned-issues>
+<app-assigned-issues *ngIf="currentView() == 'assigned-issues'" [issues]="issues()" [user]="user"></app-assigned-issues>
 
 <span class="navbar-sub-item-block" *ngIf="currentView() == 'contributions'">
   <table class="table table-striped table-bordered">

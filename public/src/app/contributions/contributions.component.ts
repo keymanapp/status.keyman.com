@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { getUserAvatarUrl } from '../../../../shared/users';
 import { appState } from '../../state';
 import { ContributionsModel } from '../data/contributions.model';
+import { dataModel } from '../data/data.model';
 
 @Component({
   selector: 'app-contributions',
@@ -10,14 +11,16 @@ import { ContributionsModel } from '../data/contributions.model';
 })
 export class ContributionsComponent implements OnInit {
 
-  @Input() status: any;
-  @Input() sprintDays: any;
-
-  @Input() pullsByBase: any;
-  @Input() sites: any;
+  // data proxies
+  get status() { return dataModel.status }
+  get sprintDays() { return dataModel.sprintDays }
+  get pullsByBase() { return dataModel.pullsByBase }
+  get sites() { return dataModel.sites }
+  // state proxies
+  get activeTab() { return appState.homeActiveTab }
 
   @Input() user: any;
-  @Input() activeTab: any;
+
 
   @Output() onSelectTab = new EventEmitter<string>();
 

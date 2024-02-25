@@ -20,7 +20,7 @@
 
             <span class="navbar-contributions" *ngIf="showContributions">
               <span *ngFor="let user of contributionUsers()" class="navbar-contribution {{activeTab === user.login ? 'fixed' : ''}}">
-                <app-contributions (onSelectTab)="selectTab($event)"  [activeTab]="activeTab" [user]="user" [pullsByBase]="pullsByBase" [sites]="sites" [sprintDays]="sprintDays" [status]="status"></app-contributions>
+                <app-contributions (onSelectTab)="selectTab($event)" [user]="user"></app-contributions>
               </span>
               <span class="navbar-contribution">
                 <app-clipboard [text]="getAllContributions" title="Copy HTML formatted list of all contributions to clipboard"></app-clipboard>

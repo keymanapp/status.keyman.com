@@ -1,6 +1,6 @@
 <div class="flex-box">
   <div id="contributions">
-    <span id="sprint">{{sprint}}</span> <app-contributions [sprintDays]="sprintDays" [status]="status"></app-contributions>
+    <span id="sprint">{{sprint}}</span> <app-contributions></app-contributions>
   </div>
   <div class="loading">
     <div *ngIf="!milestones">Loading Milestone data...</div>

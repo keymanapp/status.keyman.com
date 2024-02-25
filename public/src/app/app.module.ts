@@ -27,6 +27,7 @@ import { BoxPrAuthorComponent } from './box-pr-author/box-pr-author.component';
 import { BoxPrPlatformComponent } from './box-pr-platform/box-pr-platform.component';
 import { BoxPrBaseComponent } from './box-pr-base/box-pr-base.component';
 import { ContributionsComponent } from './contributions/contributions.component';
+import { ContributionsTabComponent } from './contributions-tab/contributions-tab.component';
 import { ContributionsHomeComponent } from './contributions-home/contributions-home.component';
 import { CommunityQueueComponent } from './community-queue/community-queue.component';
 import { AssignedIssuesComponent } from './assigned-issues/assigned-issues.component';
@@ -56,6 +57,7 @@ import { AssignedIssuesComponent } from './assigned-issues/assigned-issues.compo
     BoxPrPlatformComponent,
     BoxPrBaseComponent,
     ContributionsComponent,
+    ContributionsTabComponent,
     ContributionsHomeComponent,
     CommunityQueueComponent,
     AssignedIssuesComponent,

@@ -1,0 +1,118 @@
+/* Contributions */
+
+.navbar-contribution,
+.navbar-sub-item {
+  position: relative;
+  display: inline-block;
+}
+
+.navbar-sub-item {
+  padding: 0 8px;
+  margin: 0 3px;
+  border-radius: 6px 6px 0 0;
+  background: #f0f0ff;
+  cursor: pointer;
+}
+
+.navbar-sub-item.fixed {
+  background: #e0e0e8;
+}
+
+.navbar-contribution > span > img {
+  margin: 0 4px 0;
+}
+
+.navbar-contribution-data,
+.navbar-sub-item-block {
+  display: block;
+  overflow-y: auto;
+}
+
+.navbar-contribution:hover .navbar-contribution-data,
+.navbar-contribution.fixed .navbar-contribution-data,
+.navbar-sub-item-block {
+  visibility: visible;
+  opacity: 1;
+}
+
+.navbar-contribution.fixed .navbar-contribution-data {
+  z-index: 2;
+}
+
+.navbar-contribution.fixed > span > img {
+  border: solid 2px red;
+}
+
+.navbar-contribution-data thead th {
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.contribution-issue {
+  font-size: 12px;
+  display: inline-block;
+  background: #c0c0c0;
+  border-radius: 3px;
+  padding: 2px;
+  margin: 2px 4px;
+}
+
+table td {
+  position: relative;
+}
+
+table td .contribution-cell-clipboard {
+  display: none;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+}
+
+table td:hover .contribution-cell-clipboard {
+  display: block;
+}
+
+/* Contribution detail */
+
+.contribution-detail {
+  display: none;
+  position: absolute;
+  background: white;
+  border: solid 1px grey;
+  border-radius: 5px;
+  padding: 4px;
+  margin-top: 35px;
+  z-index: 10;
+
+  grid-template-columns: max-content max-content;
+  color: black;
+}
+
+.contribution-issue:hover .contribution-detail {
+  display: grid;
+}
+
+.contribution-detail {
+  /* We'll make the popup pull left, so that it doesn't go off screen */
+  right: -8px;
+}
+
+.detail-title {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.detail-detail {
+  width: fit-content;
+  max-width: 400px;
+}
+
+.issue-count {
+  background: darkred;
+  border-radius: 16px;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+}

@@ -6,11 +6,7 @@ import { PopupComponent } from '../popup/popup.component';
 import { VisibilityService } from '../visibility/visibility.service';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
 import { IssueClipboard } from '../utility/issue-clipboard';
-
-export enum IssueView {
-  Current = 'current',
-  All = 'all'
-};
+import { IssueView } from '../../state';
 
 @Component({
   selector: 'app-issue-list',

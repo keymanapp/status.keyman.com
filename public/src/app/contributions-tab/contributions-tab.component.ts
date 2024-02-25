@@ -1,7 +1,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { issueLabelScopes } from '../../../../shared/issue-labels';
 import { getUserAvatarUrl } from '../../../../shared/users';
-import { ContributionCollection } from '../contributions/contribution-collection';
+import { appState } from '../../state';
+import { dataModel } from '../data/data.model';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { escapeHtml } from '../utility/escapeHtml';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
@@ -14,22 +15,16 @@ import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUr
 export class ContributionsTabComponent implements OnInit, OnChanges {
 
   @Input() user: any;
-  @Input() status: any;
-  @Input() sprintDays: any;
 
-  @Input() pullsByBase: any;
-  @Input() sites: any;
+  // data proxies
+  get status() { return dataModel.status }
+  get sprintDays() { return dataModel.sprintDays }
+  get pullsByBase() { return dataModel.pullsByBase }
+  get sites() { return dataModel.sites }
 
   currentView() {
-    return ContributionCollection.currentView;
+    return appState.userView;
   }
-
-  nullUser = { login:'', avatarUrl: null, contributions: {
-    issues: { nodes: [] },
-    pullRequests: { nodes: [] },
-    reviews: { nodes: [] },
-    tests: { nodes: [] },
-  } };
 
   _issues = null;
 
@@ -37,14 +32,6 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
 
   stringify(o: any) {
     return JSON.stringify(o);
-  }
-
-  users() {
-    let users = [];
-    if(this.status?.contributions?.data.repository.contributions.nodes) {
-      users = [].concat([this.nullUser],this.status?.contributions?.data.repository.contributions.nodes);
-    }
-    return users;
   }
 
   ngOnInit(): void {
@@ -70,6 +57,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   }
 
   getUserAvatar(user, size) {
+    if(user.login == '') return null;
     return getUserAvatarUrl(user, size);
   }
 
@@ -82,22 +70,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   }
 
   hoverSubItem(item) {
-    ContributionCollection.currentView = item;
-  }
-
-  getAllContributions = () => {
-    let text = '';
-    for(let user of this.status?.contributions?.data.repository.contributions.nodes) {
-      let userContributions = this.getUserContributions({user: user}).content;
-      if(userContributions) {
-        text += `
-          <h2><img style="width:32px; height:32px" src="${this.getUserAvatar(user, 32)}"> ${user.login}</h2>
-          ${userContributions}
-          <hr>
-        `;
-      }
-    }
-    return { content: text, type: 'text/html' };
+    appState.userView = item;
   }
 
   getUserContributions = (context) => {
@@ -124,7 +97,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
     }
 
     return { content: text, type: 'text/html' };
-    }
+  }
 
   getContributionText(nodes, type, day?) {
     let n = nodes.reverse();

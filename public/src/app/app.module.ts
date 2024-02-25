@@ -31,6 +31,7 @@ import { ContributionsTabComponent } from './contributions-tab/contributions-tab
 import { ContributionsHomeComponent } from './contributions-home/contributions-home.component';
 import { CommunityQueueComponent } from './community-queue/community-queue.component';
 import { AssignedIssuesComponent } from './assigned-issues/assigned-issues.component';
+import { OverviewTabComponent } from './overview-tab/overview-tab.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { AssignedIssuesComponent } from './assigned-issues/assigned-issues.compo
     ContributionsHomeComponent,
     CommunityQueueComponent,
     AssignedIssuesComponent,
+    OverviewTabComponent,
   ],
   imports: [
     BrowserModule,

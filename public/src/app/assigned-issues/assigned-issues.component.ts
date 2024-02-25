@@ -6,6 +6,7 @@ import { issueLabelScopes } from "../../../../shared/issue-labels";
 import { IssueClipboard } from '../utility/issue-clipboard';
 import { labelColor } from '../utility/labelColor';
 import { PullRequestClipboard } from '../utility/pull-request-clipboard';
+import { dataModel } from '../data/data.model';
 
 @Component({
   selector: 'app-assigned-issues',
@@ -13,12 +14,13 @@ import { PullRequestClipboard } from '../utility/pull-request-clipboard';
   styleUrls: ['./assigned-issues.component.css']
 })
 export class AssignedIssuesComponent {
-  @Input() status: any;
   @Input() user: any;
-
-  @Input() pullsByBase: any;
-  @Input() sites: any;
   @Input() issues: any;
+
+  // data proxies
+  get status() { return dataModel.status }
+  get pullsByBase() { return dataModel.pullsByBase }
+  get sites() { return dataModel.sites }
 
   constructor(private sanitizer: DomSanitizer) { }
 

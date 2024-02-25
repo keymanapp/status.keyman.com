@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { getUserAvatarUrl } from '../../../../shared/users';
-import { ContributionCollection } from './contribution-collection';
+import { appState } from '../../state';
+import { ContributionsModel } from '../data/contributions.model';
+import { dataModel } from '../data/data.model';
 
 @Component({
   selector: 'app-contributions',
@@ -9,14 +11,16 @@ import { ContributionCollection } from './contribution-collection';
 })
 export class ContributionsComponent implements OnInit {
 
-  @Input() status: any;
-  @Input() sprintDays: any;
-
-  @Input() pullsByBase: any;
-  @Input() sites: any;
+  // data proxies
+  get status() { return dataModel.status }
+  get sprintDays() { return dataModel.sprintDays }
+  get pullsByBase() { return dataModel.pullsByBase }
+  get sites() { return dataModel.sites }
+  // state proxies
+  get activeTab() { return appState.homeActiveTab }
 
   @Input() user: any;
-  @Input() activeTab: any;
+
 
   @Output() onSelectTab = new EventEmitter<string>();
 
@@ -56,7 +60,7 @@ export class ContributionsComponent implements OnInit {
   }
 
   selectUser(login) {
-    if(login == '') ContributionCollection.currentView = 'assigned-issues';
+    if(login == '') appState.userView = 'assigned-issues';
     this.onSelectTab.emit(this.activeTab == login ? 'overview' : login);
   }
 }

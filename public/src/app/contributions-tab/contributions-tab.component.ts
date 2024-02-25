@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { issueLabelScopes } from '../../../../shared/issue-labels';
 import { getUserAvatarUrl } from '../../../../shared/users';
 import { ContributionCollection } from '../contributions/contribution-collection';
+import { dataModel } from '../data/data.model';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { escapeHtml } from '../utility/escapeHtml';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
@@ -14,11 +15,12 @@ import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUr
 export class ContributionsTabComponent implements OnInit, OnChanges {
 
   @Input() user: any;
-  @Input() status: any;
-  @Input() sprintDays: any;
 
-  @Input() pullsByBase: any;
-  @Input() sites: any;
+  // data proxies
+  get status() { return dataModel.status }
+  get sprintDays() { return dataModel.sprintDays }
+  get pullsByBase() { return dataModel.pullsByBase }
+  get sites() { return dataModel.sites }
 
   currentView() {
     return ContributionCollection.currentView;

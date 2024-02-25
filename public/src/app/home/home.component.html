@@ -50,9 +50,11 @@
 
   <div id="tabs">
 
-    <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}" *ngFor="let user of contributionUsers()">
-      <app-contributions-tab *ngIf="showContributions" [user]="user" [pullsByBase]="pullsByBase" [sites]="sites" [sprintDays]="sprintDays" [status]="status"></app-contributions-tab>
-    </div>
+    <ng-container *ngIf="showContributions">
+      <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}" *ngFor="let user of contributionUsers()">
+        <app-contributions-tab [user]="user"></app-contributions-tab>
+      </div>
+    </ng-container>
 
     <div id="tab-overview" class="flex-container container-fluid {{activeTab == 'overview' ? 'tab-active' : ''}}">
       <app-overview-tab></app-overview-tab>

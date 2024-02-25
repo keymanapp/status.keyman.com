@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { issueLabelScopes } from '../../../../shared/issue-labels';
 import { getUserAvatarUrl } from '../../../../shared/users';
-import { ContributionCollection } from '../contributions/contribution-collection';
+import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { escapeHtml } from '../utility/escapeHtml';
@@ -23,7 +23,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   get sites() { return dataModel.sites }
 
   currentView() {
-    return ContributionCollection.currentView;
+    return appState.userView;
   }
 
   _issues = null;
@@ -70,7 +70,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   }
 
   hoverSubItem(item) {
-    ContributionCollection.currentView = item;
+    appState.userView = item;
   }
 
   getUserContributions = (context) => {

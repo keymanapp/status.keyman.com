@@ -1,42 +1,30 @@
-import { appState } from '../../state';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
 import { escapeHtml } from '../utility/escapeHtml';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
 
-export class ContributionCollection {
-
-  static _currentView = appState.userView;
-
-  static get currentView() {
-    return this._currentView;
-  }
-
-  static set currentView(v) {
-    this._currentView = v;
-    appState.userView = v;
-  }
+export class ContributionsModel {
 
   static getUserContributions = (sprintDays, status, context) => {
     let text = '';
 
     if(context.user.contributions.issues.nodes.length) {
-      text += `<h3>Issues</h3>${ContributionCollection.getContributionIssueText(context).content}`;
+      text += `<h3>Issues</h3>${ContributionsModel.getContributionIssueText(context).content}`;
     }
 
     if(context.user.contributions.pullRequests.nodes.length) {
-      text += `<h3>Pull Requests</h3>${ContributionCollection.getContributionPRText(context).content}`;
+      text += `<h3>Pull Requests</h3>${ContributionsModel.getContributionPRText(context).content}`;
     }
 
     if(context.user.contributions.reviews.nodes.length) {
-      text += `<h3>Reviews</h3>${ContributionCollection.getContributionReviewText(context).content}`;
+      text += `<h3>Reviews</h3>${ContributionsModel.getContributionReviewText(context).content}`;
     }
 
     if(context.user.contributions.tests.nodes.length) {
-      text += `<h3>User Tests</h3>${ContributionCollection.getContributionTestText(context).content}`;
+      text += `<h3>User Tests</h3>${ContributionsModel.getContributionTestText(context).content}`;
     }
 
-    if(ContributionCollection.getContributionPosts(sprintDays, status, context).length) {
-      text += `<h3>Topic Posts</h3>${ContributionCollection.getContributionPostText(sprintDays, status, context).content}`;
+    if(ContributionsModel.getContributionPosts(sprintDays, status, context).length) {
+      text += `<h3>Topic Posts</h3>${ContributionsModel.getContributionPostText(sprintDays, status, context).content}`;
     }
 
     return { content: text, type: 'text/html' };
@@ -61,19 +49,19 @@ export class ContributionCollection {
   }
 
   static getContributionPRText = (context) => {
-    return ContributionCollection.getContributionText(context.user.contributions.pullRequests.nodes, 'pullRequest', context.day);
+    return ContributionsModel.getContributionText(context.user.contributions.pullRequests.nodes, 'pullRequest', context.day);
   }
 
   static getContributionIssueText = (context) => {
-    return ContributionCollection.getContributionText(context.user.contributions.issues.nodes, 'issue', context.day);
+    return ContributionsModel.getContributionText(context.user.contributions.issues.nodes, 'issue', context.day);
   }
 
   static getContributionReviewText = (context) => {
-    return ContributionCollection.getContributionText(context.user.contributions.reviews.nodes, 'pullRequest', context.day);
+    return ContributionsModel.getContributionText(context.user.contributions.reviews.nodes, 'pullRequest', context.day);
   }
 
   static getContributionTestText = (context) => {
-    return ContributionCollection.getContributionText(context.user.contributions.tests.nodes, 'issue', context.day);
+    return ContributionsModel.getContributionText(context.user.contributions.tests.nodes, 'issue', context.day);
   }
 
   /* Community Site Post Contributions */
@@ -103,7 +91,7 @@ export class ContributionCollection {
   }
 
   static getContributionPostText = (sprintDays, status, context) => {
-    let n = ContributionCollection.getContributionPosts(sprintDays, status, context);
+    let n = ContributionsModel.getContributionPosts(sprintDays, status, context);
     if(!n || !n.length) {
       return { content: '', type: 'text/html' };
     }

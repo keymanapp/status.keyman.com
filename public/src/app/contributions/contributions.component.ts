@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { getUserAvatarUrl } from '../../../../shared/users';
-import { ContributionCollection } from './contribution-collection';
+import { appState } from '../../state';
+import { ContributionsModel } from '../data/contributions.model';
 
 @Component({
   selector: 'app-contributions',
@@ -56,7 +57,7 @@ export class ContributionsComponent implements OnInit {
   }
 
   selectUser(login) {
-    if(login == '') ContributionCollection.currentView = 'assigned-issues';
+    if(login == '') appState.userView = 'assigned-issues';
     this.onSelectTab.emit(this.activeTab == login ? 'overview' : login);
   }
 }

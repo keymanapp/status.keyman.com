@@ -4,7 +4,7 @@ import { StatusService } from '../status/status.service';
 import { StatusSource } from '../../../../shared/status-source';
 import { DataSocket } from '../datasocket/datasocket.service';
 import { getUserAvatarUrl } from '../../../../shared/users';
-import { ContributionCollection } from '../contributions/contribution-collection';
+import { ContributionsModel } from '../data/contributions.model';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
 
@@ -105,7 +105,7 @@ export class HomeComponent {
   getAllContributions = () => {
     let text = '';
     for(let user of this.status?.contributions?.data.repository.contributions.nodes) {
-      let userContributions = ContributionCollection.getUserContributions(this.sprintDays, this.status, {user: user}).content;
+      let userContributions = ContributionsModel.getUserContributions(this.sprintDays, this.status, {user: user}).content;
       if(userContributions) {
         text += `
           <h2><img style="width:32px; height:32px" src="${getUserAvatarUrl(user, 32)}"> ${user.login}</h2>

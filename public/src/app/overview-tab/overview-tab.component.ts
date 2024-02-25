@@ -3,7 +3,7 @@ import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { getAvatarUrl, getUserAvatarUrl } from '../../../../shared/users';
 import { IssueClipboard } from '../utility/issue-clipboard';
 import { PullRequestClipboard } from '../utility/pull-request-clipboard';
-import { ContributionCollection } from '../contributions/contribution-collection';
+import { ContributionsModel } from '../data/contributions.model';
 import { dataModel } from '../data/data.model';
 import { appState } from '../../state';
 

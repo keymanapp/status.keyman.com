@@ -67,7 +67,7 @@ class AppState {
   // home.activeTab
 
   public get homeActiveTab(): string {
-    return this.getItem('home.activeTab') || 'overview';
+    return this.getItem('home.activeTab') ?? 'overview';
   }
 
   public set homeActiveTab(value: string) {

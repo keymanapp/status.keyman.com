@@ -8,7 +8,11 @@ export default {
       contributions: {}
     };
     for(let user of Object.keys(userIds)) {
-      result.contributions[user] = await this.getUser(startDate, userIds[user].community);
+      try {
+        result.contributions[user] = await this.getUser(startDate, userIds[user].community);
+      } catch(e) {
+        console.log(`Error retrieving discourse contributions for ${user}: ${e}`);
+      }
     }
 
     return result;

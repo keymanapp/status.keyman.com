@@ -14,14 +14,24 @@ export function pullStatus(pull) {
 
   Object.entries(authors).forEach(entry => {
     (entry[1] as any).state = (entry[1] as any).reviews.reduce((a, c) => c.state == 'APPROVED' || c.state == 'CHANGES_REQUESTED' ? c.state : a, 'PENDING');
+    (entry[1] as any).updatedAt = (entry[1] as any).reviews.reduce((a, c) => new Date(c.updatedAt) >= a ? new Date(c.updatedAt) : a, new Date(0));
   });
 
-  return Object.entries(authors).reduce(
+  const latestReviewStatus = Object.entries(authors).reduce(
     (a, c) =>
-      (c[1] as any).state == 'CHANGES_REQUESTED' || a == 'status-changes-requested' ? 'status-changes-requested' :
-      (c[1] as any).state == 'APPROVED' || a == 'status-approved' ? 'status-approved' : 'status-pending',
-    'status-pending' // Initial value
+      (c[1] as any).state == 'CHANGES_REQUESTED' || a[0] == 'status-changes-requested' ? ['status-changes-requested', ((c[1] as any).updatedAt)] :
+      (c[1] as any).state == 'APPROVED' || a[0] == 'status-approved' ? ['status-approved', (c[1] as any).updatedAt] : ['status-pending', null],
+    ['status-pending', <Date>null] // Initial value
   );
+
+  if(pr.reviewsRequested?.nodes?.length) {
+    const latestReviewRequest = pr.reviewsRequested.nodes[pr.reviewsRequested.nodes.length - 1];
+    if(new Date(latestReviewRequest.createdAt) >= latestReviewStatus[1]) {
+      return 'status-pending';
+    }
+  }
+
+  return latestReviewStatus[0];
 }
 
 export function pullUserTesting(pull) {

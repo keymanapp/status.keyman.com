@@ -142,6 +142,17 @@ const queryStrings = {
               url
             }
 
+            reviewsRequested:timelineItems(
+              itemTypes: [REVIEW_REQUESTED_EVENT]
+              first: 10
+            ) {
+              nodes {
+                ... on ReviewRequestedEvent {
+                  createdAt
+                }
+              }
+            }
+
             timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
               nodes {
                 ... on CrossReferencedEvent {

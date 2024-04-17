@@ -2,19 +2,23 @@ import { ProbotOctokit } from "probot";
 import teamcityService from "../services/teamcity/teamcity";
 import { statusData } from '../data/status-data';
 import { artifactLinks } from '../../shared/artifact-links';
+import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams";
 
 export async function getArtifactLinksComment(
   octokit: InstanceType<typeof ProbotOctokit>,
   data,
   pull) {
   // Only pull requests can have artifacts
-  if(!pull) return '';
+  if(!pull) {
+    console.error('[@keymanapp-test-bot] getArtifactLinksComment: pull is nullish')
+    return '';
+  }
 
   let statuses;
   try {
     statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
   } catch(e) {
-    console.log(e);
+    console.error(`[@keymanapp-test-bot] ${e}`);
     return '';
   }
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
@@ -50,9 +54,14 @@ export async function getArtifactLinksComment(
   for(let context of Object.keys(s)) {
     // artifactLinks
     let u;
+    if(!s[context].url) {
+      console.warn(`[@keymanapp-test-bot] skipping ${s[context].context}`);
+      continue;
+    }
     try {
       u = new URL(s[context].url);
     } catch(e) {
+      console.error(`[@keymanapp-test-bot] ${e}`);
       continue;
     }
     if (u.hostname == 'jenkins.lsdev.sil.org') {
@@ -69,7 +78,7 @@ export async function getArtifactLinksComment(
       // https://github.com/keymanapp/keyman/actions/runs/4294449810
       const matches = s[context].url.match(/.+\/runs\/(\d+)/);
       if (!matches) {
-        console.log(`Can't find workflow run in url ${s[context].url}`);
+        console.error(`[@keymanapp-test-bot] Can't find workflow run in url ${s[context].url}`);
         return '';
       }
       const run_id = matches[1];
@@ -83,7 +92,7 @@ export async function getArtifactLinksComment(
           // "keyman-binarypkgs-focal_amd64"
           const distroMatches = artifact.name.match(/keyman-binarypkgs-(.+)_amd64/);
           if (!distroMatches) {
-            console.log(`Can't find distribution in artifact name ${artifact.name}`);
+            console.error(`[@keymanapp-test-bot] Can't find distribution in artifact name ${artifact.name}`);
             return '';
           }
           if (!links['Linux']) links['Linux'] = [];
@@ -95,24 +104,21 @@ export async function getArtifactLinksComment(
           });
         }
       } catch (e) {
-        console.log(e);
+        console.error(`[@keymanapp-test-bot] ${e}`);
         return '';
       }
-    } else if(u.searchParams.has('buildTypeId')) {
-      // Assume TeamCity
-      let buildTypeId = u.searchParams.get('buildTypeId');
+    } else if(u.searchParams.has('buildTypeId') || u.pathname.match(/\/buildConfiguration\//)) {
+      const { buildTypeId, buildId } = getTeamcityUrlParams(u);
 
       buildData = findBuildData(s, buildTypeId, teamCityData);
 
       if(buildData) version = findBuildVersion(buildData);
       if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
       if(!version) {
-        console.log('[@keymanapp-test-bot] Failed to find version information for artifact links; buildData:');
-        console.log(JSON.stringify(buildData));
+        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links; buildData: ${JSON.stringify(buildData)}`);
         continue;
       }
 
-      let buildId = u.searchParams.get('buildId');
       let t = artifactLinks.teamCityTargets[buildTypeId];
       if(t) {
         for(let download of t.downloads) {
@@ -177,14 +183,11 @@ function findBuildData(s, buildTypeId, teamCity) {
       } catch(e) {
         continue;
       }
-      if(u.searchParams.has('buildTypeId')) {
-        // Assume TeamCity
-        if(u.searchParams.get('buildTypeId') == buildTypeId) {
-          // let buildTypeId = u.searchParams.get('buildTypeId');
-          let buildId = u.searchParams.get('buildId');
-          let data = getBuildDataFromTeamCityFromCache(buildTypeId, buildId, teamCity);
-          return data;
-        }
+      const up = getTeamcityUrlParams(u);
+      // Assume TeamCity
+      if(up.buildTypeId == buildTypeId) {
+        let data = getBuildDataFromTeamCityFromCache(buildTypeId, up.buildId, teamCity);
+        return data;
       }
     }
   }

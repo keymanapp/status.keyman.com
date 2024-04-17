@@ -7,6 +7,7 @@ import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { pullStatus, pullUserTesting, pullBuildState, pullBuildStateEx } from '../utility/pullStatus';
 import { VisibilityService } from '../visibility/visibility.service';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
+import { getTeamcityUrlParams } from '../../../../shared/getTeamcityUrlParams';
 import { pullEmoji } from '../utility/pullEmoji';
 
 @Component({
@@ -213,8 +214,7 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     }
 
     if(url.hostname == 'build.palaso.org') {
-      let buildId = url.searchParams.get('buildId');
-      let buildTypeId = url.searchParams.get('buildTypeId');
+      const { buildId, buildTypeId } = getTeamcityUrlParams(url);
       let targets = this.teamCityTargets[buildTypeId];
       if(targets) {
         result.name = targets.name;

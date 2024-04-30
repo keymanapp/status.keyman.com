@@ -10,6 +10,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string}} = {
   "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png'},
   "srl295": { community: "srl295", avatar: 'bg+SRL.png'},
   "bharanidharanj": { community: "", avatar: 'bg+BJ.png'},
+  "dinakaranr": {community: "" },
   "LornaSIL": { community: "Lorna" },
   "DavidLRowe": { community: "drowe" },
   "Nnyny": { community: "Nguonnyny_Tan" },

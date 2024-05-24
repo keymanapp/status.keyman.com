@@ -140,7 +140,7 @@ export async function processEpicLabelsEmoji(
 // Attempt to automatically add labels corresponding to issue title
 //
 // type(scope[,scope...]): title [emoji]
-// type: auto|bug|chore|docs|feat|refactor|spec|test
+// type: auto|bug|change|chore|docs|feat|refactor|spec|style|test
 // scope: android|common|core|developer|ios|linux|mac|web|windows
 //
 async function applyIssueLabels(

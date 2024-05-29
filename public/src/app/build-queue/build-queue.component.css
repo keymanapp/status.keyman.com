@@ -32,13 +32,18 @@
   background: #fcfffc;
   border: solid 1px #4c4c30;
   width: max-content;
-  max-width: 720px;
+  max-width: 900px;
   font-size: 10pt;
 
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.15s linear;
   transition-delay: 0.25s;
+}
+
+.build-queue-detail .detail {
+  max-height: 700px;
+  overflow-y: scroll;
 }
 
 .build-queue:hover > .build-queue-detail,

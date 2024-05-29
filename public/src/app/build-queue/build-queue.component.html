@@ -9,17 +9,19 @@
         <span class="summary-label">Build Queue</span>
         <span class="pin" (click)="pin()">📌</span>
       </div>
-      <table class="table table-sm table-borderless status-table"><thead>
-        <tr><th>Platform</th><th>Build Type</th><th>Branch / PR</th></tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let build of queue">
-          <td>{{getPlatform(build)}}</td>
-          <td><a href="{{build.webUrl}}" target="_blank">{{getBuildType(build)}}</a></td>
-          <td *ngIf="isPullRequest(build)"><a href="https://github.com/keymanapp/keyman/pull/{{build.branchName}}" target="_blank"><b>#{{build.branchName}}:</b> {{getPullRequestTitle(build)}}</a></td>
-          <td *ngIf="!isPullRequest(build)"><b>{{build.branchName}}</b></td>
-        </tr>
-      </tbody></table>
+      <div class="detail">
+        <table class="table table-sm table-borderless status-table"><thead>
+          <tr><th>Platform</th><th>Build Type</th><th>Branch / PR</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let build of queue">
+            <td>{{getPlatform(build)}}</td>
+            <td><a href="{{build.webUrl}}" target="_blank">{{getBuildType(build)}}</a></td>
+            <td *ngIf="isPullRequest(build)"><a href="https://github.com/keymanapp/keyman/pull/{{build.branchName}}" target="_blank"><b>#{{build.branchName}}:</b> {{getPullRequestTitle(build)}}</a></td>
+            <td *ngIf="!isPullRequest(build)"><b>{{build.branchName}}</b></td>
+          </tr>
+        </tbody></table>
+      </div>
     </ng-container>
   </div>
   </span>

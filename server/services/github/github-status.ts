@@ -89,7 +89,7 @@ const queryStrings = {
       issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
         totalCount
       }
-      issuesByLabelAndMilestone: labels(first: 100, query: "${issueLabelScopes.join(' ')}") {
+      issuesByLabelAndMilestone: labels(first: 100) {
         edges {
           node {
             name

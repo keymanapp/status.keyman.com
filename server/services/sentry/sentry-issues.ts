@@ -82,7 +82,7 @@ export default {
 // or statsPeriod=14d
 // groupStatsPeriod=auto
 // limit=100
-// query=is%3Aunresolved
+// query=is%3Aunresolved+issue.priority%3A%5Bhigh%2C+medium%5D
 // shortIdLookup=1
 // sort=freq
 // start=2021-03-20T13%3A00%3A00
@@ -97,7 +97,7 @@ export default {
       `&sort=freq`+
       `&utc=false`+
       `&limit=100`+
-      `&query=is%3Aunresolved`+
+      `&query=is%3Aunresolved+issue.priority%3A%5Bhigh%2C+medium%5D`+
       `+environment%3A${environment}`+ // note, it seems `&environment= doesn't work on sentry.io, but query=environment: does?
       (cursor ? `&cursor=${cursor}` : ``);
     const authOptions = {

@@ -26,7 +26,8 @@ export function pullStatus(pull) {
 
   if(pr.reviewsRequested?.nodes?.length) {
     const latestReviewRequest = pr.reviewsRequested.nodes[pr.reviewsRequested.nodes.length - 1];
-    if(new Date(latestReviewRequest.createdAt) >= latestReviewStatus[1]) {
+    if(pr.reviews.nodes.length == 0 ||
+        new Date(latestReviewRequest.createdAt) >= new Date(pr.reviews.nodes[pr.reviews.nodes.length-1].updatedAt)) {
       return 'status-pending';
     }
   }

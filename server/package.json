@@ -20,7 +20,7 @@
     "application-config-path": "^0.1.0",
     "deep-equal": "^2.0.5",
     "emoji-regex": "^10.2.1",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "parse-link-header": "^2.0.0",
     "probot": "^12.3.3",
     "source-map-support": "^0.5.19",

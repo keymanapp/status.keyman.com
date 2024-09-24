@@ -29,9 +29,9 @@ Version: 15.0.100-1+focal1
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-// http://linux.lsdev.sil.org/ubuntu/dists/focal<llsoTier>/main/binary-amd64/Packages
+// http://linux.lsdev.sil.org/ubuntu/dists/noble<llsoTier>/main/binary-amd64/Packages
 const HOST ='linux.lsdev.sil.org';
-const PATH_PREFIX='/ubuntu/dists/focal';
+const PATH_PREFIX='/ubuntu/dists/noble';
 const PATH_SUFFIX='/main/binary-amd64/Packages';
 
 const service = {

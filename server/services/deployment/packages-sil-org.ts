@@ -29,7 +29,7 @@ const service: DataService = {
     return httpget(HOST, PATH).then((data) => {
       const results = data.data.match(/^Package: keyman\s*\n(Source:\s*keyman[^\n]*\n)?Version: (\d+\.\d+\.\d+)-\d+/m);
       if(results) {
-        return { version: results[1] };
+        return { version: results[2] };
       }
 
       return null;

@@ -111,11 +111,11 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             date: this.status?.deployment?.[StatusSource.LaunchPadStable]?.date_published.substr(0, 10)
           }, {
             name: 'packages.sil.org',
-            url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman-config/',
+            url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman/',
             version: this.status?.deployment?.[StatusSource.PackagesSilOrg]?.version
           }, {
             name: 'linux.lsdev.sil.org',
-            url: '',  // Disabled, see #250 url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman-config/',
+            url: '',  // Disabled, see #250 url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman/',
             version: this.status?.deployment?.[StatusSource.LinuxLsdevSilOrgStable]?.version
           }, {
             name: 'Debian Unstable',

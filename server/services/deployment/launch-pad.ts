@@ -5,12 +5,12 @@
 import httpget from "../../util/httpget";
 import DataService from "../data-service";
 
-// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-alpha?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman-config
-// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-beta?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman-config
-// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman-config
+// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-alpha?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman
+// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-beta?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman
+// https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman
 const HOST='api.launchpad.net';
 const PATH_PREFIX='/1.0/~keymanapp/+archive/ubuntu/keyman';
-const PATH_SUFFIX='?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman-config';
+const PATH_SUFFIX='?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&binary_name=keyman';
 
 const service = {
    get: function(tier) {

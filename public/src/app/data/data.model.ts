@@ -463,8 +463,9 @@ export class DataModel {
       if(!this.pullsByBase[base]) this.pullsByBase[base] = [];
       this.pullsByBase[base].push(pd);
 
-      if(!this.pullsByAuthor[pull.node.author.login]) this.pullsByAuthor[pull.node.author.login] = [];
-      this.pullsByAuthor[pull.node.author.login].push(pd);
+      const author = pull.node.headRefName.match(/^epic\//) ? '' : pull.node.author.login;
+      if(!this.pullsByAuthor[author]) this.pullsByAuthor[author] = [];
+      this.pullsByAuthor[author].push(pd);
 
       let status = pullStatus(pd);
       let userTesting = pullUserTesting(pd);

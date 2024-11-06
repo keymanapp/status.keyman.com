@@ -127,7 +127,7 @@ const STATUS_SOURCES: StatusSource[] = [
   StatusSource.DebianBeta,
   StatusSource.DebianStable,
   StatusSource.NpmKeymanCompiler,
-  StatusSource.NpmModelsTypes,
+  StatusSource.NpmCommonTypes,
   StatusSource.SKeymanCom,
   StatusSource.PackagesSilOrg,
   StatusSource.LinuxLsdevSilOrgAlpha,

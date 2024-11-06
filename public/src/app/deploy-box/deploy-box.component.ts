@@ -159,9 +159,9 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           url: 'https://npmjs.com/package/@keymanapp/kmc',
           version: this.status?.deployment?.[StatusSource.NpmKeymanCompiler]?.[this.tier]?.split('-')[0]
         }, {
-          name: '@keymanapp/models-types',
-          url: 'https://npmjs.com/package/@keymanapp/models-types',
-          version: this.status?.deployment?.[StatusSource.NpmModelsTypes]?.[this.tier]?.split('-')[0]
+          name: '@keymanapp/common-types',
+          url: 'https://npmjs.com/package/@keymanapp/common-types',
+          version: this.status?.deployment?.[StatusSource.NpmCommonTypes]?.[this.tier]?.split('-')[0]
         });
         break;
     }

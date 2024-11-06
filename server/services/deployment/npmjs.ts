@@ -40,7 +40,7 @@ const service = {
 };
 
 const KMC_PATH='/@keymanapp/kmc';
-const MT_PATH='/@keymanapp/models-types';
+const CT_PATH='/@keymanapp/common-types';
 
 class ServiceClass implements DataService {
   private etag = '';
@@ -60,4 +60,4 @@ class ServiceClass implements DataService {
 };
 
 export const kmcService: DataService = new ServiceClass(KMC_PATH);
-export const mtService: DataService = new ServiceClass(MT_PATH);
+export const ctService: DataService = new ServiceClass(CT_PATH);

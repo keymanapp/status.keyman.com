@@ -15,7 +15,7 @@ import { launchPadAlphaService, launchPadBetaService, launchPadStableService } f
 import packagesSilOrgService from "../services/deployment/packages-sil-org";
 import { linuxLsdevSilOrgAlphaService, linuxLsdevSilOrgBetaService, linuxLsdevSilOrgStableService } from "../services/deployment/linux-lsdev-sil-org";
 import { debianBetaService, debianStableService } from "../services/deployment/debian";
-import { kmcService, mtService } from "../services/deployment/npmjs";
+import { kmcService, ctService } from "../services/deployment/npmjs";
 import { StatusSource } from "../../shared/status-source";
 import discourseService from "../services/discourse/discourse";
 import { performanceLog } from "../performance-log";
@@ -37,7 +37,7 @@ services[StatusSource.LinuxLsdevSilOrgStable] = linuxLsdevSilOrgStableService;
 services[StatusSource.DebianBeta] = debianBetaService;
 services[StatusSource.DebianStable] = debianStableService;
 services[StatusSource.NpmKeymanCompiler] = kmcService;
-services[StatusSource.NpmModelsTypes] = mtService;
+services[StatusSource.NpmCommonTypes] = ctService;
 services[StatusSource.CommunitySite] = discourseService;
 
 export interface StatusDataCache {

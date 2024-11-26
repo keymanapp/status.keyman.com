@@ -19,7 +19,7 @@
     "@angular/platform-browser": "^13.2.4",
     "@angular/platform-browser-dynamic": "^13.2.4",
     "@angular/router": "^13.2.4",
-    "@sentry/angular": "^6.2.3",
+    "@sentry/angular": "^8.40.0",
     "@sentry/tracing": "^6.2.3",
     "bootstrap": "^4.4.1",
     "compare-versions": "^3.6.0",

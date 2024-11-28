@@ -6,6 +6,9 @@
   <span *ngIf="user.login != ''" class="navbar-sub-item {{currentView() == 'contributions' ? 'fixed' : ''}}" (mouseenter)="hoverSubItem('contributions')">
     Contributions <span class="issue-count">{{contributionCount(user)}}</span>
   </span>
+  <span *ngIf="userTz" title="{{ userTz }}">
+    🕰️ {{ userDate() }}
+  </span>
 </div>
 
 <app-assigned-issues *ngIf="currentView() == 'assigned-issues'" [issues]="issues()" [user]="user"></app-assigned-issues>

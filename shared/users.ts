@@ -5,6 +5,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string, tz?: 
   "jahorton": { community: "joshua_horton", avatar: 'bg+JH.png', tz: 'Asia/Phnom_Penh'},
   "MakaraSok": { community: "makara", avatar: 'bg+MS.png', tz: 'Asia/Phnom_Penh'},
   "mcdurdin": { community: "Marc", avatar: 'bg+MD.png', tz: 'Asia/Phnom_Penh'},
+  "markcsinclair": { community: "", tz: 'Europe/London' },
   "rc-swag": { community: "ross", avatar: 'bg+RC.png', tz: 'Australia/Brisbane'},
   "SabineSIL": { community: "", avatar: 'bg+SAB.png', tz: 'Europe/Berlin'},
   "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png', tz: 'Asia/Phnom_Penh'},

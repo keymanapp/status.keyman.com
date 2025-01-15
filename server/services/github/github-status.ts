@@ -153,40 +153,40 @@ const queryStrings = {
               }
             }
 
-            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
-              nodes {
-                ... on CrossReferencedEvent {
-                  __typename
-                  subject: source {
-                    ... on Issue {
-                      number
-                      url
-                    }
-                    ... on PullRequest {
-                      number
-                      url
-                    }
-                  }
-                }
-                ... on ConnectedEvent {
-                  __typename
-                  subject {
-                    ... on Issue {
-                      number
-                      url
-                    }
-                  }
-                }
-                ... on DisconnectedEvent {
-                  __typename
-                  subject {
-                    ... on Issue {
-                      number
-                    }
-                  }
-                }
-              }
-            }
+            # timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+            #   nodes {
+            #     ... on CrossReferencedEvent {
+            #       __typename
+            #       subject: source {
+            #         ... on Issue {
+            #           number
+            #           url
+            #         }
+            #         ... on PullRequest {
+            #           number
+            #           url
+            #         }
+            #       }
+            #     }
+            #     ... on ConnectedEvent {
+            #       __typename
+            #       subject {
+            #         ... on Issue {
+            #           number
+            #           url
+            #         }
+            #       }
+            #     }
+            #     ... on DisconnectedEvent {
+            #       __typename
+            #       subject {
+            #         ... on Issue {
+            #           number
+            #         }
+            #       }
+            #     }
+            #   }
+            # }
 
             reviews(last:100) {
               nodes {
@@ -326,6 +326,16 @@ export default {
       try {
         let data = keys.reduce((pv, cv, ix) => {
           const j = JSON.parse(values[ix]);
+          if(!j || !j.data) {
+            try {
+              throw new Error(`Error parsing ${values[ix]}`);
+            } catch(e) {
+              console.log(`currentValue=${cv}`);
+              console.error(e);
+              Sentry.captureException(e);
+            }
+            return pv;
+          }
           pv[cv] = j.data[cv];
           pv[cv].rateLimit = j.data.rateLimit;
           return pv;
@@ -334,6 +344,11 @@ export default {
 
         for(let item of Object.keys(data)) {
           logGitHubRateLimit(data[item]?.rateLimit, 'github-status-'+item);
+        }
+
+        const dd: any = githubPullsData.data;
+        if(!dd?.repository) {
+          return null;
         }
 
         const phase = getCurrentSprint(githubPullsData.data);

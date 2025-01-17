@@ -153,40 +153,40 @@ const queryStrings = {
               }
             }
 
-            # timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
-            #   nodes {
-            #     ... on CrossReferencedEvent {
-            #       __typename
-            #       subject: source {
-            #         ... on Issue {
-            #           number
-            #           url
-            #         }
-            #         ... on PullRequest {
-            #           number
-            #           url
-            #         }
-            #       }
-            #     }
-            #     ... on ConnectedEvent {
-            #       __typename
-            #       subject {
-            #         ... on Issue {
-            #           number
-            #           url
-            #         }
-            #       }
-            #     }
-            #     ... on DisconnectedEvent {
-            #       __typename
-            #       subject {
-            #         ... on Issue {
-            #           number
-            #         }
-            #       }
-            #     }
-            #   }
-            # }
+            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+              nodes {
+                ... on CrossReferencedEvent {
+                  __typename
+                  subject: source {
+                    ... on Issue {
+                      number
+                      url
+                    }
+                    ... on PullRequest {
+                      number
+                      url
+                    }
+                  }
+                }
+                ... on ConnectedEvent {
+                  __typename
+                  subject {
+                    ... on Issue {
+                      number
+                      url
+                    }
+                  }
+                }
+                ... on DisconnectedEvent {
+                  __typename
+                  subject {
+                    ... on Issue {
+                      number
+                    }
+                  }
+                }
+              }
+            }
 
             reviews(last:100) {
               nodes {

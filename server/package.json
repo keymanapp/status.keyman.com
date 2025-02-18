@@ -12,9 +12,9 @@
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
-    "@octokit/core": "^3.5.1",
+    "@octokit/core": "^6.1.4",
     "@octokit/plugin-rest-endpoint-methods": "^5.8.0",
-    "@octokit/rest": "^19.0.5",
+    "@octokit/rest": "^21.1.1",
     "@sentry/node": "^6.2.3",
     "@sentry/tracing": "^6.2.3",
     "application-config-path": "^0.1.0",
@@ -22,7 +22,7 @@
     "emoji-regex": "^10.2.1",
     "express": "^4.21.2",
     "parse-link-header": "^2.0.0",
-    "probot": "^12.3.3",
+    "probot": "^13.4.3",
     "source-map-support": "^0.5.19",
     "ws": "^7.4.6"
   },

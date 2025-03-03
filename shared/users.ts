@@ -11,6 +11,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string, tz?: 
   "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png', tz: 'Asia/Phnom_Penh'},
   "srl295": { community: "srl295", avatar: 'bg+SRL.png', tz: 'America/Chicago'},
   "sze2st": { community: "", tz: 'Europe/Berlin' },
+  "Markus-SWAG": { community: "", tz: 'Europe/Berlin' },
   "bharanidharanj": { community: "", avatar: 'bg+BJ.png', tz: 'Asia/Kolkata'},
   "dinakaranr": {community: "", tz: 'Asia/Kolkata' },
   "LornaSIL": { community: "Lorna" , tz: 'America/Chicago'},

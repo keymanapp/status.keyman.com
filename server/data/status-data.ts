@@ -21,6 +21,8 @@ import discourseService from "../services/discourse/discourse";
 import { performanceLog } from "../performance-log";
 import siteLivelinessService from "../services/keyman/site-liveliness";
 
+const Sentry = require("@sentry/node");
+
 const services = {};
 services[StatusSource.ITunesKeyman] = keymaniTunesService;
 services[StatusSource.ITunesFirstVoices] = firstVoicesiTunesService;
@@ -63,9 +65,19 @@ export interface StatusDataCache {
 
 const { performance } = require('perf_hooks');
 
-function logAsync(event, method: () => Promise<any>): Promise<any> {
+async function logAsync(event, method: () => Promise<any>): Promise<any> {
   let dt = performance.now();
-  let v = method();
+  let v;
+  try {
+    v = await method();
+  } catch(e) {
+    console.error(`Error connecting to ${event}: ${e}`);
+    if(e.errors) {
+      // AggregateErrors
+      console.error(e.errors);
+    }
+    throw e;
+  }
   performanceLog(dt, event);
   return v;
 }
@@ -83,7 +95,6 @@ export class StatusData {
     try {
       keymanVersion = await logAsync('refreshKeymanVersionData', () => versionService.get());
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result = !deepEqual(keymanVersion, this.cache.keymanVersion);
@@ -98,7 +109,6 @@ export class StatusData {
     try {
       data = await logAsync('refreshTeamcityData', () => teamcityService.get());
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result =
@@ -120,7 +130,6 @@ export class StatusData {
     try {
       issues = await logAsync('refreshGitHubIssuesData', () => githubIssuesService.get(null, []));
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result = !deepEqual(issues, this.cache.issues);
@@ -137,8 +146,6 @@ export class StatusData {
     try {
       data = await logAsync('refreshGitHubStatusData', () => githubStatusService.get(sprintName));
     } catch(e) {
-      console.log(e);
-      console.log('[Refresh] GitHub Status EXIT -- error');
       return false;
     }
     if(data == null) {
@@ -169,7 +176,6 @@ export class StatusData {
         node.contributions.tests = {nodes: await logAsync(`refreshGitHubContributionsTestsData(${node.login})`, () => githubTestContributionsService.get(null, [], sprintStartDateTime, node.login))};
       }
     } catch(e) {
-      console.log(e);
       return false;
     }
 
@@ -185,7 +191,6 @@ export class StatusData {
     try {
       sentryIssues = await logAsync('refreshSentryIssuesData', () => sentryIssuesService.get());
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
@@ -200,7 +205,6 @@ export class StatusData {
     try {
       codeOwners = await logAsync('refreshCodeOwnersData', () => codeOwnersService.get());
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result = !deepEqual(codeOwners, this.cache.codeOwners);
@@ -214,7 +218,6 @@ export class StatusData {
     try {
       siteLiveliness = await logAsync('refreshSiteLivelinessData', async () => await siteLivelinessService.get());
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result = !deepEqual(siteLiveliness, this.cache.siteLiveliness);
@@ -230,7 +233,6 @@ export class StatusData {
     try {
       status = await logAsync(`refreshService:${id}`, () => service.get());
     } catch(e) {
-      console.log(e);
       return false;
     }
     let result = !deepEqual(status, this.cache.deployment[id]);
@@ -270,7 +272,6 @@ export class StatusData {
         posts = await logAsync('refreshCommunitySiteData', () => discourseService.get(sprintStartDateTime));
       }
     } catch(e) {
-      console.error(e);
       return false;
     }
 

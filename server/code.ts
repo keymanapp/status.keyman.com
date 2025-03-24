@@ -48,14 +48,8 @@ Sentry.init({
   environment: environment,
   integrations: [
     // enable HTTP calls tracing
-    new Sentry.Integrations.Http({ tracing: true }),
-    // enable Express.js middleware tracing
-    new Tracing.Integrations.Express({
-      // to trace all requests to the default router
-      app,
-      // alternatively, you can specify the routes you want to trace:
-      // router: someRouter,
-    }),
+    Sentry.httpIntegration(),
+    Sentry.captureConsoleIntegration(['warn','error','debug','assert']),
   ],
 
   // We recommend adjusting this value in production, or using tracesSampler
@@ -66,9 +60,9 @@ Sentry.init({
 
 // RequestHandler creates a separate execution context using domains, so that every
 // transaction/span/breadcrumb is attached to its own Hub instance
-app.use(Sentry.Handlers.requestHandler());
+// app.use(Sentry.Handlers.requestHandler());
 // TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
+// app.use(Sentry.Handlers.tracingHandler());
 
 const ws = require('ws');
 const keymanAppTestBotMiddleware = require('./keymanapp-test-bot/keymanapp-test-bot-middleware');
@@ -589,7 +583,7 @@ app.all('*', (request, response) => {
 
 
 // The error handler must be before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+// app.use(Sentry.Handlers.errorHandler());
 
 if(!debugTestBot) {
   console.log(`Starting app listening on ${port}`);

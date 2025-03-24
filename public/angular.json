@@ -134,6 +134,9 @@
           }
         }
       }
-    }},
-  "defaultProject": "public"
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
 }

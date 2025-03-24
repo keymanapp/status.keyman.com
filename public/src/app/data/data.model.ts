@@ -186,6 +186,9 @@ export class DataModel {
 
   removeDuplicateTimelineItems() {
     let removeDuplicates = function(items) {
+      if(!Array.isArray(items?.nodes)) {
+        return;
+      }
       // This is very much O(n^2) but the arrays are generally short
       items.nodes = items.nodes.filter(item => {
         let master = items.nodes.find(e => e.subject.number == item.subject.number);

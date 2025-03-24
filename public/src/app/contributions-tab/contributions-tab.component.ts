@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { issueLabelScopes } from '../../../../shared/issue-labels';
-import { getUserAvatarUrl } from '../../../../shared/users';
+import { getUserAvatarUrl, getTz } from '../../../../shared/users';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
 import { FilterObjectByDatePipe } from '../pipes/filter-object-by-date.pipe';
@@ -21,6 +21,20 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   get sprintDays() { return dataModel.sprintDays }
   get pullsByBase() { return dataModel.pullsByBase }
   get sites() { return dataModel.sites }
+  get userTz() { return getTz(this.user?.login); }
+
+  userDate() {
+    return new Date().toLocaleString([], {
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: this.userTz,
+      timeZoneName: "long",
+  });
+  }
 
   currentView() {
     return appState.userView;

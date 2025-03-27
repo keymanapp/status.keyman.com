@@ -16,7 +16,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string, tz?: 
   "dinakaranr": {community: "", tz: 'Asia/Kolkata' },
   "LornaSIL": { community: "Lorna" , tz: 'America/Chicago'},
   "DavidLRowe": { community: "drowe", tz: 'America/Anchorage' },
-  "Nnyny": { community: "Nguonnyny_Tan", tz: 'Asia/Phnom_Penh' },
+  "Nnyny": { community: "nyny", tz: 'Asia/Phnom_Penh' },
   "Meng-Heng": { community: "mengheng", tz: 'Asia/Phnom_Penh' },
 };
 

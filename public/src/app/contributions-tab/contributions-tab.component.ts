@@ -33,7 +33,7 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
       year: "numeric",
       timeZone: this.userTz,
       timeZoneName: "long",
-  });
+    });
   }
 
   currentView() {

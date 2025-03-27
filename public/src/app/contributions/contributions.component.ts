@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { getUserAvatarUrl } from '../../../../shared/users';
+import { getUserAvatarUrl, getTz } from '../../../../shared/users';
 import { appState } from '../../state';
-import { ContributionsModel } from '../data/contributions.model';
 import { dataModel } from '../data/data.model';
 
 @Component({
@@ -49,6 +48,51 @@ export class ContributionsComponent implements OnInit {
 
   getUserAvatar(user, size) {
     return getUserAvatarUrl(user, size);
+  }
+
+  userDate(user) {
+    if(user.login == '') {
+      return 'Unassigned issues';
+    }
+
+    const tz = getTz(user.login);
+    if(!tz) {
+      return user.login;
+    }
+
+    return user.login + ' - ' + new Date().toLocaleString([], {
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: tz,
+      timeZoneName: "long",
+    });
+  }
+
+  userAvailability(user) {
+    const tz = getTz(user.login);
+    if(!tz) {
+      return {color: 'rgba(0,0,0,0)'}; //TODO
+    }
+    const now = new Date();
+    const result = {
+      weekDay: now.toLocaleString('en-GB', { weekday: 'short', timeZone: tz }),
+      time: now.toLocaleString('en-GB', { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: tz }),
+      hour: 0,
+      color: 'green'
+    };
+
+    result.hour = parseInt(result.time, 10);
+
+    if(result.weekDay == 'Sat' || result.weekDay == 'Sun' || result.hour < 6 || result.hour > 21) {
+      result.color = 'red';
+    } else if(result.hour < 8 || result.hour > 17) {
+      result.color = 'orange';
+    }
+    return result;
   }
 
   contributionCount(user) {

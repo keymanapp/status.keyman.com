@@ -1,4 +1,6 @@
-<span *ngIf="shouldDisplay(user)" class="avatar-box {{user.login == activeTab ? 'selected' : ''}}">
-  <img *ngIf="user.login == ''" class="avatar-40" src="assets/unassigned.png" (click)="selectUser(user.login)" title="Unassigned issues">
-  <img *ngIf="user.login != ''" class="avatar-40" src="{{getUserAvatar(user, 40)}}" (click)="selectUser(user.login)" title="{{user.login}}">
+<span *ngIf="shouldDisplay(user)" class="avatar-box {{user.login == activeTab ? 'selected' : ''}}" [style]="{background: userAvailability(user).color}"
+  (click)="selectUser(user.login)" [title]="userDate(user)">
+  <img *ngIf="user.login == ''" class="avatar-40" src="assets/unassigned.png">
+  <img *ngIf="user.login != ''" class="avatar-40" src="{{getUserAvatar(user, 40)}}">
+  <div class='availiability-tablet'></div>
 </span>

@@ -12,9 +12,15 @@
 }
 
 .avatar-box:hover {
-  border: solid 2px green;
+  border: solid 2px yellow;
 }
 
 .avatar-box.selected {
-  border: solid 2px red;
+  border: solid 2px white;
+}
+
+.availability-tablet {
+  width: 24px;
+  height: 18px;
+  font-size: 12px;
 }

@@ -150,7 +150,8 @@ export class DataModel {
           continue;
         }
         for(let label of labels) {
-          if(label.node.name == platform.id+'/') {
+          const labelName = label.node.name == 'resources/' ? 'common/' : label.node.name;
+          if(labelName == platform.id+'/') {
             let foundContext = null, userTestingContext = null;
             if(contexts) {
               let firstContext = null;
@@ -541,6 +542,7 @@ export class DataModel {
   }
 
   getPlatform(platformId: string): PlatformSpec {
+    if(platformId == 'resources') platformId = 'common';
     return this.platforms.find(e => e.id == platformId);
   }
 

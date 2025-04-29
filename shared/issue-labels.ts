@@ -6,7 +6,7 @@ export const issueLabelScopes = [
 ];
 
 export const issueLabelTypes = [
-  'auto', 'bug', 'change', 'chore', 'docs', 'feat', 'refactor', 'spec', 'style', 'test'
+  'auto', 'bug', 'change', 'chore', 'docs', 'feat', 'maint', 'refactor', 'spec', 'style', 'test'
 ];
 
-export const issueValidTitleRegex = /^(auto|bug|change|chore|docs|feat|refactor|spec|style|test)(?:\(([a-z, ]+)\))?:/;
+export const issueValidTitleRegex = /^(auto|bug|change|chore|docs|feat|maint|refactor|spec|style|test)(?:\(([a-z, ]+)\))?:/;

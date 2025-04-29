@@ -24,10 +24,7 @@ export default {
     const lines = data.replace("\r", "").split("\n");
     for(let line of lines) {
       line = line.trim();
-      if(line.startsWith('#') || line == '') {
-        continue;
-      }
-      let values = /^\/([a-z]+)\/\s+@([_a-z0-9-]+)\s+@([_a-z0-9-]+)/i.exec(line);
+      let values = /^\#\/([a-z]+)\/\s+@([_a-z0-9-]+)/i.exec(line);
       if(!values) {
         // Isn't a platform line
         continue;
@@ -36,8 +33,7 @@ export default {
       for(let platform of platforms) {
         if(platform.id == values[1]) {
           owners[platform.id] = {
-            owner: values[2],
-            advocate: values[3]
+            owner: values[2]
           }
         }
       }

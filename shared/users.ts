@@ -34,7 +34,7 @@ export function getAvatarUrl(id) {
   // if(userIds[id]?.avatar) {
     // return `/assets/avatars/${userIds[id].avatar}`;
   // } else {
-    return `https://github.com/${id}.png?size=22`;
+    return `https://github.com/${id}.png?size=32`;
   // }
 }
 

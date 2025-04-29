@@ -193,8 +193,7 @@ table#sites-and-relatives {
   margin-right: 12px;
 }
 
-.tr-platform th div.platform-owner img,
-.tr-platform th div.platform-advocate img {
+.tr-platform th div.platform-owner img {
   width: 22px;
   margin-left: 6px;
 }

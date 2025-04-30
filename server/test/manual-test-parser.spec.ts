@@ -73,8 +73,8 @@ const retestComment = `@keymanapp-test-bot retest test_foo, test_baz`;
 const retestAllComment = `
 I'm not happy with the results
 
-@keymanapp-test-bot retest all
-`;
+Test-bot: retest all
+`;  // using Test-bot: form for one example only
 const altRetestComment = `x
 @keymanapp-test-bot retest`;
 
@@ -103,7 +103,7 @@ const userTestResultsComment =
 <details><summary>Retesting Template</summary>
 
 \`\`\`
-@keymanapp-test-bot retest TEST_BAR
+Test-bot: retest TEST_BAR
 \`\`\`
 </details>`;
 
@@ -262,7 +262,7 @@ describe('ManualTestParser', function() {
   });
 
   describe('isTestControlComment()', function() {
-    it('should return true when comment contains a bot handle @keymanapp-test-bot', function() {
+    it('should return true when comment contains a bot handle "@keymanapp-test-bot" or trailer "Test-Bot:"', function() {
       let mtp = new ManualTestParser();
       assert.strictEqual(mtp.isControlComment(retestAllComment, userLogin), true);
       assert.strictEqual(mtp.isControlComment(retestComment, userLogin), true);

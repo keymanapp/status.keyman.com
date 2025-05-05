@@ -5,9 +5,10 @@ import { PopupComponent } from '../popup/popup.component';
 import { VisibilityService } from '../visibility/visibility.service';
 
 @Component({
-  selector: 'app-agent-detail',
-  templateUrl: './agent-detail.component.html',
-  styleUrls: ['./agent-detail.component.css']
+    selector: 'app-agent-detail',
+    templateUrl: './agent-detail.component.html',
+    styleUrls: ['./agent-detail.component.css'],
+    standalone: false
 })
 export class AgentDetailComponent extends PopupComponent implements OnInit {
   @Input() agent: any;

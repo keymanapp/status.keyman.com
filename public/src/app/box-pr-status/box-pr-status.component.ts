@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-box-pr-status',
-  templateUrl: './box-pr-status.component.html',
-  styleUrls: ['./box-pr-status.component.css']
+    selector: 'app-box-pr-status',
+    templateUrl: './box-pr-status.component.html',
+    styleUrls: ['./box-pr-status.component.css'],
+    standalone: false
 })
 export class BoxPrStatusComponent implements OnInit {
 

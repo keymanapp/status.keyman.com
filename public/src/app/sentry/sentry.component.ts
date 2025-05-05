@@ -7,9 +7,10 @@ import { escapeHtml } from '../utility/escapeHtml';
 import { VisibilityService } from '../visibility/visibility.service';
 
 @Component({
-  selector: 'app-sentry',
-  templateUrl: './sentry.component.html',
-  styleUrls: ['./sentry.component.css']
+    selector: 'app-sentry',
+    templateUrl: './sentry.component.html',
+    styleUrls: ['./sentry.component.css'],
+    standalone: false
 })
 export class SentryComponent extends PopupComponent implements OnInit, OnChanges {
   @Input() environment: string;

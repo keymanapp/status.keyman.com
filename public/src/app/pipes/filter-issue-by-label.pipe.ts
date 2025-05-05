@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
     name: 'filterIssueByLabel',
-    pure: false
+    pure: false,
+    standalone: false
 })
 export class FilterIssueByLabelPipe implements PipeTransform {
     transform(items: any[], labelName: string): any {

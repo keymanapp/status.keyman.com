@@ -11,9 +11,10 @@ interface DeployTarget {
 }
 
 @Component({
-  selector: 'app-deploy-box',
-  templateUrl: './deploy-box.component.html',
-  styleUrls: ['./deploy-box.component.css']
+    selector: 'app-deploy-box',
+    templateUrl: './deploy-box.component.html',
+    styleUrls: ['./deploy-box.component.css'],
+    standalone: false
 })
 export class DeployBoxComponent extends PopupComponent implements OnInit, OnChanges {
   @Input() tier: string;

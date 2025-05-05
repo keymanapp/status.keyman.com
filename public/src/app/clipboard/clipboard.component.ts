@@ -16,9 +16,10 @@ declare var ClipboardItem: {
 };*/
 
 @Component({
-  selector: 'app-clipboard',
-  templateUrl: './clipboard.component.html',
-  styleUrls: ['./clipboard.component.css']
+    selector: 'app-clipboard',
+    templateUrl: './clipboard.component.html',
+    styleUrls: ['./clipboard.component.css'],
+    standalone: false
 })
 export class ClipboardComponent implements OnInit {
   @Input() text: any;

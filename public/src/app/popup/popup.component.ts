@@ -6,9 +6,10 @@ import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { VisibilityService } from '../visibility/visibility.service';
 
 @Component({
-  selector: 'app-popup',
-  template: ``,
-  styleUrls: ['./popup.component.css']
+    selector: 'app-popup',
+    template: ``,
+    styleUrls: ['./popup.component.css'],
+    standalone: false
 })
 export class PopupComponent implements OnInit {
   @Input() gravityX?: string;

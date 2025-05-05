@@ -2,9 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
 
 @Component({
-  selector: 'app-box-pr-author',
-  templateUrl: './box-pr-author.component.html',
-  styleUrls: ['./box-pr-author.component.css']
+    selector: 'app-box-pr-author',
+    templateUrl: './box-pr-author.component.html',
+    styleUrls: ['./box-pr-author.component.css'],
+    standalone: false
 })
 export class BoxPrAuthorComponent implements OnInit {
   @Input() pullsByAuthor: any;

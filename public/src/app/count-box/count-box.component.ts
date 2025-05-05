@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-count-box',
-  templateUrl: './count-box.component.html',
-  styleUrls: ['./count-box.component.css']
+    selector: 'app-count-box',
+    templateUrl: './count-box.component.html',
+    styleUrls: ['./count-box.component.css'],
+    standalone: false
 })
 export class CountBoxComponent implements OnInit {
   @Input() repo?: string;

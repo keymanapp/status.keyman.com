@@ -8,9 +8,10 @@ import { escapeHtml } from '../utility/escapeHtml';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
 
 @Component({
-  selector: 'app-contributions-tab',
-  templateUrl: './contributions-tab.component.html',
-  styleUrls: ['./contributions-tab.component.css']
+    selector: 'app-contributions-tab',
+    templateUrl: './contributions-tab.component.html',
+    styleUrls: ['./contributions-tab.component.css'],
+    standalone: false
 })
 export class ContributionsTabComponent implements OnInit, OnChanges {
 

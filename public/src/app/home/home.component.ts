@@ -9,10 +9,11 @@ import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
-  providers: [ StatusService ],
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    providers: [StatusService],
+    standalone: false
 })
 export class HomeComponent {
   error: any;

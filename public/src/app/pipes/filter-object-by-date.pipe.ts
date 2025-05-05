@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
     name: 'filterObjectByDate',
-    pure: false
+    pure: false,
+    standalone: false
 })
 export class FilterObjectByDatePipe implements PipeTransform {
     transform(items: any[], filter: Date): any {

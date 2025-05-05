@@ -2,9 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { PlatformSpec } from '../../../../shared/platforms';
 
 @Component({
-  selector: 'app-platform-tier-box',
-  templateUrl: './platform-tier-box.component.html',
-  styleUrls: ['./platform-tier-box.component.css']
+    selector: 'app-platform-tier-box',
+    templateUrl: './platform-tier-box.component.html',
+    styleUrls: ['./platform-tier-box.component.css'],
+    standalone: false
 })
 export class PlatformTierBoxComponent implements OnInit {
   @Input() tier: string;

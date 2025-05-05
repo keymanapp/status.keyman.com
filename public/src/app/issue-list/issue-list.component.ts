@@ -9,9 +9,10 @@ import { IssueClipboard } from '../utility/issue-clipboard';
 import { IssueView } from '../../state';
 
 @Component({
-  selector: 'app-issue-list',
-  templateUrl: './issue-list.component.html',
-  styleUrls: ['./issue-list.component.css']
+    selector: 'app-issue-list',
+    templateUrl: './issue-list.component.html',
+    styleUrls: ['./issue-list.component.css'],
+    standalone: false
 })
 export class IssueListComponent extends PopupComponent implements OnInit {
   @Input() view?: IssueView;

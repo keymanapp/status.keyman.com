@@ -8,9 +8,10 @@ import { dataModel } from '../data/data.model';
 import { appState } from '../../state';
 
 @Component({
-  selector: 'app-overview-tab',
-  templateUrl: './overview-tab.component.html',
-  styleUrls: ['./overview-tab.component.css'],
+    selector: 'app-overview-tab',
+    templateUrl: './overview-tab.component.html',
+    styleUrls: ['./overview-tab.component.css'],
+    standalone: false
 })
 export class OverviewTabComponent {
   error: any;

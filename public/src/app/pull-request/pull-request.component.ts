@@ -11,9 +11,10 @@ import { getTeamcityUrlParams } from '../../../../shared/getTeamcityUrlParams';
 import { pullEmoji } from '../utility/pullEmoji';
 
 @Component({
-  selector: 'app-pull-request',
-  templateUrl: './pull-request.component.html',
-  styleUrls: ['./pull-request.component.css']
+    selector: 'app-pull-request',
+    templateUrl: './pull-request.component.html',
+    styleUrls: ['./pull-request.component.css'],
+    standalone: false
 })
 export class PullRequestComponent extends PopupComponent implements OnInit, OnChanges {
   @Input() changeCounter: number;

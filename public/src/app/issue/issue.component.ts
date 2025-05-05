@@ -10,9 +10,10 @@ import { ThisReceiver } from '@angular/compiler';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
 
 @Component({
-  selector: 'app-issue',
-  templateUrl: './issue.component.html',
-  styleUrls: ['./issue.component.css']
+    selector: 'app-issue',
+    templateUrl: './issue.component.html',
+    styleUrls: ['./issue.component.css'],
+    standalone: false
 })
 export class IssueComponent extends PopupComponent implements OnInit {
   @Input() changeCounter: number;

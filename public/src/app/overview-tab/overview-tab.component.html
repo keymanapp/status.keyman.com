@@ -43,10 +43,9 @@
               <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank"><img src="assets/{{platform.value.id}}.png"></a>
             </div>
             <div class="platform-owner" *ngIf="status.codeOwners[platform.value.id]">
-              <img class="avatar-22" src="{{getAvatar(status.codeOwners[platform.value.id].owner)}}" title="Platform owner: @{{status.codeOwners[platform.value.id].owner}}">
-            </div>
-            <div class="platform-advocate" *ngIf="status.codeOwners[platform.value.id] && showCodeOwners">
-              <img class="avatar-22" src="{{getAvatar(status.codeOwners[platform.value.id].advocate)}}" title="Platform advocate: @{{status.codeOwners[platform.value.id].advocate}}">
+              <a href="https://github.com/{{status.codeOwners[platform.value.id].owner}}" target="_blank">
+                <img class="avatar-32" src="{{getAvatar(status.codeOwners[platform.value.id].owner)}}" title="Platform owner: @{{status.codeOwners[platform.value.id].owner}}">
+              </a>
             </div>
           </div>
           <!--div class="platform-row">

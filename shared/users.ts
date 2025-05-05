@@ -12,11 +12,11 @@ export const userIds: {[index:string]: {community:string, avatar?: string, tz?: 
   "srl295": { community: "srl295", avatar: 'bg+SRL.png', tz: 'America/Chicago'},
   "sze2st": { community: "", tz: 'Europe/Berlin' },
   "Markus-SWAG": { community: "", tz: 'Europe/Berlin' },
-  "bharanidharanj": { community: "", avatar: 'bg+BJ.png', tz: 'Asia/Kolkata'},
+  // "bharanidharanj": { community: "", avatar: 'bg+BJ.png', tz: 'Asia/Kolkata'},
   "dinakaranr": {community: "", tz: 'Asia/Kolkata' },
   "LornaSIL": { community: "Lorna" , tz: 'America/Chicago'},
   "DavidLRowe": { community: "drowe", tz: 'America/Anchorage' },
-  "Nnyny": { community: "Nguonnyny_Tan", tz: 'Asia/Phnom_Penh' },
+  "Nnyny": { community: "nyny", tz: 'Asia/Phnom_Penh' },
   "Meng-Heng": { community: "mengheng", tz: 'Asia/Phnom_Penh' },
 };
 
@@ -34,7 +34,7 @@ export function getAvatarUrl(id) {
   // if(userIds[id]?.avatar) {
     // return `/assets/avatars/${userIds[id].avatar}`;
   // } else {
-    return `https://github.com/${id}.png?size=22`;
+    return `https://github.com/${id}.png?size=32`;
   // }
 }
 

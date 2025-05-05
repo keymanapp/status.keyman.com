@@ -14,13 +14,17 @@ const FIRSTVOICES_APP_ID='com.firstvoices.keyboards';
 const PLAYSTORE_HOST='play.google.com';
 const PLAYSTORE_PATH='/store/apps/details?id=';
 
-const CurrentVersionRE = /Current Version<\/div><span class="[^"]+"><div class="[^"]+"><span class="[^"]+">(.+?)<\/span>/;
+// const CurrentVersionRE = /Current Version<\/div><span class="[^"]+"><div class="[^"]+"><span class="[^"]+">(.+?)<\/span>/;
 //<div class="BgcNfc">Current Version</div><span class="htlgb"><div class="IQ1z0d"><span class="htlgb">14.0.273</span></div>
+// const AF_initDataCallbackRE = /<script class="ds:5".+?>AF_initDataCallback\((.+?)\);<\/script>/;
+// Based on obscure data embedded in the page, we can find a current release number here, e.g. [["18.0.235"]]
+// at time of writing this, there was only 1 reference that matched this pattern:
+const ReallyHackyCurrentVersionRE = /\[\["(\d+\.\d+\.\d+)"\]\]/;
 
 const service = {
    get: function(appId) {
     return httpget(PLAYSTORE_HOST, PLAYSTORE_PATH + appId).then((data) => {
-      const results = CurrentVersionRE.exec(data.data);
+      const results = ReallyHackyCurrentVersionRE.exec(data.data);
       if(results) {
         return { version: results[1] };
       }

@@ -7,9 +7,9 @@
 import { ManualTestStatusUtil, ManualTest, ManualTestProtocol, ManualTestStatus, ManualTestRun, ManualTestSuite, ManualTestGroup, ManualTestUtil } from './manual-test-protocols';
 
 export default class ManualTestParser {
-  controlRegex = /@keymanapp-test-bot\b/i;
-  controlRetestRegex = /@keymanapp-test-bot(?: +)retest(?: *)(.*)$/im;
-  controlSkipRegex = /@keymanapp-test-bot(?: +)skip\b/im;
+  controlRegex = /(?:@keymanapp-test-bot\b|^Test-Bot: )/im;
+  controlRetestRegex = /(?:@keymanapp-test-bot|^Test-Bot:)(?: +)retest(?: *)(.*)$/im;
+  controlSkipRegex = /(?:@keymanapp-test-bot|^Test-Bot:)(?: +)skip\b/im;
   testBotLogin = 'keymanapp-test-bot[bot]';
 
   isUserTestingComment(comment: string, login: string): boolean {
@@ -395,7 +395,7 @@ export default class ManualTestParser {
       content +=
         "<details><summary>Retesting Template</summary>\n\n" +
         "```\n" +
-        `@keymanapp-test-bot retest ${resultsTemplate.retest.trim()}\n`+
+        `Test-bot: retest ${resultsTemplate.retest.trim()}\n`+
         "```\n"+
         "</details>\n";
     }

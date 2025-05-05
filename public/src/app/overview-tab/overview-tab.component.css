@@ -193,9 +193,9 @@ table#sites-and-relatives {
   margin-right: 12px;
 }
 
-.tr-platform th div.platform-owner img,
-.tr-platform th div.platform-advocate img {
-  width: 22px;
+.tr-platform th div.platform-owner img {
+  width: 32px;
+  border-radius: 6px;
   margin-left: 6px;
 }
 

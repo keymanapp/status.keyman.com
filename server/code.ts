@@ -49,7 +49,7 @@ Sentry.init({
   integrations: [
     // enable HTTP calls tracing
     Sentry.httpIntegration(),
-    Sentry.captureConsoleIntegration(['warn','error','debug','assert']),
+    Sentry.captureConsoleIntegration({levels:['warn','error','debug','assert']}),
   ],
 
   // We recommend adjusting this value in production, or using tracesSampler

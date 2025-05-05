@@ -6,10 +6,11 @@ import { Status, EMPTY_STATUS } from '../status/status.interface';
 import { StatusService } from '../status/status.service';
 
 @Component({
-  selector: 'app-contributions-home',
-  templateUrl: './contributions-home.component.html',
-  styleUrls: ['./contributions-home.component.css'],
-  providers: [ StatusService ],
+    selector: 'app-contributions-home',
+    templateUrl: './contributions-home.component.html',
+    styleUrls: ['./contributions-home.component.css'],
+    providers: [StatusService],
+    standalone: false
 })
 export class ContributionsHomeComponent implements OnInit {
   status: Status = EMPTY_STATUS;

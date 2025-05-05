@@ -5,9 +5,10 @@ import { PopupComponent } from '../popup/popup.component';
 import { VisibilityService } from '../visibility/visibility.service';
 
 @Component({
-  selector: 'app-build-queue',
-  templateUrl: './build-queue.component.html',
-  styleUrls: ['./build-queue.component.css']
+    selector: 'app-build-queue',
+    templateUrl: './build-queue.component.html',
+    styleUrls: ['./build-queue.component.css'],
+    standalone: false
 })
 export class BuildQueueComponent extends PopupComponent implements OnInit {
   @Input() queue: any;

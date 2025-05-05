@@ -9,9 +9,10 @@ import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-manual-test',
-  templateUrl: './manual-test.component.html',
-  styleUrls: ['./manual-test.component.css']
+    selector: 'app-manual-test',
+    templateUrl: './manual-test.component.html',
+    styleUrls: ['./manual-test.component.css'],
+    standalone: false
 })
 export class ManualTestComponent implements OnInit {
   prNumber: number;

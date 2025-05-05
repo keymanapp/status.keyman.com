@@ -13,9 +13,10 @@ export enum IssueView {
 };
 
 @Component({
-  selector: 'app-pull-request-list',
-  templateUrl: './pull-request-list.component.html',
-  styleUrls: ['./pull-request-list.component.css']
+    selector: 'app-pull-request-list',
+    templateUrl: './pull-request-list.component.html',
+    styleUrls: ['./pull-request-list.component.css'],
+    standalone: false
 })
 export class PullRequestListComponent extends PopupComponent implements OnInit {
   @Input() view?: IssueView;

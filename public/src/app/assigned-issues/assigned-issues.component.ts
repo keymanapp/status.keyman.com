@@ -9,9 +9,10 @@ import { PullRequestClipboard } from '../utility/pull-request-clipboard';
 import { dataModel } from '../data/data.model';
 
 @Component({
-  selector: 'app-assigned-issues',
-  templateUrl: './assigned-issues.component.html',
-  styleUrls: ['./assigned-issues.component.css']
+    selector: 'app-assigned-issues',
+    templateUrl: './assigned-issues.component.html',
+    styleUrls: ['./assigned-issues.component.css'],
+    standalone: false
 })
 export class AssignedIssuesComponent {
   @Input() user: any;

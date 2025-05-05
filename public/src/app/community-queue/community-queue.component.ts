@@ -8,9 +8,10 @@ import { VisibilityService } from '../visibility/visibility.service';
 import { communityUserIds } from '../../../../shared/users';
 
 @Component({
-  selector: 'app-community-queue',
-  templateUrl: './community-queue.component.html',
-  styleUrls: ['./community-queue.component.css']
+    selector: 'app-community-queue',
+    templateUrl: './community-queue.component.html',
+    styleUrls: ['./community-queue.component.css'],
+    standalone: false
 })
 export class CommunityQueueComponent extends PopupComponent implements OnInit {
   @Input() queue: any;

@@ -4,9 +4,10 @@ import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
 
 @Component({
-  selector: 'app-contributions',
-  templateUrl: './contributions.component.html',
-  styleUrls: ['./contributions.component.css']
+    selector: 'app-contributions',
+    templateUrl: './contributions.component.html',
+    styleUrls: ['./contributions.component.css'],
+    standalone: false
 })
 export class ContributionsComponent implements OnInit {
 

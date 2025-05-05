@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -33,49 +33,42 @@ import { CommunityQueueComponent } from './community-queue/community-queue.compo
 import { AssignedIssuesComponent } from './assigned-issues/assigned-issues.component';
 import { OverviewTabComponent } from './overview-tab/overview-tab.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    ClipboardComponent,
-    PullRequestComponent,
-    PullRequestListComponent,
-    CountBoxComponent,
-    FilterObjectByDatePipe,
-    FilterIssueByLabelPipe,
-    SentryComponent,
-    IssueListComponent,
-    DeployBoxComponent,
-    ManualTestComponent,
-    HomeComponent,
-    PopupComponent,
-    AgentDetailComponent,
-    BuildQueueComponent,
-    IssueComponent,
-    PlatformTierBoxComponent,
-    BoxPrStatusComponent,
-    BoxPrProjectComponent,
-    BoxPrAuthorComponent,
-    BoxPrPlatformComponent,
-    BoxPrBaseComponent,
-    ContributionsComponent,
-    ContributionsTabComponent,
-    ContributionsHomeComponent,
-    CommunityQueueComponent,
-    AssignedIssuesComponent,
-    OverviewTabComponent,
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    // Remark: because we haven't defined any routes, have to pass an empty
-    // route collection to forRoot, as the first parameter is mandatory.
-    RouterModule.forRoot([
-      {path: '', component: HomeComponent},
-      {path: 'manual-test', component: ManualTestComponent},
-      {path: 'contributions', component: ContributionsHomeComponent}
-    ]),
-  ],
-  providers: [VisibilityService],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        ClipboardComponent,
+        PullRequestComponent,
+        PullRequestListComponent,
+        CountBoxComponent,
+        FilterObjectByDatePipe,
+        FilterIssueByLabelPipe,
+        SentryComponent,
+        IssueListComponent,
+        DeployBoxComponent,
+        ManualTestComponent,
+        HomeComponent,
+        PopupComponent,
+        AgentDetailComponent,
+        BuildQueueComponent,
+        IssueComponent,
+        PlatformTierBoxComponent,
+        BoxPrStatusComponent,
+        BoxPrProjectComponent,
+        BoxPrAuthorComponent,
+        BoxPrPlatformComponent,
+        BoxPrBaseComponent,
+        ContributionsComponent,
+        ContributionsTabComponent,
+        ContributionsHomeComponent,
+        CommunityQueueComponent,
+        AssignedIssuesComponent,
+        OverviewTabComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        // Remark: because we haven't defined any routes, have to pass an empty
+        // route collection to forRoot, as the first parameter is mandatory.
+        RouterModule.forRoot([
+            { path: '', component: HomeComponent },
+            { path: 'manual-test', component: ManualTestComponent },
+            { path: 'contributions', component: ContributionsHomeComponent }
+        ])], providers: [VisibilityService, provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

@@ -4,7 +4,7 @@
     <div class="summary">
       <span><app-clipboard [text]="getIssueListText()" title="Copy list of issues to clipboard"></app-clipboard></span>
       <span>
-        <span *ngIf="user.login != ''" class="summary-label">Issues <a href="https://github.com/search?q=org%3Akeymanapp+assignee%3A{{user.login}}+milestone%3A{{status.currentSprint?.title}}+is%3Aopen&type=issues" target="_blank">assigned</a> to <a href="https://github.com/{{user.login}}" target="_blank">@{{user.login}}</a> in {{status.currentSprint?.title}}</span>
+        <span *ngIf="user.login != ''" class="summary-label">Issues <a href="https://github.com/search?q=org%3Akeymanapp+assignee%3A{{user.login}}+milestone%3A{{status.currentSprint?.title}}+is%3Aopen&type=issues" target="_blank">assigned</a> to <a href="https://github.com/{{user.login}}" target="_blank">&#64;{{user.login}}</a> in {{status.currentSprint?.title}}</span>
         <span *ngIf="user.login == ''" class="summary-label">Unassigned issues in {{status.currentSprint?.title}}</span>
       </span>
       <div class='clear'></div>

@@ -12,8 +12,8 @@
 
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 // curl -H "Accept: application/vnd.npm.install-v1+json" https://registry.npmjs.org/@keymanapp/kmc
 const HOST='registry.npmjs.org';

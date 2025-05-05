@@ -1,24 +1,45 @@
-require('source-map-support').install();
+import { performance } from 'node:perf_hooks';
 
-import { Environment } from './environment';
+import * as sms from 'source-map-support';
+
+import { Environment } from './environment.js';
+import * as Sentry from '@sentry/node';
+import express from 'express';
+// import * as Tracing from "@sentry/tracing";
+
+import { StatusSource } from '../shared/status-source.js';
+import { SprintCache } from './data/sprint-cache.js';
+
+import ws from 'ws';
+// const ws = require('ws');
+import keymanAppTestBotMiddleware from './keymanapp-test-bot/keymanapp-test-bot-middleware.js';
+import * as currentSprint from './current-sprint.js';
+
+import { statusData } from './data/status-data.js';
+import { slackLGTM } from './services/slack/slack.js';
+import { DataChangeTimingManager } from './util/DataChangeTimingManager.js';
+
+import githubContributionsService from "./services/github/github-contributions.js";
+import discourseService from "./services/discourse/discourse.js";
+import githubTestContributionsService from "./services/github/github-test-contributions.js";
+import gitHubMilestonesService from './services/github/github-milestones.js';
+
+import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment.js';
+import { performanceLog } from './performance-log.js';
+
+sms.install();
 
 export const environment: Environment =
   process.env['NODE_ENV'] == 'production' ? Environment.Production :
   process.env['NODE_ENV'] == 'staging' ? Environment.Staging :
   Environment.Development;
 
-const Sentry = require("@sentry/node");
-const Tracing = require("@sentry/tracing");
-
 console.log(`Running in ${environment} environment`);
 
-import { StatusSource } from '../shared/status-source';
-
-import { SprintCache } from './data/sprint-cache';
 
 const sprintCache = new SprintCache(environment);
 
-const express = require('express');
+
 const app = express();
 
 // Issue #420: We currently have a GitHub rate cost of 139 per refresh. We have
@@ -63,24 +84,6 @@ Sentry.init({
 // app.use(Sentry.Handlers.requestHandler());
 // TracingHandler creates a trace for every incoming request
 // app.use(Sentry.Handlers.tracingHandler());
-
-const ws = require('ws');
-const keymanAppTestBotMiddleware = require('./keymanapp-test-bot/keymanapp-test-bot-middleware');
-const currentSprint = require('./current-sprint');
-
-import { statusData } from './data/status-data';
-import { slackLGTM } from './services/slack/slack';
-import { DataChangeTimingManager } from './util/DataChangeTimingManager';
-
-import githubContributionsService from "./services/github/github-contributions";
-import discourseService from "./services/discourse/discourse";
-import githubTestContributionsService from "./services/github/github-test-contributions";
-import gitHubMilestonesService from './services/github/github-milestones';
-
-import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment';
-import { performanceLog } from './performance-log';
-
-const { performance } = require('perf_hooks');
 
 const debugTestBot = false;
 
@@ -342,7 +345,7 @@ app.post('/webhook/discourse', (request, response) => {
   response.send('ok');
 });
 
-app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware);
+app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware as any);
 
 function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {
@@ -420,7 +423,7 @@ app.get('/status/github-contributions', async (request, response) => {
     if(data) {
       response.write(data);
     } else {
-      let sprintStartDateTime = new Date(request.query.sprintStartDate);
+      let sprintStartDateTime = new Date(request.query.sprintStartDate as string);
       let contributions = null;
       try {
         contributions = await githubContributionsService.get(sprintStartDateTime.toISOString());
@@ -465,7 +468,7 @@ app.get('/status/community-site', async (request, response) => {
     if(data) {
       response.write(data);
     } else {
-      let sprintStartDateTime = new Date(request.query.sprintStartDate);
+      let sprintStartDateTime = new Date(request.query.sprintStartDate as string);
       let contributions = await discourseService.get(sprintStartDateTime);
 
       const json = JSON.stringify({

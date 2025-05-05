@@ -2,7 +2,7 @@
  Service to collect stats from downloads.keyman.com
 */
 
-import httpget from "../../util/httpget";
+import httpget from "../../util/httpget.js";
 
 export default {
    get: function() {

@@ -1,27 +1,30 @@
-import versionService from "../services/downloads.keyman.com/version";
-import teamcityService from "../services/teamcity/teamcity";
-import githubStatusService from "../services/github/github-status";
-import githubIssuesService from "../services/github/github-issues";
-import githubContributionsService from "../services/github/github-contributions";
-import githubTestContributionsService from "../services/github/github-test-contributions";
-import sentryIssuesService from "../services/sentry/sentry-issues";
-import codeOwnersService from "../services/github/code-owners";
-import deepEqual from "deep-equal";
-import DataService from "../services/data-service";
-import { keymaniTunesService, firstVoicesiTunesService } from "../services/deployment/itunes";
-import { keymanPlayStoreService, firstVoicesPlayStoreService } from "../services/deployment/play-store";
-import sKeymanComService from "../services/deployment/s-keyman-com";
-import { launchPadAlphaService, launchPadBetaService, launchPadStableService } from "../services/deployment/launch-pad";
-import packagesSilOrgService from "../services/deployment/packages-sil-org";
-import { linuxLsdevSilOrgAlphaService, linuxLsdevSilOrgBetaService, linuxLsdevSilOrgStableService } from "../services/deployment/linux-lsdev-sil-org";
-import { debianBetaService, debianStableService } from "../services/deployment/debian";
-import { kmcService, ctService } from "../services/deployment/npmjs";
-import { StatusSource } from "../../shared/status-source";
-import discourseService from "../services/discourse/discourse";
-import { performanceLog } from "../performance-log";
-import siteLivelinessService from "../services/keyman/site-liveliness";
+import { performance } from 'node:perf_hooks';
 
-const Sentry = require("@sentry/node");
+import deepEqual from "deep-equal";
+
+import versionService from "../services/downloads.keyman.com/version.js";
+import teamcityService from "../services/teamcity/teamcity.js";
+import githubStatusService from "../services/github/github-status.js";
+import githubIssuesService from "../services/github/github-issues.js";
+import githubContributionsService from "../services/github/github-contributions.js";
+import githubTestContributionsService from "../services/github/github-test-contributions.js";
+import sentryIssuesService from "../services/sentry/sentry-issues.js";
+import codeOwnersService from "../services/github/code-owners.js";
+import DataService from "../services/data-service.js";
+import { keymaniTunesService, firstVoicesiTunesService } from "../services/deployment/itunes.js";
+import { keymanPlayStoreService, firstVoicesPlayStoreService } from "../services/deployment/play-store.js";
+import sKeymanComService from "../services/deployment/s-keyman-com.js";
+import { launchPadAlphaService, launchPadBetaService, launchPadStableService } from "../services/deployment/launch-pad.js";
+import packagesSilOrgService from "../services/deployment/packages-sil-org.js";
+import { linuxLsdevSilOrgAlphaService, linuxLsdevSilOrgBetaService, linuxLsdevSilOrgStableService } from "../services/deployment/linux-lsdev-sil-org.js";
+import { debianBetaService, debianStableService } from "../services/deployment/debian.js";
+import { kmcService, ctService } from "../services/deployment/npmjs.js";
+import { StatusSource } from "../../shared/status-source.js";
+import discourseService from "../services/discourse/discourse.js";
+import { performanceLog } from "../performance-log.js";
+import siteLivelinessService from "../services/keyman/site-liveliness.js";
+
+import * as Sentry from '@sentry/node';
 
 const services = {};
 services[StatusSource.ITunesKeyman] = keymaniTunesService;
@@ -62,8 +65,6 @@ export interface StatusDataCache {
   siteLiveliness?: any;
   communitySite?: any;
 };
-
-const { performance } = require('perf_hooks');
 
 async function logAsync(event, method: () => Promise<any>): Promise<any> {
   let dt = performance.now();

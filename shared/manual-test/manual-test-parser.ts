@@ -4,7 +4,7 @@
  * Parsing of user testing comments from GitHub issues/pull requests
  */
 
-import { ManualTestStatusUtil, ManualTest, ManualTestProtocol, ManualTestStatus, ManualTestRun, ManualTestSuite, ManualTestGroup, ManualTestUtil } from './manual-test-protocols';
+import { ManualTestStatusUtil, ManualTest, ManualTestProtocol, ManualTestStatus, ManualTestRun, ManualTestSuite, ManualTestGroup, ManualTestUtil } from './manual-test-protocols.js';
 
 export default class ManualTestParser {
   controlRegex = /(?:@keymanapp-test-bot\b|^Test-Bot: )/im;

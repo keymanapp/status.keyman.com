@@ -4,16 +4,17 @@
  * @keymanapp-test-bot implementation
  */
 
-import { ManualTestProtocol, ManualTestStatus, ManualTestUtil } from "../../shared/manual-test/manual-test-protocols";
-import ManualTestParser from '../../shared/manual-test/manual-test-parser';
 import { User } from "@octokit/webhooks-types";
 import { Probot, ProbotOctokit } from "probot";
-import { statusData } from '../data/status-data';
-import { getArtifactLinksComment } from "./artifact-links-comment";
 import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
-import { processEpicLabelsEmoji } from './emoji-label';
-import { processPRMilestone } from './pull-request-milestone';
-import { updateIssueMilestoneWhenIssueClosed } from "./issue-milestone";
+
+import { ManualTestProtocol, ManualTestStatus, ManualTestUtil } from "../../shared/manual-test/manual-test-protocols.js";
+import ManualTestParser from '../../shared/manual-test/manual-test-parser.js';
+import { statusData } from '../data/status-data.js';
+import { getArtifactLinksComment } from "./artifact-links-comment.js";
+import { processEpicLabelsEmoji } from './emoji-label.js';
+import { processPRMilestone } from './pull-request-milestone.js';
+import { updateIssueMilestoneWhenIssueClosed } from "./issue-milestone.js";
 
 const manualTestRequiredLabelName = 'user-test-required';
 const manualTestMissingLabelName = 'user-test-missing';
@@ -201,7 +202,7 @@ function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
   return true;
 }
 
-module.exports = (app: Probot) => {
+const exports = (app: Probot) => {
   app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], (context) => {
     log('pull_request ENTER: '+context.id+', '+context.payload.pull_request.number);
     if(!shouldProcessEvent(context.payload.sender, context.payload.pull_request.state)) {
@@ -336,3 +337,5 @@ module.exports = (app: Probot) => {
     log('status EXIT: '+context.id+' -- no matching pull request found');
   });
 };
+
+export default exports;

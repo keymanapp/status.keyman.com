@@ -2,8 +2,8 @@
  Service to collect site-liveliness from Keyman sites
 */
 
-import httpget from "../../util/httpget";
-import { sitesWithState } from "../../../shared/sites";
+import httpget from "../../util/httpget.js";
+import { sitesWithState } from "../../../shared/sites.js";
 
 export default {
   get: async function() {

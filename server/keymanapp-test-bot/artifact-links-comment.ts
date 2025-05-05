@@ -1,8 +1,9 @@
 import { ProbotOctokit } from "probot";
-import teamcityService from "../services/teamcity/teamcity";
-import { statusData } from '../data/status-data';
-import { artifactLinks } from '../../shared/artifact-links';
-import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams";
+
+import teamcityService from "../services/teamcity/teamcity.js";
+import { statusData } from '../data/status-data.js';
+import { artifactLinks } from '../../shared/artifact-links.js';
+import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams.js";
 
 export async function getArtifactLinksComment(
   octokit: InstanceType<typeof ProbotOctokit>,

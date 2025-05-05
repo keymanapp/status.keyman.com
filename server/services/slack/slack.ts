@@ -1,6 +1,6 @@
-import httppost from '../../util/httppost';
-import httpget from '../../util/httpget';
-import { slack_bot_token, slack_user_token } from '../../identity/slack';
+import httppost from '../../util/httppost.js';
+import httpget from '../../util/httpget.js';
+import { slack_bot_token, slack_user_token } from '../../identity/slack.js';
 
 const SLACK_CHANNEL='C6Q9WS09G';
 

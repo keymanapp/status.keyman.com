@@ -1,8 +1,9 @@
 import { ProbotOctokit } from "probot";
-import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
-import { ProcessEventData } from "./keymanapp-test-bot";
+import { GetResponseTypeFromEndpointMethod } from "@octokit/types";
 import emojiRegex from 'emoji-regex';
-import { issueLabelTypes, issueLabelScopes, issueValidTitleRegex } from "../../shared/issue-labels";
+
+import { ProcessEventData } from "./keymanapp-test-bot.js";
+import { issueLabelTypes, issueLabelScopes, issueValidTitleRegex } from "../../shared/issue-labels.js";
 
 const titleRegex = issueValidTitleRegex;
 const validTypeLabels = issueLabelTypes;

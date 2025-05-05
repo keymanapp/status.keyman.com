@@ -1,5 +1,5 @@
-import httpget from '../../util/httpget';
-import { userIds } from '../../../shared/users';
+import httpget from '../../util/httpget.js';
+import { userIds } from '../../../shared/users.js';
 
 export default {
   get: async function(startDate) {

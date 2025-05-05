@@ -2,8 +2,8 @@
  Service to collect version info from App Store
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 //https://itunes.apple.com/lookup?bundleId=Tavultesoft.Keyman
 const KEYMAN_APP_BUNDLE_ID='Tavultesoft.Keyman';

@@ -17,8 +17,8 @@ Version: 17.0.330-1+noble1
 
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 // https://packages.sil.org/ubuntu/dists/noble/main/binary-amd64/Packages
 const HOST='packages.sil.org';

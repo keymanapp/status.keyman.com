@@ -1,8 +1,9 @@
-import { Probot, ProbotOctokit } from "probot";
+import { ProbotOctokit } from "probot";
 import { Issue } from "@octokit/webhooks-types";
-import { ProcessEventData } from "./keymanapp-test-bot";
-import { getCurrentSprint } from "../current-sprint";
-import { statusData } from '../data/status-data';
+
+import { ProcessEventData } from "./keymanapp-test-bot.js";
+import { getCurrentSprint } from "../current-sprint.js";
+import { statusData } from '../data/status-data.js';
 
 /**
  * Apply the current milestone to the issue when it is closed,

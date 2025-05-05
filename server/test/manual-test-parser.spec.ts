@@ -5,8 +5,9 @@
  */
 
 import assert from 'assert';
-import ManualTestParser from '../../shared/manual-test/manual-test-parser';
-import { ManualTestProtocol, ManualTestStatus } from '../../shared/manual-test/manual-test-protocols';
+
+import ManualTestParser from '../../shared/manual-test/manual-test-parser.js';
+import { ManualTestProtocol, ManualTestStatus } from '../../shared/manual-test/manual-test-protocols.js';
 
 const userTestingComment = `
 # User Testing

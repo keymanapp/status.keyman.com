@@ -83,8 +83,8 @@ export class AgentDetailComponent extends PopupComponent implements OnInit {
   agentNameToPlatform(name: string): string {
     if(name.match(/^ba-win/)) return 'windows';
     if(name.match(/^ba-mac/)) return 'mac';
-    if(name.match(/^ba-bionic/)) return 'linux';
     if(name.match(/^ba-jammy/)) return 'linux';
+    if(name.match(/^ba-noble/)) return 'linux';
     return 'common'; // unknown agent
   }
 

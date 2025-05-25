@@ -4,11 +4,16 @@
  * @keymanapp-test-bot middleware
  */
 
-import { env } from "process";
+import { env } from "node:process";
+import * as fs from 'node:fs';
 
-const { createNodeMiddleware, Probot } = require('probot');
-const keymanappTestBot = require('./keymanapp-test-bot');
-const fs = require('fs');
+import { createNodeMiddleware, Probot } from 'probot';
+import * as keymanappTestBot from './keymanapp-test-bot.js';
+
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const rootPath = __dirname + '/../../../../';
 const privateKeyFilename = rootPath + '.keymanapp-test-bot.pem';
@@ -38,4 +43,5 @@ const probot = new Probot({
   secret: secret,
 });
 
-module.exports = createNodeMiddleware(keymanappTestBot, { probot });
+const exports = createNodeMiddleware(keymanappTestBot.default, { probot });
+export default exports;

@@ -1,4 +1,4 @@
-import * as https from "https";
+import * as https from "node:https";
 
 type resolver = (a: string) => void;
 

@@ -1,11 +1,11 @@
 
-import httppost from '../../util/httppost';
-import { github_token } from '../../identity/github';
-import { getCurrentSprint } from '../../current-sprint';
-import { issueLabelScopes } from '../../../shared/issue-labels';
-import { logGitHubRateLimit } from '../../util/github-rate-limit';
+import httppost from '../../util/httppost.js';
+import { github_token } from '../../identity/github.js';
+import { getCurrentSprint } from '../../current-sprint.js';
+import { issueLabelScopes } from '../../../shared/issue-labels.js';
+import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
-const Sentry = require("@sentry/node");
+import * as Sentry from '@sentry/node';
 
 const queryStrings = {
 

@@ -1,5 +1,6 @@
-import { github_token } from '../../identity/github';
 import { Octokit } from '@octokit/rest';
+
+import { github_token } from '../../identity/github.js';
 
 export default {
   get: async function(): Promise<any> {

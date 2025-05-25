@@ -2,11 +2,12 @@
  Service to collect CODEOWNERS from github
 */
 
-import httpget from "../../util/httpget";
-import { platforms } from "../../../shared/platforms";
-import { environment } from "../../code";
-import { Environment } from "../../environment";
-import fs from "fs";
+import fs from "node:fs";
+
+import httpget from "../../util/httpget.js";
+import { platforms } from "../../../shared/platforms.js";
+import { environment } from "../../code.js";
+import { Environment } from "../../environment.js";
 
 export default {
   get: function() {

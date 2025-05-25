@@ -1,5 +1,5 @@
-import * as https from "https";
-import * as http from "http";
+import * as https from "node:https";
+import * as http from "node:http";
 
 type resolver = (a: {data: string; res: http.IncomingMessage}) => void;
 

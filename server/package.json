@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Report on status of Keyman projects",
   "main": "dist/server/code.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "run-script-os",
@@ -12,9 +13,9 @@
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
-    "@octokit/core": "^3.5.1",
-    "@octokit/plugin-rest-endpoint-methods": "^5.8.0",
-    "@octokit/rest": "^19.0.5",
+    "@octokit/core": "^5.2.0",
+    "@octokit/plugin-rest-endpoint-methods": "13.3.2-cjs.1",
+    "@octokit/rest": "^21.1.1",
     "@sentry/node": "^9.8.0",
     "@sentry/tracing": "^7.120.3",
     "application-config-path": "^0.1.0",
@@ -22,23 +23,24 @@
     "emoji-regex": "^10.2.1",
     "express": "^4.21.2",
     "parse-link-header": "^2.0.0",
-    "probot": "^12.3.3",
+    "probot": "^13.4.5",
     "source-map-support": "^0.5.19",
     "ws": "^7.4.6"
   },
   "devDependencies": {
-    "@octokit/types": "^6.25.0",
+    "@octokit/types": "^12.3.0",
     "@types/deep-equal": "^1.0.1",
-    "@types/express": "^4.17.11",
+    "@types/express": "^5.0.1",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.1",
     "@types/parse-link-header": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",
-    "mocha": "^9.2.2",
+    "mocha": "^10.2.0",
     "run-script-os": "^1.1.6",
     "tsc-watch": "^4.2.9",
-    "typescript": "^4.2.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

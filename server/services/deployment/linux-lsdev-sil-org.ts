@@ -26,8 +26,8 @@ Version: 15.0.100-1+focal1
 
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 // http://linux.lsdev.sil.org/ubuntu/dists/noble<llsoTier>/main/binary-amd64/Packages
 const HOST ='linux.lsdev.sil.org';

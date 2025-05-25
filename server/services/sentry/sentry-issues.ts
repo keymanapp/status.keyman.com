@@ -2,8 +2,9 @@
  Service to collect stats from sentry.io (formerly sentry.keyman.com)
 */
 
-import httpget from "../../util/httpget";
 import parseLinkHeader from "parse-link-header";
+
+import httpget from "../../util/httpget.js";
 
 const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
 

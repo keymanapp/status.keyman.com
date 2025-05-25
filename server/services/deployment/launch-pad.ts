@@ -2,8 +2,8 @@
  Service to collect version info from Launchpad
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 // https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-alpha?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&exact_match=true&binary_name=keyman
 // https://api.launchpad.net/1.0/~keymanapp/+archive/ubuntu/keyman-beta?ws.op=getPublishedBinaries&ws.size=1&order_by_date=true&exact_match=true&binary_name=keyman

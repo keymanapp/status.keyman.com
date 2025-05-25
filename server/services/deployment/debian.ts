@@ -2,8 +2,8 @@
  Service to collect version info from Debian
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 // https://sources.debian.org/api/src/keyman/
 const HOST = 'sources.debian.org';

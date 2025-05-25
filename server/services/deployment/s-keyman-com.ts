@@ -2,8 +2,8 @@
  Service to collect version info from s.keyman.com
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 const HOST='s.keyman.com';
 const PATH='/api/kmwversion.php';

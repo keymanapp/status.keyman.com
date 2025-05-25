@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import applicationConfigPath from 'application-config-path';
-import { Environment } from '../environment';
+import { Environment } from '../environment.js';
 
 export class SprintCache {
   private readonly cachePath: string;

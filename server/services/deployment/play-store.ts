@@ -6,8 +6,8 @@
  they cost significant money each month. Ridiculous!
 */
 
-import httpget from "../../util/httpget";
-import DataService from "../data-service";
+import httpget from "../../util/httpget.js";
+import DataService from "../data-service.js";
 
 const KEYMAN_APP_ID='com.tavultesoft.kmapro';
 const FIRSTVOICES_APP_ID='com.firstvoices.keyboards';

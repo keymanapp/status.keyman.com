@@ -19,6 +19,13 @@ const rootPath = __dirname + '/../../../../';
 const privateKeyFilename = rootPath + '.keymanapp-test-bot.pem';
 const secretFilename = rootPath + '.keymanapp-test-bot.secret';
 const appIdFilename = rootPath + '.keymanapp-test-bot.appid';
+
+if(!fs.existsSync(appIdFilename)) {
+  console.error(`keymanapp-test-bot: appId file ${appIdFilename} does not exist`);
+} else {
+  console.log(`keymanapp-test-bot: Reading appId file ${appIdFilename}`);
+}
+
 const appId = fs.existsSync(appIdFilename) ?
   parseInt(fs.readFileSync(appIdFilename, 'utf8'), 10) :
   133554; //test id: 134443;

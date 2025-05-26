@@ -580,7 +580,7 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.all('*', (request, response) => {
+app.all('/{*splat}', (request, response) => {
   response.status(200).sendFile('/public/dist/public/index.html', {root: environment == Environment.Development ? '../' : '../../../'});
 });
 

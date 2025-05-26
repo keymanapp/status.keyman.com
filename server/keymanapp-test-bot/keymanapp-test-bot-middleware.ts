@@ -55,8 +55,5 @@ const middleware = createNodeMiddleware(keymanappTestBot.default, { probot,
 });
 
 export default (req, res) => {
-  middleware(req, res, () => {
-    res.writeHead(404);
-    res.end();
-  });
+  return middleware(req, res);
 };

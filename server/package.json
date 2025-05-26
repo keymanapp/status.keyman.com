@@ -23,7 +23,7 @@
     "emoji-regex": "^10.2.1",
     "express": "^5.1.0",
     "parse-link-header": "^2.0.0",
-    "probot": "^13.4.5",
+    "probot": "^12.0.0",
     "source-map-support": "^0.5.19",
     "ws": "^7.4.6"
   },

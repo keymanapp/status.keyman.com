@@ -43,5 +43,13 @@ const probot = new Probot({
   secret: secret,
 });
 
-const exports = createNodeMiddleware(keymanappTestBot.default, { probot });
-export default exports;
+const middleware = createNodeMiddleware(keymanappTestBot.default, { probot,
+  webhooksPath: "/",
+});
+
+export default (req, res) => {
+  middleware(req, res, () => {
+    res.writeHead(404);
+    res.end();
+  });
+};

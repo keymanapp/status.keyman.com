@@ -125,6 +125,13 @@ export const platforms: PlatformSpec[] = [
     },
     context: "Common",
   },
+  {
+    id: "resources",
+    name: "Resources",
+    configs: {
+    },
+    context: "Resources",
+  },
 ];
 
 // TODO: consolidate with list in sentry-issues.ts

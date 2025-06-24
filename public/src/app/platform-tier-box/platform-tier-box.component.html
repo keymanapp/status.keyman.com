@@ -4,6 +4,8 @@
     <a href="{{tierTestLink(platform.id,tier,'testLMLayer')}}" target="_blank"><img src='/assets/web.png'></a>
   </div>
 </div>
+<div class="tier-container" *ngIf="platform.id == 'resources'">
+</div>
 <div class="tier-container" *ngIf="platform.id == 'core'">
   <span class="tier-test">🧪</span>
   <ng-container *ngFor="let tierId of ['linux', 'mac', 'web', 'windows']">

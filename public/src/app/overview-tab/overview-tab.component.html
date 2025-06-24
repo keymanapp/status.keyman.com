@@ -30,7 +30,7 @@
     <tr class='tr-platform' *ngFor="let platform of platforms | keyvalue">
       <th>
         <div *ngIf="!showCodeOwners">
-          <img src="assets/{{platform.value.id}}.png">&#160;&#160;
+          <img src="assets/{{platform.value.id}}.png" alt="{{platform.value.id}}">&#160;&#160;
           <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
           <span class="new-issue-links">
             <a title="Create new bug report issue for {{platform.value.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=bug,{{platform.value.id}}/&template=bug_report.md&title=bug({{platform.value.id}})%3A+" target="_blank">🐛</a>
@@ -40,7 +40,7 @@
         <div *ngIf="showCodeOwners">
           <div class="platform-row">
             <div class="platform-icon">
-              <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank"><img src="assets/{{platform.value.id}}.png"></a>
+              <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" title="{{platform.value.id}}" target="_blank"><img src="assets/{{platform.value.id}}.png"></a>
             </div>
             <div class="platform-owner" *ngIf="status.codeOwners[platform.value.id]">
               <a href="https://github.com/{{status.codeOwners[platform.value.id].owner}}" target="_blank">

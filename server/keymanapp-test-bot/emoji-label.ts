@@ -142,7 +142,7 @@ export async function processEpicLabelsEmoji(
 //
 // type(scope[,scope...]): title [emoji]
 // type: auto|bug|change|chore|docs|feat|maint|refactor|spec|style|test
-// scope: android|common|core|developer|ios|linux|mac|web|windows
+// scope: android|common|core|developer|ios|linux|mac|resources|web|windows
 //
 async function applyIssueLabels(
   octokit: InstanceType<typeof ProbotOctokit>,

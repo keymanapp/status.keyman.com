@@ -1,8 +1,7 @@
 
-// Ordered in the same way as the status home page is (developer, core, common at end)
+// Ordered in the same way as the status home page is (developer, core, common, resources at end)
 export const issueLabelScopes = [
-  'android/', 'ios/', 'linux/', 'mac/', 'web/', 'windows/', 'developer/', 'core/', 'common/'
-  // note: resources/ lives under common/ for now
+  'android/', 'ios/', 'linux/', 'mac/', 'web/', 'windows/', 'developer/', 'core/', 'common/', 'resources/',
 ];
 
 export const issueLabelTypes = [

@@ -1,4 +1,4 @@
-<span class="sentry-container {{site ? 'sentry-site' : 'sentry-platform'}} {{platform != 'common' && platform != 'core' && (!site || env.totalEvents != 0) ? 'sentry-visible' : 'sentry-hidden'}}">
+<span class="sentry-container {{site ? 'sentry-site' : 'sentry-platform'}} {{platform != 'common' && platform != 'core' && platform != 'resources' && (!site || env.totalEvents != 0) ? 'sentry-visible' : 'sentry-hidden'}}">
 
   <span class="label">
     <!--<img class="avatar-22" src="assets/{{platform}}.png" *ngIf="!site && mode != 'simple'">-->

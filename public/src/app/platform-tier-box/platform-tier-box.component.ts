@@ -169,7 +169,7 @@ export class PlatformTierBoxComponent implements OnInit {
   }
 
   hasReleaseBuild(platform) {
-    return platform.id != 'common' && platform.id != 'core';
+    return platform.id != 'common' && platform.id != 'core' && platform.id != 'resources';
   }
 
 }

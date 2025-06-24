@@ -129,8 +129,9 @@ export class DataModel {
         break;
       }
 
-    if(this.status.github && this.status.issues)
+    if(this.status.github && this.status.issues) {
       this.extractMilestoneData();
+    }
   }
 
   transformPlatformStatusData() {
@@ -139,9 +140,7 @@ export class DataModel {
     for(let platform of this.platforms) {
       platform.pulls = [];
       platform.pullsByEmoji = {};
-      //console.log(this.status.github.data.repository.pullRequests.edges);
       for(let pull of this.status.github.data.repository.pullRequests.edges) {
-        //console.log(pull);
         pull.node.checkSummary = pullChecks(pull);
         let labels = pull.node.labels.edges;
         let status = pull.node.commits.edges[0].node.commit.status;
@@ -150,7 +149,7 @@ export class DataModel {
           continue;
         }
         for(let label of labels) {
-          const labelName = label.node.name == 'resources/' ? 'common/' : label.node.name;
+          const labelName = /*label.node.name == 'resources/' ? 'common/' :*/ label.node.name;
           if(labelName == platform.id+'/') {
             let foundContext = null, userTestingContext = null;
             if(contexts) {
@@ -542,7 +541,7 @@ export class DataModel {
   }
 
   getPlatform(platformId: string): PlatformSpec {
-    if(platformId == 'resources') platformId = 'common';
+    // if(platformId == 'resources') platformId = 'common';
     return this.platforms.find(e => e.id == platformId);
   }
 

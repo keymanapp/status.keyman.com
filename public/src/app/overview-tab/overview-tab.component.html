@@ -81,18 +81,18 @@
         </div>
       </td>
 
-      <td class="pulls" *ngIf="pullRequestView == 'status' && platform.value.id == 'android'" rowspan='9'>
+      <td class="pulls" *ngIf="pullRequestView == 'status' && platform.value.id == 'android'" rowspan='10'>
         <app-box-pr-status
           [status]="status" [userTestIssues]="userTestIssues" [userTestIssuesPassed]="userTestIssuesPassed"
           [pullsByStatus]="pullsByStatus" [changeCounter]="changeCounter" [pullStatusName]="pullStatusName">
         </app-box-pr-status>
       </td>
 
-      <td class="pulls" *ngIf="pullRequestView == 'project' && platform.value.id == 'android'" rowspan='9'>
+      <td class="pulls" *ngIf="pullRequestView == 'project' && platform.value.id == 'android'" rowspan='10'>
         <app-box-pr-project [status]="status" [pullsByProject]="pullsByProject" [changeCounter]="changeCounter"></app-box-pr-project>
       </td>
 
-      <td class="pulls" *ngIf="pullRequestView == 'author' && platform.value.id == 'android'" rowspan='9'>
+      <td class="pulls" *ngIf="pullRequestView == 'author' && platform.value.id == 'android'" rowspan='10'>
         <app-box-pr-author [status]="status" [pullsByAuthor]="pullsByAuthor" [changeCounter]="changeCounter"></app-box-pr-author>
       </td>
 
@@ -100,7 +100,7 @@
         <app-box-pr-platform [status]="status" [platform]="platform" [changeCounter]="changeCounter"></app-box-pr-platform>
       </td>
 
-      <td class="pulls" *ngIf="pullRequestView == 'base' && platform.value.id == 'android'" rowspan="9">
+      <td class="pulls" *ngIf="pullRequestView == 'base' && platform.value.id == 'android'" rowspan="10">
         <app-box-pr-base [status]="status" [pullsByBase]="pullsByBase" [changeCounter]="changeCounter"></app-box-pr-base>
       </td>
     </tr>

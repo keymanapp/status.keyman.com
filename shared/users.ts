@@ -4,7 +4,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string, tz?: 
   "ermshiperete": { community: "EberhardBeilharz", tz: 'Europe/Berlin' },
   "jahorton": { community: "joshua_horton", avatar: 'bg+JH.png', tz: 'America/Chicago'},
   "MakaraSok": { community: "makara", avatar: 'bg+MS.png', tz: 'Asia/Phnom_Penh'},
-  "mcdurdin": { community: "Marc", avatar: 'bg+MD.png', tz: 'Asia/Phnom_Penh'},
+  "mcdurdin": { community: "Marc", avatar: 'bg+MD.png', tz: 'Europe/Berlin'},
   "markcsinclair": { community: "", tz: 'Europe/London' },
   "rc-swag": { community: "ross", avatar: 'bg+RC.png', tz: 'Australia/Brisbane'},
   "SabineSIL": { community: "", avatar: 'bg+SAB.png', tz: 'Europe/Berlin'},

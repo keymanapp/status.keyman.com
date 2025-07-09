@@ -8,7 +8,7 @@ export const userIds: {[index:string]: {community:string, avatar?: string, tz?: 
   "markcsinclair": { community: "", tz: 'Europe/London' },
   "rc-swag": { community: "ross", avatar: 'bg+RC.png', tz: 'Australia/Brisbane'},
   "SabineSIL": { community: "", avatar: 'bg+SAB.png', tz: 'Europe/Berlin'},
-  "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png', tz: 'America/Chicago'},
+  "sgschantz": { community: "Shawn", avatar: 'bg+SGS.png', tz: 'America/New_York'},
   "srl295": { community: "srl295", avatar: 'bg+SRL.png', tz: 'America/Chicago'},
   "sze2st": { community: "", tz: 'Europe/Berlin' },
   "Markus-SWAG": { community: "", tz: 'Europe/Berlin' },

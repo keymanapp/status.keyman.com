@@ -27,7 +27,7 @@ export default {
     return Promise.all([
       getTeamCity(  //0 - cache.teamCity
         '/app/rest/buildTypes?locator=affectedProject:(id:Keyman)&fields=buildType(id,name,builds($locator(canceled:false,branch:default:any),'+
-          'build(id,number,branchName,status,statusText,resultingProperties($locator(name:build.counter),property(name,value)))))'
+          'build(id,number,branchName,status,statusText,properties($locator(name:env.KEYMAN_BUILD_LEVEL),property(name,value)),resultingProperties($locator(name:build.counter),property(name,value)))))'
       ).then(data => transformTeamCityResponse(JSON.parse(data.data))),
 
       getTeamCity(  //1 - cache.teamCityRunning

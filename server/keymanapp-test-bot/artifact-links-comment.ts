@@ -130,12 +130,15 @@ export async function getArtifactLinksComment(
             download.name == 'Test Keyboards' ? 'Keyboards' :
             t.name;
           if(!links[platform]) links[platform] = [];
-          links[platform].push({
-            state: s[context].state,
-            platform: platform,
-            download: download.name,
-            url: `https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment}`
-          });
+          let buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
+          if(buildLevel != 'build') {
+            links[platform].push({
+              state: s[context].state,
+              platform: platform,
+              download: download.name,
+              url: `https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment}`
+            });
+          }
         }
         if(t.platform == 'ios') {
           // Special case note for TestFlight

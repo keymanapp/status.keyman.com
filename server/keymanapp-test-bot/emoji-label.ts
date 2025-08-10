@@ -124,7 +124,7 @@ export async function processEpicLabelsEmoji(
       }
     }
 
-    await applyIssueLabels(octokit, data, issue);
+    await applyIssueLabelsAndType(octokit, data, issue);
   }
 
   if(emoji != '') {
@@ -144,7 +144,7 @@ export async function processEpicLabelsEmoji(
 // type: auto|bug|change|chore|docs|feat|maint|refactor|spec|style|test
 // scope: android|common|core|developer|ios|linux|mac|resources|web|windows
 //
-async function applyIssueLabels(
+async function applyIssueLabelsAndType(
   octokit: InstanceType<typeof ProbotOctokit>,
   data: ProcessEventData,
   issue: GetResponseTypeFromEndpointMethod<typeof octokit.rest.issues.get>
@@ -188,4 +188,8 @@ async function applyIssueLabels(
     log(issue, `Adding labels ${newLabelsToAdd.join(',')}`);
     await octokit.rest.issues.addLabels({...data, labels: newLabelsToAdd});
   }
+
+  // Set the issue Type field based on matches[1]
+  const issueType = validTypeLabels.includes(matches[1]) ? matches[1] : null;
+  await octokit.rest.issues.update({...data, type: issueType});
 }

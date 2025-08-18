@@ -15,13 +15,13 @@ import ws from 'ws';
 import keymanAppTestBotMiddleware from './keymanapp-test-bot/keymanapp-test-bot-middleware.js';
 import * as currentSprint from './current-sprint.js';
 
-import { statusData } from './data/status-data.js';
+import { ContributionChanges, statusData } from './data/status-data.js';
 import { slackLGTM } from './services/slack/slack.js';
 import { DataChangeTimingManager } from './util/DataChangeTimingManager.js';
 
 import githubContributionsService from "./services/github/github-contributions.js";
 import discourseService from "./services/discourse/discourse.js";
-import githubTestContributionsService from "./services/github/github-test-contributions.js";
+import githubTestContributionsService, { USER_TEST_RESULT_REGEX } from "./services/github/github-test-contributions.js";
 import gitHubMilestonesService from './services/github/github-milestones.js';
 
 import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment.js';
@@ -140,13 +140,26 @@ function initialLoad() {
 
   respondCodeOwnersDataChange();
   respondSiteLivelinessDataChange();
-  respondGitHubDataChange();
+  initialLoadGitHub();
+  doDiscourseDataChange();
   respondKeymanDataChange();
   respondTeamcityDataChange();
   respondSentryDataChange();
   // We have a bunch of deploy endpoints
   respondPolledEndpoints();
-};
+}
+
+function initialLoadGitHub() {
+  // TODO: cleanup for initial load
+  timingManager.start('github');
+  statusData.refreshGitHubStatusData('current')
+    .then(hasChanged => sendWsAlert(hasChanged, 'github'))
+    .then(() => respondGitHubContributionsDataChange({issue:true, post:true, pull:true, review:true, test:true}))
+    .then(() => statusData.refreshGitHubIssuesData())
+    .then(hasChanged => sendWsAlert(hasChanged, 'github-issues'))
+    .catch(error => reportError(error))
+    .finally(() => timingManager.finish('github'));
+}
 
 /* Interval triggers */
 
@@ -196,20 +209,59 @@ function respondKeymanDataChange() {
     .catch(error => reportError(error));
 }
 
-function respondGitHubDataChange() {
-  if(timingManager.isTooSoon('github', GitHubRefreshRate, respondGitHubDataChange)) {
+async function respondGitHubDataChange(request: express.Request) {
+  if(timingManager.isTooSoon('github', GitHubRefreshRate, () => respondGitHubDataChange(request))) {
     return;
   }
 
   timingManager.start('github');
 
-  return statusData.refreshGitHubStatusData('current')
-    .then(hasChanged => sendWsAlert(hasChanged, 'github'))
-    .then(doDiscourseDataChange)
-    .then(respondGitHubContributionsDataChange)
-    .then(respondGitHubIssuesDataChange)
-    .catch(error => reportError(error))
-    .finally(() => timingManager.finish('github'));
+  const event = request?.headers?.['x-github-event'];
+  const issueNumber = request?.body?.issue?.number;
+  const repo = request?.body?.repository?.name;
+
+  if((event == 'issues' || event == 'issue_comment') && !request.body.issue.pull_request) {
+    console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+    try {
+      if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
+        sendWsAlert(true, 'github-issues');
+      }
+      await respondGitHubContributionsDataChange(
+        {issue:true, post:false, pull:false, review:false, test:false}
+      );
+    } catch(error) {
+      reportError(error);
+    }
+/*  } else if(event == 'check_run') {
+    // TODO: only refresh data related to check runs?
+    const prNumbers = request.body?.check_suite?.pull_requests?.map(pr => pr.number) ?? [];
+  } else if(event == 'check_suite') {
+    // TODO: only refresh data related to check suites?
+    const prNumbers = request.body?.check_suite?.pull_requests?.map(pr => pr.number) ?? [];
+  } else if(event == 'pull_request') {
+    // TODO: only refresh data related to pull requests
+    const prNumber = request.body?.pull_request?.number;
+*/
+  } else {
+    console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+    try {
+      const hasChanged = await statusData.refreshGitHubStatusData('current');
+      if(hasChanged) {
+        sendWsAlert(true, 'github');
+      }
+      if(event != 'check_run' && event != 'check_suite') {
+        // We'll only refresh contribution data if the event type merits it
+        const isUserTestComment =
+          event == 'issue_comment' &&
+          (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
+        await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request', test:isUserTestComment});
+      }
+    } catch(error) {
+      reportError(error);
+    }
+  }
+
+  timingManager.finish('github');
 }
 
 function respondCodeOwnersDataChange() {
@@ -224,14 +276,8 @@ function respondSiteLivelinessDataChange() {
     .catch(error => reportError(error));
 }
 
-function respondGitHubIssuesDataChange() {
-  return statusData.refreshGitHubIssuesData()
-    .then(hasChanged => sendWsAlert(hasChanged, 'github-issues'))
-    .catch(error => reportError(error));
-}
-
-function respondGitHubContributionsDataChange() {
-  return statusData.refreshGitHubContributionsData('current')
+function respondGitHubContributionsDataChange(contributionChanges: ContributionChanges) {
+  return statusData.refreshGitHubContributionsData('current', contributionChanges)
     .then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'))
     .catch(error => reportError(error));
 }
@@ -307,9 +353,9 @@ app.use('/', express.static((environment == Environment.Development ? '' : '../'
 
 /* Web hooks */
 
-app.post('/webhook/github', (request, response) => {
+app.post('/webhook/github', (request: express.Request, response) => {
   (async () => {
-    respondGitHubDataChange();
+    respondGitHubDataChange(request);
     slackLGTM(request.body);
   })();
   response.send('ok');

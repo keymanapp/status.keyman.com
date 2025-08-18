@@ -3,6 +3,8 @@ import httppost from '../../util/httppost.js';
 import { github_token } from '../../identity/github.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
+export const USER_TEST_RESULT_REGEX = /^[\*\s-]*TEST_[A-Z0-9_]+[\*\s:\(]*(PASS|PASSED|FAIL|FAILED|BLOCKED|OPEN)/gm;
+
 export default {
 
   get: function(cursor, issues, startDate, user): Promise<Array<any>> {
@@ -39,7 +41,7 @@ export default {
   filterTestResults: function(results) {
     // Only return comments that have valid TEST_XXX results
     return results.filter(result => {
-      return (result.body ?? '').match(/^[\*\s-]*TEST_[A-Z0-9_]+[\*\s:\(]*(PASS|PASSED|FAIL|FAILED|BLOCKED|OPEN)/gm)
+      return (result.body ?? '').match(USER_TEST_RESULT_REGEX)
     }).map(result => { return {
         // strip body from results
         occurredAt: result.createdAt,

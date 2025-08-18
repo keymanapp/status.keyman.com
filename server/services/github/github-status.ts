@@ -372,10 +372,4 @@ export default {
       }
     });
   },
-  queryString: function() {
-    return `
-
-  `
-  }
-
 };

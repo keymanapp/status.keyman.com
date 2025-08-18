@@ -6,6 +6,7 @@ import versionService from "../services/downloads.keyman.com/version.js";
 import teamcityService from "../services/teamcity/teamcity.js";
 import githubStatusService from "../services/github/github-status.js";
 import githubIssuesService from "../services/github/github-issues.js";
+import githubIssueService, { KSGitHubIssue } from "../services/github/github-issue.js";
 import githubContributionsService from "../services/github/github-contributions.js";
 import githubTestContributionsService from "../services/github/github-test-contributions.js";
 import sentryIssuesService from "../services/sentry/sentry-issues.js";
@@ -25,6 +26,8 @@ import { performanceLog } from "../performance-log.js";
 import siteLivelinessService from "../services/keyman/site-liveliness.js";
 
 import * as Sentry from '@sentry/node';
+
+export type ContributionChanges = { issue: boolean, pull: boolean, review: boolean, test: boolean, post: boolean };
 
 const services = {};
 services[StatusSource.ITunesKeyman] = keymaniTunesService;
@@ -51,7 +54,7 @@ export interface StatusDataCache {
   teamCityAgents?: any;
   teamCityQueue?: any;
   keymanVersion?: any;
-  issues?: any;
+  issues?: KSGitHubIssue[];
   sentryIssues?: any;
   sprints: {
     current: {
@@ -125,6 +128,43 @@ export class StatusData {
     return result;
   };
 
+  refreshGitHubIssueData = async (repo: string, number: number): Promise<boolean> => {
+    let issue;
+    try {
+      issue = await logAsync(`refreshGitHubIssueData(${repo}, ${number})`, () => githubIssueService.get(repo, number));
+    } catch(e) {
+      return false;
+    }
+
+    const idx = this.cache.issues.findIndex(i => i.number == issue.number);
+
+    if(issue.state == 'CLOSED' && idx >= 0) {
+      // issue has been closed, remove from cache
+      this.cache.issues.splice(idx, 1);
+      return true;
+    }
+
+    if(issue.state == 'CLOSED') {
+      // issue is closed but not in cache, no need to refresh
+      return false;
+    }
+
+    if(idx < 0) {
+      // issue is not in the cache, add it
+      this.cache.issues.push(issue);
+      return true;
+    }
+
+    if(deepEqual(issue, this.cache.issues[idx])) {
+      // issue is in cache, but has no visible changes
+      return false;
+    }
+
+    // replace existing issue in cache
+    this.cache.issues[idx] = issue;
+    return true;
+  };
+
   refreshGitHubIssuesData = async (): Promise<boolean> => {
     // console.log('[Refresh] GitHub Issues ENTER');
     let issues;
@@ -164,17 +204,22 @@ export class StatusData {
     return result;
   };
 
-  refreshGitHubContributionsData = async (sprintName): Promise<boolean> => {
+  refreshGitHubContributionsData = async (sprintName: string, contributionChanges: ContributionChanges): Promise<boolean> => {
     // console.log('[Refresh] GitHub Contributions ENTER');
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) return false;
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
     let contributions;
     try {
+      // TODO: check other contributionChanges?
       contributions = await logAsync('refreshGitHubContributionsData', () => githubContributionsService.get(sprintStartDateTime));
 
-      for(let node of contributions?.data?.repository?.contributions?.nodes) {
-        node.contributions.tests = {nodes: await logAsync(`refreshGitHubContributionsTestsData(${node.login})`, () => githubTestContributionsService.get(null, [], sprintStartDateTime, node.login))};
+      if(contributionChanges.test) {
+        for(let node of contributions?.data?.repository?.contributions?.nodes) {
+          node.contributions.tests = {nodes: await logAsync(`refreshGitHubContributionsTestsData(${node.login})`, () => githubTestContributionsService.get(null, [], sprintStartDateTime, node.login))};
+        }
+      } else {
+        contributions.tests = sprint.contributions?.tests;
       }
     } catch(e) {
       return false;
@@ -254,7 +299,7 @@ export class StatusData {
 
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) {
-      console.error(`[Refresh] Community-Site: invalid sprint ${sprint}`);
+      console.error(`[Refresh] Community-Site: invalid sprint ${JSON.stringify(sprint)}`);
       return false;
     }
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart) : getSprintStart();

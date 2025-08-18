@@ -9,3 +9,8 @@ export const issueLabelTypes = [
 ];
 
 export const issueValidTitleRegex = /^(auto|bug|change|chore|docs|feat|maint|refactor|spec|style|test)(?:\(([a-z, ]+)\))?:/;
+
+// history: PRs use 'fix', but issues use 'bug'
+export const prLabelTypes = [
+  'auto', 'change', 'chore', 'docs', 'feat', 'fix', 'maint', 'refactor', 'spec', 'style', 'test'
+];

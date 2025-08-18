@@ -214,12 +214,14 @@ export class StatusData {
       // TODO: check other contributionChanges?
       contributions = await logAsync('refreshGitHubContributionsData', () => githubContributionsService.get(sprintStartDateTime));
 
-      if(contributionChanges.test) {
-        for(let node of contributions?.data?.repository?.contributions?.nodes) {
-          node.contributions.tests = {nodes: await logAsync(`refreshGitHubContributionsTestsData(${node.login})`, () => githubTestContributionsService.get(null, [], sprintStartDateTime, node.login))};
+      for(let node of contributions?.data?.repository?.contributions?.nodes) {
+          const cachedNode = sprint.contributions?.data?.repository?.
+              contributions?.nodes?.find(n => n.login == node.login);
+          if(contributionChanges.test || !cachedNode?.contributions?.tests) {
+            node.contributions.tests = {nodes: await logAsync(`refreshGitHubContributionsTestsData(${node.login})`, () => githubTestContributionsService.get(null, [], sprintStartDateTime, node.login))};
+          } else {
+            node.contributions.tests = cachedNode.contributions.tests;
         }
-      } else {
-        contributions.tests = sprint.contributions?.tests;
       }
     } catch(e) {
       return false;

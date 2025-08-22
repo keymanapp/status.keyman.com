@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { StatusSource } from '../../../../shared/status-source';
+import { ServiceIdentifier } from '../../../../shared/services';
 
 @Injectable()
 export class StatusService {
@@ -10,7 +10,7 @@ export class StatusService {
 
   constructor(private http: HttpClient) { }
 
-  getStatus(source: StatusSource, sprint?: string, sprintStartDate?: Date) {
+  getStatus(source: ServiceIdentifier, sprint?: string, sprintStartDate?: Date) {
     const url = this.statusUrl + '/' + source;
     let params:any = {};
     if(sprint) params.sprint = sprint;

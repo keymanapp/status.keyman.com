@@ -36,6 +36,7 @@ import { CommunityQueueComponent } from "./community-queue/community-queue.compo
 import { AssignedIssuesComponent } from "./assigned-issues/assigned-issues.component";
 import { OverviewTabComponent } from "./overview-tab/overview-tab.component";
 import { createErrorHandler } from "@sentry/angular";
+import { ServiceStatePopupComponent } from "./service-state-popup/service-state-popup.component";
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { createErrorHandler } from "@sentry/angular";
     CommunityQueueComponent,
     AssignedIssuesComponent,
     OverviewTabComponent,
+    ServiceStatePopupComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

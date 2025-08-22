@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/node';
 import express from 'express';
 // import * as Tracing from "@sentry/tracing";
 
-import { StatusSource } from '../shared/status-source.js';
+import { ServiceStateCache, ServiceIdentifier } from '../shared/services.js';
 import { SprintCache } from './data/sprint-cache.js';
 
 import ws from 'ws';
@@ -113,23 +113,23 @@ app.use(requestLoggerMiddleware({ logger: console.log }));
 
 /* Deployment Endpoints */
 
-const STATUS_SOURCES: StatusSource[] = [
-  StatusSource.ITunesKeyman,
-  StatusSource.ITunesFirstVoices,
-  StatusSource.PlayStoreKeyman,
-  StatusSource.PlayStoreFirstVoices,
-  StatusSource.LaunchPadAlpha,
-  StatusSource.LaunchPadBeta,
-  StatusSource.LaunchPadStable,
-  StatusSource.DebianBeta,
-  StatusSource.DebianStable,
-  StatusSource.NpmKeymanCompiler,
-  StatusSource.NpmCommonTypes,
-  StatusSource.SKeymanCom,
-  StatusSource.PackagesSilOrg,
-  StatusSource.LinuxLsdevSilOrgAlpha,
-  StatusSource.LinuxLsdevSilOrgBeta,
-  StatusSource.LinuxLsdevSilOrgStable
+const STATUS_SOURCES: ServiceIdentifier[] = [
+  ServiceIdentifier.ITunesKeyman,
+  ServiceIdentifier.ITunesFirstVoices,
+  ServiceIdentifier.PlayStoreKeyman,
+  ServiceIdentifier.PlayStoreFirstVoices,
+  ServiceIdentifier.LaunchPadAlpha,
+  ServiceIdentifier.LaunchPadBeta,
+  ServiceIdentifier.LaunchPadStable,
+  ServiceIdentifier.DebianBeta,
+  ServiceIdentifier.DebianStable,
+  ServiceIdentifier.NpmKeymanCompiler,
+  ServiceIdentifier.NpmCommonTypes,
+  ServiceIdentifier.SKeymanCom,
+  ServiceIdentifier.PackagesSilOrg,
+  ServiceIdentifier.LinuxLsdevSilOrgAlpha,
+  ServiceIdentifier.LinuxLsdevSilOrgBeta,
+  ServiceIdentifier.LinuxLsdevSilOrgStable
 ];
 
 initialLoad();
@@ -215,53 +215,54 @@ async function respondGitHubDataChange(request: express.Request) {
   }
 
   timingManager.start('github');
+  try {
+    const event = request?.headers?.['x-github-event'];
+    const issueNumber = request?.body?.issue?.number;
+    const repo = request?.body?.repository?.name;
 
-  const event = request?.headers?.['x-github-event'];
-  const issueNumber = request?.body?.issue?.number;
-  const repo = request?.body?.repository?.name;
-
-  if((event == 'issues' || event == 'issue_comment') && !request.body.issue.pull_request) {
-    console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
-    try {
-      if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
-        sendWsAlert(true, 'github-issues');
+    if((event == 'issues' || event == 'issue_comment') && !request.body.issue.pull_request) {
+      console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+      try {
+        if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
+          sendWsAlert(true, 'github-issues');
+        }
+        await respondGitHubContributionsDataChange(
+          {issue:true, post:false, pull:false, review:false, test:false}
+        );
+      } catch(error) {
+        reportError(error);
       }
-      await respondGitHubContributionsDataChange(
-        {issue:true, post:false, pull:false, review:false, test:false}
-      );
-    } catch(error) {
-      reportError(error);
+  /*  } else if(event == 'check_run') {
+      // TODO: only refresh data related to check runs?
+      const prNumbers = request.body?.check_suite?.pull_requests?.map(pr => pr.number) ?? [];
+    } else if(event == 'check_suite') {
+      // TODO: only refresh data related to check suites?
+      const prNumbers = request.body?.check_suite?.pull_requests?.map(pr => pr.number) ?? [];
+    } else if(event == 'pull_request') {
+      // TODO: only refresh data related to pull requests
+      const prNumber = request.body?.pull_request?.number;
+  */
+    } else {
+      console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+      try {
+        const hasChanged = await statusData.refreshGitHubStatusData('current');
+        if(hasChanged) {
+          sendWsAlert(true, 'github');
+        }
+        if(event != 'check_run' && event != 'check_suite') {
+          // We'll only refresh contribution data if the event type merits it
+          const isUserTestComment =
+            event == 'issue_comment' &&
+            (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
+          await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request', test:isUserTestComment});
+        }
+      } catch(error) {
+        reportError(error);
+      }
     }
-/*  } else if(event == 'check_run') {
-    // TODO: only refresh data related to check runs?
-    const prNumbers = request.body?.check_suite?.pull_requests?.map(pr => pr.number) ?? [];
-  } else if(event == 'check_suite') {
-    // TODO: only refresh data related to check suites?
-    const prNumbers = request.body?.check_suite?.pull_requests?.map(pr => pr.number) ?? [];
-  } else if(event == 'pull_request') {
-    // TODO: only refresh data related to pull requests
-    const prNumber = request.body?.pull_request?.number;
-*/
-  } else {
-    console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
-    try {
-      const hasChanged = await statusData.refreshGitHubStatusData('current');
-      if(hasChanged) {
-        sendWsAlert(true, 'github');
-      }
-      if(event != 'check_run' && event != 'check_suite') {
-        // We'll only refresh contribution data if the event type merits it
-        const isUserTestComment =
-          event == 'issue_comment' &&
-          (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
-        await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request', test:isUserTestComment});
-      }
-    } catch(error) {
-      reportError(error);
-    }
+  } finally {
+    timingManager.finish('github');
   }
-
-  timingManager.finish('github');
 }
 
 function respondCodeOwnersDataChange() {
@@ -328,8 +329,9 @@ function respondPolledEndpoints() {
 
 function sendInitialRefreshMessages(socket) {
   const sprint = statusData.cache.sprints['current'];
+  sendWsAlert(true, 'service-state:' + JSON.stringify(statusData.cache.serviceState));
   if(sprint) {
-    if(statusData.cache.communitySite) socket.send(StatusSource.CommunitySite);
+    if(statusData.cache.communitySite) socket.send(ServiceIdentifier.CommunitySite);
     if(sprint.contributions) socket.send('github-contributions');
     if(sprint.github) socket.send('github');
   }
@@ -404,6 +406,11 @@ function sendWsAlert(hasChanged: boolean, message: string): boolean {
   return hasChanged;
 }
 
+statusData.onServiceStateChanged = function(cache: ServiceStateCache) {
+  sendWsAlert(true, 'service-state:' + JSON.stringify(cache));
+}
+
+
 /* App Service */
 
 function statusHead(request, response) {
@@ -426,6 +433,13 @@ app.get('/status/teamcity', (request, response) => {
     teamCityRunning: statusData.cache.teamCityRunning,
     teamCityAgents: statusData.cache.teamCityAgents,
     teamCityQueue: statusData.cache.teamCityQueue,
+  }));
+  response.end();
+});
+
+app.get('/status/services', (request, response) => {
+  response.write(JSON.stringify({
+    services: statusData.cache.serviceState
   }));
   response.end();
 });

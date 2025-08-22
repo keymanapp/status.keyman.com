@@ -1,5 +1,5 @@
 export class DataChangeTimingManager {
-  started: boolean[] = [];
+  started: Date[] = [];
   lastRun: Date[] = [];
   dataChangeTimeout: NodeJS.Timeout[] = [];
 
@@ -7,12 +7,10 @@ export class DataChangeTimingManager {
     if (this.started[id] || this.lastRun[id] &&
         (new Date()).valueOf() - this.lastRun[id].valueOf() < minInterval) {
 
-      //if(process.env['NODE_ENV'] != 'production') {
-        if(this.isRunning(id))
-          console.log(`DataChangeTimingManager: Data change for ${id} is still underway; waiting ${minInterval} milliseconds`);
-        else
-          console.log(`DataChangeTimingManager: Data change for ${id} is too soon; waiting ${minInterval} milliseconds`);
-      //}
+      console.log(
+        `DataChangeTimingManager: Data change for ${id} is ${this.isRunning(id) ? 'still underway' : 'too soon'} `+
+        `(started at ${(this.started[id] ?? '??').toString()}); waiting ${minInterval} milliseconds`
+      );
 
       if (this.dataChangeTimeout[id]) {
         clearTimeout(this.dataChangeTimeout[id]);
@@ -31,11 +29,12 @@ export class DataChangeTimingManager {
   };
 
   start = (id): void => {
-    this.started[id] = true;
+    this.started[id] = new Date();
+    // this.lastRun[id] = new Date();
   };
 
   finish = (id): void => {
-    this.started[id] = false;
+    this.started[id] = null;
     this.lastRun[id] = new Date();
   };
 

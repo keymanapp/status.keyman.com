@@ -1,0 +1,17 @@
+<!--
+  Keyman is copyright (C) SIL Global. MIT License.
+-->
+<span class="service-state">
+  <span class="status-title"><span class="icon {{overallStatus()}}">●</span> Keyman Status</span>
+  <div class="service-state-popup {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+    <div class="title"><span class="pin" (click)="pin()">📌</span> Service State - {{serviceState?.length}} services</div>
+
+    <table>
+      <tbody>
+      <tr *ngFor="let service of serviceState">
+        <td><span class="icon {{service.state}}" title="{{service.state}}">●</span> {{service.service}}</td><td>{{service.message}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</span>

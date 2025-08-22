@@ -1,4 +1,5 @@
-export enum StatusSource {
+export enum ServiceIdentifier {
+  // Custom sources
   Keyman = "keyman",
   GitHub = "github",
   GitHubIssues = "github-issues",
@@ -7,7 +8,7 @@ export enum StatusSource {
   SentryIssues = "sentry-issues",
   CodeOwners = "code-owners",
   SiteLiveliness = "site-liveliness",
-  // Deployment targets
+  // Deployment targets - standard sources
   ITunesKeyman = "itunes-keyman",
   ITunesFirstVoices = "itunes-firstvoices",
   PlayStoreKeyman = "play-store-keyman",
@@ -24,7 +25,21 @@ export enum StatusSource {
   LinuxLsdevSilOrgStable = "linux-lsdev-sil-org-stable",
   DebianBeta = "debian-beta",
   DebianStable = "debian-stable",
+  // Other standard sources
   CommunitySite = "community-site",
   GitHubMilestones = 'github-milestones',
 };
 
+export enum ServiceState {
+  loading = 'loading',
+  successful = 'successful',
+  error = 'error',
+  unknown = 'unknown',
+};
+
+export interface ServiceStateRecord {
+  state: ServiceState;
+  message: string;
+};
+
+export type ServiceStateCache = {[index in ServiceIdentifier]?: ServiceStateRecord};

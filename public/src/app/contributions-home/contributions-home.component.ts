@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { StatusSource } from '../../../../shared/status-source';
+import { ServiceIdentifier } from '../../../../shared/services';
 import { Status, EMPTY_STATUS } from '../status/status.interface';
 import { StatusService } from '../status/status.service';
 
@@ -33,8 +33,8 @@ export class ContributionsHomeComponent implements OnInit {
         this.sprint = queryParams.get('sprint');
       });
 
-    this.statusService.getStatus(StatusSource.GitHubMilestones).subscribe((data:any) => {
-      console.log('getStatus.data for '+StatusSource.GitHubMilestones);
+    this.statusService.getStatus(ServiceIdentifier.GitHubMilestones).subscribe((data:any) => {
+      console.log('getStatus.data for '+ServiceIdentifier.GitHubMilestones);
       this.milestones = data.milestones;
 
       this.milestone = this.milestones.find(m => m.title == this.sprint);
@@ -57,23 +57,23 @@ export class ContributionsHomeComponent implements OnInit {
             };
         }
 
-        this.refreshStatus(StatusSource.GitHubContributions);
-        this.refreshStatus(StatusSource.CommunitySite);
+        this.refreshStatus(ServiceIdentifier.GitHubContributions);
+        this.refreshStatus(ServiceIdentifier.CommunitySite);
       }
     });
   }
 
-  refreshStatus(source: StatusSource) {
+  refreshStatus(source: ServiceIdentifier) {
     this.statusService.getStatus(source, this.sprint, this.sprintStartDate)
       .subscribe(
         (data: any) => {
           console.log('getStatus.data for '+source);
           this.status.currentSprint = data.currentSprint;
           switch(source) {
-            case StatusSource.GitHubContributions:
+            case ServiceIdentifier.GitHubContributions:
               this.status.contributions = data.contributions;
               break;
-            case StatusSource.CommunitySite:
+            case ServiceIdentifier.CommunitySite:
               this.status.communitySite = this.transformCommunitySiteData(data.contributions);
               break;
           }

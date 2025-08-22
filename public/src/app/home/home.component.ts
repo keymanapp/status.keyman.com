@@ -1,7 +1,7 @@
 import { NgZone, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from '../status/status.service';
-import { StatusSource } from '../../../../shared/status-source';
+import { ServiceIdentifier } from '../../../../shared/services';
 import { DataSocket } from '../datasocket/datasocket.service';
 import { getUserAvatarUrl } from '../../../../shared/users';
 import { ContributionsModel } from '../data/contributions.model';
@@ -43,6 +43,7 @@ export class HomeComponent {
   get phaseStart() { return this.data.phaseStart };
   get phaseEnd() { return this.data.phaseEnd };
   get unlabeledPulls() { return this.data.unlabeledPulls };
+  get serviceState() { return this.data.serviceState };
 
   constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
   };
@@ -64,8 +65,15 @@ export class HomeComponent {
 
 
     this.ws = new DataSocket();
-    this.ws.onMessage = (data) => {
-      this.zone.run(() => this.refreshStatus(data as StatusSource));
+    this.ws.onMessage = (data: string) => {
+      this.zone.run(() => {
+        if(data.startsWith('service-state:')) {
+          const json = JSON.parse(data.substring('service-state:'.length));
+          this.data.updateServiceState(json);
+        } else {
+          this.refreshStatus(data as ServiceIdentifier)
+        }
+      });
     };
   }
 
@@ -74,7 +82,7 @@ export class HomeComponent {
     this.statusService.refreshBackend();
   }
 
-  refreshStatus(source: StatusSource) {
+  refreshStatus(source: ServiceIdentifier) {
     // Suck in Keyman Status from code.js (server side)
     this.statusService.getStatus(source, this.sprintOverride)
       .subscribe(

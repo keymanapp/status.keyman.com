@@ -1,5 +1,5 @@
 import { platforms, PlatformSpec } from "../../../../shared/platforms";
-import { StatusSource } from "../../../../shared/status-source";
+import { ServiceStateCache, ServiceState, ServiceIdentifier } from "../../../../shared/services";
 import { sites, siteSentryNames, sitesWithState } from "../sites";
 import { EMPTY_STATUS, Status } from "../status/status.interface";
 import { pullEmoji } from "../utility/pullEmoji";
@@ -13,6 +13,8 @@ interface OtherSites {
 
 export class DataModel {
   status: Status = EMPTY_STATUS;
+
+  serviceState: {service: ServiceIdentifier, state: ServiceState, message?: string}[];
 
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
   sites = Object.assign({}, ...sites.map(v => ({[v]: {id: /^([^.]+)/.exec(v)[0], pulls:[], hasState: sitesWithState.includes(v)}}))); // make an object map of 'url.com': {pulls:[]}
@@ -62,17 +64,23 @@ export class DataModel {
   pullsByAuthor = {};
   pullsByBase = {};
 
-  refreshStatus(source: StatusSource, data) {
+  updateServiceState(data: ServiceStateCache) {
+    this.serviceState = Object.keys(data).map(key =>
+      ({service: <ServiceIdentifier>key, state: data[key].state, message: data[key].message})
+    );
+  }
+
+  refreshStatus(source: ServiceIdentifier, data) {
     console.log('getStatus.data for '+source);
     this.status.currentSprint = data.currentSprint;
     switch(source) {
-      case StatusSource.CodeOwners:
+      case ServiceIdentifier.CodeOwners:
         this.status.codeOwners = data.codeOwners;
         break;
-      case StatusSource.SiteLiveliness:
+      case ServiceIdentifier.SiteLiveliness:
         this.status.siteLiveliness = data.siteLiveliness;
         break;
-      case StatusSource.GitHub:
+      case ServiceIdentifier.GitHub:
         this.status.github = data.github;
         this.keyboardPRs = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='keyboards')?.pullRequests.edges;
         this.lexicalModelPRs = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='lexical-models')?.pullRequests.edges;
@@ -82,48 +90,48 @@ export class DataModel {
         this.extractPullsByAuthorProjectAndStatus();
         this.removeDuplicateTimelineItems();
         break;
-      case StatusSource.GitHubIssues:
+      case ServiceIdentifier.GitHubIssues:
         this.status.issues = data.issues;
         this.removeDuplicateTimelineItems();
         this.extractKeyboardAndLMIssues();
         this.extractUserTestIssues();
         break;
-      case StatusSource.GitHubContributions:
+      case ServiceIdentifier.GitHubContributions:
         this.status.contributions = data.contributions;
         break;
-      case StatusSource.CommunitySite:
+      case ServiceIdentifier.CommunitySite:
         this.status.communitySite = this.transformCommunitySiteData(data.communitySite.contributions);
         this.status.communitySiteQueue = data.communitySite.queue;
         break;
-      case StatusSource.Keyman:
+      case ServiceIdentifier.Keyman:
         this.status.keyman = data.keyman;
         break;
-      case StatusSource.SentryIssues:
+      case ServiceIdentifier.SentryIssues:
         this.status.sentryIssues = this.transformSentryData(data.sentryIssues);
         break;
-      case StatusSource.TeamCity:
+      case ServiceIdentifier.TeamCity:
         this.status.teamCity = data.teamCity;
         this.status.teamCityRunning = data.teamCityRunning;
         this.status.teamCityAgents = data.teamCityAgents;
         this.status.teamCityQueue = data.teamCityQueue;
         this.changeCounter++; // forces a rebuild
         break;
-      case StatusSource.DebianBeta:
-      case StatusSource.DebianStable:
-      case StatusSource.ITunesKeyman:
-      case StatusSource.ITunesFirstVoices:
-      case StatusSource.PlayStoreKeyman:
-      case StatusSource.PlayStoreFirstVoices:
-      case StatusSource.SKeymanCom:
-      case StatusSource.LaunchPadAlpha:
-      case StatusSource.LaunchPadBeta:
-      case StatusSource.LaunchPadStable:
-      case StatusSource.PackagesSilOrg:
-      case StatusSource.LinuxLsdevSilOrgAlpha:
-      case StatusSource.LinuxLsdevSilOrgBeta:
-      case StatusSource.LinuxLsdevSilOrgStable:
-      case StatusSource.NpmKeymanCompiler:
-      case StatusSource.NpmCommonTypes:
+      case ServiceIdentifier.DebianBeta:
+      case ServiceIdentifier.DebianStable:
+      case ServiceIdentifier.ITunesKeyman:
+      case ServiceIdentifier.ITunesFirstVoices:
+      case ServiceIdentifier.PlayStoreKeyman:
+      case ServiceIdentifier.PlayStoreFirstVoices:
+      case ServiceIdentifier.SKeymanCom:
+      case ServiceIdentifier.LaunchPadAlpha:
+      case ServiceIdentifier.LaunchPadBeta:
+      case ServiceIdentifier.LaunchPadStable:
+      case ServiceIdentifier.PackagesSilOrg:
+      case ServiceIdentifier.LinuxLsdevSilOrgAlpha:
+      case ServiceIdentifier.LinuxLsdevSilOrgBeta:
+      case ServiceIdentifier.LinuxLsdevSilOrgStable:
+      case ServiceIdentifier.NpmKeymanCompiler:
+      case ServiceIdentifier.NpmCommonTypes:
         this.status.deployment[source] = data.data;
         this.changeCounter++; // forces a rebuild
         break;

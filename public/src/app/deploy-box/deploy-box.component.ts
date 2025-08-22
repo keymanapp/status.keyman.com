@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
-import { StatusSource } from '../../../../shared/status-source';
+import { ServiceIdentifier } from '../../../../shared/services';
 import { compare as versionCompare } from "compare-versions";
 import { PopupComponent } from '../popup/popup.component';
 
@@ -66,12 +66,12 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           this.targets.push({
             name: 'Play Store (Keyman)',
             url: 'https://play.google.com/store/apps/details?id=com.tavultesoft.kmapro',
-            version: this.status?.deployment?.[StatusSource.PlayStoreKeyman]?.version
+            version: this.status?.deployment?.[ServiceIdentifier.PlayStoreKeyman]?.version
           });
           this.targets.push({
             name: 'Play Store (FirstVoices)',
             url: 'https://play.google.com/store/apps/details?id=com.firstvoices.keyboards',
-            version: this.status?.deployment?.[StatusSource.PlayStoreFirstVoices]?.version
+            version: this.status?.deployment?.[ServiceIdentifier.PlayStoreFirstVoices]?.version
           });
         }
         break;
@@ -80,14 +80,14 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           this.targets.push({
             name: 'App Store (Keyman)',
             url: 'https://itunes.apple.com/us/app/keyman/id933676545?ls=1&mt=8',
-            version: this.status?.deployment?.[StatusSource.ITunesKeyman]?.version,
-            date: this.status?.deployment?.[StatusSource.ITunesKeyman]?.releaseDate?.substr(0,10)
+            version: this.status?.deployment?.[ServiceIdentifier.ITunesKeyman]?.version,
+            date: this.status?.deployment?.[ServiceIdentifier.ITunesKeyman]?.releaseDate?.substr(0,10)
           });
           this.targets.push({
             name: 'App Store (FirstVoices)',
             url: 'https://apps.apple.com/us/app/firstvoices-keyboards/id1066651145',
-            version: this.status?.deployment?.[StatusSource.ITunesFirstVoices]?.version,
-            date: this.status?.deployment?.[StatusSource.ITunesFirstVoices]?.releaseDate?.substr(0,10)
+            version: this.status?.deployment?.[ServiceIdentifier.ITunesFirstVoices]?.version,
+            date: this.status?.deployment?.[ServiceIdentifier.ITunesFirstVoices]?.releaseDate?.substr(0,10)
           });
         }
         this.targets.push({
@@ -108,20 +108,20 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
           this.targets.push({
             name: 'Launchpad',
             url: 'https://launchpad.net/~keymanapp/+archive/ubuntu/keyman',
-            version: this.status?.deployment?.[StatusSource.LaunchPadStable]?.version,
-            date: this.status?.deployment?.[StatusSource.LaunchPadStable]?.date_published.substr(0, 10)
+            version: this.status?.deployment?.[ServiceIdentifier.LaunchPadStable]?.version,
+            date: this.status?.deployment?.[ServiceIdentifier.LaunchPadStable]?.date_published.substr(0, 10)
           }, {
             name: 'packages.sil.org',
             url: 'https://packages.sil.org/ubuntu/?prefix=ubuntu/pool/main/k/keyman/',
-            version: this.status?.deployment?.[StatusSource.PackagesSilOrg]?.version
+            version: this.status?.deployment?.[ServiceIdentifier.PackagesSilOrg]?.version
           }, {
             name: 'linux.lsdev.sil.org',
             url: '',  // Disabled, see #250 url: 'http://linux.lsdev.sil.org/ubuntu/pool/main/k/keyman/',
-            version: this.status?.deployment?.[StatusSource.LinuxLsdevSilOrgStable]?.version
+            version: this.status?.deployment?.[ServiceIdentifier.LinuxLsdevSilOrgStable]?.version
           }, {
             name: 'Debian Unstable',
             url: `https://tracker.debian.org/pkg/keyman`,
-            version: this.status?.deployment?.[StatusSource.DebianStable]?.version,
+            version: this.status?.deployment?.[ServiceIdentifier.DebianStable]?.version,
           });
         } else if (this.tier == 'beta' || this.tier == 'alpha') {
           this.targets.push({
@@ -138,7 +138,7 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
             this.targets.push({
               name: 'Debian Unstable',
               url: `https://tracker.debian.org/pkg/keyman`,
-              version: this.status?.deployment?.[StatusSource.DebianBeta]?.version,
+              version: this.status?.deployment?.[ServiceIdentifier.DebianBeta]?.version,
             });
           }
         }
@@ -158,24 +158,24 @@ export class DeployBoxComponent extends PopupComponent implements OnInit, OnChan
         this.targets.push({
           name: '@keymanapp/kmc',
           url: 'https://npmjs.com/package/@keymanapp/kmc',
-          version: this.status?.deployment?.[StatusSource.NpmKeymanCompiler]?.[this.tier]?.split('-')[0]
+          version: this.status?.deployment?.[ServiceIdentifier.NpmKeymanCompiler]?.[this.tier]?.split('-')[0]
         }, {
           name: '@keymanapp/common-types',
           url: 'https://npmjs.com/package/@keymanapp/common-types',
-          version: this.status?.deployment?.[StatusSource.NpmCommonTypes]?.[this.tier]?.split('-')[0]
+          version: this.status?.deployment?.[ServiceIdentifier.NpmCommonTypes]?.[this.tier]?.split('-')[0]
         });
         break;
     }
   }
 
   getLatestKeymanWebFromSKeymanCom(version: string) {
-    if(!this.status || !this.status.deployment || !this.status.deployment[StatusSource.SKeymanCom])
+    if(!this.status || !this.status.deployment || !this.status.deployment[ServiceIdentifier.SKeymanCom])
       return null;
 
     const web = this.platform;
     if(!web || !version.match(/^\d+\.\d+\.\d+$/))
       return null;
-    const versions: string[] = this.status.deployment[StatusSource.SKeymanCom].versions;
+    const versions: string[] = this.status.deployment[ServiceIdentifier.SKeymanCom].versions;
     if(!versions)
       return null;
 

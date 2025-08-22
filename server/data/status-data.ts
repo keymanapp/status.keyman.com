@@ -20,33 +20,31 @@ import packagesSilOrgService from "../services/deployment/packages-sil-org.js";
 import { linuxLsdevSilOrgAlphaService, linuxLsdevSilOrgBetaService, linuxLsdevSilOrgStableService } from "../services/deployment/linux-lsdev-sil-org.js";
 import { debianBetaService, debianStableService } from "../services/deployment/debian.js";
 import { kmcService, ctService } from "../services/deployment/npmjs.js";
-import { StatusSource } from "../../shared/status-source.js";
+import { ServiceStateCache, ServiceState, ServiceIdentifier } from "../../shared/services.js";
 import discourseService from "../services/discourse/discourse.js";
 import { performanceLog } from "../performance-log.js";
 import siteLivelinessService from "../services/keyman/site-liveliness.js";
 
-import * as Sentry from '@sentry/node';
-
 export type ContributionChanges = { issue: boolean, pull: boolean, review: boolean, test: boolean, post: boolean };
 
-const services = {};
-services[StatusSource.ITunesKeyman] = keymaniTunesService;
-services[StatusSource.ITunesFirstVoices] = firstVoicesiTunesService;
-services[StatusSource.PlayStoreKeyman] = keymanPlayStoreService;
-services[StatusSource.PlayStoreFirstVoices] = firstVoicesPlayStoreService;
-services[StatusSource.SKeymanCom] = sKeymanComService;
-services[StatusSource.LaunchPadAlpha] = launchPadAlphaService;
-services[StatusSource.LaunchPadBeta] = launchPadBetaService;
-services[StatusSource.LaunchPadStable] = launchPadStableService;
-services[StatusSource.PackagesSilOrg] = packagesSilOrgService;
-services[StatusSource.LinuxLsdevSilOrgAlpha] = linuxLsdevSilOrgAlphaService;
-services[StatusSource.LinuxLsdevSilOrgBeta] = linuxLsdevSilOrgBetaService;
-services[StatusSource.LinuxLsdevSilOrgStable] = linuxLsdevSilOrgStableService;
-services[StatusSource.DebianBeta] = debianBetaService;
-services[StatusSource.DebianStable] = debianStableService;
-services[StatusSource.NpmKeymanCompiler] = kmcService;
-services[StatusSource.NpmCommonTypes] = ctService;
-services[StatusSource.CommunitySite] = discourseService;
+const services: {[index in ServiceIdentifier]?: any} = {};
+services[ServiceIdentifier.ITunesKeyman] = keymaniTunesService;
+services[ServiceIdentifier.ITunesFirstVoices] = firstVoicesiTunesService;
+services[ServiceIdentifier.PlayStoreKeyman] = keymanPlayStoreService;
+services[ServiceIdentifier.PlayStoreFirstVoices] = firstVoicesPlayStoreService;
+services[ServiceIdentifier.SKeymanCom] = sKeymanComService;
+services[ServiceIdentifier.LaunchPadAlpha] = launchPadAlphaService;
+services[ServiceIdentifier.LaunchPadBeta] = launchPadBetaService;
+services[ServiceIdentifier.LaunchPadStable] = launchPadStableService;
+services[ServiceIdentifier.PackagesSilOrg] = packagesSilOrgService;
+services[ServiceIdentifier.LinuxLsdevSilOrgAlpha] = linuxLsdevSilOrgAlphaService;
+services[ServiceIdentifier.LinuxLsdevSilOrgBeta] = linuxLsdevSilOrgBetaService;
+services[ServiceIdentifier.LinuxLsdevSilOrgStable] = linuxLsdevSilOrgStableService;
+services[ServiceIdentifier.DebianBeta] = debianBetaService;
+services[ServiceIdentifier.DebianStable] = debianStableService;
+services[ServiceIdentifier.NpmKeymanCompiler] = kmcService;
+services[ServiceIdentifier.NpmCommonTypes] = ctService;
+services[ServiceIdentifier.CommunitySite] = discourseService;
 
 export interface StatusDataCache {
   teamCity?: any;
@@ -67,6 +65,8 @@ export interface StatusDataCache {
   codeOwners?: {};
   siteLiveliness?: any;
   communitySite?: any;
+
+  serviceState?: ServiceStateCache;
 };
 
 async function logAsync(event, method: () => Promise<any>): Promise<any> {
@@ -93,26 +93,46 @@ export class StatusData {
     this.cache = { sprints: { current: { } }, deployment: { } };
   };
 
+  //
+  public onServiceStateChanged: (serviceStateCache: ServiceStateCache) => void;
+
+  private setServiceState(service: ServiceIdentifier, state: ServiceState, message?: any) {
+    if(!this.cache.serviceState) this.cache.serviceState = {};
+    const newState = { state, message };
+    if(this.cache.serviceState[service] != newState) {
+      this.cache.serviceState[service] = {
+        state,
+        // for now, limit errors to first 100 chars, hopefully enough to get a bit of an idea
+        message: message === undefined
+          ? undefined
+          : (typeof message == 'string' ? message : JSON.stringify(message)).substring(0, 100)
+      };
+      this.onServiceStateChanged?.(this.cache.serviceState);
+    }
+  }
+
   refreshKeymanVersionData = async (): Promise<boolean> => {
-    // console.log('[Refresh] Keyman Version ENTER');
     let keymanVersion;
+    this.setServiceState(ServiceIdentifier.Keyman, ServiceState.loading);
     try {
       keymanVersion = await logAsync('refreshKeymanVersionData', () => versionService.get());
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.Keyman, ServiceState.error, e);
       return false;
     }
     let result = !deepEqual(keymanVersion, this.cache.keymanVersion);
     this.cache.keymanVersion = keymanVersion;
-    // console.log('[Refresh] Keyman Version EXIT');
+    this.setServiceState(ServiceIdentifier.Keyman, ServiceState.successful);
     return result;
   };
 
   refreshTeamcityData = async (): Promise<boolean> => {
-    // console.log('[Refresh] TeamCity ENTER');
     let data;
+    this.setServiceState(ServiceIdentifier.TeamCity, ServiceState.loading);
     try {
       data = await logAsync('refreshTeamcityData', () => teamcityService.get());
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.TeamCity, ServiceState.error, e);
       return false;
     }
     let result =
@@ -124,12 +144,13 @@ export class StatusData {
     this.cache.teamCityRunning = data[1];
     this.cache.teamCityAgents = data[2];
     this.cache.teamCityQueue = data[3];
-    // console.log('[Refresh] TeamCity EXIT: '+result);
+    this.setServiceState(ServiceIdentifier.TeamCity, ServiceState.successful);
     return result;
   };
 
   refreshGitHubIssueData = async (repo: string, number: number): Promise<boolean> => {
     let issue;
+      // this.setServiceStatus(StatusSource.Keyman, ServiceStatusState.loading);
     try {
       issue = await logAsync(`refreshGitHubIssueData(${repo}, ${number})`, () => githubIssueService.get(repo, number));
     } catch(e) {
@@ -137,6 +158,8 @@ export class StatusData {
     }
 
     const idx = this.cache.issues.findIndex(i => i.number == issue.number);
+
+    // this.setServiceStatus(StatusSource.Keyman, ServiceStatusState.successful);
 
     if(issue.state == 'CLOSED' && idx >= 0) {
       // issue has been closed, remove from cache
@@ -166,31 +189,34 @@ export class StatusData {
   };
 
   refreshGitHubIssuesData = async (): Promise<boolean> => {
-    // console.log('[Refresh] GitHub Issues ENTER');
     let issues;
+    this.setServiceState(ServiceIdentifier.GitHubIssues, ServiceState.loading);
     try {
       issues = await logAsync('refreshGitHubIssuesData', () => githubIssuesService.get(null, []));
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.GitHubIssues, ServiceState.error, e);
       return false;
     }
     let result = !deepEqual(issues, this.cache.issues);
     this.cache.issues = issues;
-    // console.log('[Refresh] GitHub Issues EXIT');
+    this.setServiceState(ServiceIdentifier.GitHubIssues, ServiceState.successful);
     return result;
   };
 
   // Warning: this currently returns TRUE if sprint dates have changed,
   // not if any data has changed. This is different to all the others
   refreshGitHubStatusData = async (sprintName): Promise<boolean> => {
-    // console.log('[Refresh] GitHub Status ENTER');
     let data;
+    this.setServiceState(ServiceIdentifier.GitHub, ServiceState.loading);
     try {
       data = await logAsync('refreshGitHubStatusData', () => githubStatusService.get(sprintName));
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.GitHub, ServiceState.error, e);
       return false;
     }
     if(data == null) {
       console.log('[Refresh] GitHub Status EXIT -- null data');
+      this.setServiceState(ServiceIdentifier.GitHub, ServiceState.error, 'null data');
       return false;
     }
     this.cache.sprints[sprintName].github = data.github;
@@ -200,14 +226,14 @@ export class StatusData {
     if(result) {
       this.cache.sprints[sprintName].adjustedStart = data.adjustedStart;
     }
-    // console.log('[Refresh] GitHub Status EXIT');
+    this.setServiceState(ServiceIdentifier.GitHub, ServiceState.successful);
     return result;
   };
 
   refreshGitHubContributionsData = async (sprintName: string, contributionChanges: ContributionChanges): Promise<boolean> => {
-    // console.log('[Refresh] GitHub Contributions ENTER');
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) return false;
+    this.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.loading);
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart).toISOString() : getSprintStart().toISOString();
     let contributions;
     try {
@@ -224,72 +250,80 @@ export class StatusData {
         }
       }
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.error, e);
       return false;
     }
 
     let result = !deepEqual(contributions, sprint.contributions);
     sprint.contributions = contributions;
-    // console.log('[Refresh] GitHub Contributions EXIT');
+    this.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.successful);
     return result;
   };
 
   refreshSentryIssuesData = async (): Promise<boolean> => {
-    // console.log('[Refresh] Sentry ENTER');
     let sentryIssues;
+    this.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.loading);
     try {
       sentryIssues = await logAsync('refreshSentryIssuesData', () => sentryIssuesService.get());
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.error, e);
       return false;
     }
     let result = !deepEqual(sentryIssues, this.cache.sentryIssues);
     this.cache.sentryIssues = sentryIssues;
-    // console.log('[Refresh] Sentry EXIT');
+    this.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.successful);
     return result;
   };
 
   refreshCodeOwnersData = async (): Promise<boolean> => {
-    // console.log('[Refresh] CodeOwners ENTER');
     let codeOwners;
+    this.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.loading);
     try {
       codeOwners = await logAsync('refreshCodeOwnersData', () => codeOwnersService.get());
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.error, e);
       return false;
     }
     let result = !deepEqual(codeOwners, this.cache.codeOwners);
     this.cache.codeOwners = codeOwners;
-    // console.log('[Refresh] CodeOwners EXIT');
+    this.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.successful);
     return result;
   };
 
   refreshSiteLivelinessData = async (): Promise<boolean> => {
     let siteLiveliness;
+    this.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.loading);
     try {
       siteLiveliness = await logAsync('refreshSiteLivelinessData', async () => await siteLivelinessService.get());
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.error, e);
       return false;
     }
     let result = !deepEqual(siteLiveliness, this.cache.siteLiveliness);
     this.cache.siteLiveliness = siteLiveliness;
+    this.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.successful);
     return result;
   };
 
   // Deployment endpoints
 
-  refreshService = async (id: StatusSource, service: DataService): Promise<boolean> => {
+  refreshService = async (id: ServiceIdentifier, service: DataService): Promise<boolean> => {
     // console.log('[Refresh] '+id+' ENTER');
     let status;
+    this.setServiceState(id, ServiceState.loading);
     try {
       status = await logAsync(`refreshService:${id}`, () => service.get());
     } catch(e) {
+      this.setServiceState(id, ServiceState.error, e);
       return false;
     }
     let result = !deepEqual(status, this.cache.deployment[id]);
     this.cache.deployment[id] = status;
-    // console.log('[Refresh] '+id+' EXIT');
+    this.setServiceState(id, ServiceState.successful);
     return result;
   }
 
-  refreshEndpointData = async (source: StatusSource): Promise<boolean> => {
+  refreshEndpointData = async (source: ServiceIdentifier): Promise<boolean> => {
     if(!services[source]) return Promise.resolve(false);
     return this.refreshService(source, services[source]);
   }
@@ -297,13 +331,14 @@ export class StatusData {
   // Discourse
 
   refreshCommunitySiteData = async (sprintName: string, user?: string): Promise<boolean> => {
-    // console.log('[Refresh] Community-Site ENTER');
-
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) {
       console.error(`[Refresh] Community-Site: invalid sprint ${JSON.stringify(sprint)}`);
       return false;
     }
+
+    this.setServiceState(ServiceIdentifier.CommunitySite, ServiceState.loading);
+
     const sprintStartDateTime = sprint.phase ? new Date(sprint.adjustedStart) : getSprintStart();
 
     if(!this.cache.communitySite) {
@@ -320,6 +355,7 @@ export class StatusData {
         posts = await logAsync('refreshCommunitySiteData', () => discourseService.get(sprintStartDateTime));
       }
     } catch(e) {
+      this.setServiceState(ServiceIdentifier.CommunitySite, ServiceState.error, e);
       return false;
     }
 
@@ -331,7 +367,9 @@ export class StatusData {
       result = !deepEqual(posts, this.cache.communitySite);
       this.cache.communitySite = posts;
     }
-    // console.log('[Refresh] Community-Site EXIT');
+
+    this.setServiceState(ServiceIdentifier.CommunitySite, ServiceState.successful);
+
     return result;
   };
 

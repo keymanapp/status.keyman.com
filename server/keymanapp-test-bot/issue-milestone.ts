@@ -4,6 +4,7 @@ import { Issue } from "@octokit/webhooks-types";
 import { ProcessEventData } from "./keymanapp-test-bot.js";
 import { getCurrentSprint } from "../current-sprint.js";
 import { statusData } from '../data/status-data.js';
+import { consoleError, consoleLog } from "../util/console-log.js";
 
 /**
  * Apply the current milestone to the issue when it is closed,
@@ -14,14 +15,14 @@ export async function updateIssueMilestoneWhenIssueClosed(
   data: ProcessEventData,
   issue: Issue
 ): Promise<void> {
-  console.log(`[@keymanapp-pr-bot] Updating issue #${issue.number} milestone`);
+  consoleLog('pr-bot', null, `Updating issue #${issue.number} milestone`);
   const currentSprint = getCurrentSprint(statusData.cache.sprints?.current?.github?.data);
   if(currentSprint) {
-    console.log(`[@keymanapp-pr-bot] Applying milestone ${currentSprint.title} to issue #${issue.number}`);
+    consoleLog('pr-bot', null, `Applying milestone ${currentSprint.title} to issue #${issue.number}`);
     const milestones = await octokit.rest.issues.listMilestones({...data, state: "open", per_page: 100});
     const milestone = milestones.data.find(m => m.title == currentSprint.title);
     if(!milestone) {
-      console.error(`Could not find milestone ${currentSprint.title} in list of milestones`);
+      consoleError('pr-bot', null, `Could not find milestone ${currentSprint.title} in list of milestones`);
       return;
     }
     await octokit.rest.issues.update({

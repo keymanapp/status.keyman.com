@@ -12,6 +12,7 @@ import * as keymanappTestBot from './keymanapp-test-bot.js';
 
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { consoleError, consoleLog } from "../util/console-log.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,9 +22,9 @@ const secretFilename = rootPath + '.keymanapp-test-bot.secret';
 const appIdFilename = rootPath + '.keymanapp-test-bot.appid';
 
 if(!fs.existsSync(appIdFilename)) {
-  console.error(`keymanapp-test-bot: appId file ${appIdFilename} does not exist`);
+  consoleError('test-bot', null, `appId file ${appIdFilename} does not exist`);
 } else {
-  console.log(`keymanapp-test-bot: Reading appId file ${appIdFilename}`);
+  consoleLog(`test-bot`, null, `Reading appId file ${appIdFilename}`);
 }
 
 const appId = fs.existsSync(appIdFilename) ?
@@ -40,9 +41,6 @@ if(fs.existsSync(secretFilename))
   secret = fs.readFileSync(secretFilename, 'utf8').trim();
 else if(env.PROBOT_SECRET)
   secret = env.PROBOT_SECRET;
-
-//let buf = Buffer.from(privateKey);
-//console.log(buf.toString('base64'));
 
 const probot = new Probot({
   appId: appId,

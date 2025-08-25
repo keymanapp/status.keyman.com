@@ -15,6 +15,7 @@ import { getArtifactLinksComment } from "./artifact-links-comment.js";
 import { processEpicLabelsEmoji } from './emoji-label.js';
 import { processPRMilestone } from './pull-request-milestone.js';
 import { updateIssueMilestoneWhenIssueClosed } from "./issue-milestone.js";
+import { consoleLog } from "../util/console-log.js";
 
 const manualTestRequiredLabelName = 'user-test-required';
 const manualTestMissingLabelName = 'user-test-missing';
@@ -22,7 +23,7 @@ const manualTestFailedLabelName = 'user-test-failed';
 const hasUserTestLabelName = 'has-user-test';
 
 function log(s) {
-  console.log('[@keymanapp-test-bot] '+s);
+  consoleLog('test-bot', null, s);
 }
 
 export interface ProcessEventData {

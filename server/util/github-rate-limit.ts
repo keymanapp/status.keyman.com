@@ -1,3 +1,4 @@
+import { consoleLog } from "./console-log.js";
 
 export interface KSGitHubRateLimit {
   limit: number,
@@ -7,5 +8,5 @@ export interface KSGitHubRateLimit {
 };
 
 export function logGitHubRateLimit(rateLimit: KSGitHubRateLimit, module: string) {
-  console.log(`[RATE LIMIT] ${module}: cost=${rateLimit?.cost} remaining=${rateLimit?.remaining}`);
+  consoleLog('rate-limit', module, `cost=${rateLimit?.cost} remaining=${rateLimit?.remaining}`);
 }

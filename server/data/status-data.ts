@@ -24,6 +24,7 @@ import { ServiceStateCache, ServiceState, ServiceIdentifier } from "../../shared
 import discourseService from "../services/discourse/discourse.js";
 import { performanceLog } from "../performance-log.js";
 import siteLivelinessService from "../services/keyman/site-liveliness.js";
+import { consoleError, consoleLog } from '../util/console-log.js';
 
 export type ContributionChanges = { issue: boolean, pull: boolean, review: boolean, test: boolean, post: boolean };
 
@@ -75,10 +76,10 @@ async function logAsync(event, method: () => Promise<any>): Promise<any> {
   try {
     v = await method();
   } catch(e) {
-    console.error(`Error connecting to ${event}: ${e}`);
+    consoleError('refresh', event, `Error connecting to ${event}: ${e}`);
     if(e.errors) {
       // AggregateErrors
-      console.error(e.errors);
+      consoleError('refresh', event, e.errors);
     }
     throw e;
   }
@@ -215,7 +216,7 @@ export class StatusData {
       return false;
     }
     if(data == null) {
-      console.log('[Refresh] GitHub Status EXIT -- null data');
+      consoleLog('refresh', 'github', 'EXIT ERROR: unexpected null data');
       this.setServiceState(ServiceIdentifier.GitHub, ServiceState.error, 'null data');
       return false;
     }
@@ -333,7 +334,7 @@ export class StatusData {
   refreshCommunitySiteData = async (sprintName: string, user?: string): Promise<boolean> => {
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) {
-      console.error(`[Refresh] Community-Site: invalid sprint ${JSON.stringify(sprint)}`);
+      consoleError('refresh', 'community-site', `invalid sprint ${JSON.stringify(sprint)}`);
       return false;
     }
 

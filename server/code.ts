@@ -26,6 +26,7 @@ import gitHubMilestonesService from './services/github/github-milestones.js';
 
 import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment.js';
 import { performanceLog } from './performance-log.js';
+import { consoleLog } from './util/console-log.js';
 
 sms.install();
 
@@ -34,7 +35,7 @@ export const environment: Environment =
   process.env['NODE_ENV'] == 'staging' ? Environment.Staging :
   Environment.Development;
 
-console.log(`Running in ${environment} environment`);
+consoleLog('main', null, `Running in ${environment} environment`);
 
 
 const sprintCache = new SprintCache(environment);
@@ -191,7 +192,7 @@ setInterval(() => {
 const wsServer = new ws.Server({ noServer: true });
 wsServer.on('connection', socket => {
   socket.on('message', message => {
-    console.log(message);
+    consoleLog('websocket', null, message);
     if(message == 'ping')
       socket.send('pong');
   });
@@ -218,10 +219,11 @@ async function respondGitHubDataChange(request: express.Request) {
   try {
     const event = request?.headers?.['x-github-event'];
     const issueNumber = request?.body?.issue?.number;
+    const pullNumber = request?.body?.pull_request?.number;
     const repo = request?.body?.repository?.name;
 
     if((event == 'issues' || event == 'issue_comment') && !request.body.issue.pull_request) {
-      console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+      consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber}`);
       try {
         if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
           sendWsAlert(true, 'github-issues');
@@ -243,7 +245,7 @@ async function respondGitHubDataChange(request: express.Request) {
       const prNumber = request.body?.pull_request?.number;
   */
     } else {
-      console.log(`POST github webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+      consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber ?? pullNumber}`);
       try {
         const hasChanged = await statusData.refreshGitHubStatusData('current');
         if(hasChanged) {
@@ -649,7 +651,7 @@ app.all('/{*splat}', (request, response) => {
 // app.use(Sentry.Handlers.errorHandler());
 
 if(!debugTestBot) {
-  console.log(`Starting app listening on ${port}`);
+  consoleLog('main', null, `Starting app listening on ${port}`);
   const server = app.listen(port);
 
   /* Upgrade any websocket connections */

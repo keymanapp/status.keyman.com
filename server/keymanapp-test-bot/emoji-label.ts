@@ -4,6 +4,7 @@ import emojiRegex from 'emoji-regex';
 
 import { ProcessEventData } from "./keymanapp-test-bot.js";
 import { issueLabelTypes, issueLabelScopes, issueValidTitleRegex } from "../../shared/issue-labels.js";
+import { consoleLog } from "../util/console-log.js";
 
 const titleRegex = issueValidTitleRegex;
 const validTypeLabels = issueLabelTypes;
@@ -25,7 +26,7 @@ const epicRefSubstring = (ref: string) => ref.match(/^epic\//) ? ref.substring('
 const epicRefToLabel = (ref: string) => 'epic-'+epicRefSubstring(ref);
 
 function log(issue, s) {
-  console.log(`[@keymanapp-pr-bot] #${issue.data.number}: ${s}`);
+  consoleLog('pr-bot', null, `#${issue.data.number}: ${s}`);
 }
 
 export async function processEpicLabelsEmoji(

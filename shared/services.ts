@@ -39,6 +39,7 @@ export enum ServiceState {
 
 export interface ServiceStateRecord {
   state: ServiceState;
+  lastStateChange: number; /// msec since epoch
   message: string;
 };
 

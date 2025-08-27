@@ -66,7 +66,7 @@ export class DataModel {
 
   updateServiceState(data: ServiceStateCache) {
     this.serviceState = Object.keys(data).map(key =>
-      ({service: <ServiceIdentifier>key, state: data[key].state, message: data[key].message})
+      ({service: <ServiceIdentifier>key, state: data[key].state, message: data[key].message, lastStateChange: data[key].lastStateChange})
     );
   }
 

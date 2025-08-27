@@ -1,11 +1,11 @@
 /*
  * Keyman is copyright (C) SIL Global. MIT License.
  */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { VisibilityService } from '../visibility/visibility.service';
-import { ServiceIdentifier, ServiceState } from '../../../../shared/services';
+import { ServiceIdentifier, ServiceState, ServiceStateRecord } from '../../../../shared/services';
 
 @Component({
   selector: 'app-service-state-popup',
@@ -13,18 +13,28 @@ import { ServiceIdentifier, ServiceState } from '../../../../shared/services';
   styleUrl: './service-state-popup.component.css',
   standalone: false,
 })
-export class ServiceStatePopupComponent extends PopupComponent implements OnInit {
-  @Input() serviceState: {service: ServiceIdentifier, state: ServiceState, message?: string}[];
+export class ServiceStatePopupComponent extends PopupComponent implements OnInit, OnDestroy {
+  @Input() serviceState: (ServiceStateRecord & {service: ServiceIdentifier})[];
+
+  private timerId = null;
 
   constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
     super(popupCoordinator, visibilityService);
   }
 
   ngOnInit() {
+    this.timerId = setInterval(() => this.refresh(), 1000);
     this.popupId = 'service-state';
     this.gravityX = 'right';
     this.gravityY = 'bottom';
     super.ngOnInit();
+  }
+
+  ngOnDestroy() {
+    if(this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
   }
 
   overallStatus() {
@@ -37,5 +47,21 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
       }
     }
     return icon;
+  }
+
+  refresh() {
+    // no-op is enough to trigger data refresh
+  }
+
+  lastChange(service: ServiceStateRecord): string {
+    const value = Math.round(((new Date()).valueOf() - service.lastStateChange)/1000);
+    if(service.state == ServiceState.successful) {
+      // Infrequent updates for 'loaded' state
+      return value > 60 ? Math.round(value/60) + ' min' : '';
+    } else if(service.state == ServiceState.loading) {
+      // While loading, show the counter after 5 seconds
+      return value > 5 ? value.toString() + ' sec' : '';
+    }
+    return value + ' sec';
   }
 }

@@ -9,7 +9,7 @@
     <table>
       <tbody>
       <tr *ngFor="let service of serviceState">
-        <td><span class="icon {{service.state}}" title="{{service.state}}">●</span> {{service.service}}</td><td>{{service.message}}</td>
+        <td><span class="icon {{service.state}}" title="{{service.state}}">●</span> {{service.service}}</td><td>{{lastChange(service)}} {{service.message}}</td>
       </tr>
       </tbody>
     </table>

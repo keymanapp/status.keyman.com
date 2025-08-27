@@ -10,7 +10,8 @@ export default function httppost(hostname, path, headers, data) {
       port: 443,
       path: path,
       method: 'POST',
-      headers: headers
+      headers: headers,
+      timeout: 10000, // timeout for connection
     }
 
     headers['User-Agent'] = 'Keyman Status App/1.0';
@@ -22,7 +23,7 @@ export default function httppost(hostname, path, headers, data) {
     try {
       const req = https.request(options, res => {
         if(res.statusCode != 200) {
-          consoleError('http-post', 'http-post', `statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
+          consoleError('http-post', hostname, `statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
           reject(`statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
           return;
         }
@@ -38,13 +39,19 @@ export default function httppost(hostname, path, headers, data) {
       });
 
       req.on('error', error => {
+        consoleError('http-post', hostname, `error: ${error?.name}: ${error?.message}`);
         reject(error);
       });
+
+      req.setTimeout(180000, () => {
+        consoleError('http-post', hostname, `timeout after 3 minutes on ${hostname}${path}`);
+        req.destroy();
+      })
 
       req.write(data);
       req.end();
     } catch(e) {
-      consoleError('http-post', 'http-post', e);
+      consoleError('http-post', hostname, e);
       reject(e);
     }
   });

@@ -103,6 +103,7 @@ export class StatusData {
     if(this.cache.serviceState[service] != newState) {
       this.cache.serviceState[service] = {
         state,
+        lastStateChange: new Date().valueOf(),
         // for now, limit errors to first 100 chars, hopefully enough to get a bit of an idea
         message: message === undefined
           ? undefined

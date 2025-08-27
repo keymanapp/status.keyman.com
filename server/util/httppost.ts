@@ -24,16 +24,22 @@ export default function httppost(hostname, path, headers, data) {
       const req = https.request(options, res => {
         if(res.statusCode != 200) {
           consoleError('http-post', hostname, `statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
+          if(timeoutId) {
+            clearTimeout(timeoutId);
+          }
           reject(`statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
           return;
         }
 
         res.on('data', d => {
           chunk += d;
-          });
+        });
 
         res.on('end', () => {
           //console.log(chunk);
+          if(timeoutId) {
+            clearTimeout(timeoutId);
+          }
           resolve(chunk);
         });
       });
@@ -43,10 +49,16 @@ export default function httppost(hostname, path, headers, data) {
         reject(error);
       });
 
-      req.setTimeout(180000, () => {
+      const timeoutId = setTimeout(() => {
         consoleError('http-post', hostname, `timeout after 3 minutes on ${hostname}${path}`);
-        req.destroy();
-      })
+        req?.destroy();
+        reject(`timeout after 3 minutes on ${hostname}${path}`);
+      }, 180000);
+
+      // req.setTimeout(180000, () => {
+      //   consoleError('http-post', hostname, `timeout after 3 minutes on ${hostname}${path}`);
+      //   req.destroy();
+      // })
 
       req.write(data);
       req.end();

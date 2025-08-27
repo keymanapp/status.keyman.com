@@ -54,7 +54,7 @@ export default {
       // .then(data => {
       //   return [].concat(results, data);
       // });
-    }));
+    })).then(items => items.flat());
 
 /*
     return projects.reduce((previousPromise, project) => {
@@ -130,7 +130,7 @@ export default {
           return Promise.all([
             this.delay(),
             this.getEnvironmentProject(environment, project, links.next.cursor, results, pageNumber+1)
-          ]);
+          ]).then(items => items[1]);
         }
       }
       return results;

@@ -11,7 +11,6 @@ import { ServiceStateCache, ServiceIdentifier } from '../shared/services.js';
 import { SprintCache } from './data/sprint-cache.js';
 
 import ws from 'ws';
-// const ws = require('ws');
 import keymanAppTestBotMiddleware from './keymanapp-test-bot/keymanapp-test-bot-middleware.js';
 import * as currentSprint from './current-sprint.js';
 
@@ -191,7 +190,8 @@ setInterval(() => {
 // events that come in.
 const wsServer = new ws.Server({ noServer: true });
 wsServer.on('connection', socket => {
-  socket.on('message', message => {
+  socket.on('message', rawData => {
+    const message = rawData.toString();
     consoleLog('websocket', null, message);
     if(message == 'ping')
       socket.send('pong');
@@ -400,7 +400,7 @@ app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware);
 function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {
     wsServer.clients.forEach((client) => {
-      if(client.readState === wsServer.OPEN) {
+      if(client.readyState === ws.OPEN) {
         client.send(message);
       }
     });

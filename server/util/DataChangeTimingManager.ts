@@ -14,7 +14,7 @@ export class DataChangeTimingManager {
 
     if (this.started[id] || lastRunDelta < minInterval) {
       if(this.started[id]) {
-        consoleLog('timing', id, `Data change is still underway (started at ${this.formatDate(this.started[id])}); waiting ${minInterval} milliseconds`);
+        consoleLog('timing', id, `Data change has been underway for ${(new Date()).valueOf() - this.started[id].valueOf()} msec (started at ${this.formatDate(this.started[id])}); waiting ${minInterval} milliseconds`);
       } else {
         consoleLog('timing', id, `Data change was only ${lastRunDelta} msec ago (finished at ${this.formatDate(this.lastRun[id])}); waiting ${minInterval} milliseconds`);
       }

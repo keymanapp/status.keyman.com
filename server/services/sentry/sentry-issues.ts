@@ -5,6 +5,7 @@
 import parseLinkHeader from "parse-link-header";
 
 import httpget from "../../util/httpget.js";
+import { consoleLog } from "../../util/console-log.js";
 
 const sentry_token=process.env['KEYMANSTATUS_SENTRY_TOKEN'];
 
@@ -48,9 +49,17 @@ export default {
 
     const projects = isApp ? appProjects : siteProjects;
 
+    return Promise.all(projects.map(project => {
+      return this.getEnvironmentProject(environment, project);
+      // .then(data => {
+      //   return [].concat(results, data);
+      // });
+    }));
+
+/*
     return projects.reduce((previousPromise, project) => {
       return previousPromise.then((results) => {
-        // We cannot do more than 10 requests/second. Given we cannot do
+        // We cannot do more than 40 requests/second. Given we cannot do
         // cross-project requests on our current plan, nor get environment data
         // in the returned issue data, we have to issue multiple requests, one
         // per project per environment, and we'll delay each one by 125msec to
@@ -67,17 +76,18 @@ export default {
       })
     },
       Promise.resolve<[]>([])
-    );
+    );*/
   },
 
   delay() {
     return new Promise<void>(function(resolve, reject) {
-      setTimeout(resolve, 125);
+      setTimeout(resolve, 1000/35); // a max of 40 req/sec, so use max of 35
     });
   },
 
-  getEnvironmentProject: function(environment, project, cursor?, issues?) {
-
+  getEnvironmentProject: function(environment, project, cursor?, issues?, pageNumber?) {
+    pageNumber = pageNumber ?? 1;
+    consoleLog('services', 'sentry-issues', `getEnvironmentProject[${environment},${project}]: ${pageNumber}`);
 // https://sentry.io/api/0/organizations/keyman/issues/
 // end=2021-03-24T12%3A59%3A59
 // or statsPeriod=14d
@@ -111,12 +121,16 @@ export default {
 
     return sentryQuery.then((data) => {
       //console.log(data.data);
+      consoleLog('services', 'sentry-issues', `sentry rate limit: remaining: ${data.res.headers['x-sentry-rate-limit-remaining']} limit: ${data.res.headers['x-sentry-rate-limit-limit']}   reset: ${data.res.headers['x-sentry-rate-limit-reset']}   concurrent-remaining: ${data.res.headers['x-sentry-rate-limit-concurrentremaining']}   concurrent-limit: ${data.res.headers['x-sentry-rate-limit-concurrentlimit']}`);
       let results = [].concat(issues, JSON.parse(data.data));
       if(data.res.headers.link) {
         const link = typeof data.res.headers.link == 'string' ? data.res.headers.link : data.res.headers.link[0];
         const links = parseLinkHeader(link);
         if(links && links.next && links.next.results == 'true') {
-          return this.delay().then(() => this.getEnvironmentProject(environment, project, links.next.cursor, results));
+          return Promise.all([
+            this.delay(),
+            this.getEnvironmentProject(environment, project, links.next.cursor, results, pageNumber+1)
+          ]);
         }
       }
       return results;

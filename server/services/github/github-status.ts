@@ -6,6 +6,7 @@ import { issueLabelScopes } from '../../../shared/issue-labels.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
 import * as Sentry from '@sentry/node';
+import { consoleError, consoleLog } from '../../util/console-log.js';
 
 const queryStrings = {
 
@@ -309,20 +310,27 @@ const queryStrings = {
 // Current rate limit cost is 60 points. We have 5000 points/hour.
 // https://developer.github.com/v4/guides/resource-limitations/
 
-function httppostgh(query) {
-  return httppost('api.github.com', '/graphql',  //3
-    {
-      Authorization: ` Bearer ${github_token}`,
-      Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-    },
-    JSON.stringify({query: '{' + query + '}'})
-  );
+async function httppostgh(query, key) {
+  consoleLog('services', 'github-status-' + key, '  starting refresh');
+  try {
+    const res = await httppost('api.github.com', '/graphql',  //3
+      {
+        Authorization: ` Bearer ${github_token}`,
+        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+      },
+      JSON.stringify({query: '{' + query + '}'})
+    );
+    return res;
+  } finally {
+    consoleLog('services', 'github-status-' + key, '  finishing refresh');
+  }
 }
 
 export default {
   get: function(sprint): Promise<{github, phase, adjustedStart}> {
     const keys = Object.keys(queryStrings);
-    return Promise.all( keys.map(v => httppostgh(queryStrings[v])) ).then(values => {
+    consoleLog('services', 'github-status', 'starting refresh of 5 github services');
+    return Promise.all( keys.map(v => httppostgh(queryStrings[v], v)) ).then(values => {
       try {
         let data = keys.reduce((pv, cv, ix) => {
           const j = JSON.parse(values[ix]);
@@ -362,7 +370,7 @@ export default {
         if(adjustedStart > new Date()) adjustedStart = new Date();
         return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
       } catch(e) {
-        console.debug(e);
+        consoleError('services', 'github-status', e);
         Sentry.addBreadcrumb({
           category: "JSON",
           message: JSON.stringify(values)

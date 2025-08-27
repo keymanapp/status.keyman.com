@@ -1,4 +1,5 @@
 import * as https from "node:https";
+import { consoleError } from "./console-log.js";
 
 type resolver = (a: string) => void;
 
@@ -21,7 +22,7 @@ export default function httppost(hostname, path, headers, data) {
     try {
       const req = https.request(options, res => {
         if(res.statusCode != 200) {
-          console.error(`statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
+          consoleError('http-post', 'http-post', `statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
           reject(`statusCode for ${hostname}${path}: ${res.statusCode} ${res.statusMessage}`);
           return;
         }
@@ -43,7 +44,7 @@ export default function httppost(hostname, path, headers, data) {
       req.write(data);
       req.end();
     } catch(e) {
-      console.log(e);
+      consoleError('http-post', 'http-post', e);
       reject(e);
     }
   });

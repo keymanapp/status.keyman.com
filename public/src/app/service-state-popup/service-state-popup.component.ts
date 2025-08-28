@@ -1,7 +1,7 @@
 /*
  * Keyman is copyright (C) SIL Global. MIT License.
  */
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { VisibilityService } from '../visibility/visibility.service';
@@ -19,7 +19,7 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
   private timerId = null;
   private currentTime: number = new Date().valueOf();
 
-  constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
+  constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService, private changeDetectorRef: ChangeDetectorRef) {
     super(popupCoordinator, visibilityService);
   }
 
@@ -52,6 +52,7 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
 
   refresh() {
     this.currentTime = new Date().valueOf();
+    this.changeDetectorRef.detectChanges();
   }
 
   lastChange(service: ServiceStateRecord): string {

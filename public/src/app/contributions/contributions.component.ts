@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { getUserAvatarUrl, getTz } from '../../../../shared/users';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
@@ -9,7 +9,7 @@ import { dataModel } from '../data/data.model';
     styleUrls: ['./contributions.component.css'],
     standalone: false
 })
-export class ContributionsComponent implements OnInit {
+export class ContributionsComponent implements OnInit, OnDestroy {
 
   // data proxies
   get status() { return dataModel.status }
@@ -27,7 +27,7 @@ export class ContributionsComponent implements OnInit {
   private timerId = null;
   private currentTime: Date = new Date();
 
-  constructor() { }
+  constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
   stringify(o: any) {
     return JSON.stringify(o);
@@ -37,8 +37,13 @@ export class ContributionsComponent implements OnInit {
     this.timerId = setInterval(() => this.refresh(), 1000);
   }
 
+  ngOnDestroy() {
+    clearInterval(this.timerId);
+  }
+
   private refresh() {
     this.currentTime = new Date();
+    this.changeDetectorRef.detectChanges();
   }
 
   shouldDisplay(user) {
@@ -57,6 +62,24 @@ export class ContributionsComponent implements OnInit {
 
   getUserAvatar(user, size) {
     return getUserAvatarUrl(user, size);
+  }
+
+  userTime(user) {
+    if(user.login == '') {
+      return ' ';
+    }
+
+    const tz = getTz(user.login);
+    if(!tz) {
+      return ' ';
+    }
+
+    return this.currentTime.toLocaleString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: tz,
+    });
   }
 
   userDate(user) {
@@ -84,22 +107,25 @@ export class ContributionsComponent implements OnInit {
   userAvailability(user) {
     const tz = getTz(user.login);
     if(!tz) {
-      return {color: 'rgba(0,0,0,0)'}; //TODO
+      return {background: 'rgba(0,0,0,0)', color: 'rgba(0,0,0,0)'}; //TODO
     }
-    const now = new Date();
+    const now = this.currentTime;
     const result = {
       weekDay: now.toLocaleString('en-GB', { weekday: 'short', timeZone: tz }),
       time: now.toLocaleString('en-GB', { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: tz }),
       hour: 0,
-      color: 'green'
+      background: 'green',
+      color: 'white',
     };
 
     result.hour = parseInt(result.time, 10);
 
     if(result.weekDay == 'Sat' || result.weekDay == 'Sun' || result.hour < 6 || result.hour > 21) {
-      result.color = 'red';
+      result.background = 'red';
+      // result.color = 'black';
     } else if(result.hour < 8 || result.hour > 17) {
-      result.color = 'orange';
+      result.background = 'orange';
+      result.color = 'black';
     }
     return result;
   }

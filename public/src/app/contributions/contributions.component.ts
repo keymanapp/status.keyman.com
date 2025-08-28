@@ -114,15 +114,23 @@ export class ContributionsComponent implements OnInit, OnDestroy {
       weekDay: now.toLocaleString('en-GB', { weekday: 'short', timeZone: tz }),
       time: now.toLocaleString('en-GB', { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: tz }),
       hour: 0,
-      style: 'user-at-work',
+      style: 'user-8am-to-6pm',
     };
 
     result.hour = parseInt(result.time, 10);
 
-    if(result.weekDay == 'Sat' || result.weekDay == 'Sun' || result.hour < 6 || result.hour > 21) {
-      result.style = 'user-asleep-or-weekend';
-    } else if(result.hour < 8 || result.hour > 17) {
-      result.style = 'user-awake';
+    if(result.weekDay == 'Sat' || result.weekDay == 'Sun' || result.hour < 4 || result.hour >= 22) {
+      result.style = 'user-10pm-to-4am';
+    } else if(result.hour < 6) {
+      result.style = 'user-4am-to-6am';
+    } else if(result.hour < 8) {
+      result.style = 'user-6am-to-8am';
+    } else if(result.hour < 18) {
+      result.style = 'user-8am-to-6pm';
+    } else if(result.hour < 20) {
+      result.style = 'user-6pm-to-8pm';
+    } else {
+      result.style = 'user-8pm-to-10pm';
     }
     return result;
   }

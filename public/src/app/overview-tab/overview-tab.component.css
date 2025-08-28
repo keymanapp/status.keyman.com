@@ -118,13 +118,19 @@ td.sentry-events {
 
 /* Tables */
 
-table#sites-and-relatives {
-  border: none !important;
+table#sites-and-relatives td,
+table#sites-and-relatives th {
+  border: solid 1px var(--bs-border-color);
 }
 
-#sites-and-relatives .gap {
+table#sites-and-relatives.table-bordered > :not(caption) > * {
+  border-width: 0;
+}
+
+#sites-and-relatives td.gap,
+#sites-and-relatives th.gap {
   border: none;
-  background: white;
+  box-shadow: none;
   max-width: 0;
   width: 0;
   padding: 8px;

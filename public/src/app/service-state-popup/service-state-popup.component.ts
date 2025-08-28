@@ -1,7 +1,7 @@
 /*
  * Keyman is copyright (C) SIL Global. MIT License.
  */
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { VisibilityService } from '../visibility/visibility.service';
@@ -17,8 +17,9 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
   @Input() serviceState: (ServiceStateRecord & {service: ServiceIdentifier})[];
 
   private timerId = null;
+  private currentTime: number = new Date().valueOf();
 
-  constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
+  constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService, private changeDetectorRef: ChangeDetectorRef) {
     super(popupCoordinator, visibilityService);
   }
 
@@ -50,11 +51,12 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
   }
 
   refresh() {
-    // no-op is enough to trigger data refresh
+    this.currentTime = new Date().valueOf();
+    this.changeDetectorRef.detectChanges();
   }
 
   lastChange(service: ServiceStateRecord): string {
-    const value = Math.round(((new Date()).valueOf() - service.lastStateChange)/1000);
+    const value = Math.round((this.currentTime - service.lastStateChange)/1000);
     if(service.state == ServiceState.successful) {
       // Infrequent updates for 'loaded' state
       return value > 60 ? Math.round(value/60) + ' min' : '';

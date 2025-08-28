@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { issueLabelScopes } from '../../../../shared/issue-labels';
 import { getUserAvatarUrl, getTz } from '../../../../shared/users';
 import { appState } from '../../state';
@@ -13,7 +13,7 @@ import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUr
     styleUrls: ['./contributions-tab.component.css'],
     standalone: false
 })
-export class ContributionsTabComponent implements OnInit, OnChanges {
+export class ContributionsTabComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() user: any;
 
@@ -24,8 +24,18 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
   get sites() { return dataModel.sites }
   get userTz() { return getTz(this.user?.login); }
 
+  private timerId = null;
+  private currentTime: Date = new Date();
+
+  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+
+  refresh() {
+    this.currentTime = new Date();
+    this.changeDetectorRef.detectChanges();
+  }
+
   userDate() {
-    return new Date().toLocaleString([], {
+    return this.currentTime.toLocaleString([], {
       weekday: "short",
       hour: "2-digit",
       minute: "2-digit",
@@ -43,13 +53,16 @@ export class ContributionsTabComponent implements OnInit, OnChanges {
 
   _issues = null;
 
-  constructor() { }
-
   stringify(o: any) {
     return JSON.stringify(o);
   }
 
   ngOnInit(): void {
+    this.timerId = setInterval(() => this.refresh(), 1000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.timerId);
   }
 
   ngOnChanges() {

@@ -17,6 +17,7 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
   @Input() serviceState: (ServiceStateRecord & {service: ServiceIdentifier})[];
 
   private timerId = null;
+  private currentTime: number = new Date().valueOf();
 
   constructor(popupCoordinator: PopupCoordinatorService, visibilityService: VisibilityService) {
     super(popupCoordinator, visibilityService);
@@ -50,11 +51,11 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
   }
 
   refresh() {
-    // no-op is enough to trigger data refresh
+    this.currentTime = new Date().valueOf();
   }
 
   lastChange(service: ServiceStateRecord): string {
-    const value = Math.round(((new Date()).valueOf() - service.lastStateChange)/1000);
+    const value = Math.round((this.currentTime - service.lastStateChange)/1000);
     if(service.state == ServiceState.successful) {
       // Infrequent updates for 'loaded' state
       return value > 60 ? Math.round(value/60) + ' min' : '';

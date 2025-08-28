@@ -25,17 +25,32 @@
   text-align: center;
 }
 
-.user-at-work {
-  background: green;
+.user-10pm-to-4am {
+  background: hsl(0, 75%, 35%);
   color: white;
 }
 
-.user-asleep-or-weekend {
-  background: red ;
+.user-4am-to-6am {
+  background: hsl(30, 75%, 35%);
   color: black;
 }
 
-.user-awake {
-  background: orange;
+.user-6am-to-8am {
+  background: hsl(60, 76%, 51%);
   color: black;
+}
+
+.user-8am-to-6pm {
+  background: hsl(120, 75%, 35%);
+  color: white;
+}
+
+.user-6pm-to-8pm {
+  background: hsl(210, 75%, 35%);
+  color: white;
+}
+
+.user-8pm-to-10pm {
+  background: hsl(270, 75%, 35%);
+  color: white;
 }

@@ -24,6 +24,9 @@ export class ContributionsComponent implements OnInit {
 
   @Output() onSelectTab = new EventEmitter<string>();
 
+  private timerId = null;
+  private currentTime: Date = new Date();
+
   constructor() { }
 
   stringify(o: any) {
@@ -31,6 +34,11 @@ export class ContributionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.timerId = setInterval(() => this.refresh(), 1000);
+  }
+
+  private refresh() {
+    this.currentTime = new Date();
   }
 
   shouldDisplay(user) {
@@ -61,7 +69,7 @@ export class ContributionsComponent implements OnInit {
       return user.login;
     }
 
-    return user.login + ' - ' + new Date().toLocaleString([], {
+    return user.login + ' - ' + this.currentTime.toLocaleString([], {
       weekday: "short",
       hour: "2-digit",
       minute: "2-digit",

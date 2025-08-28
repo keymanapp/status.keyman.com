@@ -107,25 +107,22 @@ export class ContributionsComponent implements OnInit, OnDestroy {
   userAvailability(user) {
     const tz = getTz(user.login);
     if(!tz) {
-      return {background: 'rgba(0,0,0,0)', color: 'rgba(0,0,0,0)'}; //TODO
+      return {style: ''};
     }
     const now = this.currentTime;
     const result = {
       weekDay: now.toLocaleString('en-GB', { weekday: 'short', timeZone: tz }),
       time: now.toLocaleString('en-GB', { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: tz }),
       hour: 0,
-      background: 'green',
-      color: 'white',
+      style: 'user-at-work',
     };
 
     result.hour = parseInt(result.time, 10);
 
     if(result.weekDay == 'Sat' || result.weekDay == 'Sun' || result.hour < 6 || result.hour > 21) {
-      result.background = 'red';
-      // result.color = 'black';
+      result.style = 'user-asleep-or-weekend';
     } else if(result.hour < 8 || result.hour > 17) {
-      result.background = 'orange';
-      result.color = 'black';
+      result.style = 'user-awake';
     }
     return result;
   }

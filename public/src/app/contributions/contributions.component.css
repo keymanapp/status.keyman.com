@@ -24,3 +24,18 @@
   font-size: 12px;
   text-align: center;
 }
+
+.user-at-work {
+  background: green;
+  color: white;
+}
+
+.user-asleep-or-weekend {
+  background: red ;
+  color: black;
+}
+
+.user-awake {
+  background: orange;
+  color: black;
+}

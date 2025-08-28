@@ -1,4 +1,4 @@
-<span *ngIf="shouldDisplay(user)" class="avatar-box {{user.login == activeTab ? 'selected' : ''}}" [style]="{background: userAvailability(user).background, color: userAvailability(user).color}"
+<span *ngIf="shouldDisplay(user)" class="avatar-box {{user.login == activeTab ? 'selected' : ''}} {{userAvailability(user).style}}"
   (click)="selectUser(user.login)" [title]="userDate(user)">
   <img *ngIf="user.login == ''" class="avatar-40" src="assets/unassigned.png">
   <img *ngIf="user.login != ''" class="avatar-40" src="{{getUserAvatar(user, 40)}}">

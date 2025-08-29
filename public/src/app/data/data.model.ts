@@ -278,12 +278,17 @@ export class DataModel {
       this.phase = {title:'?'};
     } else {
       // Assuming a phase is 2 weeks; we can't really show more than that on screen easily anyway!
-      this.phaseEnd = new Date(this.phase.end).toDateString();
-      this.phaseStart = new Date(this.phase.start).toDateString();
 
-      let d = new Date(this.phase.start);
+      // use current timezone; we are assuming phase.end and phase.start end
+      // with 'Z', so we trim that off and automatically get midnight on the
+      // date in question. This does mean that each site user will see their
+      // contributions broken down by their current viewing timezone -- so the
+      // contributions table will differ from user to user.
+      this.phaseEnd = new Date(this.phase.end.substring(0,this.phase.end.length-1)).toDateString();
+      this.phaseStart = new Date(this.phase.start.substring(0,this.phase.start.length-1)).toDateString();
+
+      let d = new Date(this.phase.start.substring(0,this.phase.start.length-1));
       d.setUTCDate(d.getUTCDate()-2);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
-      // TODO: sort out timezones one day ...
 
       let dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       let monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -292,10 +297,10 @@ export class DataModel {
         let dt = new Date(d.valueOf()+n*86400*1000);
         this.sprintDays[n] = {
             date: dt,
-            dayText: dayName[dt.getUTCDay()],
-            monthText: monthName[dt.getUTCMonth()],
-            dateText: dt.getUTCDate().toString(),
-            ghdate: dt.toISOString().substr(0,10)
+            dayText: dayName[dt.getDay()],
+            monthText: monthName[dt.getMonth()],
+            dateText: dt.getDate().toString(),
+            ghdate: dt.toISOString().substring(0,10)
           };
       }
     }

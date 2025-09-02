@@ -1,3 +1,18 @@
+.issue-box-view-current {
+  display: none;
+}
+
+.issue-box-view-current app-count-box {
+  zoom: 1.25;
+}
+
+.issue-box-view-current.milestone-current,
+.issue-box-view-current.milestone-tests,
+.issue-box-view-current.milestone-other
+ {
+  display: inline;
+}
+
 .issue-box.nav {
   display: inline-flex;
 }
@@ -25,24 +40,23 @@
 }
 
 
-.issue-box.platform .issue-list-container {
-  top: 24px;
-  left: 2px;
+.gravity-bottom.issue-list-container {
+  margin-top: 24px;
 }
 
-.issue-box.site .issue-list-container {
-  bottom: 21px;
-  right: 2px;
+.gravity-top.issue-list-container {
+  margin-bottom: 21px;
 }
 
 .issue-box.nav .issue-list-container {
-  left: 0;
-  top: 32px;
+  left: 4px;
+  top: 8px;
 }
 
 .issue-box.pinned .issue-list-container,
 .issue-box:hover .issue-list-container {
-  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 .issue-box {
@@ -50,16 +64,21 @@
 }
 
 .issue-list-container {
-  display: none;
+  display: block;
   position: absolute;
   width: auto;
   z-index: 10;
   text-align: left;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
 }
 
 .issue-list-container ul {
   max-width: 800px;
-  max-height: 640px;
+  max-height: 320px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow-x: hidden;
@@ -73,10 +92,20 @@
 .issue-list {
   background: #fcfffc;
   border: solid 1px #4c4c30;
-  border-radius: 0 0 4px 4px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   padding: 0;
   width: max-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.gravity-top .issue-list {
+  flex-direction: column-reverse;
+  border-radius: 4px 4px 0 0;
+}
+
+.gravity-bottom .issue-list {
+  border-radius: 0 0 4px 4px;
 }
 
 ul {
@@ -101,7 +130,7 @@ li {
 .issue {
   display: inline-block;
   height: 22px;
-  padding: 0px 8px 0px 4px;
+  padding: 4px 8px 0px 4px;
   margin-top: 2px;
 }
 
@@ -126,7 +155,8 @@ li {
   display: inline-block;
 }
 
-.author {
+.author,
+.assignee {
   display: inline-block;
   vertical-align: bottom;
   margin-top: 4px;
@@ -135,7 +165,11 @@ li {
 
 .related-pr {
   padding: 0 4px;
-  margin: 0 4px;
+  margin: 0 2px;
+}
+
+.related-pr a {
+  white-space: nowrap;
 }
 
 .related-pr:hover {
@@ -145,9 +179,16 @@ li {
 
 .summary {
   background: #e0e0e8;
-  border-bottom: solid 1px #4c4c30;
   padding: 4px;
   font-size: 8pt;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
 }
 
 .summary .summary-label {
@@ -157,6 +198,24 @@ li {
 
 .summary .summary-label::after {
   content: ':';
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.gravity-left .summary > span {
+  float: right;
+  margin: 0 2px;
+}
+
+.gravity-left .summary > .clear {
+  float: none;
+  clear: right;
 }
 
 .pin:hover {
@@ -171,4 +230,9 @@ li {
 .pinned .pin {
   background: #60a060;
   border-radius: 6px;
+}
+
+.label a.will-close {
+  color: green;
+  font-weight: bold;
 }

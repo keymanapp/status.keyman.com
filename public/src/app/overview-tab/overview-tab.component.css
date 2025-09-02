@@ -1,0 +1,324 @@
+.flex-box {
+  flex-direction: column;
+  display: flex;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.flex-container {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+.navbar-phase {
+  background: rgb(240,240,240);
+  border-radius: 3px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 4px 6px;
+  color: #343a40;
+  display: inline-block;
+  margin: 0 8px 0 0;
+}
+
+.navbar-phase a {
+  color: #343a40;
+}
+
+.navbar-phase-dates {
+  padding-left: 8px;
+  font-weight: normal;
+  color: #646464;
+}
+
+.navbar-new-pulls a.label {
+  color: white;
+  background: rgb(255, 24, 48);
+}
+
+.not-in-beta th#th-beta {
+  color: #606060;
+}
+
+.not-in-beta #tier-beta ::ng-deep .tier-build-state,
+.not-in-beta #tier-beta ::ng-deep .tier-release-version a {
+  filter: brightness(1.25) saturate(0.25);
+}
+
+/* Issue total */
+
+a.issue-count {
+  font-size: 9pt;
+  color: #808080;
+  margin-right: 8px;
+  text-decoration: none;
+}
+
+/* Etc */
+
+td.tier {
+  text-align: center;
+}
+
+td, th {
+  vertical-align: middle;
+}
+
+tbody th,
+td#tier-stable, td#tier-beta, td#tier-alpha {
+  white-space: nowrap;
+}
+
+thead th.tier {
+  text-align: center;
+}
+
+td.gap, th.gap {
+  width: 10%;
+}
+
+tr.tr-site td, tr.tr-site th {
+  text-align: center;
+  width: 9%;
+}
+
+tr.tr-site app-sentry {
+  margin-left: 8px;
+}
+
+td.sentry-events {
+  text-align: center;
+}
+
+
+.navbar-right {
+  margin-left: auto;
+}
+
+/* Refresh */
+
+.navbar-header {
+  display: flex;
+  width: 100%;
+}
+
+.navbar-refresh {
+  margin-left: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.navbar-header > * {
+  align-self: center;
+}
+
+/* Tables */
+
+table#sites-and-relatives td,
+table#sites-and-relatives th {
+  border: solid 1px var(--bs-border-color);
+}
+
+table#sites-and-relatives.table-bordered > :not(caption) > * {
+  border-width: 0;
+}
+
+#sites-and-relatives td.gap,
+#sites-and-relatives th.gap {
+  border: none;
+  box-shadow: none;
+  max-width: 0;
+  width: 0;
+  padding: 8px;
+  margin: 0;
+}
+
+#other-repos-cell {
+  position: relative;
+  cursor: default;
+}
+
+#other-repos {
+  display: none;
+  cursor: auto;
+  position: absolute;
+  bottom: 32px;
+  right: -1px;
+  z-index: 10;
+  background: white;
+  border: solid 1px #c0c0c0;
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+#other-repos ul {
+  margin: 0.5em 1em;
+  padding-left: 1em;
+}
+
+#other-repos li {
+  font-size: 0.8em;
+  text-align: left;
+}
+
+#other-repos-cell:hover > #other-repos {
+  display: block;
+}
+
+.view-link {
+  font-weight: normal;
+  font-size: 0.8em;
+  float: right;
+  margin-top: 3px;
+}
+
+.view-link a {
+  padding: 2px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+/* Platform Icon + Code Owner */
+
+.tr-platform th > div div.platform-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.tr-platform > th img {
+  width: 42px;
+}
+
+.tr-platform th div.platform-icon img {
+  width: 32px;
+  margin-right: 12px;
+}
+
+.tr-platform th div.platform-owner img {
+  width: 32px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+.platform-title {
+  flex-grow: 1;
+  text-align: center;
+}
+
+/* Issue Views */
+
+.tr-platform .issues {
+  min-width: 240px;
+}
+
+.issue-container {
+  display: flex;
+}
+
+.issue-view-current #issue-view-link-current { background-color: #e0e0e0; }
+.issue-view-all #issue-view-link-all { background-color: #e0e0e0; }
+
+.issue-view-current .issue-count-container {
+  margin-top: 0.3em;
+}
+
+.issue-view-current .issue-count {
+  zoom: 1.25;
+}
+
+/* Pull Request Views */
+
+/*.pull-request-view-link { color: white; }*/
+.pull-request-view-platform #pull-request-view-link-platform { background-color: #e0e0e0; }
+.pull-request-view-project #pull-request-view-link-project { background-color: #e0e0e0; }
+.pull-request-view-status #pull-request-view-link-status { background-color: #e0e0e0; }
+.pull-request-view-author #pull-request-view-link-author { background-color: #e0e0e0; }
+.pull-request-view-base #pull-request-view-link-base { background-color: #e0e0e0; }
+
+.pr-group-block {
+  display: block;
+}
+
+.pr-group-block > span {
+  display: table-cell !important;
+}
+
+.new-issue-links {
+  font-size: 0.5em;
+  padding-left: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+#sites-and-relatives td.issues {
+  padding-right: 20px;
+  position: relative;
+}
+
+#sites-and-relatives .new-issue-links {
+  float: right;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  margin-top: -5px;
+}
+
+.new-issue-links a {
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.new-issue-links a:hover {
+  background-color: #c0c0c0;
+  text-decoration: none;
+}
+
+/* Liveliness */
+
+.liveliness {
+  display: inline-block;
+  border: solid 1px black;
+  background: rgb(224,229,233);
+  border-radius: 12px;
+  width: 16px;
+  height: 16px;
+  margin: 0 4px 0 0;
+}
+
+.liveliness.liveliness-ready {
+  background: rgb(68, 204, 17);
+}
+
+.liveliness.liveliness-alive {
+  background: rgb(240,240,100);
+}
+
+.liveliness.liveliness-dead {
+  background: rgb(255, 24, 48);
+}
+
+.liveliness.liveliness-error {
+  background: orange;
+}
+
+#tabs {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#tabs > div {
+  display: none;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+#tabs > div.tab-active {
+  display: block;
+}

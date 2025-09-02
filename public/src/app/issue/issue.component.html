@@ -1,0 +1,25 @@
+<span class="issue scope-{{scope}}">
+  <span class="label {{class || issueClass()}} {{issueUserTesting()}}">
+    <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-32" src="{{getAuthorAvatar(issue.author, 32)}}"></a>
+    <a class="issue" target="_blank" href="{{issue.url}}">
+      <span class="title" *ngIf="scope == 'keyboards-lexical-models'">{{issue.title}}</span>
+      <span class='emoji'>{{issueEmoji()}}</span>{{issue.number}}
+    </a>
+    <span class='user-testing'> </span>
+  </span>
+  <div *ngIf="scope != 'keyboards-lexical-models'" class="issue-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+    <ng-container *ngIf="pinned || (isVisible | async)">
+      <span class="title-changes">
+        <span class="title"><span class="pin" (click)="pin()">📌</span> {{issue.title}}</span>
+      </span>
+      <table class="table table-sm table-borderless status-table"><tbody>
+        <tr class="user-testing-status {{issueUserTesting()}}">
+          <th class="user-testing-status-title">User testing</th>
+          <td class="user-testing-status-value"></td>
+        </tr>
+      </tbody></table>
+
+      <span class="labels"><span class="issue-label" *ngFor="let label of issue.labels.nodes" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
+    </ng-container>
+  </div>
+  </span>

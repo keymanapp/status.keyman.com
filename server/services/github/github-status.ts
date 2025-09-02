@@ -1,66 +1,22 @@
 
-import httppost from '../../util/httppost';
-import { github_token } from '../../identity/github';
-import { getCurrentSprint } from '../../current-sprint';
+import httppost from '../../util/httppost.js';
+import { github_token } from '../../identity/github.js';
+import { getCurrentSprint } from '../../current-sprint.js';
+import { issueLabelScopes } from '../../../shared/issue-labels.js';
+import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
-export default {
-  get: function(sprint): Promise<{github, phase, adjustedStart}> {
-    const ghStatusQuery = this.queryString(sprint);
-    return httppost('api.github.com', '/graphql',  //3
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
+import * as Sentry from '@sentry/node';
+import { consoleError, consoleLog } from '../../util/console-log.js';
 
-      // Lists all open pull requests in keyman repos
-      // and all open pull requests + status for keymanapp repo
-      // Gather the contributions for each recent user
+const queryStrings = {
 
-      // Current rate limit cost is 60 points. We have 5000 points/hour.
-      // https://developer.github.com/v4/guides/resource-limitations/
-
-      JSON.stringify({query: ghStatusQuery})
-    ).then(data => {
-      let githubPullsData = JSON.parse(data);
-      const phase = getCurrentSprint(githubPullsData.data);
-
-      let d = new Date(phase.start);
-      d.setDate(d.getDate()-2);
-      let adjustedStart = d;
-
-      // TODO: is this correct now?
-      // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
-      if(adjustedStart > new Date()) adjustedStart = new Date();
-      return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
-    });
-  },
-  queryString: function(sprint) {
-    let search = '';
-    if(sprint != 'current') {
-      // GH search appears to have a bug where it returns issues from another milestone if we don't include 'is:closed'...
-      // we can probably safely assume is:closed because we are always looking at past milestones
-      search = `
-      milestoneDueOn: search(first: 1, type:ISSUE, query:"is:issue is:closed org:keymanapp repo:keyman milestone:${sprint}") {
-        edges {
-          node {
-            ... on Issue {
-              title
-              number
-              milestone {
-                title
-                dueOn
-              }
-            }
-          }
-        }
-      }
-      `;
+  keyboards: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
     }
-
-    return `
-  {
-    ${search}
-
     keyboards: repository(owner: "keymanapp", name: "keyboards") {
       issues(filterBy: {states: OPEN}) {
         totalCount
@@ -69,7 +25,15 @@ export default {
         totalCount
       }
     }
+  `,
 
+  lexicalModels: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     lexicalModels: repository(owner: "keymanapp", name: "lexical-models") {
       issues(filterBy: {states: OPEN}) {
         totalCount
@@ -78,8 +42,16 @@ export default {
         totalCount
       }
     }
+  `,
 
-    unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open -label:windows/ -label:web/ -label:developer/ -label:mac/ -label:ios/ -label:android/ -label:linux/ -label:common/") {
+  unlabeledIssues: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
+    unlabeledIssues: search(type: ISSUE, first: 100, query: "repo:keymanapp/keyman is:issue is:open ${issueLabelScopes.map(scope=>`-label:${scope}`).join(' ')}") {
       issueCount
       nodes {
         ... on Issue {
@@ -100,7 +72,15 @@ export default {
         }
       }
     }
+  `,
 
+  repository: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     repository(owner: "keymanapp", name: "keyman") {
       refs(first:100, refPrefix: "refs/heads/") {
         nodes {
@@ -110,7 +90,7 @@ export default {
       issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
         totalCount
       }
-      issuesByLabelAndMilestone: labels(first: 100, query: "windows/ web/ developer/ mac/ ios/ android/ linux/ common/") {
+      issuesByLabelAndMilestone: labels(first: 100) {
         edges {
           node {
             name
@@ -151,6 +131,9 @@ export default {
 
             isDraft # requires application/vnd.github.shadow-cat-preview+json
 
+            additions
+            deletions
+
             headRefName
             baseRefName
 
@@ -160,8 +143,32 @@ export default {
               url
             }
 
-            timelineItems(itemTypes: [CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+            reviewsRequested:timelineItems(
+              itemTypes: [REVIEW_REQUESTED_EVENT]
+              first: 10
+            ) {
               nodes {
+                ... on ReviewRequestedEvent {
+                  createdAt
+                }
+              }
+            }
+
+            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+              nodes {
+                ... on CrossReferencedEvent {
+                  __typename
+                  subject: source {
+                    ... on Issue {
+                      number
+                      url
+                    }
+                    ... on PullRequest {
+                      number
+                      url
+                    }
+                  }
+                }
                 ... on ConnectedEvent {
                   __typename
                   subject {
@@ -196,11 +203,13 @@ export default {
               edges {
                 node {
                   commit {
+                    oid
                     status {
                       contexts {
                         description
                         context
                         state
+                        targetUrl
                       }
                     }
                   }
@@ -219,11 +228,20 @@ export default {
         }
       }
     }
+   `,
+
+   organization: `
+    rateLimit {
+      limit
+      cost
+      remaining
+      resetAt
+    }
     organization(login: "keymanapp") {
-      repositories(first: 30) {
+      repositories(isArchived:false, first: 42) {
         nodes {
           name
-          pullRequests(last: 50, states: OPEN) {
+          pullRequests(last: 20, states: OPEN) {
             edges {
               node {
                 title
@@ -231,6 +249,10 @@ export default {
                 isDraft # requires application/vnd.github.shadow-cat-preview+json
                 headRefName
                 baseRefName
+
+                additions
+                deletions
+
                 milestone {
                   title
                 }
@@ -278,15 +300,84 @@ export default {
         }
       }
     }
-
-    rateLimit {
-      limit
-      cost
-      remaining
-      resetAt
-    }
-  }
   `
-  }
+};
 
+// Lists all open pull requests in keyman repos
+// and all open pull requests + status for keymanapp repo
+// Gather the contributions for each recent user
+
+// Current rate limit cost is 60 points. We have 5000 points/hour.
+// https://developer.github.com/v4/guides/resource-limitations/
+
+async function httppostgh(query, key) {
+  consoleLog('services', 'github-status-' + key, '  starting refresh');
+  try {
+    const res = await httppost('api.github.com', '/graphql',  //3
+      {
+        Authorization: ` Bearer ${github_token}`,
+        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+      },
+      JSON.stringify({query: '{' + query + '}'})
+    );
+    return res;
+  } finally {
+    consoleLog('services', 'github-status-' + key, '  finishing refresh');
+  }
+}
+
+export default {
+  get: function(sprint): Promise<{github, phase, adjustedStart}> {
+    const keys = Object.keys(queryStrings);
+    consoleLog('services', 'github-status', 'starting refresh of 5 github services');
+    return Promise.all( keys.map(v => httppostgh(queryStrings[v], v)) ).then(values => {
+      try {
+        let data = keys.reduce((pv, cv, ix) => {
+          const j = JSON.parse(values[ix]);
+          if(!j || !j.data) {
+            try {
+              throw new Error(`Error parsing ${values[ix]}`);
+            } catch(e) {
+              console.log(`currentValue=${cv}`);
+              console.error(e);
+              Sentry.captureException(e);
+            }
+            return pv;
+          }
+          pv[cv] = j.data[cv];
+          pv[cv].rateLimit = j.data.rateLimit;
+          return pv;
+        }, {});
+        let githubPullsData = { data: data };
+
+        for(let item of Object.keys(data)) {
+          logGitHubRateLimit(data[item]?.rateLimit, 'github-status-'+item);
+        }
+
+        const dd: any = githubPullsData.data;
+        if(!dd?.repository) {
+          return null;
+        }
+
+        const phase = getCurrentSprint(githubPullsData.data);
+
+        let d = new Date(phase.start);
+        d.setDate(d.getDate()-2);
+        let adjustedStart = d;
+
+        // TODO: is this correct now?
+        // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
+        if(adjustedStart > new Date()) adjustedStart = new Date();
+        return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
+      } catch(e) {
+        consoleError('services', 'github-status', e);
+        Sentry.addBreadcrumb({
+          category: "JSON",
+          message: JSON.stringify(values)
+        });
+        Sentry.captureException(e);
+        return null;
+      }
+    });
+  },
 };

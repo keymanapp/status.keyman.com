@@ -1,17 +1,22 @@
+import { consoleLog } from "./console-log.js";
+
 export class DataChangeTimingManager {
-  started: boolean[] = [];
+  started: Date[] = [];
   lastRun: Date[] = [];
   dataChangeTimeout: NodeJS.Timeout[] = [];
 
-  isTooSoon = (id: string, minInterval: number, callback: () => void): boolean => {
-    if (this.started[id] || this.lastRun[id] &&
-        (new Date()).valueOf() - this.lastRun[id].valueOf() < minInterval) {
+  private formatDate(date: Date) {
+    return date ? date.toISOString() : 'unknown';
+  }
 
-      if(process.env['NODE_ENV'] != 'production') {
-        if(this.isRunning(id))
-          console.log(`Data change for ${id} is still underway; waiting ${minInterval} milliseconds`);
-        else
-          console.log(`Data change for ${id} is too soon; waiting ${minInterval} milliseconds`);
+  isTooSoon = (id: string, minInterval: number, callback: () => void): boolean => {
+    const lastRunDelta = this.lastRun[id] ? (new Date()).valueOf() - this.lastRun[id].valueOf() : 1000000;
+
+    if (this.started[id] || lastRunDelta < minInterval) {
+      if(this.started[id]) {
+        consoleLog('timing', id, `Data change has been underway for ${(new Date()).valueOf() - this.started[id].valueOf()} msec (started at ${this.formatDate(this.started[id])}); waiting ${minInterval} milliseconds`);
+      } else {
+        consoleLog('timing', id, `Data change was only ${lastRunDelta} msec ago (finished at ${this.formatDate(this.lastRun[id])}); waiting ${minInterval} milliseconds`);
       }
 
       if (this.dataChangeTimeout[id]) {
@@ -31,11 +36,23 @@ export class DataChangeTimingManager {
   };
 
   start = (id): void => {
-    this.started[id] = true;
+    this.started[id] = new Date();
+    consoleLog('timing', id, `starting at ${this.formatDate(this.started[id])}`);
+    // this.lastRun[id] = new Date();
   };
 
   finish = (id): void => {
-    this.started[id] = false;
     this.lastRun[id] = new Date();
+    const delta = this.started[id] ? this.lastRun[id].valueOf() - this.started[id].valueOf() : '??';
+    consoleLog('timing', id, `finished in ${delta} msec at ${this.formatDate(this.lastRun[id])}; started at ${this.formatDate(this.started[id])}`);
+    this.started[id] = null;
   };
+
+  reset = (): void => {
+    consoleLog('timing', null, `resetting all timeouts`);
+    this.started = [];
+    this.lastRun = [];
+    this.dataChangeTimeout.forEach(t => clearTimeout(t));
+    this.dataChangeTimeout = [];
+  }
 }

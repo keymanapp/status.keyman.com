@@ -1,6 +1,7 @@
 
-import httppost from '../../util/httppost';
-import { github_token } from '../../identity/github';
+import httppost from '../../util/httppost.js';
+import { github_token } from '../../identity/github.js';
+import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
 export default {
 
@@ -13,7 +14,11 @@ export default {
       // Gather the contributions for each recent user
 
       JSON.stringify({query: this.queryString(startDateTime)}),
-    ).then(data => JSON.parse(data));
+    ).then(data => {
+      const result = JSON.parse(data);
+      logGitHubRateLimit(result?.data?.rateLimit, 'github-contributions');
+      return result;
+    });
   },
 
   queryString: function(startDate) {
@@ -22,6 +27,13 @@ export default {
     let endDate = d.toISOString();
     return `
     {
+      rateLimit {
+        limit
+        cost
+        remaining
+        resetAt
+      }
+
       repository(owner: "keymanapp", name: "keyman") {
 
         # Collect contributions

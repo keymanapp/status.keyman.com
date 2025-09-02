@@ -1,0 +1,17 @@
+<div class="flex-box">
+  <div id="contributions">
+    <span id="sprint">{{sprint}}</span> <app-contributions></app-contributions>
+  </div>
+  <div class="loading">
+    <div *ngIf="!milestones">Loading Milestone data...</div>
+    <div *ngIf="!status.contributions">Loading GitHub contributions for {{sprint}}...</div>
+    <div *ngIf="!status.communitySite">Loading Community Site contributions for {{sprint}}...</div>
+  </div>
+  <div class="sprints">
+    <span *ngFor="let milestone of milestones">
+      <span *ngIf="shouldIncludeMilestone(milestone)">
+        <a href="/contributions?sprint={{milestone.title}}">{{milestone.title}}</a> &nbsp;
+      </span>
+    </span>
+  </div>
+</div>

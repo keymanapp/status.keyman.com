@@ -1,11 +1,13 @@
 
-import httppost from '../../util/httppost';
-import { github_token } from '../../identity/github';
-// import { getCurrentSprint } from '../../current-sprint';
+import httppost from '../../util/httppost.js';
+import { github_token } from '../../identity/github.js';
+import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
+import { KSGitHubIssue } from './github-issue.js';
+// import { getCurrentSprint } from '../../current-sprint.js';
 
 export default {
 
-  get: function(cursor, issues): Promise<Array<any>> {
+  get: function(cursor, issues): Promise<Array<KSGitHubIssue[]>> {
     const ghIssuesQuery = this.queryString(cursor);
     return httppost('api.github.com', '/graphql',  //4
       {
@@ -17,6 +19,8 @@ export default {
       JSON.stringify({query: ghIssuesQuery})
     ).then(data => {
       let obj = JSON.parse(data);
+
+      logGitHubRateLimit(obj?.data?.rateLimit, 'github-issues');
       //console.log(data);
       if(!obj.data || !obj.data.search) return [];
       const newIssues = [].concat(issues, obj.data.search.nodes);
@@ -31,7 +35,7 @@ export default {
     after = JSON.stringify(after);
     return `
     {
-      search(first: 100, after:${after} type: ISSUE, query:"org:keymanapp is:open is:issue") {
+      search(first: 100, after:${after} type: ISSUE, query:"org:keymanapp is:open is:issue -repo:keymanapp/legacy-issues") {
         issueCount
         pageInfo {
           hasNextPage
@@ -41,6 +45,14 @@ export default {
           ... on Issue {
             repository {
               name
+            }
+            state
+            assignees(first:10) {
+              nodes {
+                login
+                avatarUrl
+                url
+              }
             }
 
             author {
@@ -60,8 +72,22 @@ export default {
               }
             }
 
-            timelineItems(itemTypes: [CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
               nodes {
+                ... on CrossReferencedEvent {
+                  __typename
+                  willCloseTarget
+                  subject: source {
+                    ... on PullRequest {
+                      number
+                      url
+                    }
+                    ... on Issue {
+                      number
+                      url
+                    }
+                  }
+                }
                 ... on ConnectedEvent {
                   __typename
                   subject {
@@ -91,7 +117,10 @@ export default {
       }
 
       rateLimit {
+        limit
         cost
+        remaining
+        resetAt
       }
     }
     `

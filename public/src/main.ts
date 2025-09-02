@@ -1,13 +1,15 @@
-import { enableProdMode } from '@angular/core';
+import { ApplicationRef, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
 import * as Sentry from "@sentry/angular";
+import { enableDebugTools } from '@angular/platform-browser';
 
 Sentry.init({
-  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@sentry.keyman.com/13"
+  dsn: "https://4ed13a2db1294bb695765ebe2f98171d@o1005580.ingest.sentry.io/5983526",
+  environment: environment.production ? 'production' : 'development'
 });
 
 if (environment.production) {
@@ -15,5 +17,9 @@ if (environment.production) {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+  .then(module => { if(!environment.production) { enableDebugTools(module.injector.get(ApplicationRef).components[0]) } })
+  .catch(err => {
+    console.error(err);
+    Sentry.captureMessage(err);
+  });
 

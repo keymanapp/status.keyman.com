@@ -1,0 +1,27 @@
+<span class="issue-box {{platform ? 'platform' : 'site'}} {{pinned ? 'pinned' : ''}} issue-box-view-{{view}} milestone-{{repo == '*' ? 'current' : milestone?.id}}">
+  <app-count-box
+    [repo]="repo"
+    [title]="milestone?.title"
+    [unfixedCount]="milestone?.count"
+    [count]="milestone?.count"
+    [label]="platform?.value.id ? platform?.value.id+'/' : null"
+    [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
+
+  <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+    <div class="issue-list">
+      <div class="summary">
+        <span class="pin" (click)="pin()">📌</span>
+        <!--<span><app-clipboard [text]="getPRListText()" title="Copy list of issues to clipboard"></app-clipboard></span>-->
+        <span>
+          <span class="summary-label">Pull Requests</span><span>{{pullRequests?.length}}</span>
+        </span>
+        <div class='clear'></div>
+      </div>
+
+      <span *ngFor="let pull of pullRequests">
+        <app-pull-request [status]="status" [scope]="'keyboards-lexical-models'" [gravityX]="'right'" [gravityY]="'top'" [class]="" [pull]="{pull:pull}"></app-pull-request>
+      </span>
+
+    </div>
+  </div>
+</span>

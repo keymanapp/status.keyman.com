@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { ServiceIdentifier } from '../../../../shared/services';
 
 @Injectable()
 export class StatusService {
@@ -9,20 +10,19 @@ export class StatusService {
 
   constructor(private http: HttpClient) { }
 
-  getStatus(source: StatusSource, sprint?: string) {
+  getStatus(source: ServiceIdentifier, sprint?: string, sprintStartDate?: Date) {
     const url = this.statusUrl + '/' + source;
-    return sprint ?
-      this.http.get(url, {params:{sprint:sprint}}) :
-      this.http.get(url);
+    let params:any = {};
+    if(sprint) params.sprint = sprint;
+    if(sprintStartDate) params.sprintStartDate = sprintStartDate.toISOString();
+    return this.http.get(url, {params: params});
   }
-};
 
-// TODO share this between client and server
-export enum StatusSource {
-  Keyman = "keyman",
-  GitHub = "github",
-  GitHubIssues = "github-issues",
-  GitHubContributions = "github-contributions",
-  TeamCity = "teamcity",
-  SentryIssues = "sentry-issues"
+  refreshBackend() {
+    const o = this.http.post(environment.refreshBackendUrl, {});
+    o.subscribe( (data: any) => {
+      console.log(data);
+    });
+    return o;
+  }
 };

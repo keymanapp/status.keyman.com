@@ -1,0 +1,95 @@
+/*
+ * Keyman is copyright (C) SIL Global. MIT License.
+ */
+
+.status-title {
+  cursor: pointer;
+}
+
+.service-state {
+  position: relative;
+}
+
+.service-state-popup {
+  display: block;
+  position: absolute;
+  margin: 29px 4px 24px 4px;
+  text-align: left;
+  z-index: 10;
+  background: #fcfffc;
+  color: black;
+  border: solid 1px #4c4c30;
+  padding: 0;
+  width: max-content;
+  max-width: 720px;
+  font-size: 10pt;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
+}
+
+.gravity-top.service-state-popup {
+  border-radius: 4px 4px 0 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.gravity-bottom.service-state-popup {
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.service-state:hover > .service-state-popup,
+.service-state > .service-state-popup.pinned {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Pin */
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+  font-size: 8pt;
+}
+
+/* Internal styles */
+
+.title {
+  font-weight: bold;
+  background: #444444;
+  color: white;
+}
+
+table {
+  margin: 4px;
+  border-collapse: collapse;
+}
+
+.icon {
+  /* border: solid 1px #cccccc; */
+  line-height: 0.5em;
+  font-size: 1.4em;
+}
+
+.icon.loading {
+  color: yellow;
+}
+
+.icon.successful {
+  color: green;
+}
+
+.icon.error {
+  color: red;
+}

@@ -1,0 +1,6 @@
+<div [class]="'emoji-group' + (emoji.key == '' ? '' : ' emoji-group-border')" *ngFor="let emoji of platform.value.pullsByEmoji | keyvalue">
+  <span *ngIf="emoji.key != ''" class="emoji">{{emoji.key}}</span>
+  <span *ngFor="let pull of emoji.value">
+    <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="platform.value.id" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+  </span>
+</div>

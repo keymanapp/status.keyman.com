@@ -1,0 +1,6 @@
+.base {
+  white-space: nowrap
+}
+td, th {
+  vertical-align: middle;
+}

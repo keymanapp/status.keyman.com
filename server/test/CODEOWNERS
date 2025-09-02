@@ -1,0 +1,16 @@
+#
+# Code owners - this lists the primary dev for each area
+#
+## Note: Per 2025-April CODEOWNERS is not used, please add reviews manually
+##  — contact team owners if you're unsure.
+#
+#
+#/android/                         @darcywong00
+#/common/                          @mcdurdin
+#/core/                            @mcdurdin
+#/developer/                       @mcdurdin
+#/ios/
+#/linux/                           @ermshiperete
+#/mac/                             @sgschantz
+#/web/                             @ermshiperete
+#/windows/                         @rc-swag

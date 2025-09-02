@@ -1,20 +1,64 @@
-<span class="pull-request">
-<span class="label {{class || pullClass()}} {{pullStatus()}}">
-  <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{pull.pull.node.author.avatarUrl}}&size=32"></a>
+<span class="pull-request scope-{{scope}}">
+<span class="label {{class || pullClass()}} {{pullStatus()}} {{pullUserTesting()}}">
+  <a class="author" title="{{pull.pull.node.author.login}}" target="_blank" href="{{pull.pull.node.author.url}}"><img class="avatar-32" src="{{getAuthorAvatar(pull.pull.node.author, 32)}}"></a>
+  <span class="epic-icon">{{pullEmoji()}}</span>
   <a class="pull" target="_blank" href="{{pull.pull.node.url}}">
-    <span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>{{pull.pull.node.number}}
+    <span class="title" *ngIf="scope == 'keyboards-lexical-models'">{{pull.pull.node.title}}</span>
+    <span *ngIf='pullIsForStableOrBetaBranch()' class='{{pullStableOrBetaClassName()}}'>{{pullStableOrBetaBranchIdentifier()}}</span>
+    <!--<span *ngIf='pullIsCherryPick()' class='cherry-pick'>🍒 </span>-->
+    <span class='emoji'>{{pullEmoji()}}</span>{{pull.pull.node.number}}
   </a>
+  <span class="file-size-failure-icon" title="{{pull.pull.node.fileSizeFailureText}}">🐡</span>
+  <span class='user-testing'> </span>
 </span>
-<div class="pull-request-detail">
-  <span class="branches">
-    <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
-    <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
-      <a href="https://github.com/keymanapp/keyman/issues/{{issue.subject.number}}" target="_blank">🔗 #{{issue.subject.number}}</a>
+<div *ngIf="scope != 'keyboards-lexical-models'" class="pull-request-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
+  <ng-container *ngIf="pinned || (isVisible | async)">
+    <span class="title-changes">
+      <span class="title"><span class="pin" (click)="pin()">📌</span>{{pull.pull.node.title}}</span>
+      <span class="changes">
+        <span class="additions">+{{pull.pull.node.additions}}</span>
+        <span class="deletions">−{{pull.pull.node.deletions}}</span>
+      </span>
     </span>
-    <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
-  </span>
-  <span class="title">{{pull.pull.node.title}}</span>
-  <span class="status">{{pull.state ? pull.state.context + ': ' + pull.state.description : ''}}</span>
-  <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>
+    <span class="branches">
+      <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
+      <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
+      <span class="related-issue" *ngFor="let issue of pull.pull.node.timelineItems?.nodes">
+        <a href="{{issue.subject.url}}" target="_blank">{{issue.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{issue.subject.number}}</a>
+      </span>
+    </span>
+    <table class="table table-sm table-borderless status-table"><tbody>
+      <tr class="status {{pullClass()}}">
+        <th class="status-title">Build</th>
+        <td>{{pullStateSummary()}}</td>
+      </tr>
+      <tr class="status" *ngIf="pull.pull.node.fileSizeFailureText">
+        <th class="status-title">File Size</th>
+        <td>{{pull.pull.node.fileSizeFailureText}}</td>
+      </tr>
+      <tr class="review-status {{pullStatus()}}">
+        <th class="review-status-title">Code review</th>
+        <td><span class="sprint" *ngIf="pull.pull.node.milestone?.title != status?.currentSprint?.title">{{pull.pull.node.milestone?.title}}</span></td>
+      </tr>
+      <tr class="user-testing-status {{pullUserTesting()}}">
+        <th class="user-testing-status-title">User testing</th>
+        <td>{{pull.userTesting ? pull.userTesting.description : ''}}</td>
+      </tr>
+      <tr *ngIf="scope == 'platform'">
+        <td class="test-builds" colspan='2'>
+          <ng-container *ngFor="let context of contexts">
+            <span *ngIf="context.downloads.length">
+              <img src="assets/{{context.icon}}" alt="{{context.name}}" title="{{context.name}}">
+              <span *ngFor="let download of context.downloads">
+                <a href='{{download.url}}' target='_blank'><img src="assets/artifacts/{{download.icon}}" title="{{download.name}}" alt="{{download.name}}" /></a>
+              </span>
+            </span>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <span class="labels"><span class="issue-label" *ngFor="let label of pull.pull.node.labels.edges" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span></span>
+  </ng-container>
 </div>
 </span>

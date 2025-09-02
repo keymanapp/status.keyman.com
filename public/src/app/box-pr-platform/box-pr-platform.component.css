@@ -1,0 +1,21 @@
+.emoji-group.emoji-group-border {
+  border: solid 1px #c0c0c0;
+}
+
+.emoji-group {
+  border: solid 1px #c0c0c000;
+  border-radius: 6px;
+  display: inline-block;
+  padding: 3px 0 4px 0;
+  margin: 1px 2px;
+}
+
+.emoji-group .emoji {
+  font-size: 16px;
+  font-family: "Noto Color Emoji";
+  vertical-align: middle;
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  margin-left: 4px;
+}

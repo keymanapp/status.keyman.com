@@ -1,9 +1,10 @@
 .label {
-  margin: 0 4px;
+  margin: 2px 4px;
   border-radius: 4px;
   display: inline-block;
   background: #c0c0c0;
   box-shadow: 3px 3px rgba(40,40,40,0.2);
+  border: solid 2px rgb(224,229,233);
 }
 
 .label a.author img.avatar-32 {
@@ -42,12 +43,27 @@
 
 /* Future PRs */
 
+.label.epic {
+  opacity: 1.0 !important;
+  background: #e0f4ff !important;
+  color: #2044ff !important;
+  border-color: #2044ff !important;
+}
+.label.epic a {
+  color: #2044ff !important;
+}
+
 .label.status-draft {
-  opacity: 0.5;
+  opacity: 0.3;
+}
+
+.draft {
+  opacity: 0.3;
 }
 
 .future {
-  opacity: 0.3;
+  filter: saturate(0.1)
+  /* opacity: 0.3; */
 }
 
 /* Pull Request Review Status */
@@ -68,7 +84,7 @@
 }
 
 .label.status-pending::after {
-  content:'😶';
+  content:'🟡';
   alt: 'Pending';
   font-size: 0.75rem;
   font-family: "Noto Color Emoji";
@@ -76,7 +92,7 @@
 }
 
 .label.status-changes-requested::after {
-  content:'❌';
+  content:'👀';
   alt: 'Changes Requested';
   font-size: 0.75rem;
   font-family: "Noto Color Emoji";
@@ -92,6 +108,136 @@
   color: black;
 }
 
+.status-table {
+  margin-bottom: 0;
+}
+
+.status-table tbody tr {
+  /*background-color: rgba(0,0,0,0)*/
+}
+
+.status-table tbody tr td,
+.status-table tbody tr th {
+  padding: 0 4px;
+}
+
+/* Build Status Formatting */
+
+.status.success {
+  color: #206f24;
+}
+
+.status.pending {
+  color: #A0A024;
+}
+
+.status.failure {
+  color: #A01624;
+}
+
+.status.missing {
+  color: #808080;
+}
+
+.status.failure td::before {
+  content:'😡 ';
+}
+
+.status.success td::before {
+  content:'✔️ ';
+}
+
+.status.pending td::before {
+  content:'🟡 ';
+}
+
+/* Review Status Formatting */
+
+.review-status.status-changes-requested {
+  color: #A01624;
+}
+
+.review-status.status-changes-requested td::after {
+  content:'👀 Changes Requested';
+}
+
+.review-status.status-draft {
+  color: #808080;
+}
+
+.review-status.status-draft td::after {
+  content:'🚧 In Draft';
+}
+
+.review-status.status-approved {
+  color: #206f24;
+}
+
+.review-status.status-approved td::after {
+  content: '✔️ Approved';
+}
+
+.review-status.status-pending {
+  color: #A0A024;
+}
+
+.review-status.status-pending td::after {
+  content:'🟡 Pending';
+}
+
+/* User Testing formatting */
+
+.label.user-test-failure {
+  border: solid 2px rgb(255, 24, 48);
+}
+
+.label.user-test-pending {
+  border: solid 2px rgb(255,255,32);
+}
+
+.label.user-test-success {
+  border: solid 2px rgb(68,204,17);
+}
+
+.user-test-failure.user-testing-status {
+  color: #A01624;
+}
+
+.user-test-pending.user-testing-status {
+  color: #A0A024;
+}
+
+.user-test-success.user-testing-status {
+  color: #206f24;
+}
+
+.user-test-failure td::before {
+  content:'😡 ';
+}
+
+.user-test-success td::before {
+  content:'✔️ ';
+}
+
+.user-test-pending td::before {
+  content:'😶 ';
+}
+
+.file-size-failure-icon {
+  display: none;
+}
+
+.file-size-failure .file-size-failure-icon {
+  display: inline;
+  font-size: 0.9em;
+  cursor: default;
+}
+
+.scope-keyboards-lexical-models .label {
+  width: 98%;
+  white-space: nowrap;
+}
+
 .label a.pull {
   padding: 0px 6px;
   font-size: 0.8rem;
@@ -99,8 +245,75 @@
   vertical-align: middle;
 }
 
-.cherry-pick {
+.emoji {
+  font-family: "Noto Color Emoji";
+}
+
+.scope-platform .emoji {
+  display: none;
+}
+
+.scope-keyboards-lexical-models > span > .pull > .title {
+  display: inline;
+  font-size: 0.8rem;
+  font-weight: normal;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.scope-platform > span > .pull > .title,
+.scope-site > span > .pull > .title {
+  display: none;
+}
+
+.cherry-pick, .emoji {
   color: rgba(0,0,0,0.5);
+}
+
+.epic-icon {
+  display: none;
+
+}
+.epic .author {
+  display: none;
+}
+
+.epic .epic-icon {
+  display: inline-block;
+  max-width: 32px;
+  max-height: 32px;
+  width: 32px;
+  height: 32px;
+  background: #e0f4ff;
+  line-height: 16px;
+  padding-top: 8px;
+  font-size:24px;
+  text-align: center;
+  vertical-align: middle;
+  font-family: "Noto Color Emoji";
+  /* color: white; */
+}
+
+.stable {
+  font-weight: bold;
+  color: white;
+  border: solid 1px blue;
+  border-radius: 8px;
+  background: blue;
+  padding: 0 4px 0 2px;
+  margin: 0 4px 0 0;
+  box-shadow: 0 0 5px 2px rgb(0 0 255 / 50%);
+}
+
+.beta {
+  /* font-weight: 700; */
+  color: purple;
+  border: solid 1px purple;
+  border-radius: 8px;
+  /* background: purple; */
+  padding: 0 4px 3px 4px;
+  margin: 0 4px 0 0;
+  /* box-shadow: 0 0 5px 2px rgb(128 0 128 / 50%); */
 }
 
 .pull-request {
@@ -108,28 +321,43 @@
 }
 
 .pull-request-detail {
-  display: none;
+  display: block;
   position: absolute;
-  right: 4px;
-  top: 29px;
+  margin: 29px 4px 24px 4px;
   text-align: left;
   z-index: 10;
   background: #fcfffc;
   border: solid 1px #4c4c30;
-  border-radius: 0 0 4px 4px;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   padding: 3px;
   width: max-content;
   max-width: 720px;
   font-size: 10pt;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
 }
 
-.pull-request:hover > .pull-request-detail {
-  display: block;
+.gravity-top.pull-request-detail {
+  border-radius: 4px 4px 0 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.gravity-bottom.pull-request-detail {
+  border-radius: 0 0 4px 4px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.pull-request:hover > .pull-request-detail,
+.pull-request > .pull-request-detail.pinned {
+  visibility: visible;
+  opacity: 1;
 }
 
 .branches {
   display: block;
+  padding: 2px 0;
 }
 
 .branch {
@@ -142,15 +370,39 @@
   margin: 0 2px;
  }
 
- .title {
-   display: block;
+.title-changes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.title-changes .changes {
+  font-size: 0.9em;
+  margin-right: 2px;
+ }
+
+.title-changes .title {
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+ .additions, .deletions {
    font-weight: bold;
    margin-left: 4px;
  }
 
- .status {
-   display: block;
-   margin-left: 4px;
+ .additions {
+   color: #22863a;
+ }
+
+ .deletions {
+   color: #cb2431;
+ }
+
+ .user-testing-status-title,
+ .status-title,
+ .review-status-title {
+   font-weight: normal;
  }
 
  .issue-label {
@@ -175,3 +427,57 @@
   background: #c0ffff;
   border-radius: 3px 3px 0 0;
 }
+
+.related-issue a {
+    white-space: nowrap;
+}
+
+/* Test builds */
+
+.test-builds > span {
+  border-radius: 4px;
+  background: #e0e0e0;
+  padding: 0 4px 0 0;
+  margin: 0 2px 0 0;
+  display: inline-block;
+}
+
+.test-builds > span > img {
+  width: 32px;
+  height: 32px;
+}
+
+.test-builds > span > span {
+  background: white;
+  display: inline-block;
+}
+
+.test-builds > span > span img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Pin */
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+  font-size: 8pt;
+}
+
+.sprint {
+  color: red;
+  padding-right: 8px;
+}
+
+.sprint::before { content: "["; }
+.sprint::after { content: "]"; }

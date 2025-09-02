@@ -1,0 +1,222 @@
+.issue-box.nav {
+  display: inline-flex;
+}
+
+.navbar-new-issues {
+  display: inline-flex;
+}
+
+.navbar-new-issues .label {
+  font-size: 1rem;
+  padding: 4px;
+  margin: 0 4px;
+  border-radius: 4px;
+  display: inline-block;
+  color: white;
+  background: rgb(255, 24, 48);
+}
+
+.navbar-new-issues .label.hide-if-zero {
+  display: none;
+}
+
+.navbar-new-issues .label.hide-if-zero.failure {
+  display: inline-block;
+}
+
+
+.gravity-bottom.issue-list-container {
+  margin-top: 24px;
+}
+
+.gravity-top.issue-list-container {
+  margin-bottom: 21px;
+}
+
+.issue-box.nav .issue-list-container {
+  left: 4px;
+  top: 8px;
+}
+
+.issue-box.pinned .issue-list-container,
+.issue-box:hover .issue-list-container {
+  visibility: visible;
+  opacity: 1;
+}
+
+.issue-box {
+  position: relative;
+}
+
+.issue-list-container {
+  display: block;
+  position: absolute;
+  width: auto;
+  z-index: 10;
+  text-align: left;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.15s linear;
+  transition-delay: 0.25s;
+}
+
+.issue-list-container ul {
+  max-width: 800px;
+  max-height: 320px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.issue-list-container.pinned {
+  display: block;
+}
+
+.issue-list {
+  background: #fcfffc;
+  border: solid 1px #4c4c30;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  padding: 0;
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.gravity-top .issue-list {
+  flex-direction: column-reverse;
+  border-radius: 4px 4px 0 0;
+}
+
+.gravity-bottom .issue-list {
+  border-radius: 0 0 4px 4px;
+}
+
+ul {
+  margin: 0;
+  padding: 0 3px 3px 3px;
+}
+
+li {
+  margin: 2px 0 2px 0;
+  list-style: none;
+  font-size: 9pt;
+  overflow: hidden;
+  max-height: 26px;
+}
+
+.label {
+  display: block;
+  text-indent: 0;
+  margin-left: 4px;
+}
+
+.issue {
+  display: inline-block;
+  height: 22px;
+  padding: 0px 8px 0px 4px;
+  margin-top: 2px;
+}
+
+.issue:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
+}
+
+.label a,
+.label a:visited {
+  color: black;
+}
+
+.issue-label {
+  margin-left: 3px;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-weight: 500;
+  word-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  display: inline-block;
+}
+
+.author {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-top: 4px;
+  margin-right: 4px;
+}
+
+.related-pr {
+  padding: 0 4px;
+  margin: 0 2px;
+}
+
+.related-pr a {
+  white-space: nowrap;
+}
+
+.related-pr:hover {
+  background: #c0ffff;
+  border-radius: 3px 3px 0 0;
+}
+
+.summary {
+  background: #e0e0e8;
+  padding: 4px;
+  font-size: 8pt;
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.summary .summary-label {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.summary .summary-label::after {
+  content: ':';
+}
+
+.gravity-top .summary {
+  border-top: solid 1px #4c4c30;
+}
+
+.gravity-bottom .summary {
+  border-bottom: solid 1px #4c4c30;
+}
+
+.gravity-left .summary > span {
+  float: right;
+  margin: 0 2px;
+}
+
+.gravity-left .summary > .clear {
+  float: none;
+  clear: right;
+}
+
+.pin:hover {
+  background: #c0e0c0;
+}
+
+.pin {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.pinned .pin {
+  background: #60a060;
+  border-radius: 6px;
+}
+
+.label a.will-close {
+  color: green;
+  font-weight: bold;
+}

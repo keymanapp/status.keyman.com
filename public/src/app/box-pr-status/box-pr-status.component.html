@@ -1,0 +1,30 @@
+<table><tbody>
+  <tr *ngFor="let pullStatus of pullsByStatus | keyvalue">
+    <td>
+      <a *ngIf="pullStatus.key == 'draft'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+is%3Adraft">{{pullStatusName[pullStatus.key]}}</a>
+      <a *ngIf="pullStatus.key == 'waitingTest'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+label%3Auser-test-required">{{pullStatusName[pullStatus.key]}}</a>
+      <a *ngIf="pullStatus.key == 'waitingReview'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+review%3Arequired+-is%3Adraft">{{pullStatusName[pullStatus.key]}}</a>
+      <span *ngIf="pullStatus.key != 'waitingReview' && pullStatus.key != 'draft' && pullStatus.key != 'waitingTest'">{{pullStatusName[pullStatus.key]}}</span>
+    </td>
+    <td>
+      <span *ngFor="let pull of pullStatus.value">
+        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+      </span>
+      <span *ngIf="pullStatus.key =='readyToMerge'">
+        <span *ngFor="let issue of userTestIssuesPassed">
+          <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
+        </span>
+      </span>
+      <span *ngIf="pullStatus.key =='waitingTest'">
+        <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-required'">
+          <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
+        </span>
+      </span>
+      <span *ngIf="pullStatus.key =='waitingResponse'">
+        <span *ngFor="let issue of userTestIssues | filterIssueByLabel: 'user-test-failed'">
+          <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
+        </span>
+      </span>
+    </td>
+  </tr>
+</tbody></table>

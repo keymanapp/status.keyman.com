@@ -18,6 +18,10 @@
   border-radius: 3px 0 0 3px;
 }
 
+.countbox-total {
+  font-weight: normal;
+}
+
 .countbox-value {
   padding: 2px 4px;
   font-weight: bold;
@@ -29,35 +33,52 @@
   background: white;
 }
 
-.milestone-current .countbox-title {
+.milestone-current .countbox-title,
+.is-clean .countbox-title {
   border-color: rgb(68,204,17);
   background: rgb(68,204,17);
 }
 
-.milestone-current .countbox-value {
+.milestone-current .countbox-value,
+.is-clean .countbox-value {
   border-color: rgb(68,204,17);
   color: rgb(68,204,17);
 }
 
 .milestone-future .countbox-title,
-.milestone-waiting .countbox-title {
+.milestone-waiting .countbox-title,
+.is-empty .countbox-title {
   background: rgb(204,204,224);
   border: solid 1px #c0c0c0;
 }
 
 .milestone-future .countbox-value,
-.milestone-waiting .countbox-value {
+.milestone-waiting .countbox-value,
+.is-empty .countbox-value {
   color: rgb(204,204,224);
   border: solid 1px #c0c0c0;
 }
 
-.milestone-other .countbox-title {
+.milestone-other .countbox-title,
+.has-error .countbox-title {
   background: rgb(255, 24, 48);
   border-color: rgb(255, 24, 48);
   color: white;
 }
 
-.milestone-other .countbox-value {
+.milestone-other .countbox-value,
+.has-error .countbox-value {
   border-color: rgb(255, 24, 48);
   color: rgb(255, 24, 48);
+}
+
+.has-warning .countbox-title {
+  background: rgb(240, 240, 100);
+  border-color: rgb(120, 120, 50);
+  color: black;
+}
+
+.has-warning .countbox-value {
+  border-color: rgb(120, 120, 50);
+  color: black;
 }

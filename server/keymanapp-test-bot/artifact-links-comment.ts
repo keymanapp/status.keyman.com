@@ -40,7 +40,11 @@ export async function getArtifactLinksComment(
   // Load version of the build from cached data or if necessary,
   // pull it from TeamCity
 
-  let teamCityData = statusData.cache.teamCity ?? (await teamcityService.get())[0];
+  let teamCityData = statusData.cache.teamCity;
+  let teamCityDataFromCache = !!teamCityData;
+  if(!teamCityDataFromCache) {
+    teamCityData = (await teamcityService.get())[0];
+   }
 
   type LinkInfo = {
     state: string;
@@ -116,8 +120,20 @@ export async function getArtifactLinksComment(
       if(buildData) version = findBuildVersion(buildData);
       if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
       if(!version) {
-        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links; buildData: ${JSON.stringify(buildData)}`);
-        continue;
+        if(teamCityDataFromCache) {
+          // retry reload, but only once
+          console.log(`[@keymanapp-test-bot] Attempting reload of TeamCity data instead of using cache`);
+          teamCityDataFromCache = false;
+          teamCityData = (await teamcityService.get())[0];
+          buildData = findBuildData(s, buildTypeId, teamCityData);
+
+          if(buildData) version = findBuildVersion(buildData);
+          if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+        }
+        if(!version) {
+          console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links; buildData: ${JSON.stringify(buildData)}`);
+          continue;
+        }
       }
 
       let t = artifactLinks.teamCityTargets[buildTypeId];

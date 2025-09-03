@@ -106,29 +106,32 @@ export async function getArtifactLinksComment(
       const { buildTypeId, buildId } = getTeamcityUrlParams(u);
       console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${buildTypeId}:${buildId}`)
 
+      version = null;
       buildData = findBuildData(s, buildTypeId, teamCityData);
 
       if(buildData) version = findBuildVersion(buildData);
       if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
       if(!version) {
-        if(teamCityDataFromCache) {
-          // retry reload, but only once
-          console.log(`[@keymanapp-test-bot] Attempting reload of TeamCity data instead of using cache`);
-          teamCityDataFromCache = false;
-          teamCityData = (await teamcityService.get())[0];
-          buildData = findBuildData(s, buildTypeId, teamCityData);
-
-          if(buildData) version = findBuildVersion(buildData);
-          if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}; teamCityData.length:${JSON.stringify(teamCityData).length}`);
+        if(!teamCityDataFromCache) {
+          continue;
         }
+
+        // retry reload, but only once, in case our cache is out of date
+        console.log(`[@keymanapp-test-bot] Attempting reload of TeamCity data instead of using cache for ${buildTypeId}:${buildId}`);
+        teamCityDataFromCache = false;
+        teamCityData = (await teamcityService.get())[0];
+        buildData = findBuildData(s, buildTypeId, teamCityData);
+
+        if(buildData) version = findBuildVersion(buildData);
+        if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
         if(!version) {
-          console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links; buildData: ${JSON.stringify(buildData)}`);
+          console.error(`[@keymanapp-test-bot] After reload, failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
           continue;
         }
       }
-      if(version) {
-        console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version}`)
-      }
+
+      console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version}`)
 
       let t = artifactLinks.teamCityTargets[buildTypeId];
       if(t) {

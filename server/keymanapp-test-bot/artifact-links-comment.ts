@@ -147,7 +147,14 @@ export async function getArtifactLinksComment(
             t.name;
           if(!links[platform]) links[platform] = [];
           let buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
-          if(buildLevel != 'build') {
+          if(buildLevel == 'build') {
+            links[platform].push({
+              state: s[context].state == 'success' ? ': all tests passed (no artifacts on BuildLevel "build")' : s[context].state,
+              platform: platform,
+              download: download.name,
+              url: null
+            });
+          } else {
             links[platform].push({
               state: s[context].state,
               platform: platform,

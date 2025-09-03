@@ -59,31 +59,21 @@ export async function getArtifactLinksComment(
   for(let context of Object.keys(s)) {
     // artifactLinks
     let u;
-    if(!s[context].url) {
+    if(!s[context].target_url) {
       console.warn(`[@keymanapp-test-bot] skipping ${s[context].context}`);
       continue;
     }
     try {
-      u = new URL(s[context].url);
+      u = new URL(s[context].target_url);
     } catch(e) {
       console.error(`[@keymanapp-test-bot] ${e}`);
       continue;
     }
-    if (u.hostname == 'jenkins.lsdev.sil.org') {
-      for (let download of artifactLinks.jenkinsTarget.downloads) {
-        if (!links['Linux']) links['Linux'] = [];
-        links['Linux'].push({
-          state: s[context].state,
-          platform: 'Linux',
-          download: download.name,
-          url: `${s[context].url}/${download.fragment}`,
-        });
-      }
-    } else if (context == 'Debian Packaging') {
+    if (context == 'Debian Packaging') {
       // https://github.com/keymanapp/keyman/actions/runs/4294449810
-      const matches = s[context].url.match(/.+\/runs\/(\d+)/);
+      const matches = s[context].target_url.match(/.+\/runs\/(\d+)/);
       if (!matches) {
-        console.error(`[@keymanapp-test-bot] Can't find workflow run in url ${s[context].url}`);
+        console.error(`[@keymanapp-test-bot] Can't find workflow run in url ${s[context].target_url}`);
         return '';
       }
       const run_id = matches[1];
@@ -200,7 +190,7 @@ function findBuildData(s, buildTypeId, teamCity) {
       // artifactLinks
       let u;
       try {
-        u = new URL(s[context].url);
+        u = new URL(s[context].target_url);
       } catch(e) {
         continue;
       }

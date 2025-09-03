@@ -23,12 +23,12 @@ export async function getArtifactLinksComment(
     return '';
   }
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
-  let s = {};
+  let s: {[index:string]: {context:string, target_url:string, state:string}} = {};
   statuses.data.statuses.forEach(status => {
     if(s[status.context]) return;
     let o = {
       context: status.context,
-      url: status.target_url,
+      target_url: status.target_url,
       state: status.state,
     };
     s[status.context] = o;
@@ -104,7 +104,7 @@ export async function getArtifactLinksComment(
       }
     } else if(u.searchParams.has('buildTypeId') || u.pathname.match(/\/buildConfiguration\//)) {
       const { buildTypeId, buildId } = getTeamcityUrlParams(u);
-      console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${u.buildTypeId}:${u.buildId}`)
+      console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${buildTypeId}:${buildId}`)
 
       buildData = findBuildData(s, buildTypeId, teamCityData);
 
@@ -125,6 +125,9 @@ export async function getArtifactLinksComment(
           console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links; buildData: ${JSON.stringify(buildData)}`);
           continue;
         }
+      }
+      if(version) {
+        console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version}`)
       }
 
       let t = artifactLinks.teamCityTargets[buildTypeId];
@@ -190,7 +193,7 @@ function findBuildData(s, buildTypeId, teamCity) {
       // artifactLinks
       let u;
       try {
-        u = new URL(s[context].target_url);
+        u = new URL(s[context].url);
       } catch(e) {
         continue;
       }

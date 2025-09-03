@@ -114,6 +114,7 @@ export async function getArtifactLinksComment(
       }
     } else if(u.searchParams.has('buildTypeId') || u.pathname.match(/\/buildConfiguration\//)) {
       const { buildTypeId, buildId } = getTeamcityUrlParams(u);
+      console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${u.buildTypeId}:${u.buildId}`)
 
       buildData = findBuildData(s, buildTypeId, teamCityData);
 

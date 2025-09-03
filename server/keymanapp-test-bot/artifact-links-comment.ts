@@ -5,6 +5,9 @@ import { statusData } from '../data/status-data.js';
 import { artifactLinks } from '../../shared/artifact-links.js';
 import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams.js";
 
+type BuildDataCacheItem = {context:string, target_url:string, state:string};
+type BuildDataCache = {[index:string]: BuildDataCacheItem};
+
 export async function getArtifactLinksComment(
   octokit: InstanceType<typeof ProbotOctokit>,
   data,
@@ -23,7 +26,7 @@ export async function getArtifactLinksComment(
     return '';
   }
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
-  let s: {[index:string]: {context:string, target_url:string, state:string}} = {};
+  let s: BuildDataCache = {};
   statuses.data.statuses.forEach(status => {
     if(s[status.context]) return;
     let o = {
@@ -112,7 +115,7 @@ export async function getArtifactLinksComment(
       if(buildData) version = findBuildVersion(buildData);
       if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
       if(!version) {
-        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}; teamCityData.length:${JSON.stringify(teamCityData).length}`);
+        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
         if(!teamCityDataFromCache) {
           continue;
         }
@@ -190,13 +193,13 @@ export async function getArtifactLinksComment(
   return r;
 }
 
-function findBuildData(s, buildTypeId, teamCity) {
+function findBuildData(s: BuildDataCache, buildTypeId, teamCity) {
   for(let context of Object.keys(s)) {
     if(s[context].state == 'success') {
       // artifactLinks
       let u;
       try {
-        u = new URL(s[context].url);
+        u = new URL(s[context].target_url);
       } catch(e) {
         continue;
       }

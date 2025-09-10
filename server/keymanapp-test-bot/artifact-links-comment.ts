@@ -37,7 +37,7 @@ export async function getArtifactLinksComment(
     s[status.context] = o;
   });
 
-  let version = null;
+  let version = null, version_with_tag = null;
   let buildData = null;
 
   // Load version of the build from cached data or if necessary,
@@ -109,11 +109,12 @@ export async function getArtifactLinksComment(
       const { buildTypeId, buildId } = getTeamcityUrlParams(u);
       console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${buildTypeId}:${buildId}`)
 
+      version_with_tag = null;
       version = null;
       buildData = findBuildData(s, buildTypeId, teamCityData);
 
-      if(buildData) version = findBuildVersion(buildData);
-      if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+      if(buildData) version_with_tag = findBuildVersion(buildData);
+      if(version_with_tag) version = /^(\d+\.\d+\.\d+)/.exec(version_with_tag)?.[1];
       if(!version) {
         console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
         if(!teamCityDataFromCache) {
@@ -126,27 +127,28 @@ export async function getArtifactLinksComment(
         teamCityData = (await teamcityService.get())[0];
         buildData = findBuildData(s, buildTypeId, teamCityData);
 
-        if(buildData) version = findBuildVersion(buildData);
-        if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+        if(buildData) version_with_tag = findBuildVersion(buildData);
+        if(version_with_tag) version = /^(\d+\.\d+\.\d+)/.exec(version_with_tag)?.[1];
         if(!version) {
           console.error(`[@keymanapp-test-bot] After reload, failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
           continue;
         }
       }
 
-      console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version}`)
+      console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version_with_tag}`)
 
+      const buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
       let t = artifactLinks.teamCityTargets[buildTypeId];
       if(t) {
         for(let download of t.downloads) {
-          let fragment = download.fragment.replace(/\$version/g, version);
+          let fragment = download.fragment.replace(/\$version_with_tag/g, version_with_tag).replace(/\$version/g, version);
           // Special cases - Keyman Developer, Test Keyboards
           let platform =
             download.name == '**Keyman Developer**' ? 'Developer' :
             download.name == 'Test Keyboards' ? 'Keyboards' :
             t.name;
           if(!links[platform]) links[platform] = [];
-          let buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
+
           if(buildLevel == 'build') {
             links[platform].push({
               state: s[context].state == 'success' ? ': all tests passed (no artifacts on BuildLevel "build")' : s[context].state,
@@ -163,7 +165,7 @@ export async function getArtifactLinksComment(
             });
           }
         }
-        if(t.platform == 'ios') {
+        if(t.platform == 'ios' && buildLevel == 'release') {
           // Special case note for TestFlight
           let buildCounter = buildData?.resultingProperties?.property?.find(prop => prop.name == 'build.counter')?.value;
           if(buildCounter) {

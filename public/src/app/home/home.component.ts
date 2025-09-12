@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { StatusService } from '../status/status.service';
 import { ServiceIdentifier } from '../../../../shared/services';
 import { DataSocket } from '../datasocket/datasocket.service';
-import { getUserAvatarUrl } from '../../../../shared/users';
+import { getTz, getUserAvatarUrl } from '../../../../shared/users';
 import { ContributionsModel } from '../data/contributions.model';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
@@ -103,10 +103,23 @@ export class HomeComponent {
     tests: { nodes: [] },
   } };
 
+  private getTimezoneOffset(timeZone){
+    if(!timeZone) return undefined;
+    const str = new Date().toLocaleString('en', {timeZone, timeZoneName: 'longOffset'});
+    const [_,h,m] = (str.match(/([+-]\d+):(\d+)$/) || [, '+00', '00']).map(t => parseInt(t,10));
+    return h * 60 + (h > 0 ? +m : -m);
+  }
+
   contributionUsers() {
     let users = [];
     if(this.status?.contributions?.data.repository.contributions.nodes) {
-      users = [].concat([this.nullUser],this.status?.contributions?.data.repository.contributions.nodes);
+      const usersWithTimeZones = this.status?.contributions?.data.repository.contributions.nodes.map(u => ({...u, tzOffset: this.getTimezoneOffset(getTz(u.login))}));
+      users = [].concat([this.nullUser],usersWithTimeZones.sort( (a:any, b:any) =>
+        a.tzOffset == b.tzOffset ? a.login.localeCompare(b.login) :
+        a.tzOffset == undefined ? 1 :
+        b.tzOffset == undefined ? -1 :
+        a.tzOffset - b.tzOffset
+      ));
     }
     return users;
   }

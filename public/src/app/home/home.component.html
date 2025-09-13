@@ -19,7 +19,7 @@
             </span>
 
             <span class="navbar-contributions" *ngIf="showContributions">
-              <span *ngFor="let user of contributionUsers()" class="navbar-contribution {{activeTab === user.login ? 'fixed' : ''}}">
+              <span *ngFor="let user of contributionUsers" class="navbar-contribution {{activeTab === user.login ? 'fixed' : ''}}">
                 <app-contributions (onSelectTab)="selectTab($event)" [user]="user"></app-contributions>
               </span>
               <span class="navbar-contribution">
@@ -51,7 +51,7 @@
   <div id="tabs">
 
     <ng-container *ngIf="showContributions">
-      <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}" *ngFor="let user of contributionUsers()">
+      <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}" *ngFor="let user of contributionUsers">
         <app-contributions-tab [user]="user"></app-contributions-tab>
       </div>
     </ng-container>

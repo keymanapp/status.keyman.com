@@ -44,6 +44,7 @@ export class HomeComponent {
   get phaseEnd() { return this.data.phaseEnd };
   get unlabeledPulls() { return this.data.unlabeledPulls };
   get serviceState() { return this.data.serviceState };
+  get contributionUsers() { return this.data.contributionUsers; }
 
   constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
   };
@@ -95,34 +96,6 @@ export class HomeComponent {
   };
 
   // Tab View
-
-  nullUser = { login:'', avatarUrl: null, contributions: {
-    issues: { nodes: [] },
-    pullRequests: { nodes: [] },
-    reviews: { nodes: [] },
-    tests: { nodes: [] },
-  } };
-
-  private getTimezoneOffset(timeZone){
-    if(!timeZone) return undefined;
-    const str = new Date().toLocaleString('en', {timeZone, timeZoneName: 'longOffset'});
-    const [_,h,m] = (str.match(/([+-]\d+):(\d+)$/) || [, '+00', '00']).map(t => parseInt(t,10));
-    return h * 60 + (h > 0 ? +m : -m);
-  }
-
-  contributionUsers() {
-    let users = [];
-    if(this.status?.contributions?.data.repository.contributions.nodes) {
-      const usersWithTimeZones = this.status?.contributions?.data.repository.contributions.nodes.map(u => ({...u, tzOffset: this.getTimezoneOffset(getTz(u.login))}));
-      users = [].concat([this.nullUser],usersWithTimeZones.sort( (a:any, b:any) =>
-        a.tzOffset == b.tzOffset ? a.login.localeCompare(b.login) :
-        a.tzOffset == undefined ? 1 :
-        b.tzOffset == undefined ? -1 :
-        a.tzOffset - b.tzOffset
-      ));
-    }
-    return users;
-  }
 
   getAllContributions = () => {
     let text = '';

@@ -47,6 +47,7 @@ export class DataModel {
   };
 
   pullsByStatus = {
+    epics: [],
     draft: [],
     waitingReview: [],
     waitingResponse: [],
@@ -55,6 +56,7 @@ export class DataModel {
     readyToMerge: []
   };
   pullStatusName = {
+    epics: 'Epics',
     draft: 'Draft',
     waitingReview: 'Waiting for review',
     waitingResponse: 'Changes requested',
@@ -492,6 +494,7 @@ export class DataModel {
     this.pullsByAuthor = {};
     this.pullsByProject = {};
     this.pullsByBase = {'master':[]}; // always show 'master' base
+    this.pullsByStatus.epics = [];
     this.pullsByStatus.draft = [];
     this.pullsByStatus.readyToMerge = [];
     this.pullsByStatus.waitingGoodBuild = [];
@@ -519,6 +522,9 @@ export class DataModel {
       let buildState = pullBuildState(pd);
 
       switch(status) {
+        case 'status-epic':
+          this.pullsByStatus.epics.push(pd);
+          continue; // We don't add epic PRs to other categories
         case 'status-draft':
           this.pullsByStatus.draft.push(pd);
           continue; // We don't add draft PRs to other categories

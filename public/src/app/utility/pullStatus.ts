@@ -3,6 +3,8 @@ export function pullStatus(pull) {
   let authors = {};
   let pr = pull.pull.node;
 
+  if(pr.headRefName.startsWith('epic/')) return 'status-epic';
+
   if(pr.isDraft) return 'status-draft';
 
   if(pr.labels.edges.find(node => node.node.name == 'work-in-progress') !== undefined) return 'status-draft';

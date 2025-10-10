@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { StatusService } from '../status/status.service';
 import { ServiceIdentifier } from '../../../../shared/services';
 import { DataSocket } from '../datasocket/datasocket.service';
-import { getUserAvatarUrl } from '../../../../shared/users';
+import { getTz, getUserAvatarUrl } from '../../../../shared/users';
 import { ContributionsModel } from '../data/contributions.model';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
@@ -44,6 +44,7 @@ export class HomeComponent {
   get phaseEnd() { return this.data.phaseEnd };
   get unlabeledPulls() { return this.data.unlabeledPulls };
   get serviceState() { return this.data.serviceState };
+  get contributionUsers() { return this.data.contributionUsers; }
 
   constructor(private statusService: StatusService, private route: ActivatedRoute, private zone: NgZone) {
   };
@@ -95,21 +96,6 @@ export class HomeComponent {
   };
 
   // Tab View
-
-  nullUser = { login:'', avatarUrl: null, contributions: {
-    issues: { nodes: [] },
-    pullRequests: { nodes: [] },
-    reviews: { nodes: [] },
-    tests: { nodes: [] },
-  } };
-
-  contributionUsers() {
-    let users = [];
-    if(this.status?.contributions?.data.repository.contributions.nodes) {
-      users = [].concat([this.nullUser],this.status?.contributions?.data.repository.contributions.nodes);
-    }
-    return users;
-  }
 
   getAllContributions = () => {
     let text = '';

@@ -5,6 +5,9 @@ import { statusData } from '../data/status-data.js';
 import { artifactLinks } from '../../shared/artifact-links.js';
 import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams.js";
 
+type BuildDataCacheItem = {context:string, target_url:string, state:string};
+type BuildDataCache = {[index:string]: BuildDataCacheItem};
+
 export async function getArtifactLinksComment(
   octokit: InstanceType<typeof ProbotOctokit>,
   data,
@@ -23,24 +26,28 @@ export async function getArtifactLinksComment(
     return '';
   }
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
-  let s = {};
+  let s: BuildDataCache = {};
   statuses.data.statuses.forEach(status => {
     if(s[status.context]) return;
     let o = {
       context: status.context,
-      url: status.target_url,
+      target_url: status.target_url,
       state: status.state,
     };
     s[status.context] = o;
   });
 
-  let version = null;
+  let version = null, version_with_tag = null;
   let buildData = null;
 
   // Load version of the build from cached data or if necessary,
   // pull it from TeamCity
 
-  let teamCityData = statusData.cache.teamCity ?? (await teamcityService.get())[0];
+  let teamCityData = statusData.cache.teamCity;
+  let teamCityDataFromCache = !!teamCityData;
+  if(!teamCityDataFromCache) {
+    teamCityData = (await teamcityService.get())[0];
+   }
 
   type LinkInfo = {
     state: string;
@@ -55,31 +62,21 @@ export async function getArtifactLinksComment(
   for(let context of Object.keys(s)) {
     // artifactLinks
     let u;
-    if(!s[context].url) {
+    if(!s[context].target_url) {
       console.warn(`[@keymanapp-test-bot] skipping ${s[context].context}`);
       continue;
     }
     try {
-      u = new URL(s[context].url);
+      u = new URL(s[context].target_url);
     } catch(e) {
       console.error(`[@keymanapp-test-bot] ${e}`);
       continue;
     }
-    if (u.hostname == 'jenkins.lsdev.sil.org') {
-      for (let download of artifactLinks.jenkinsTarget.downloads) {
-        if (!links['Linux']) links['Linux'] = [];
-        links['Linux'].push({
-          state: s[context].state,
-          platform: 'Linux',
-          download: download.name,
-          url: `${s[context].url}/${download.fragment}`,
-        });
-      }
-    } else if (context == 'Debian Packaging') {
+    if (context == 'Debian Packaging') {
       // https://github.com/keymanapp/keyman/actions/runs/4294449810
-      const matches = s[context].url.match(/.+\/runs\/(\d+)/);
+      const matches = s[context].target_url.match(/.+\/runs\/(\d+)/);
       if (!matches) {
-        console.error(`[@keymanapp-test-bot] Can't find workflow run in url ${s[context].url}`);
+        console.error(`[@keymanapp-test-bot] Can't find workflow run in url ${s[context].target_url}`);
         return '';
       }
       const run_id = matches[1];
@@ -110,28 +107,56 @@ export async function getArtifactLinksComment(
       }
     } else if(u.searchParams.has('buildTypeId') || u.pathname.match(/\/buildConfiguration\//)) {
       const { buildTypeId, buildId } = getTeamcityUrlParams(u);
+      console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${buildTypeId}:${buildId}`)
 
+      version_with_tag = null;
+      version = null;
       buildData = findBuildData(s, buildTypeId, teamCityData);
 
-      if(buildData) version = findBuildVersion(buildData);
-      if(version) version = /^(\d+\.\d+\.\d+)/.exec(version)?.[1];
+      if(buildData) version_with_tag = findBuildVersion(buildData);
+      if(version_with_tag) version = /^(\d+\.\d+\.\d+)/.exec(version_with_tag)?.[1];
       if(!version) {
-        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links; buildData: ${JSON.stringify(buildData)}`);
-        continue;
+        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
+        if(!teamCityDataFromCache) {
+          continue;
+        }
+
+        // retry reload, but only once, in case our cache is out of date
+        console.log(`[@keymanapp-test-bot] Attempting reload of TeamCity data instead of using cache for ${buildTypeId}:${buildId}`);
+        teamCityDataFromCache = false;
+        teamCityData = (await teamcityService.get())[0];
+        buildData = findBuildData(s, buildTypeId, teamCityData);
+
+        if(buildData) version_with_tag = findBuildVersion(buildData);
+        if(version_with_tag) version = /^(\d+\.\d+\.\d+)/.exec(version_with_tag)?.[1];
+        if(!version) {
+          console.error(`[@keymanapp-test-bot] After reload, failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
+          continue;
+        }
       }
 
+      console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version_with_tag}`)
+
+      const buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
       let t = artifactLinks.teamCityTargets[buildTypeId];
       if(t) {
         for(let download of t.downloads) {
-          let fragment = download.fragment.replace(/\$version/g, version);
+          let fragment = download.fragment.replace(/\$version_with_tag/g, version_with_tag).replace(/\$version/g, version);
           // Special cases - Keyman Developer, Test Keyboards
           let platform =
             download.name == '**Keyman Developer**' ? 'Developer' :
             download.name == 'Test Keyboards' ? 'Keyboards' :
             t.name;
           if(!links[platform]) links[platform] = [];
-          let buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
-          if(buildLevel != 'build') {
+
+          if(buildLevel == 'build') {
+            links[platform].push({
+              state: s[context].state == 'success' ? ': all tests passed (no artifacts on BuildLevel "build")' : s[context].state,
+              platform: platform,
+              download: download.name,
+              url: null
+            });
+          } else {
             links[platform].push({
               state: s[context].state,
               platform: platform,
@@ -140,7 +165,7 @@ export async function getArtifactLinksComment(
             });
           }
         }
-        if(t.platform == 'ios') {
+        if(t.platform == 'ios' && buildLevel == 'release') {
           // Special case note for TestFlight
           let buildCounter = buildData?.resultingProperties?.property?.find(prop => prop.name == 'build.counter')?.value;
           if(buildCounter) {
@@ -177,13 +202,13 @@ export async function getArtifactLinksComment(
   return r;
 }
 
-function findBuildData(s, buildTypeId, teamCity) {
+function findBuildData(s: BuildDataCache, buildTypeId, teamCity) {
   for(let context of Object.keys(s)) {
     if(s[context].state == 'success') {
       // artifactLinks
       let u;
       try {
-        u = new URL(s[context].url);
+        u = new URL(s[context].target_url);
       } catch(e) {
         continue;
       }

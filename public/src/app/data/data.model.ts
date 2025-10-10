@@ -1,5 +1,6 @@
 import { platforms, PlatformSpec } from "../../../../shared/platforms";
 import { ServiceStateCache, ServiceState, ServiceIdentifier } from "../../../../shared/services";
+import { getTz } from "../../../../shared/users";
 import { sites, siteSentryNames, sitesWithState } from "../sites";
 import { EMPTY_STATUS, Status } from "../status/status.interface";
 import { pullEmoji } from "../utility/pullEmoji";
@@ -30,6 +31,7 @@ export class DataModel {
 
   sprintDays = [];
 
+  contributionUsers = [];
 
   // Phase data, grabbing from github's milestones for the keyman repo
   milestones = {};
@@ -45,6 +47,7 @@ export class DataModel {
   };
 
   pullsByStatus = {
+    epics: [],
     draft: [],
     waitingReview: [],
     waitingResponse: [],
@@ -53,6 +56,7 @@ export class DataModel {
     readyToMerge: []
   };
   pullStatusName = {
+    epics: 'Epics',
     draft: 'Draft',
     waitingReview: 'Waiting for review',
     waitingResponse: 'Changes requested',
@@ -98,6 +102,7 @@ export class DataModel {
         break;
       case ServiceIdentifier.GitHubContributions:
         this.status.contributions = data.contributions;
+        this.transformContributionUsers();
         break;
       case ServiceIdentifier.CommunitySite:
         this.status.communitySite = this.transformCommunitySiteData(data.communitySite.contributions);
@@ -140,6 +145,34 @@ export class DataModel {
     if(this.status.github && this.status.issues) {
       this.extractMilestoneData();
     }
+  }
+
+  nullUser = { login:'', avatarUrl: null, contributions: {
+    issues: { nodes: [] },
+    pullRequests: { nodes: [] },
+    reviews: { nodes: [] },
+    tests: { nodes: [] },
+  } };
+
+  private getTimezoneOffset(timeZone){
+    if(!timeZone) return undefined;
+    const str = new Date().toLocaleString('en', {timeZone, timeZoneName: 'longOffset'});
+    const [_,h,m] = (str.match(/([+-]\d+):(\d+)$/) || [, '+00', '00']).map(t => parseInt(t,10));
+    return h * 60 + (h > 0 ? +m : -m);
+  }
+
+  transformContributionUsers() {
+    let users = [];
+    if(this.status?.contributions?.data.repository.contributions.nodes) {
+      const usersWithTimeZones = this.status.contributions.data.repository.contributions.nodes.map(u => ({...u, tzOffset: this.getTimezoneOffset(getTz(u.login))}));
+      users = [].concat([this.nullUser],usersWithTimeZones.sort( (a:any, b:any) =>
+        a.tzOffset == b.tzOffset ? a.login.localeCompare(b.login) :
+        a.tzOffset == undefined ? 1 :
+        b.tzOffset == undefined ? -1 :
+        a.tzOffset - b.tzOffset
+      ));
+    }
+    this.contributionUsers = users;
   }
 
   transformPlatformStatusData() {
@@ -461,6 +494,7 @@ export class DataModel {
     this.pullsByAuthor = {};
     this.pullsByProject = {};
     this.pullsByBase = {'master':[]}; // always show 'master' base
+    this.pullsByStatus.epics = [];
     this.pullsByStatus.draft = [];
     this.pullsByStatus.readyToMerge = [];
     this.pullsByStatus.waitingGoodBuild = [];
@@ -488,6 +522,9 @@ export class DataModel {
       let buildState = pullBuildState(pd);
 
       switch(status) {
+        case 'status-epic':
+          this.pullsByStatus.epics.push(pd);
+          continue; // We don't add epic PRs to other categories
         case 'status-draft':
           this.pullsByStatus.draft.push(pd);
           continue; // We don't add draft PRs to other categories

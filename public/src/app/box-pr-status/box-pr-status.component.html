@@ -2,9 +2,10 @@
   <tr *ngFor="let pullStatus of pullsByStatus | keyvalue">
     <td>
       <a *ngIf="pullStatus.key == 'draft'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+is%3Adraft">{{pullStatusName[pullStatus.key]}}</a>
+      <a *ngIf="pullStatus.key == 'epics'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+head%3Aepic%2F">{{pullStatusName[pullStatus.key]}}</a>
       <a *ngIf="pullStatus.key == 'waitingTest'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+label%3Auser-test-required">{{pullStatusName[pullStatus.key]}}</a>
       <a *ngIf="pullStatus.key == 'waitingReview'" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+review%3Arequired+-is%3Adraft">{{pullStatusName[pullStatus.key]}}</a>
-      <span *ngIf="pullStatus.key != 'waitingReview' && pullStatus.key != 'draft' && pullStatus.key != 'waitingTest'">{{pullStatusName[pullStatus.key]}}</span>
+      <span *ngIf="pullStatus.key != 'waitingReview' && pullStatus.key != 'draft' && pullStatus.key != 'epics' && pullStatus.key != 'waitingTest'">{{pullStatusName[pullStatus.key]}}</span>
     </td>
     <td>
       <span *ngFor="let pull of pullStatus.value">

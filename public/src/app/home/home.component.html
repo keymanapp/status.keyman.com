@@ -1,60 +1,72 @@
 <div class="flex-box">
   <nav class="navbar navbar-dark bg-dark shadow navbar-sm">
-      <div class="container-fluid">
-          <div class="navbar-header">
-            <span class="navbar-brand">
-              <app-service-state-popup [serviceState]="serviceState"></app-service-state-popup>
-            </span>
-            <span class="navbar-phase">
-              <a target='_blank' href='https://github.com/keymanapp/keyman/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+milestone%3A{{phase?.title}}+org%3Akeymanapp'>{{phase?.title}}</a>
-              <span class="navbar-phase-dates">{{phaseStart}} &mdash; {{phaseEnd}}</span>
-            </span>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <span class="navbar-brand">
+          <app-service-state-popup [serviceState]="serviceState"></app-service-state-popup>
+        </span>
+        <span class="navbar-phase">
+          <a target='_blank' href='https://github.com/keymanapp/keyman/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+milestone%3A{{phase?.title}}+org%3Akeymanapp'>{{phase?.title}}</a>
+          <span class="navbar-phase-dates">{{phaseStart}} &mdash; {{phaseEnd}}</span>
+        </span>
 
-            <app-issue-list [repo]="'keyman'" [isNav]="true" [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
+        <app-issue-list [repo]="'keyman'" [isNav]="true" [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
 
-            <span class="navbar-new-pulls">
-              <span *ngFor="let pull of unlabeledPulls">
-                <app-pull-request [status]="status" [class]="'failure'" [pull]="pull"></app-pull-request>
-              </span>
+        <span class="navbar-new-pulls">
+          @for (pull of unlabeledPulls; track pull) {
+            <span>
+              <app-pull-request [status]="status" [class]="'failure'" [pull]="pull"></app-pull-request>
             </span>
+          }
+        </span>
 
-            <span class="navbar-contributions" *ngIf="showContributions">
-              <span *ngFor="let user of contributionUsers" class="navbar-contribution {{activeTab === user.login ? 'fixed' : ''}}">
+        @if (showContributions) {
+          <span class="navbar-contributions">
+            @for (user of contributionUsers; track user) {
+              <span class="navbar-contribution {{activeTab === user.login ? 'fixed' : ''}}">
                 <app-contributions (onSelectTab)="selectTab($event)" [user]="user"></app-contributions>
               </span>
-              <span class="navbar-contribution">
-                <app-clipboard [text]="getAllContributions" title="Copy HTML formatted list of all contributions to clipboard"></app-clipboard>
-              </span>
+            }
+            <span class="navbar-contribution">
+              <app-clipboard [text]="getAllContributions" title="Copy HTML formatted list of all contributions to clipboard"></app-clipboard>
             </span>
+          </span>
+        }
 
-            <span class="navbar-right"></span>
+        <span class="navbar-right"></span>
 
-            <span class="navbar-agents" *ngIf="showAgents">
-              <app-build-queue [status]="status" [queue]="status?.teamCityQueue"></app-build-queue>
-              <ng-container *ngFor="let agent of status?.teamCityAgents">
-                <app-agent-detail [status]="status" [agent]="agent"></app-agent-detail>
-              </ng-container>
-            </span>
+        @if (showAgents) {
+          <span class="navbar-agents">
+            <app-build-queue [status]="status" [queue]="status?.teamCityQueue"></app-build-queue>
+            @for (agent of status?.teamCityAgents; track agent) {
+              <app-agent-detail [status]="status" [agent]="agent"></app-agent-detail>
+            }
+          </span>
+        }
 
-            <span class="navbar-refresh" *ngIf="showRefreshButton">
-              <a class="btn btn-sm btn-success" id='navbar-refresh-link' href="javascript:void(0)" (click)="refreshBackend()" title="Force server-side refresh">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                </svg>
-              </a>
-            </span>
-          </div>
+        @if (showRefreshButton) {
+          <span class="navbar-refresh">
+            <a class="btn btn-sm btn-success" id='navbar-refresh-link' href="javascript:void(0)" (click)="refreshBackend()" title="Force server-side refresh">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+              </svg>
+            </a>
+          </span>
+        }
       </div>
+    </div>
   </nav>
 
   <div id="tabs">
 
-    <ng-container *ngIf="showContributions">
-      <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}" *ngFor="let user of contributionUsers">
-        <app-contributions-tab [user]="user"></app-contributions-tab>
-      </div>
-    </ng-container>
+    @if (showContributions) {
+      @for (user of contributionUsers; track user) {
+        <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}">
+          <app-contributions-tab [user]="user"></app-contributions-tab>
+        </div>
+      }
+    }
 
     <div id="tab-overview" class="flex-container container-fluid {{activeTab == 'overview' ? 'tab-active' : ''}}">
       <app-overview-tab></app-overview-tab>

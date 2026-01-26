@@ -1,17 +1,20 @@
 <span class="issue-box {{isNav ? 'nav' : platform ? 'platform' : 'site'}} {{pinned ? 'pinned' : ''}} issue-box-view-{{view}} milestone-{{repo == '*' ? 'current' : milestone?.id}}">
-  <app-count-box
-    *ngIf="!isNav"
-    [repo]="repo"
-    [title]="milestone?.title"
-    [unfixedCount]="getUnfixedIssueCount()"
-    [count]="milestone?.count"
-    [label]="platform?.value.id ? platform?.value.id+'/' : null"
-    [alwaysShow]="view == 'all'"
+  @if (!isNav) {
+    <app-count-box
+      [repo]="repo"
+      [title]="milestone?.title"
+      [unfixedCount]="getUnfixedIssueCount()"
+      [count]="milestone?.count"
+      [label]="platform?.id ? platform?.id+'/' : null"
+      [alwaysShow]="view == 'all'"
     [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' || milestone?.title == 'Tests' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
+  }
 
-  <span *ngIf="isNav" class="navbar-new-issues">
-    <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/+-label%3Acore/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
-  </span>
+  @if (isNav) {
+    <span class="navbar-new-issues">
+      <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/+-label%3Acore/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
+    </span>
+  }
 
   <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
     <div class="issue-list">
@@ -23,26 +26,38 @@
         </span>
         <div class='clear'></div>
       </div>
-      <ul *ngIf="pinned || (isVisible | async)">
-        <li *ngFor="let issue of issues; trackBy: trackByIssue">
-            <span class="label">
-            <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>
-            <span class="assignee" title="Unassigned" *ngIf="!issue.assignees?.nodes?.length">
-              <img class="avatar-assignee-22" src="assets/unassigned.png">
-            </span>
-            <ng-template [ngIf]="issue?.assignees?.nodes">
-              <a *ngFor="let assignee of issue.assignees.nodes" class="assignee" title="{{assignee.login}}" target="_blank" href="{{assignee.url}}" >
-                <img class="avatar-assignee-22" src="{{getAuthorAvatar(assignee, 22)}}">
-              </a>
-            </ng-template>
-            <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
-            <span class="related-pr" *ngFor="let pr of issue.timelineItems?.nodes">
-              <a href="{{pr.subject.url}}" class="{{pr.willCloseTarget ? 'will-close' : ''}}" target="_blank">{{pr.subject.url && pr.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{pr.subject.number}}</a>
-            </span>
-            <span *ngFor="let label of issue.labels?.nodes"><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
-          </span>
-        </li>
-      </ul>
+      @if (pinned || (isVisible | async)) {
+        <ul>
+          @for (issue of issues; track trackByIssue($index, issue)) {
+            <li>
+              <span class="label">
+                <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>
+                @if (!issue.assignees?.nodes?.length) {
+                  <span class="assignee" title="Unassigned">
+                    <img class="avatar-assignee-22" src="assets/unassigned.png">
+                  </span>
+                }
+                @if (issue?.assignees?.nodes) {
+                  @for (assignee of issue.assignees.nodes; track assignee) {
+                    <a class="assignee" title="{{assignee.login}}" target="_blank" href="{{assignee.url}}" >
+                      <img class="avatar-assignee-22" src="{{getAuthorAvatar(assignee, 22)}}">
+                    </a>
+                  }
+                }
+                <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
+                @for (pr of issue.timelineItems?.nodes; track pr) {
+                  <span class="related-pr">
+                    <a href="{{pr.subject.url}}" class="{{pr.willCloseTarget ? 'will-close' : ''}}" target="_blank">{{pr.subject.url && pr.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{pr.subject.number}}</a>
+                  </span>
+                }
+                @for (label of issue.labels?.nodes; track label) {
+                  <span><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      }
     </div>
   </div>
 </span>

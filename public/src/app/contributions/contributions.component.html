@@ -1,6 +1,12 @@
-<span *ngIf="shouldDisplay(user)" class="avatar-box {{user.login == activeTab ? 'selected' : ''}} {{userAvailability(user).style}}"
-  (click)="selectUser(user.login)" [title]="userDate(user)">
-  <img *ngIf="user.login == ''" class="avatar-40" src="assets/unassigned.png">
-  <img *ngIf="user.login != ''" class="avatar-40" src="{{getUserAvatar(user, 40)}}">
-  <div class='availability-tablet'>{{userTime(user)}}</div>
-</span>
+@if (shouldDisplay(user)) {
+  <span class="avatar-box {{user.login == activeTab ? 'selected' : ''}} {{userAvailability(user).style}}"
+    (click)="selectUser(user.login)" [title]="userDate(user)">
+    @if (user.login == '') {
+      <img class="avatar-40" src="assets/unassigned.png">
+    }
+    @if (user.login != '') {
+      <img class="avatar-40" src="{{getUserAvatar(user, 40)}}">
+    }
+    <div class='availability-tablet'>{{userTime(user)}}</div>
+  </span>
+}

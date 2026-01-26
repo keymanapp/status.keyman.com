@@ -4,8 +4,8 @@
     [title]="milestone?.title"
     [unfixedCount]="milestone?.count"
     [count]="milestone?.count"
-    [label]="platform?.value.id ? platform?.value.id+'/' : null"
-    [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
+    [label]="platform?.id ? platform?.id+'/' : null"
+  [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
 
   <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
     <div class="issue-list">
@@ -18,9 +18,11 @@
         <div class='clear'></div>
       </div>
 
-      <span *ngFor="let pull of pullRequests">
-        <app-pull-request [status]="status" [scope]="'keyboards-lexical-models'" [gravityX]="'right'" [gravityY]="'top'" [class]="" [pull]="{pull:pull}"></app-pull-request>
-      </span>
+      @for (pull of pullRequests; track pull) {
+        <span>
+          <app-pull-request [status]="status" [scope]="'keyboards-lexical-models'" [gravityX]="'right'" [gravityY]="'top'" [class]="" [pull]="{pull:pull}"></app-pull-request>
+        </span>
+      }
 
     </div>
   </div>

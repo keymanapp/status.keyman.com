@@ -6,7 +6,7 @@
     [unfixedCount]="countOfNewPosts()"
     [count]="queue?.length"
     [label]="'Open Topics'"
-    [class]="hasNewTopics() ? 'has-error' : hasNewPosts() ? 'has-warning' : 'is-empty'"></app-count-box>
+  [class]="hasNewTopics() ? 'has-error' : hasNewPosts() ? 'has-warning' : 'is-empty'"></app-count-box>
 
   <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
     <div class="issue-list">
@@ -20,21 +20,25 @@
       </div>
 
       <ul>
-        <li *ngFor="let topic of queue">
-          <span class="label">
-            <a class="author" target="_blank" title="{{topic.last_post?.username}}"
-              href="https://community.software.sil.org/t/{{topic.slug}}/{{topic.id}}/{{topic.highest_post_number}}">
-              <img class="avatar-22" src="https://community.software.sil.org{{topic.last_post.avatar_template.replace('{size}', '22')}}" />
-            </a>
-            {{hasNewPost(topic) ? '': '✔'}}
-            <a class="issue" target="_blank" title="{{topic.title}}"
-               href="https://community.software.sil.org/t/{{topic.slug}}/{{topic.id}}/{{topic.highest_post_number}}"><b>{{topic.id}}</b> {{topic.title}}</a>
-            <span class="issue-label" [style]="!isNewTopic(topic) ? 'background: #f0f0f0' : 'background: #f08080'" title="Created">{{topic.created_at | date: "medium"}}</span>
-            <span *ngIf="!isNewTopic(topic)" class="issue-label" style="background: #c0cfcf" title="Last Update">{{topic.last_posted_at | date: "medium"}}</span>
-          </span>
-        </li>
-      </ul>
+        @for (topic of queue; track topic) {
+          <li>
+            <span class="label">
+              <a class="author" target="_blank" title="{{topic.last_post?.username}}"
+                href="https://community.software.sil.org/t/{{topic.slug}}/{{topic.id}}/{{topic.highest_post_number}}">
+                <img class="avatar-22" src="https://community.software.sil.org{{topic.last_post.avatar_template.replace('{size}', '22')}}" />
+              </a>
+              {{hasNewPost(topic) ? '': '✔'}}
+              <a class="issue" target="_blank" title="{{topic.title}}"
+                href="https://community.software.sil.org/t/{{topic.slug}}/{{topic.id}}/{{topic.highest_post_number}}"><b>{{topic.id}}</b> {{topic.title}}</a>
+                <span class="issue-label" [style]="!isNewTopic(topic) ? 'background: #f0f0f0' : 'background: #f08080'" title="Created">{{topic.created_at | date: "medium"}}</span>
+                @if (!isNewTopic(topic)) {
+                  <span class="issue-label" style="background: #c0cfcf" title="Last Update">{{topic.last_posted_at | date: "medium"}}</span>
+                }
+              </span>
+            </li>
+          }
+        </ul>
 
+      </div>
     </div>
-  </div>
-</span>
+  </span>

@@ -1,10 +1,14 @@
 <table><tbody>
-  <tr *ngFor="let base of pullsByBase | keyvalue">
-    <td class='base'>{{base.key == 'other' ? '⬜' : base.key}}</td>
-    <td>
-      <span *ngFor="let pull of base.value">
-        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-      </span>
-    </td>
-  </tr>
+  @for (base of pullsByBase | keyvalue; track base) {
+    <tr>
+      <td class='base'>{{base.key == 'other' ? '⬜' : base.key}}</td>
+      <td>
+        @for (pull of base.value; track pull) {
+          <span>
+            <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+          </span>
+        }
+      </td>
+    </tr>
+  }
 </tbody></table>

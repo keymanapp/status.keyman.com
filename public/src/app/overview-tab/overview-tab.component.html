@@ -27,85 +27,94 @@
     </tr>
   </thead>
   <tbody>
-    <tr class='tr-platform' *ngFor="let platform of platforms | keyvalue">
-      <th>
-        <div *ngIf="!showCodeOwners">
-          <img src="assets/{{platform.value.id}}.png" alt="{{platform.value.id}}">&#160;&#160;
-          <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
-          <span class="new-issue-links">
-            <a title="Create new bug report issue for {{platform.value.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=bug,{{platform.value.id}}/&template=bug_report.md&title=bug({{platform.value.id}})%3A+" target="_blank">🐛</a>
-            <a title="Create new feature request issue for {{platform.value.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=feat,{{platform.value.id}}/&template=feature_request.md&title=feat({{platform.value.id}})%3A+" target="_blank">➕</a>
-          </span>
-        </div>
-        <div *ngIf="showCodeOwners">
-          <div class="platform-row">
-            <div class="platform-icon">
-              <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" title="{{platform.value.id}}" target="_blank"><img src="assets/{{platform.value.id}}.png"></a>
+    @for (platform of platforms; track platform.id) {
+      <tr class='tr-platform'>
+        <th>
+          @if (!showCodeOwners) {
+            <div>
+              <img src="assets/{{platform.id}}.png" alt="{{platform.id}}">&#160;&#160;
+              <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.id}}/" target="_blank">{{platform.name}}</a>
+              <span class="new-issue-links">
+                <a title="Create new bug report issue for {{platform.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=bug,{{platform.id}}/&template=bug_report.md&title=bug({{platform.id}})%3A+" target="_blank">🐛</a>
+                <a title="Create new feature request issue for {{platform.name}}" href="https://github.com/keymanapp/keyman/issues/new?assignees=&labels=feat,{{platform.id}}/&template=feature_request.md&title=feat({{platform.id}})%3A+" target="_blank">➕</a>
+              </span>
             </div>
-            <div class="platform-owner" *ngIf="status.codeOwners[platform.value.id]">
-              <a href="https://github.com/{{status.codeOwners[platform.value.id].owner}}" target="_blank">
-                <img class="avatar-32" src="{{getAvatar(status.codeOwners[platform.value.id].owner)}}" title="Platform owner: @{{status.codeOwners[platform.value.id].owner}}">
-              </a>
-            </div>
+          }
+          @if (showCodeOwners) {
+            <div>
+              <div class="platform-row">
+                <div class="platform-icon">
+                  <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.id}}/" title="{{platform.id}}" target="_blank"><img src="assets/{{platform.id}}.png"></a>
+                </div>
+                @if (status.codeOwners[platform.id]) {
+                  <div class="platform-owner">
+                    <a href="https://github.com/{{status.codeOwners[platform.id].owner}}" target="_blank">
+                      <img class="avatar-32" src="{{getAvatar(status.codeOwners[platform.id].owner)}}" title="Platform owner: @{{status.codeOwners[platform.id].owner}}">
+                    </a>
+                  </div>
+                }
+              </div>
+              <!--div class="platform-row">
+              <div class="platform-title">
+                <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.id}}/" target="_blank">{{platform.name}}</a>
+              </div>
+            </div>-->
           </div>
-          <!--div class="platform-row">
-            <div class="platform-title">
-              <a href="https://github.com/keymanapp/keyman/pulls?q=is%3Aopen+is%3Apr+label%3A{{platform.value.id}}/" target="_blank">{{platform.value.name}}</a>
-            </div>
-          </div>-->
-        </div>
+        }
       </th>
-
       <td class="tier" id="tier-stable">
-        <app-platform-tier-box [platforms]="platforms" [platform]="platform.value" [status]="status" [changeCounter]="changeCounter" [tier]="'stable'"></app-platform-tier-box>
+        <app-platform-tier-box [platforms]="platforms" [platform]="platform" [status]="status" [changeCounter]="changeCounter" [tier]="'stable'"></app-platform-tier-box>
       </td>
-
       <td class="tier" id="tier-beta">
-        <app-platform-tier-box [platforms]="platforms" [platform]="platform.value" [status]="status" [changeCounter]="changeCounter" [tier]="'beta'"></app-platform-tier-box>
+        <app-platform-tier-box [platforms]="platforms" [platform]="platform" [status]="status" [changeCounter]="changeCounter" [tier]="'beta'"></app-platform-tier-box>
       </td>
-
       <td class="tier" id="tier-alpha">
-        <app-platform-tier-box [platforms]="platforms" [platform]="platform.value" [status]="status" [changeCounter]="changeCounter" [tier]="'alpha'"></app-platform-tier-box>
+        <app-platform-tier-box [platforms]="platforms" [platform]="platform" [status]="status" [changeCounter]="changeCounter" [tier]="'alpha'"></app-platform-tier-box>
       </td>
-
       <td class="issues">
         <div class="issue-container">
           <div class="issue-count-container">
-            <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.value.id}}/">{{platform.value.totalIssueCount}}</a>
+            <a class="issue-count" target="_blank" href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+label%3A{{platform.id}}/">{{platform.totalIssueCount}}</a>
           </div>
           <div class="issue-box-container">
-            <ng-container *ngFor="let milestone of platform.value.milestones">
-              <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.value.id == 'developer' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
-            </ng-container>
+            @for (milestone of platform.milestones; track milestone.title) {
+              <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.id == 'developer' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
+            }
           </div>
         </div>
       </td>
-
-      <td class="pulls" *ngIf="pullRequestView == 'status' && platform.value.id == 'android'" rowspan='10'>
-        <app-box-pr-status
-          [status]="status" [userTestIssues]="userTestIssues" [userTestIssuesPassed]="userTestIssuesPassed"
-          [pullsByStatus]="pullsByStatus" [changeCounter]="changeCounter" [pullStatusName]="pullStatusName">
-        </app-box-pr-status>
-      </td>
-
-      <td class="pulls" *ngIf="pullRequestView == 'project' && platform.value.id == 'android'" rowspan='10'>
-        <app-box-pr-project [status]="status" [pullsByProject]="pullsByProject" [changeCounter]="changeCounter"></app-box-pr-project>
-      </td>
-
-      <td class="pulls" *ngIf="pullRequestView == 'author' && platform.value.id == 'android'" rowspan='10'>
-        <app-box-pr-author [status]="status" [pullsByAuthor]="pullsByAuthor" [changeCounter]="changeCounter"></app-box-pr-author>
-      </td>
-
-      <td class="pulls" *ngIf="pullRequestView == 'platform'">
-        <app-box-pr-platform [status]="status" [platform]="platform" [changeCounter]="changeCounter"></app-box-pr-platform>
-      </td>
-
-      <td class="pulls" *ngIf="pullRequestView == 'base' && platform.value.id == 'android'" rowspan="10">
-        <app-box-pr-base [status]="status" [pullsByBase]="pullsByBase" [changeCounter]="changeCounter"></app-box-pr-base>
-      </td>
+      @if (pullRequestView == 'status' && platform.id == 'android') {
+        <td class="pulls" rowspan='10'>
+          <app-box-pr-status
+            [status]="status" [userTestIssues]="userTestIssues" [userTestIssuesPassed]="userTestIssuesPassed"
+            [pullsByStatus]="pullsByStatus" [changeCounter]="changeCounter" [pullStatusName]="pullStatusName">
+          </app-box-pr-status>
+        </td>
+      }
+      @if (pullRequestView == 'project' && platform.id == 'android') {
+        <td class="pulls" rowspan='10'>
+          <app-box-pr-project [status]="status" [pullsByProject]="pullsByProject" [changeCounter]="changeCounter"></app-box-pr-project>
+        </td>
+      }
+      @if (pullRequestView == 'author' && platform.id == 'android') {
+        <td class="pulls" rowspan='10'>
+          <app-box-pr-author [status]="status" [pullsByAuthor]="pullsByAuthor" [changeCounter]="changeCounter"></app-box-pr-author>
+        </td>
+      }
+      @if (pullRequestView == 'platform') {
+        <td class="pulls">
+          <app-box-pr-platform [status]="status" [platform]="platform" [changeCounter]="changeCounter"></app-box-pr-platform>
+        </td>
+      }
+      @if (pullRequestView == 'base' && platform.id == 'android') {
+        <td class="pulls" rowspan="10">
+          <app-box-pr-base [status]="status" [pullsByBase]="pullsByBase" [changeCounter]="changeCounter"></app-box-pr-base>
+        </td>
+      }
     </tr>
+  }
 
-  </tbody>
+</tbody>
 </table>
 <table id="sites-and-relatives" class="table table-striped table-bordered table-sm issue-view-{{issueView}}">
   <tbody>
@@ -115,22 +124,30 @@
       <th class='gap'></th>
       <th class='th-discourse'><a href="https://community.software.sil.org/c/keyman" target="_blank">🗨 community</a></th>
       <th class='gap'></th>
-      <th *ngFor="let site of sites | keyvalue">
-        <a target="_blank" href="https://{{site.key}}/_control/info">
-          <span *ngIf="site.value.hasState" class='liveliness liveliness-{{getSiteLivelinessClass(site.key)}}'></span>
-        </a>
-        <span *ngIf="!site.value.hasState" class='liveliness liveliness-unknown'></span>
-        <a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id == 'keymanweb' ? 'kmw' : site.value.id}}</a>
-        <app-sentry [environment]="'production'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
-      </th>
+      @for (site of sites | keyvalue; track site.key) {
+        <th>
+          <a target="_blank" href="https://{{site.key}}/_control/info">
+            @if (site.value.hasState) {
+              <span class='liveliness liveliness-{{getSiteLivelinessClass(site.key)}}'></span>
+            }
+          </a>
+          @if (!site.value.hasState) {
+            <span class='liveliness liveliness-unknown'></span>
+          }
+          <a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id == 'keymanweb' ? 'kmw' : site.value.id}}</a>
+          <app-sentry [environment]="'production'" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
+        </th>
+      }
       <th class='gap'></th>
       <th id='other-repos-cell'>
         <span id='other-repos-title'>other repos</span>
         <div id='other-repos'>
           <ul>
-            <li *ngFor="let repo of otherSites?.repos">
-              <a target="_blank" href='https://github.com/keymanapp/{{repo}}'>{{repo}}</a>
-            </li>
+            @for (repo of otherSites?.repos; track repo) {
+              <li>
+                <a target="_blank" href='https://github.com/keymanapp/{{repo}}'>{{repo}}</a>
+              </li>
+            }
           </ul>
         </div>
       </th>
@@ -144,11 +161,11 @@
           [gravityY]="'top'"
           [repo]="'keyboards'"
           [milestone]="{title:'Open PRs',count:keyboardPRs?.length}"
-          [pullRequests]="keyboardPRs"></app-pull-request-list>
+        [pullRequests]="keyboardPRs"></app-pull-request-list>
       </td>
       <td class='pulls'>
         <app-pull-request-list
-        [status]="status"
+          [status]="status"
           [view]="'all'"
           [gravityX]="'right'"
           [gravityY]="'top'"
@@ -162,18 +179,22 @@
         <app-community-queue [queue]="status.communitySiteQueue"></app-community-queue>
       </td>
       <td class='gap'></td>
-      <ng-container *ngFor="let site of sites | keyvalue">
-      <td class='pulls'>
-        <span *ngFor="let pull of site.value.pulls">
-          <app-pull-request [status]="status" [scope]="'site'" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
-        </span>
-      </td>
-      </ng-container>
+      @for (site of sites | keyvalue; track site.key) {
+        <td class='pulls'>
+          @for (pull of site.value.pulls; track pull) {
+            <span>
+              <app-pull-request [status]="status" [scope]="'site'" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
+            </span>
+          }
+        </td>
+      }
       <td class='gap'></td>
       <td class='pulls'>
-        <span *ngFor="let pull of otherSites?.pulls">
-          <app-pull-request [status]="status" [scope]="'site'" [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
-        </span>
+        @for (pull of otherSites?.pulls; track pull) {
+          <span>
+            <app-pull-request [status]="status" [scope]="'site'" [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
+          </span>
+        }
       </td>
     </tr>
     <tr class='tr-site'>
@@ -188,21 +209,21 @@
         <!-- <app-community-queue></app-community-queue> -->
       </td>
       <td class='gap'></td>
-      <ng-container *ngFor="let site of sites | keyvalue">
+      @for (site of sites | keyvalue; track site.key) {
         <td class='issues'>
           <span class="new-issue-links">
             <a title="Create new issue for {{site.key}}" href="https://github.com/keymanapp/{{site.key}}/issues/new" target="_blank">➕</a>
           </span>
-          <ng-container *ngFor="let milestone of site.value.milestones">
-            <app-issue-list [view]="issueView" [gravityX]="site.key &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
-          </ng-container>
+          @for (milestone of site.value.milestones; track milestone.title) {
+            <app-issue-list [view]="issueView" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+          }
         </td>
-      </ng-container>
+      }
       <td class='gap'></td>
       <td class='issues'>
-        <ng-container *ngFor="let milestone of otherSites?.milestones">
+        @for (milestone of otherSites?.milestones; track milestone.title) {
           <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="'top'" [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
-        </ng-container>
+        }
       </td>
     </tr>
   </tbody>

@@ -1,5 +1,5 @@
 <!--
-  Keyman is copyright (C) SIL Global. MIT License.
+Keyman is copyright (C) SIL Global. MIT License.
 -->
 <span class="service-state">
   <span class="status-title"><span class="icon {{overallStatus()}}">●</span> Keyman Status</span>
@@ -8,9 +8,11 @@
 
     <table>
       <tbody>
-      <tr *ngFor="let service of serviceState">
-        <td><span class="icon {{service.state}}" title="{{service.state}}">●</span> {{service.service}}</td><td>{{lastChange(service)}} {{service.message}}</td>
-      </tr>
+        @for (service of serviceState; track service.service) {
+          <tr>
+            <td><span class="icon {{service.state}}" title="{{service.state}}">●</span> {{service.service}}</td><td>{{lastChange(service)}} {{service.message}}</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>

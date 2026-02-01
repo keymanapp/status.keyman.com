@@ -27,7 +27,7 @@ export class IssueListComponent extends PopupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.popupId = 'issues-'+(this.platform ? this.platform.value.id : this.repo)+'-'+this.milestone?.title;
+    this.popupId = 'issues-'+(this.platform ? this.platform.id : this.repo)+'-'+this.milestone?.title;
     if(!this.gravityX) this.gravityX = 'right';
     if(!this.gravityY) this.gravityY = 'bottom';
     super.ngOnInit();

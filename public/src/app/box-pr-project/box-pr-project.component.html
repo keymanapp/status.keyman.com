@@ -1,10 +1,14 @@
 <table><tbody>
-  <tr *ngFor="let project of pullsByProject | keyvalue">
-    <td class='emoji'>{{project.key == 'other' ? '⬜' : project.key}}</td>
-    <td>
-      <span *ngFor="let pull of project.value">
-        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-      </span>
-    </td>
-  </tr>
+  @for (project of pullsByProject | keyvalue; track project) {
+    <tr>
+      <td class='emoji'>{{project.key == 'other' ? '⬜' : project.key}}</td>
+      <td>
+        @for (pull of project.value; track pull) {
+          <span>
+            <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+          </span>
+        }
+      </td>
+    </tr>
+  }
 </tbody></table>

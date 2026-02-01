@@ -3,7 +3,9 @@
   <span class="label">
     <!--<img class="avatar-22" src="assets/{{platform}}.png" *ngIf="!site && mode != 'simple'">-->
     <span class="issue-total {{env.issues.length == 0 ? 'normal' : 'error'}}"><a href="https://keyman.sentry.io/issues/?project={{projectIndex()}}" target="_blank">{{env.issues.length}}</a></span>
-    <span class="event-total {{env.issues.length == 0 ? 'normal' : 'error'}}" *ngIf="mode != 'simple'"><a href="https://keyman.sentry.io/issues/?project={{projectIndex()}}" target="_blank">{{env.totalEvents}}</a></span>
+    @if (mode != 'simple') {
+      <span class="event-total {{env.issues.length == 0 ? 'normal' : 'error'}}"><a href="https://keyman.sentry.io/issues/?project={{projectIndex()}}" target="_blank">{{env.totalEvents}}</a></span>
+    }
   </span>
 
   <div class="sentry-detail {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
@@ -18,21 +20,26 @@
       </span>
       <div class='clear'></div>
     </div>
-    <ul class="issues" *ngIf="pinned || (isVisible | async)">
-      <li *ngFor="let issue of env.issues; trackBy: issueTrackBy">
-        <a href="{{issue.permalink}}" target="_blank">
-          <b>{{issue.shortId}}</b>
-          <span class="issue-title">{{issue.title}}</span>
-        </a>
-        <span class="label">
-          <span class="issue-count normal" title="# events"><span>{{issue.count}}</span></span>
-          <span class="issue-users normal" title="# users"><span>{{issue.userCount}}</span></span>
-        </span>
-
-        <span *ngFor="let annotation of issue.annotations">
-          <a href="{{extractAnnotationLink(annotation)}}" target="_blank">🔗 #{{extractAnnotationIssueNumber(annotation)}}</a>
-        </span>
-      </li>
-    </ul>
+    @if (pinned || (isVisible | async)) {
+      <ul class="issues">
+        @for (issue of env.issues; track issueTrackBy($index, issue)) {
+          <li>
+            <a href="{{issue.permalink}}" target="_blank">
+              <b>{{issue.shortId}}</b>
+              <span class="issue-title">{{issue.title}}</span>
+            </a>
+            <span class="label">
+              <span class="issue-count normal" title="# events"><span>{{issue.count}}</span></span>
+              <span class="issue-users normal" title="# users"><span>{{issue.userCount}}</span></span>
+            </span>
+            @for (annotation of issue.annotations; track annotation) {
+              <span>
+                <a href="{{extractAnnotationLink(annotation)}}" target="_blank">🔗 #{{extractAnnotationIssueNumber(annotation)}}</a>
+              </span>
+            }
+          </li>
+        }
+      </ul>
+    }
   </div>
 </span>

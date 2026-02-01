@@ -6,7 +6,7 @@
   </span>
 
   <div class="agent-detail {{pinned ? 'pinned':''}} gravity-left gravity-bottom" #wrapper>
-    <ng-container *ngIf="pinned || (isVisible | async)">
+    @if (pinned || (isVisible | async)) {
       <div class="summary">
         <span class="summary-label">{{agent.name}}</span>
         <span class="pin" (click)="pin()">📌</span>
@@ -16,15 +16,19 @@
           <th class="">Status</th>
           <td>{{agentStatus(agent).title}}</td>
         </tr>
-        <ng-container *ngIf="agent.build">
-          <tr *ngIf="pullRequest">
-            <th class="">Pull Request</th>
-            <td><a href="https://github.com/keymanapp/keyman/pull/{{pullRequest}}" target="_blank"><b>#{{pullRequest.number}}:</b> {{pullRequest.title}}</a></td>
-          </tr>
-          <tr *ngIf="branch">
-            <th class="">Branch</th>
-            <td>{{branch}}</td>
-          </tr>
+        @if (agent.build) {
+          @if (pullRequest) {
+            <tr>
+              <th class="">Pull Request</th>
+              <td><a href="https://github.com/keymanapp/keyman/pull/{{pullRequest}}" target="_blank"><b>#{{pullRequest.number}}:</b> {{pullRequest.title}}</a></td>
+            </tr>
+          }
+          @if (branch) {
+            <tr>
+              <th class="">Branch</th>
+              <td>{{branch}}</td>
+            </tr>
+          }
           <tr>
             <th class="">Version String</th>
             <td>{{agent.build.number}}</td>
@@ -45,9 +49,8 @@
             <th>Progress</th>
             <td>{{agent.build.percentageComplete}}% complete</td>
           </tr>
-        </ng-container>
+        }
       </tbody></table>
-
-    </ng-container>
+    }
   </div>
-  </span>
+</span>

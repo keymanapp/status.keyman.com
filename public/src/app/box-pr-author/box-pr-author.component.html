@@ -1,13 +1,21 @@
 <table><tbody>
-  <tr *ngFor="let author of pullsByAuthor | keyvalue">
-    <td>
-      <a *ngIf="!author.value[0].pull.node.headRefName.startsWith('epic')" class="author" title="{{author.value[0].pull.node.author.login}}" target="_blank" href="{{author.value[0].pull.node.author.url}}"><img class="avatar-48" src="{{getAuthorAvatar(author.value[0].pull.node.author, 48)}}"></a>
-      <a *ngIf="author.value[0].pull.node.headRefName.startsWith('epic')" class="author" title="epics" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+head%3Aepic"><img class="avatar-48" src="/assets/artifacts/keyman.png"></a>
-    </td>
-    <td>
-      <span *ngFor="let pull of author.value">
-        <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
-      </span>
-    </td>
-  </tr>
+  @for (author of pullsByAuthor | keyvalue; track author) {
+    <tr>
+      <td>
+        @if (!author.value[0].pull.node.headRefName.startsWith('epic')) {
+          <a class="author" title="{{author.value[0].pull.node.author.login}}" target="_blank" href="{{author.value[0].pull.node.author.url}}"><img class="avatar-48" src="{{getAuthorAvatar(author.value[0].pull.node.author, 48)}}"></a>
+        }
+        @if (author.value[0].pull.node.headRefName.startsWith('epic')) {
+          <a class="author" title="epics" target="_blank" href="https://github.com/keymanapp/keyman/pulls?q=is%3Apr+is%3Aopen+head%3Aepic"><img class="avatar-48" src="/assets/artifacts/keyman.png"></a>
+        }
+      </td>
+      <td>
+        @for (pull of author.value; track pull) {
+          <span>
+            <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
+          </span>
+        }
+      </td>
+    </tr>
+  }
 </tbody></table>

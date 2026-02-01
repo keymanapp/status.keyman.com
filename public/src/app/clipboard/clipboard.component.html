@@ -1,1 +1,5 @@
-<span (click)="copyToClipboard()" title="{{title}}"><ng-container *ngIf="!loading">📋</ng-container><span *ngIf="loading" class="spinner-border spinner-border-sm"></span></span>
+<span (click)="copyToClipboard()" title="{{title}}">@if (!loading) {
+  📋
+  }@if (loading) {
+  <span class="spinner-border spinner-border-sm"></span>
+}</span>

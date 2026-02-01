@@ -16,14 +16,20 @@
 
     <table class="tier-release-items table table-sm">
       <tbody>
-        <tr *ngFor="let target of targets">
-          <th>
-            <a *ngIf="target.url != ''" href="{{target.url}}" target="_blank">{{target.name}}</a>
-            <span *ngIf="target.url == ''">{{target.name}}</span>
-          </th>
-          <td class="{{getVersionClass(target.version)}}">{{target.version}}</td>
-          <td>{{target.date}}</td>
-        </tr>
+        @for (target of targets; track target.name) {
+          <tr>
+            <th>
+              @if (target.url != '') {
+                <a href="{{target.url}}" target="_blank">{{target.name}}</a>
+              }
+              @if (target.url == '') {
+                <span>{{target.name}}</span>
+              }
+            </th>
+            <td class="{{getVersionClass(target.version)}}">{{target.version}}</td>
+            <td>{{target.date}}</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>

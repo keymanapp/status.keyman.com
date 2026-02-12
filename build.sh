@@ -2,7 +2,8 @@
 ## START STANDARD SITE BUILD SCRIPT INCLUDE
 readonly THIS_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
 readonly BOOTSTRAP="$(dirname "$THIS_SCRIPT")/resources/bootstrap.inc.sh"
-readonly BOOTSTRAP_VERSION=v1.0.9
+# TODO: release updated bootstrap version!
+readonly BOOTSTRAP_VERSION=feat/docker-support-for-status-site
 [ -f "$BOOTSTRAP" ] && source "$BOOTSTRAP" || source <(curl -H "Cache-Control: no-cache" -fs https://raw.githubusercontent.com/keymanapp/shared-sites/$BOOTSTRAP_VERSION/bootstrap.inc.sh)
 ## END STANDARD SITE BUILD SCRIPT INCLUDE
 
@@ -13,6 +14,9 @@ readonly BOOTSTRAP_VERSION=v1.0.9
 # production into two containers, given production version of public is fully
 # static on server side.
 #
+
+source _common/keyman-local-ports.inc.sh
+source _common/docker.inc.sh
 
 readonly HOST_STATUS_KEYMAN_COM=status.keyman.com.localhost
 
@@ -27,8 +31,6 @@ readonly PUBLIC_HOST="$HOST_STATUS_KEYMAN_COM" # same host
 readonly THIS_PORT="$PORT_STATUS_KEYMAN_COM"
 readonly PUBLIC_PORT="$PORT_STATUS_KEYMAN_COM_PUBLIC"
 
-source _common/keyman-local-ports.inc.sh
-source _common/docker.inc.sh
 
 ################################ Main script ################################
 

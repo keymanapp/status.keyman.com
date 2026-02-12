@@ -7,19 +7,13 @@ git clone https://github.com/keymanapp/status.keyman.com
 cd status.keyman.com/
 ```
 
-Build status.keyman.com:
+### Prerequisites
 
-```bash
-cd server
-npm install
-npm run-script build
-cd ../public
-npm install
-npm run-script build
-cd ..
-```
+* Docker Desktop
+* On Windows, you'll need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
 
-Before running the node server, you need to have two API tokens set as environment variables.  You might want to add these to script `server/localenv.sh`.
+Before building and starting the site, you need to have API tokens set as
+environment variables. These should be added in script `server/localenv.sh`.
 
 ```bash
 export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
@@ -27,25 +21,33 @@ export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
 ```
 
-On Windows, you'll also need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
+## Build the docker containers
 
-## Development server
-
-This repo is configured for live build and reload of both the client and server. You'll need two terminals open. In the first, run:
+Build status.keyman.com, in development mode:
 
 ```bash
-npm run start-server
+./build.sh stop build --debug
 ```
 
-and in the second, run:
+## Start the development server
+
+This repo is configured for live build and reload of both the client and server,
+running in Docker.
 
 ```bash
-npm run start-client
+./build.sh start --debug
 ```
 
-* Point your browser to <http://localhost:4200> to view the live reload version of the application.
-* The query parameter `?c=1` adds a contributions view which is not visible by default.
-* Another query parameter `?sprint=P8S4` parameter to view sprint contributions data for P8S4
+* Point your browser to <http://localhost:8061> to view the live reload version
+  of the application.
+* The following query parameters are available:
+  * `?c=1` shows contributions at the top center
+  * `?o=1` shows owner for each platform
+  * `?a=1` shows build agent status at the top right
+  * `?r=1` adds a refresh button to force a server-side full refresh (this is
+           costly, so only press this when there has been a data error such as a
+           network failure making status data out of date; most errors are
+           actually self-healing)
 
 ### @keymanapp-test-bot
 
@@ -54,3 +56,8 @@ Three files needed for development:
 * `.keymanapp-test-bot.appid`: integer appid (e.g. 134443 for the normal test app)
 * `.keymanapp-test-bot.pem`: certificate for GitHub integration for app
 * `.keymanapp-test-bot.secret`: secret for GitHub integration for app
+
+## Production
+
+This site is deployed to a Kubernetes cluster via configuration in a private
+repo to status.keyman.com.

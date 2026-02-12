@@ -9,5 +9,8 @@
     "allowJs": true,
     "skipLibCheck": true
   },
-  "include": ["./**/*"]
+  "include": ["./**/*"],
+  "watchOptions": {
+    "watchFile": "dynamicPriorityPolling"
+  }
 }

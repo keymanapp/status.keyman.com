@@ -18,13 +18,13 @@ if [ "$BUILDER_CONFIGURATION" = release ]; then
   # same container
   echo "- Building public for release"
   cd public
-  npm install
+  npm ci
   ./node_modules/.bin/ng build --configuration production
   cd ..
 
   echo "- Building server for release"
   cd server
-  npm install
+  npm ci
   ./node_modules/.bin/tsc
   cd ..
 else
@@ -33,7 +33,7 @@ else
   # done with tsc-watch
   echo "- Preparing server for debug"
   cd server
-  npm install
+  npm ci
   cd ..
 fi
 

@@ -13,5 +13,5 @@ echo "Testing server with $BUILDER_CONFIGURATION configuration"
 
 cd server
 
-npm install
+npm ci
 npx mocha --import=./_mocha_register.js

@@ -4,7 +4,7 @@ node_modules/
 local*.sh
 
 # Shared files are bootstrapped:
-resources/bootstrap.inc.sh
+resources/bootstrap.inc.sh*
 resources/.bootstrap-version
 resources/.bootstrap-registry
 _common/

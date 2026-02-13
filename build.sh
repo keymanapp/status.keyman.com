@@ -2,18 +2,13 @@
 ## START STANDARD SITE BUILD SCRIPT INCLUDE
 readonly THIS_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
 readonly BOOTSTRAP="$(dirname "$THIS_SCRIPT")/resources/bootstrap.inc.sh"
-# TODO: release updated bootstrap version!
 readonly BOOTSTRAP_VERSION=v1.0.10
-[ -f "$BOOTSTRAP" ] && source "$BOOTSTRAP" || source <(curl -H "Cache-Control: no-cache" -fs https://raw.githubusercontent.com/keymanapp/shared-sites/$BOOTSTRAP_VERSION/bootstrap.inc.sh)
+if ! [ -f "$BOOTSTRAP" ] || ! source "$BOOTSTRAP"; then
+  curl -H "Cache-Control: no-cache" --fail --silent --show-error -w "curl: Finished attempt to download %{url}" "https://raw.githubusercontent.com/keymanapp/shared-sites/$BOOTSTRAP_VERSION/bootstrap.inc.sh" -o "$BOOTSTRAP.tmp" || exit 1
+  source "$BOOTSTRAP.tmp"
+  rm -f "$BOOTSTRAP.tmp"
+fi
 ## END STANDARD SITE BUILD SCRIPT INCLUDE
-
-#
-# in development mode, the public host is on a separate port to reduce the
-# complexity of tsc --watch vs nodemon; in the future we could consider
-# consolidation into a single container. There is little benefit into splitting
-# production into two containers, given production version of public is fully
-# static on server side.
-#
 
 source _common/keyman-local-ports.inc.sh
 source _common/docker.inc.sh

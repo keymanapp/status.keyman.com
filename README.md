@@ -1,4 +1,45 @@
-# Quick Start
+# status.keyman.com
+
+## Overview
+
+* Back end is a node server in `/server`.
+* Front end is an Angular app in `/public`.
+* The [Keyman Test-bot](https://github.com/keymanapp/keyman/wiki/User-Testing-Workflows)
+  (@keymanapp-test-bot) is in `/server/keymanapp-test-bot`.
+
+The site is setup to run in Docker container(s).
+
+The site can be setup in development (`--debug`) or production (`--release`)
+modes. When in development mode, the front end is hosted (on
+http://localhost:8061) in a separate container to the back end (on
+http://localhost:8060) in order to facilitate live-reload on changes.
+
+For production mode, the front end is compiled to static pages which are then
+served by the back end (on http://localhost:8060).
+
+## Prerequisites
+
+* Docker Desktop
+* On Windows, you'll need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
+
+Before building and starting the site, you need to have API tokens set as
+environment variables. These should be added in script `server/localenv.sh`.
+
+```bash
+export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
+export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
+export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
+```
+
+### @keymanapp-test-bot
+
+Three files are needed for development:
+
+* `.keymanapp-test-bot.appid`: integer appid (e.g. 134443 for the normal test app)
+* `.keymanapp-test-bot.pem`: certificate for GitHub integration for app
+* `.keymanapp-test-bot.secret`: secret for GitHub integration for app
+
+## Development setup
 
 Clone the repo:
 
@@ -7,50 +48,57 @@ git clone https://github.com/keymanapp/status.keyman.com
 cd status.keyman.com/
 ```
 
-Build status.keyman.com:
+### Build the docker containers
+
+Build status.keyman.com, in development mode:
 
 ```bash
-cd server
-npm install
-npm run-script build
-cd ../public
-npm install
-npm run-script build
-cd ..
+./build.sh stop build --debug
 ```
 
-Before running the node server, you need to have two API tokens set as environment variables.  You might want to add these to script `server/localenv.sh`.
+### Start the development server
+
+This repo is configured for live build and reload of both the client and server,
+running in Docker.
 
 ```bash
-export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
-export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
-export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
+./build.sh start --debug
 ```
 
-On Windows, you'll also need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
+* Point your browser to <http://localhost:8061> to view the live reload version
+  of the application.
+* The site takes a moment to compile and load; you can watch the logs to see
+  when it is ready.
 
-## Development server
+### Running unit tests
 
-This repo is configured for live build and reload of both the client and server. You'll need two terminals open. In the first, run:
+The unit tests will currently stop the back end container before running.
 
 ```bash
-npm run start-server
+./build.sh test --debug
 ```
 
-and in the second, run:
+## Production setup
+
+This site is deployed to a Kubernetes cluster via configuration in a private
+repo to status.keyman.com.
+
+You can run the production mode site locally with:
 
 ```bash
-npm run start-client
+./build.sh stop build start --release
 ```
 
-* Point your browser to <http://localhost:4200> to view the live reload version of the application.
-* The query parameter `?c=1` adds a contributions view which is not visible by default.
-* Another query parameter `?sprint=P8S4` parameter to view sprint contributions data for P8S4
+* Point your browser to <http://localhost:8060> to view the production version
+  of the application.
 
-### @keymanapp-test-bot
+## Site query parameters
 
-Three files needed for development:
-
-* `.keymanapp-test-bot.appid`: integer appid (e.g. 134443 for the normal test app)
-* `.keymanapp-test-bot.pem`: certificate for GitHub integration for app
-* `.keymanapp-test-bot.secret`: secret for GitHub integration for app
+* The following query parameters are available:
+  * `?c=1` shows contributions at the top center
+  * `?o=1` shows owner for each platform
+  * `?a=1` shows build agent status at the top right
+  * `?r=1` adds a refresh button to force a server-side full refresh (this is
+           costly, so only press this when there has been a data error such as a
+           network failure making status data out of date; most errors are
+           actually self-healing)

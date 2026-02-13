@@ -1,0 +1,52 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - com-keyman-status
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Set up Node.js version
+      uses: actions/setup-node@v1
+      with:
+        node-version: '22.x'
+
+    - name: npm ci + build - public
+      run: |
+        echo "- Building public for release"
+        cd public
+        npm ci
+        ./node_modules/.bin/ng build --configuration production
+        cd ..
+
+    - name: npm ci + build - server
+      run: |
+        echo "- Building server for release"
+        cd server
+        npm ci
+        ./node_modules/.bin/tsc
+        cd ..
+
+    - name: server test
+      run: |
+        cd server
+        npx mocha --import=./_mocha_register.js
+        cd ..
+
+    - name: 'Deploy to Azure Web App'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'com-keyman-status'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_29683e7e380246d28c473e1643a69a4d }}
+        package: .

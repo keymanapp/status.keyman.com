@@ -4,12 +4,6 @@
   "description": "Report on status of Keyman projects",
   "main": "dist/server/code.js",
   "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "start": "run-script-os",
-    "start:windows": "_start_server.bat",
-    "start:default": "./_start_server.sh"
-  },
   "author": "Marc Durdin",
   "license": "MIT",
   "dependencies": {
@@ -39,7 +33,6 @@
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",
     "mocha": "^10.2.0",
-    "run-script-os": "^1.1.6",
     "ts-node": "^10.9.2",
     "tsc-watch": "^4.2.9",
     "typescript": "^5.8.3"

@@ -2,17 +2,7 @@
   "name": "keyman-status",
   "version": "1.0.0",
   "description": "Report on status of Keyman projects",
-  "main": "server/dist/server/code.js",
   "type": "module",
-  "scripts": {
-    "build": "npm run-script build-server && npm run-script build-client",
-    "build-client": "cd public && npm install && npm run-script build",
-    "build-server": "cd server && npm install && npm run-script build",
-    "start-client": "cd public && npm run-script start",
-    "start-server": "cd server && npm run-script start",
-    "test": "cd server && npx mocha --import=./_mocha_register.js",
-    "log": "az webapp log tail --resource-group keyman --name com-keyman-status"
-  },
   "author": "Marc Durdin",
   "license": "MIT"
 }

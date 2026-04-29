@@ -360,7 +360,7 @@ export class DataModel {
 
     // TODO: split search against future and current milestones (future milestone shows only count; current milestone shows more detail)
     // For each platform, fill in the milestone counts
-    this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
+    this.status.github.data.repositoryRefsLabelsMilestones.issueLabels.edges.forEach(label => {
       let platform = this.getPlatform(label.node.name.substring(0,label.node.name.length-1));
       if(!platform) return;
       platform.totalIssueCount = label.node.openIssues.totalCount;

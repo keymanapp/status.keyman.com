@@ -1,5 +1,5 @@
 import { ProbotOctokit } from "probot";
-import { Issue } from "@octokit/webhooks-types";
+import { components } from "@octokit/openapi-webhooks-types";
 
 import { ProcessEventData } from "./keymanapp-test-bot.js";
 import { getCurrentSprint } from "../current-sprint.js";
@@ -13,7 +13,7 @@ import { consoleError, consoleLog } from "../util/console-log.js";
 export async function updateIssueMilestoneWhenIssueClosed(
   octokit: InstanceType<typeof ProbotOctokit>,
   data: ProcessEventData,
-  issue: Issue
+  issue: components["schemas"]["webhook-issues-closed"]["issue"]
 ): Promise<void> {
   consoleLog('pr-bot', null, `Updating issue #${issue.number} milestone`);
   const currentSprint = getCurrentSprint(statusData.cache.sprints?.current?.github?.data);

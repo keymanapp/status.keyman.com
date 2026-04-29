@@ -364,7 +364,7 @@ app.post('/webhook/discourse', (request, response) => {
   response.send('ok');
 });
 
-app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware);
+app.use('/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
 
 export function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {

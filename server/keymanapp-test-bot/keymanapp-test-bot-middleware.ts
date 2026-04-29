@@ -7,7 +7,7 @@
 import { env } from "node:process";
 import * as fs from 'node:fs';
 
-import { createNodeMiddleware, Probot } from 'probot';
+import { createNodeMiddleware, createProbot, Probot } from 'probot';
 import * as keymanappTestBot from './keymanapp-test-bot.js';
 
 import { dirname } from 'node:path';
@@ -35,7 +35,7 @@ let privateKey, secret;
 if(fs.existsSync(privateKeyFilename))
   privateKey = fs.readFileSync(privateKeyFilename, 'utf8');
 else if(env.PROBOT_PRIVATE_KEY)
-  privateKey = Buffer.from(env.PROBOT_PRIVATE_KEY, 'base64');
+  privateKey = Buffer.from(env.PROBOT_PRIVATE_KEY, 'base64').toString('utf-8');
 
 if(fs.existsSync(secretFilename))
   secret = fs.readFileSync(secretFilename, 'utf8').trim();
@@ -48,10 +48,22 @@ const probot = new Probot({
   secret: secret,
 });
 
-const middleware = createNodeMiddleware(keymanappTestBot.default, { probot,
+// const probot = createProbot({
+//   env: {
+//     APP_ID: appId.toString(),
+//     PRIVATE_KEY: privateKey,
+//     WEBHOOK_SECRET: secret,
+//   }
+// });
+
+const middleware = await createNodeMiddleware(keymanappTestBot.default, { probot,
   webhooksPath: "/",
 });
 
 export default (req, res) => {
-  return middleware(req, res);
+  middleware(req, res, () => {
+    res.writeHead(404);
+    res.end();
+  });
 };
+

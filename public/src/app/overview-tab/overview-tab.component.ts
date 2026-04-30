@@ -58,7 +58,7 @@ export class OverviewTabComponent {
   get sprintOverride() { return appState.sprintOverride }
 
   isBetaRunning() {
-    let e = this.status && this.status.github ? this.status.github.data.repositoryRefsLabelsMilestones.refs.nodes.find(e => e.name == 'beta') : undefined;
+    let e = this.status?.github?.data?.repositoryRefsLabelsMilestones?.refs?.nodes?.find(e => e.name == 'beta');
     return (typeof e != 'undefined');
   }
 

@@ -35,6 +35,7 @@ export enum ServiceState {
   successful = 'successful',
   error = 'error',
   unknown = 'unknown',
+  disabled = 'disabled',
 };
 
 export interface ServiceStateRecord {

@@ -309,7 +309,7 @@ const exports = (app: Probot) => {
 
     // We can look for a corresponding PR in our cache because we'll almost certainly have it there
     // before any check returns 'success'.
-    const pulls = statusData.cache.sprints?.current?.github?.data?.repository?.pullRequests?.edges;
+    const pulls = statusData.cache.sprints?.current?.github?.data?.organization?.repositories?.nodes.find(e=>e.name=='keyman')?.pullRequests?.edges;
     if(!pulls) {
       log('status EXIT: '+context.id+' -- no pulls found -- cache may not be ready');
       return null;

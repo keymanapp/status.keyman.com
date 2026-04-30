@@ -28,9 +28,9 @@ export class PlatformTierBoxComponent implements OnInit {
   }
 
   releaseDate(platformId: string, tier: string): string {
-    if(!this.status) return '';
+    if(!this.status?.keyman?.[platformId]) return '';
     let files = this.status.keyman[platformId];
-    if(!files) return '';
+    if(!files[tier]) return '';
     files = files[tier].files;
     let items = Object.keys(files);
     if(items.length == 0) return '';

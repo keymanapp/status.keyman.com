@@ -120,123 +120,6 @@ const queryStrings = {
     }
   `,
 
-  repository: `
-    rateLimit {
-      limit
-      cost
-      remaining
-      resetAt
-    }
-    repository(owner: "keymanapp", name: "keyman") {
-      pullRequests(last: 100, states: OPEN) {
-        edges {
-          node {
-            title
-            milestone {
-              title
-            }
-
-            isDraft # requires application/vnd.github.shadow-cat-preview+json
-
-            additions
-            deletions
-
-            headRefName
-            baseRefName
-
-            author {
-              avatarUrl
-              login
-              url
-            }
-
-            reviewsRequested:timelineItems(
-              itemTypes: [REVIEW_REQUESTED_EVENT]
-              first: 10
-            ) {
-              nodes {
-                ... on ReviewRequestedEvent {
-                  createdAt
-                }
-              }
-            }
-
-            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
-              nodes {
-                ... on CrossReferencedEvent {
-                  __typename
-                  subject: source {
-                    ... on Issue {
-                      number
-                      url
-                    }
-                    ... on PullRequest {
-                      number
-                      url
-                    }
-                  }
-                }
-                ... on ConnectedEvent {
-                  __typename
-                  subject {
-                    ... on Issue {
-                      number
-                      url
-                    }
-                  }
-                }
-                ... on DisconnectedEvent {
-                  __typename
-                  subject {
-                    ... on Issue {
-                      number
-                    }
-                  }
-                }
-              }
-            }
-
-            reviews(last:100) {
-              nodes {
-                author { login }
-                updatedAt
-                state
-              }
-            }
-
-            number
-            url
-            commits(last: 1) {
-              edges {
-                node {
-                  commit {
-                    oid
-                    status {
-                      contexts {
-                        description
-                        context
-                        state
-                        targetUrl
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            labels(first: 25) {
-              edges {
-                node {
-                  color
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-   `,
-
   organization: `
     rateLimit {
       limit
@@ -254,6 +137,120 @@ const queryStrings = {
   `
 };
 
+export const pullRequestQuery = `
+  title
+  number
+  isDraft # requires application/vnd.github.shadow-cat-preview+json
+  headRefName
+  baseRefName
+
+  additions
+  deletions
+
+  milestone {
+    title
+  }
+  author {
+    avatarUrl
+    login
+    url
+  }
+
+  reviewsRequested:timelineItems(
+    itemTypes: [REVIEW_REQUESTED_EVENT]
+    first: 10
+  ) {
+    nodes {
+      ... on ReviewRequestedEvent {
+        createdAt
+      }
+    }
+  }
+
+  timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+    nodes {
+      ... on CrossReferencedEvent {
+        __typename
+        subject: source {
+          ... on Issue {
+            number
+            url
+          }
+          ... on PullRequest {
+            number
+            url
+          }
+        }
+      }
+      ... on ConnectedEvent {
+        __typename
+        subject {
+          ... on Issue {
+            number
+            url
+          }
+        }
+      }
+      ... on DisconnectedEvent {
+        __typename
+        subject {
+          ... on Issue {
+            number
+          }
+        }
+      }
+    }
+  }
+
+  commits(last: 1) {
+    edges {
+      node {
+        commit {
+          oid
+          status {
+            contexts {
+              description
+              context
+              state
+              targetUrl
+            }
+          }
+        }
+      }
+    }
+    nodes {
+      commit {
+        checkSuites(last: 10) {
+          nodes {
+            app { name }
+            conclusion
+            status
+          }
+        }
+      }
+    }
+  }
+
+  reviews(last:100) {
+    nodes {
+      author { login }
+      updatedAt
+      state
+    }
+  }
+
+  labels(first: 25) {
+    edges {
+      node {
+        color
+        name
+      }
+    }
+  }
+
+  url
+`;
+
 const repoQuery = (name) => `
   rateLimit {
     limit
@@ -266,56 +263,8 @@ const repoQuery = (name) => `
     pullRequests(last: 100, states: OPEN) {
       edges {
         node {
-          title
-          number
-          isDraft # requires application/vnd.github.shadow-cat-preview+json
-          headRefName
-          baseRefName
+          ${pullRequestQuery}
 
-          additions
-          deletions
-
-          milestone {
-            title
-          }
-          author {
-            avatarUrl
-            login
-            url
-          }
-
-          commits(last: 1) {
-            nodes {
-              commit {
-                checkSuites(last: 10) {
-                  nodes {
-                    app { name }
-                    conclusion
-                    status
-                  }
-                }
-              }
-            }
-          }
-
-          reviews(last:100) {
-            nodes {
-              author { login }
-              updatedAt
-              state
-            }
-          }
-
-          labels(first: 25) {
-            edges {
-              node {
-                color
-                name
-              }
-            }
-          }
-
-          url
         }
       }
     }
@@ -408,7 +357,7 @@ export default {
       // }
 
       const dd: any = githubPullsData.data;
-      if(!dd?.repository) {
+      if(!dd?.organization) {
         return null;
       }
 

@@ -1,6 +1,7 @@
 export interface Status {
   currentSprint: any;
   github: any;
+  keymanRepo: any;
   issues: any;
   contributions: any;
   communitySite: any;
@@ -20,6 +21,7 @@ export interface Status {
 export const EMPTY_STATUS: Status = {
   currentSprint: undefined,
   github: undefined,
+  keymanRepo: undefined,
   issues: undefined,
   contributions: undefined,
   communitySite: undefined,

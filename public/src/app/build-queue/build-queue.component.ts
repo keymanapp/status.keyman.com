@@ -53,7 +53,7 @@ export class BuildQueueComponent extends PopupComponent implements OnInit {
 
   getPullRequestTitle(build) {
     const prNumber = parseInt(build.branchName, 10);
-    const pullRequest = this.status.github?.data?.repository?.pullRequests?.edges?.find(pr => pr.node?.number == prNumber)?.node;
+    const pullRequest = this.status.keymanRepo?.pullRequests?.edges?.find(pr => pr.node?.number == prNumber)?.node;
     return pullRequest ? pullRequest.title : '<unknown pull request>';
   }
 

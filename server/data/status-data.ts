@@ -7,6 +7,7 @@ import teamcityService from "../services/teamcity/teamcity.js";
 import githubStatusService from "../services/github/github-status.js";
 import githubIssuesService from "../services/github/github-issues.js";
 import githubIssueService, { KSGitHubIssue } from "../services/github/github-issue.js";
+import githubPullRequestService from "../services/github/github-pull-request.js";
 import githubContributionsService from "../services/github/github-contributions.js";
 import githubTestContributionsService from "../services/github/github-test-contributions.js";
 import sentryIssuesService from "../services/sentry/sentry-issues.js";
@@ -97,7 +98,12 @@ export class StatusData {
   //
   public onServiceStateChanged: (serviceStateCache: ServiceStateCache) => void;
 
-  private setServiceState(service: ServiceIdentifier, state: ServiceState, message?: any) {
+  public getServiceState(service: ServiceIdentifier): ServiceState {
+    if(!this.cache.serviceState) this.cache.serviceState = {};
+    return this.cache.serviceState[service]?.state ?? ServiceState.unknown;
+  }
+
+  public setServiceState(service: ServiceIdentifier, state: ServiceState, message?: any) {
     if(!this.cache.serviceState) this.cache.serviceState = {};
     const newState = { state, message };
     if(this.cache.serviceState[service] != newState) {
@@ -114,6 +120,7 @@ export class StatusData {
   }
 
   refreshKeymanVersionData = async (): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.Keyman) == ServiceState.disabled) return false;
     let keymanVersion;
     this.setServiceState(ServiceIdentifier.Keyman, ServiceState.loading);
     try {
@@ -129,6 +136,7 @@ export class StatusData {
   };
 
   refreshTeamcityData = async (): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.TeamCity) == ServiceState.disabled) return false;
     let data;
     this.setServiceState(ServiceIdentifier.TeamCity, ServiceState.loading);
     try {
@@ -150,9 +158,64 @@ export class StatusData {
     return result;
   };
 
+  refreshGitHubPullRequestsData = async (pulls: {repo: string, pullNumber: number}[]) => {
+    let result = false;
+    for(const pull of pulls) {
+      result = await this.refreshGitHubPullRequestData(pull.repo, pull.pullNumber) || result;
+    }
+    return result;
+  }
+
+  refreshGitHubPullRequestData = async (repo: string, number: number) => {
+    let pull;
+      // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.loading);
+    try {
+      pull = await logAsync(`refreshGitHubPullRequestData(${repo}, ${number})`, () => githubPullRequestService.get(repo, number));
+    } catch(e) {
+      console.error(e);
+      return false;
+    }
+
+    const repository = this.cache.sprints['current']?.github?.data.organization.repositories.nodes.find(e=>e.name == repo);
+    if(!repository) {
+      console.error(`refreshGitHubPullRequestData: Unable to find ${repo}`);
+      return false;
+    }
+
+    const idx = repository.pullRequests.edges.findIndex(pr => pr.node?.number == number);
+
+    // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.successful);
+
+    if(pull.state == 'CLOSED' && idx >= 0) {
+      // pull has been closed, remove from cache
+      repository.pullRequests.edges.splice(idx, 1);
+      return true;
+    }
+
+    if(pull.state == 'CLOSED') {
+      // pull is closed but not in cache, no need to refresh
+      return false;
+    }
+
+    if(idx < 0) {
+      // pull is not in the cache, add it
+      repository.pullRequests.edges.push({node: pull});
+      return true;
+    }
+
+    if(deepEqual(pull, repository.pullRequests.edges[idx].node)) {
+      // pull is in cache, but has no visible changes
+      return false;
+    }
+
+    // replace existing PR in cache
+    repository.pullRequests.edges[idx].node = pull;
+    return true;
+  }
+
   refreshGitHubIssueData = async (repo: string, number: number): Promise<boolean> => {
     let issue;
-      // this.setServiceStatus(StatusSource.Keyman, ServiceStatusState.loading);
+      // this.setServiceStatus(StatusSource.KeymanIssue, ServiceStatusState.loading);
     try {
       issue = await logAsync(`refreshGitHubIssueData(${repo}, ${number})`, () => githubIssueService.get(repo, number));
     } catch(e) {
@@ -161,7 +224,7 @@ export class StatusData {
 
     const idx = this.cache.issues.findIndex(i => i.number == issue.number);
 
-    // this.setServiceStatus(StatusSource.Keyman, ServiceStatusState.successful);
+    // this.setServiceStatus(StatusSource.KeymanIssue, ServiceStatusState.successful);
 
     if(issue.state == 'CLOSED' && idx >= 0) {
       // issue has been closed, remove from cache
@@ -191,6 +254,7 @@ export class StatusData {
   };
 
   refreshGitHubIssuesData = async (): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.GitHubIssues) == ServiceState.disabled) return false;
     let issues;
     this.setServiceState(ServiceIdentifier.GitHubIssues, ServiceState.loading);
     try {
@@ -208,6 +272,7 @@ export class StatusData {
   // Warning: this currently returns TRUE if sprint dates have changed,
   // not if any data has changed. This is different to all the others
   refreshGitHubStatusData = async (sprintName): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.GitHub) == ServiceState.disabled) return false;
     let data;
     this.setServiceState(ServiceIdentifier.GitHub, ServiceState.loading);
     try {
@@ -233,6 +298,7 @@ export class StatusData {
   };
 
   refreshGitHubContributionsData = async (sprintName: string, contributionChanges: ContributionChanges): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.GitHubContributions) == ServiceState.disabled) return false;
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) return false;
     this.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.loading);
@@ -263,6 +329,7 @@ export class StatusData {
   };
 
   refreshSentryIssuesData = async (): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.SentryIssues) == ServiceState.disabled) return false;
     let sentryIssues;
     this.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.loading);
     try {
@@ -278,6 +345,7 @@ export class StatusData {
   };
 
   refreshCodeOwnersData = async (): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.CodeOwners) == ServiceState.disabled) return false;
     let codeOwners;
     this.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.loading);
     try {
@@ -293,6 +361,7 @@ export class StatusData {
   };
 
   refreshSiteLivelinessData = async (): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.SiteLiveliness) == ServiceState.disabled) return false;
     let siteLiveliness;
     this.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.loading);
     try {
@@ -310,6 +379,7 @@ export class StatusData {
   // Deployment endpoints
 
   refreshService = async (id: ServiceIdentifier, service: DataService): Promise<boolean> => {
+    if(this.getServiceState(id) == ServiceState.disabled) return false;
     // console.log('[Refresh] '+id+' ENTER');
     let status;
     this.setServiceState(id, ServiceState.loading);
@@ -333,6 +403,7 @@ export class StatusData {
   // Discourse
 
   refreshCommunitySiteData = async (sprintName: string, user?: string): Promise<boolean> => {
+    if(this.getServiceState(ServiceIdentifier.CommunitySite) == ServiceState.disabled) return false;
     const sprint = this.cache.sprints[sprintName];
     if(!sprint || !sprint.phase) {
       consoleError('refresh', 'community-site', `invalid sprint ${JSON.stringify(sprint)}`);

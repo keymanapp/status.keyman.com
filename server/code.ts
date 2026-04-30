@@ -26,6 +26,7 @@ import gitHubMilestonesService from './services/github/github-milestones.js';
 import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment.js';
 import { performanceLog } from './performance-log.js';
 import { consoleLog } from './util/console-log.js';
+import { buildVersion } from '../shared/version.js';
 
 sms.install();
 
@@ -211,6 +212,7 @@ wsServer.on('connection', socket => {
     if(message == 'ping')
       socket.send('pong');
   });
+  socket.send('version:' + JSON.stringify({buildVersion}));
   sendInitialRefreshMessages(socket);
 });
 

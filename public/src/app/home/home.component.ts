@@ -7,6 +7,7 @@ import { getTz, getUserAvatarUrl } from '../../../../shared/users';
 import { ContributionsModel } from '../data/contributions.model';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
+import { buildVersion } from '../../../../shared/version';
 
 @Component({
     selector: 'app-home',
@@ -68,7 +69,13 @@ export class HomeComponent {
     this.ws = new DataSocket();
     this.ws.onMessage = (data: string) => {
       this.zone.run(() => {
-        if(data.startsWith('service-state:')) {
+        if(data.startsWith('version:')) {
+          const json = JSON.parse(data.substring('version:'.length));
+          console.log(`Server version: ${json.buildVersion}; client version: ${buildVersion}`);
+          if(json.buildVersion != buildVersion) {
+            window.location.reload();
+          }
+        } else if(data.startsWith('service-state:')) {
           const json = JSON.parse(data.substring('service-state:'.length));
           this.data.updateServiceState(json);
         } else {

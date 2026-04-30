@@ -1,0 +1,1 @@
+export const buildVersion = '1.0';

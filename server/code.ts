@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/node';
 import express from 'express';
 // import * as Tracing from "@sentry/tracing";
 
-import { ServiceStateCache, ServiceIdentifier } from '../shared/services.js';
+import { ServiceStateCache, ServiceIdentifier, ServiceState } from '../shared/services.js';
 import { SprintCache } from './data/sprint-cache.js';
 
 import ws from 'ws';
@@ -132,6 +132,21 @@ const STATUS_SOURCES: ServiceIdentifier[] = [
   ServiceIdentifier.LinuxLsdevSilOrgStable
 ];
 
+// TODO: move all other services into the STATUS_SOURCES
+
+// FOR DEBUGGING
+// statusData.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.TeamCity, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.CommunitySite, ServiceState.disabled);
+// for(const id of STATUS_SOURCES) {
+//   statusData.setServiceState(id, ServiceState.disabled);
+// }
+
+///
+
 initialLoad();
 
 function initialLoad() {
@@ -222,7 +237,7 @@ async function respondGitHubDataChange(request: express.Request) {
     const pullNumber = request?.body?.pull_request?.number;
     const repo = request?.body?.repository?.name;
 
-    if((event == 'issues' || event == 'issue_comment') && !request.body.issue.pull_request) {
+    if((event == 'issues' || event == 'issue_comment') && !request?.body?.issue?.pull_request) {
       consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber}`);
       try {
         if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
@@ -245,12 +260,24 @@ async function respondGitHubDataChange(request: express.Request) {
       const prNumber = request.body?.pull_request?.number;
   */
     } else {
-      consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber ?? pullNumber}`);
       try {
-        const hasChanged = await statusData.refreshGitHubStatusData('current');
-        if(hasChanged) {
-          sendWsAlert(true, 'github');
+        const prNumbers: {repo: string, pullNumber: number}[] = [];
+        if(issueNumber && repo && request?.body?.issue?.pull_request) {
+          prNumbers.push({repo, pullNumber: issueNumber});
+        } else if(pullNumber && repo) {
+          prNumbers.push({repo, pullNumber});
+        } else if(event == 'check_suite') {
+          prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
+        } else if(event == 'check_run') {
+          prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         }
+
+        consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${prNumbers.map(p => `${p.repo}#${p.pullNumber}`).join(',')}`);
+
+        if(await statusData.refreshGitHubPullRequestsData(prNumbers)) {
+          sendWsAlert(true, 'github'); // TODO: later just refresh prs
+        }
+
         if(event != 'check_run' && event != 'check_suite') {
           // We'll only refresh contribution data if the event type merits it
           const isUserTestComment =

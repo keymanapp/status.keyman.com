@@ -158,22 +158,24 @@ export class StatusData {
     return result;
   };
 
-  refreshGitHubPullRequestsData = async (pulls: {repo: string, pullNumber: number}[]) => {
+  refreshGitHubPullRequestsData = async (pulls: {hasBeenClosed: boolean, repo: string, pullNumber: number}[]) => {
     let result = false;
     for(const pull of pulls) {
-      result = await this.refreshGitHubPullRequestData(pull.repo, pull.pullNumber) || result;
+      result = await this.refreshGitHubPullRequestData(pull.hasBeenClosed, pull.repo, pull.pullNumber) || result;
     }
     return result;
   }
 
-  refreshGitHubPullRequestData = async (repo: string, number: number) => {
+  refreshGitHubPullRequestData = async (hasBeenClosed: boolean, repo: string, number: number) => {
     let pull;
       // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.loading);
-    try {
-      pull = await logAsync(`refreshGitHubPullRequestData(${repo}, ${number})`, () => githubPullRequestService.get(repo, number));
-    } catch(e) {
-      console.error(e);
-      return false;
+    if(!hasBeenClosed) {
+      try {
+        pull = await logAsync(`refreshGitHubPullRequestData(${repo}, ${number})`, () => githubPullRequestService.get(repo, number));
+      } catch(e) {
+        console.error(e);
+        return false;
+      }
     }
 
     const repository = this.cache.sprints['current']?.github?.data.organization.repositories.nodes.find(e=>e.name == repo);
@@ -186,14 +188,14 @@ export class StatusData {
 
     // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.successful);
 
-    if(pull.state == 'CLOSED' && idx >= 0) {
-      // pull has been closed, remove from cache
-      console.log(`refreshGitHubPullRequestData: Removing ${repo}#${number} from cache and announcing refresh`);
-      repository.pullRequests.edges.splice(idx, 1);
-      return true;
-    }
+    if(hasBeenClosed || pull.state == 'CLOSED') {
+      if(idx >= 0) {
+        // pull has been closed, remove from cache
+        console.log(`refreshGitHubPullRequestData: Removing ${repo}#${number} from cache and announcing refresh`);
+        repository.pullRequests.edges.splice(idx, 1);
+        return true;
+      }
 
-    if(pull.state == 'CLOSED') {
       // pull is closed but not in cache, no need to refresh
       console.log(`refreshGitHubPullRequestData: ${repo}#${number} was not found in cache`);
       return false;

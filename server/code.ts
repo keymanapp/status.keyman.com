@@ -238,9 +238,10 @@ async function respondGitHubDataChange(request: express.Request) {
     const issueNumber = request?.body?.issue?.number;
     const pullNumber = request?.body?.pull_request?.number;
     const repo = request?.body?.repository?.name;
+    const action = request?.body?.action;
 
     if((event == 'issues' || event == 'issue_comment') && !request?.body?.issue?.pull_request) {
-      consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+      consoleLog('main', 'github', `POST webhook ${event}.${action} : keymanapp/${repo}#${issueNumber}`);
       try {
         if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
           sendWsAlert(true, 'github-issues');
@@ -263,18 +264,18 @@ async function respondGitHubDataChange(request: express.Request) {
   */
     } else {
       try {
-        const prNumbers: {repo: string, pullNumber: number}[] = [];
+        const prNumbers: {hasBeenClosed: boolean, repo: string, pullNumber: number}[] = [];
         if(issueNumber && repo && request?.body?.issue?.pull_request) {
-          prNumbers.push({repo, pullNumber: issueNumber});
+          prNumbers.push({hasBeenClosed: false, repo, pullNumber: issueNumber});
         } else if(pullNumber && repo) {
-          prNumbers.push({repo, pullNumber});
+          prNumbers.push({hasBeenClosed: request.body.action == 'closed',  repo, pullNumber});
         } else if(event == 'check_suite') {
-          prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
+          prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         } else if(event == 'check_run') {
-          prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
+          prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         }
 
-        consoleLog('main', 'github', `POST webhook ${event} : ${prNumbers.map(p => `keymanapp/${p.repo}#${p.pullNumber}`).join(',')}`);
+        consoleLog('main', 'github', `POST webhook ${event}.${action} : ${prNumbers.map(p => `keymanapp/${p.repo}#${p.pullNumber}`).join(',')}`);
 
         if(await statusData.refreshGitHubPullRequestsData(prNumbers)) {
           sendWsAlert(true, 'github'); // TODO: later just refresh prs

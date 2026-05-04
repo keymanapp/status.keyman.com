@@ -188,27 +188,32 @@ export class StatusData {
 
     if(pull.state == 'CLOSED' && idx >= 0) {
       // pull has been closed, remove from cache
+      console.log(`refreshGitHubPullRequestData: Removing ${repo}#${number} from cache and announcing refresh`);
       repository.pullRequests.edges.splice(idx, 1);
       return true;
     }
 
     if(pull.state == 'CLOSED') {
       // pull is closed but not in cache, no need to refresh
+      console.log(`refreshGitHubPullRequestData: ${repo}#${number} was not found in cache`);
       return false;
     }
 
     if(idx < 0) {
       // pull is not in the cache, add it
+      console.log(`refreshGitHubPullRequestData: Adding ${repo}#${number} to cache and announcing refresh`);
       repository.pullRequests.edges.push({node: pull});
       return true;
     }
 
     if(deepEqual(pull, repository.pullRequests.edges[idx].node)) {
       // pull is in cache, but has no visible changes
+      console.log(`refreshGitHubPullRequestData: No relevant changes to ${repo}#${number}`);
       return false;
     }
 
     // replace existing PR in cache
+    console.log(`refreshGitHubPullRequestData: Updating ${repo}#${number} in cache and announcing refresh`);
     repository.pullRequests.edges[idx].node = pull;
     return true;
   }

@@ -274,7 +274,7 @@ async function respondGitHubDataChange(request: express.Request) {
           prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         }
 
-        consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${prNumbers.map(p => `${p.repo}#${p.pullNumber}`).join(',')}`);
+        consoleLog('main', 'github', `POST webhook ${event} : ${prNumbers.map(p => `keymanapp/${p.repo}#${p.pullNumber}`).join(',')}`);
 
         if(await statusData.refreshGitHubPullRequestsData(prNumbers)) {
           sendWsAlert(true, 'github'); // TODO: later just refresh prs

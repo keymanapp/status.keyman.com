@@ -39,7 +39,7 @@ export default {
     ).then(data => {
       let obj = JSON.parse(data);
 
-      logGitHubRateLimit(obj?.data?.rateLimit, 'github-issue');
+      logGitHubRateLimit(obj?.data?.rateLimit, 'github-pull-request');
       const pullRequest = obj?.data?.repository?.pullRequest ?? null;
       if(!pullRequest) {
         console.dir(obj);

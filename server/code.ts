@@ -228,9 +228,16 @@ function respondKeymanDataChange() {
 }
 
 async function respondGitHubDataChange(request: express.Request) {
-  if(timingManager.isTooSoon('github', GitHubRefreshRate, () => respondGitHubDataChange(request))) {
-    return;
-  }
+  // For now, removing this so that we get all refreshes -- check_run and
+  // check_suite are busy but only do anything significant if they reference a
+  // specific PR, so majority of those events should have no real impact. The
+  // problem here is that we lose the individual refreshes as they are coalesced
+  // by timingManager, but we need them to keep issues and PRs in sync, so a
+  // redesign is needed.
+  //
+  // if(timingManager.isTooSoon('github', GitHubRefreshRate, () => respondGitHubDataChange(request))) {
+  //   return;
+  // }
 
   timingManager.start('github');
   try {
@@ -245,10 +252,11 @@ async function respondGitHubDataChange(request: express.Request) {
       try {
         if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
           sendWsAlert(true, 'github-issues');
+
+          await respondGitHubContributionsDataChange(
+            {issue:true, post:false, pull:false, review:false, test:false}
+          );
         }
-        await respondGitHubContributionsDataChange(
-          {issue:true, post:false, pull:false, review:false, test:false}
-        );
       } catch(error) {
         reportError(error);
       }
@@ -279,14 +287,14 @@ async function respondGitHubDataChange(request: express.Request) {
 
         if(await statusData.refreshGitHubPullRequestsData(prNumbers)) {
           sendWsAlert(true, 'github'); // TODO: later just refresh prs
-        }
 
-        if(event != 'check_run' && event != 'check_suite') {
-          // We'll only refresh contribution data if the event type merits it
-          const isUserTestComment =
-            event == 'issue_comment' &&
-            (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
-          await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request', test:isUserTestComment});
+          if(event != 'check_run' && event != 'check_suite') {
+            // We'll only refresh contribution data if the event type merits it -- checks do not impact contributions
+            const isUserTestComment =
+              event == 'issue_comment' &&
+              (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
+            await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request' || event=='pull_request_review', test:isUserTestComment});
+          }
         }
       } catch(error) {
         reportError(error);

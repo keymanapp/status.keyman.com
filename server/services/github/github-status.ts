@@ -251,7 +251,7 @@ export const pullRequestQuery = `
   url
 `;
 
-const repoQuery = (name) => `
+const repoQuery = (name, after = 'null') => `
   rateLimit {
     limit
     cost
@@ -260,12 +260,17 @@ const repoQuery = (name) => `
   }
   repository(owner: "keymanapp", name: "${name}") {
     name
-    pullRequests(last: 100, states: OPEN) {
+    pullRequests(first: 10, after: ${after}, states: OPEN) {
       edges {
         node {
           ${pullRequestQuery}
-
         }
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
+        hasPreviousPage
       }
     }
   }
@@ -275,22 +280,35 @@ const repoQuery = (name) => `
 // and all open pull requests + status for keymanapp repo
 // Gather the contributions for each recent user
 
-// Current rate limit cost is 60 points. We have 5000 points/hour.
+// Current rate limit cost is broken down into quite a few
+// requests. estimate under 50 points. We have 5000 points/hour.
 // https://developer.github.com/v4/guides/resource-limitations/
 
+/**
+ * Request wrapper for GitHub GraphQL
+ * @param query   GraphQL query string (without `query:{}` wrapper)
+ * @param key     name of request for logging
+ * @returns       JSON object
+ */
 async function httppostgh(query, key) {
-  consoleLog('services', 'github-status-' + key, '  starting refresh');
+  consoleLog('services', `github-status-${key}`, '  starting refresh');
   try {
-    const res = await httppost('api.github.com', '/graphql',  //3
-      {
-        Authorization: ` Bearer ${github_token}`,
+    const response = await fetch('https://api.github.com/graphql', {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${github_token}`,
         Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
       },
-      JSON.stringify({query: '{' + query + '}'})
-    );
-    return res;
+      body: JSON.stringify({query: '{' + query + '}'})
+    });
+
+    if(!response.ok) {
+      throw new Error(`Failed to query github graphql ${query} for ${key}: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
   } finally {
-    consoleLog('services', 'github-status-' + key, '  finishing refresh');
+    consoleLog('services', `github-status-${key}`, '  finishing refresh');
   }
 }
 
@@ -310,7 +328,7 @@ export default {
     const values = await runPromisesSequentially( keys.map(key => async () => {
       const result = await httppostgh(queryStrings[key], key);
       try {
-        const j = JSON.parse(result);
+        const j = result;
         if(!j || !j.data) {
           throw new Error(`Error parsing JSON for ${key}: '${result}`);
         }
@@ -328,15 +346,26 @@ export default {
     const organization = values[keys.indexOf('organization')].data.organization;
     for(const repo of organization.repositories.nodes) {
       console.dir(repo);
-      const q = repoQuery(repo.name);
-      const result = await httppostgh(q, `organization-${repo.name}`);
+
       try {
-        const j = JSON.parse(result);
-        if(!j || !j.data) {
-          throw new Error(`Error parsing JSON for organization-${repo.name}: '${result}`);
-        }
-        logGitHubRateLimit(j.data.rateLimit, 'github-status-organization-'+repo.name);
-        repo.pullRequests = j.data.repository.pullRequests;
+        let after = 'null';
+        let n = 0;
+        repo.pullRequests = { edges: [] };
+        do {
+          const q = repoQuery(repo.name, after);
+          const j = await httppostgh(q, `organization-${repo.name}-${n}`);
+          if(!j || !j.data) {
+            throw new Error(`Error parsing JSON for organization-${repo.name}-${n}: '${JSON.stringify(j)}`);
+          }
+          logGitHubRateLimit(j.data.rateLimit, 'github-status-organization-'+repo.name+n);
+          repo.pullRequests.edges = repo.pullRequests.edges.concat(j.data.repository.pullRequests.edges); // = j.data.repository.pullRequests;
+          if(j.data.repository.pullRequests.pageInfo.hasNextPage) {
+            after = `"${j.data.repository.pullRequests.pageInfo.endCursor}"`;
+          } else {
+            after = null;
+          }
+          n++;
+        } while(after !== null);
       } catch(e) {
         console.error(e);
         Sentry.captureException(e);

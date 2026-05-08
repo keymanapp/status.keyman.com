@@ -4,7 +4,7 @@ Keyman is copyright (C) SIL Global. MIT License.
 <span class="service-state">
   <span class="status-title"><span class="icon {{overallStatus()}}">●</span> Keyman Status</span>
   <div class="service-state-popup {{pinned ? 'pinned':''}} gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>
-    <div class="title"><span class="pin" (click)="pin()">📌</span> Service State - {{serviceState?.length}} services</div>
+    <div class="title"><span class="pin" (click)="pin()">📌</span> Service State - {{serviceState?.length}} services - {{overallStatus()}}</div>
 
     <table>
       <tbody>

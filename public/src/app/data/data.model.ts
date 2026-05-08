@@ -15,6 +15,8 @@ interface OtherSites {
 export class DataModel {
   status: Status = EMPTY_STATUS;
 
+  serverBuildVersion: string = '';
+
   serviceState: {service: ServiceIdentifier, state: ServiceState, message?: string}[];
 
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component

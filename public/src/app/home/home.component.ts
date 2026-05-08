@@ -23,6 +23,7 @@ export class HomeComponent {
   title = 'Keyman Status';
 
   activeTab = 'overview';
+  clientBuildVersion = buildVersion;
 
   TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
 
@@ -71,10 +72,8 @@ export class HomeComponent {
       this.zone.run(() => {
         if(data.startsWith('version:')) {
           const json = JSON.parse(data.substring('version:'.length));
-          console.log(`Server version: ${json.buildVersion}; client version: ${buildVersion}`);
-          if(json.buildVersion != buildVersion) {
-            window.location.reload();
-          }
+          this.data.serverBuildVersion = json.buildVersion;
+          console.log(`Server version: ${this.data.serverBuildVersion}; client version: ${this.clientBuildVersion}`);
         } else if(data.startsWith('service-state:')) {
           const json = JSON.parse(data.substring('service-state:'.length));
           this.data.updateServiceState(json);
@@ -88,6 +87,10 @@ export class HomeComponent {
   refreshBackend() {
     console.log('Connecting to status service for refresh');
     this.statusService.refreshBackend();
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 
   refreshStatus(source: ServiceIdentifier) {

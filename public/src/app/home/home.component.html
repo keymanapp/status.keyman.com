@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="navbar-header">
         <span class="navbar-brand">
-          <app-service-state-popup [serviceState]="serviceState"></app-service-state-popup>
+          <app-service-state-popup [isConnected]="ws.isConnected()" [serviceState]="serviceState"></app-service-state-popup>
           @if (clientBuildVersion != data.serverBuildVersion) {
             <a class="btn btn-sm btn-warning" id='navbar-reload-page-link' href="javascript:void(0)" (click)="reloadPage()"
               title="A new version of status.keyman.com is available - current sha: {{clientBuildVersion}} / new sha: {{data.serverBuildVersion}}">Reload page</a>

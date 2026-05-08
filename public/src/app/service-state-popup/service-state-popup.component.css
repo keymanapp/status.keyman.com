@@ -82,6 +82,10 @@ table {
   font-size: 1.4em;
 }
 
+.icon.disconnected {
+  color: grey;
+}
+
 .icon.loading {
   color: yellow;
 }

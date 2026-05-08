@@ -15,6 +15,7 @@ import { ServiceIdentifier, ServiceState, ServiceStateRecord } from '../../../..
 })
 export class ServiceStatePopupComponent extends PopupComponent implements OnInit, OnDestroy {
   @Input() serviceState: (ServiceStateRecord & {service: ServiceIdentifier})[];
+  @Input() isConnected: boolean;
 
   private timerId = null;
   private currentTime: number = new Date().valueOf();
@@ -39,6 +40,8 @@ export class ServiceStatePopupComponent extends PopupComponent implements OnInit
   }
 
   overallStatus() {
+    if(!this.isConnected) return 'disconnected';
+
     let icon = 'successful';
     for(const service of this.serviceState ?? []) {
       if(service.state == 'error') {

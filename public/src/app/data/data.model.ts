@@ -15,6 +15,8 @@ interface OtherSites {
 export class DataModel {
   status: Status = EMPTY_STATUS;
 
+  serverBuildVersion: string = '';
+
   serviceState: {service: ServiceIdentifier, state: ServiceState, message?: string}[];
 
   platforms: PlatformSpec[] = JSON.parse(JSON.stringify(platforms)); // makes a copy of the constant platform data for this component
@@ -86,6 +88,7 @@ export class DataModel {
         break;
       case ServiceIdentifier.GitHub:
         this.status.github = data.github;
+        this.status.keymanRepo = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='keyman');
         this.keyboardPRs = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='keyboards')?.pullRequests.edges;
         this.lexicalModelPRs = this.status.github?.data.organization.repositories.nodes.find(e=>e.name=='lexical-models')?.pullRequests.edges;
         this.transformPlatformStatusData();
@@ -181,7 +184,7 @@ export class DataModel {
     for(let platform of this.platforms) {
       platform.pulls = [];
       platform.pullsByEmoji = {};
-      for(let pull of this.status.github.data.repository.pullRequests.edges) {
+      for(let pull of this.status.keymanRepo.pullRequests.edges) {
         pull.node.checkSummary = pullChecks(pull);
         let labels = pull.node.labels.edges;
         let status = pull.node.commits.edges[0].node.commit.status;
@@ -237,8 +240,8 @@ export class DataModel {
       })
     };
 
-    if(this.status.github && this.status.github.data) {
-      this.status.github.data.repository.pullRequests.edges.forEach(item => {
+    if(this.status.keymanRepo) {
+      this.status.keymanRepo.pullRequests.edges.forEach(item => {
         removeDuplicates(item.node.timelineItems);
      });
     }
@@ -360,7 +363,7 @@ export class DataModel {
 
     // TODO: split search against future and current milestones (future milestone shows only count; current milestone shows more detail)
     // For each platform, fill in the milestone counts
-    this.status.github.data.repository.issuesByLabelAndMilestone.edges.forEach(label => {
+    this.status.github.data.repositoryRefsLabelsMilestones.issueLabels.edges.forEach(label => {
       let platform = this.getPlatform(label.node.name.substring(0,label.node.name.length-1));
       if(!platform) return;
       platform.totalIssueCount = label.node.openIssues.totalCount;
@@ -453,8 +456,8 @@ export class DataModel {
 
   extractUnlabeledPulls() {
     this.unlabeledPulls = [];
-    for(let q in this.status.github.data.repository.pullRequests.edges) {
-      let pull = this.status.github.data.repository.pullRequests.edges[q];
+    for(let q in this.status.keymanRepo.pullRequests.edges) {
+      let pull = this.status.keymanRepo.pullRequests.edges[q];
       if(!this.labeledPulls.includes(pull)) {
         this.unlabeledPulls.push({pull:pull});
       }
@@ -501,8 +504,8 @@ export class DataModel {
     this.pullsByStatus.waitingReview = [];
     this.pullsByStatus.waitingTest = [];
     this.pullsByStatus.waitingResponse = [];
-    for(let q in this.status.github.data.repository.pullRequests.edges) {
-      let pull = this.status.github.data.repository.pullRequests.edges[q];
+    for(let q in this.status.keymanRepo.pullRequests.edges) {
+      let pull = this.status.keymanRepo.pullRequests.edges[q];
       let emoji = pullEmoji(pull) || "other";
       if(!this.pullsByProject[emoji]) this.pullsByProject[emoji] = [];
 
@@ -617,7 +620,7 @@ export class DataModel {
     }
 
     while(pull && !pull.node.baseRefName.match(ultimateBaseRef)) {
-      pull = this.status.github.data.repository.pullRequests.edges.find(e => e.node.headRefName == pull.node.baseRefName);
+      pull = this.status.keymanRepo.pullRequests.edges.find(e => e.node.headRefName == pull.node.baseRefName);
     }
 
     input.node.ultimateBaseRefName = pull ? pull.node.baseRefName : 'unknown';

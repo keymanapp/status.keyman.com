@@ -41,10 +41,16 @@ builder_describe \
 builder_parse "$@"
 
 function build_docker_containers() {
+  NEWVERSION="$(git rev-parse HEAD)"
+  echo "Writing version '$NEWVERSION' to version.ts"
+  echo "export const buildVersion = '$NEWVERSION';" > shared/version.ts
+
   build_docker_container $THIS_IMAGE_NAME $THIS_CONTAINER_NAME $BUILDER_CONFIGURATION server.Dockerfile
   if builder_is_debug_build; then
     build_docker_container $PUBLIC_IMAGE_NAME $PUBLIC_CONTAINER_NAME $BUILDER_CONFIGURATION public.Dockerfile
   fi
+
+  git checkout shared/version.ts
 }
 
 function start_docker_containers() {

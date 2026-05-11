@@ -7,6 +7,7 @@ import { getTz, getUserAvatarUrl } from '../../../../shared/users';
 import { ContributionsModel } from '../data/contributions.model';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
+import { buildVersion } from '../../../../shared/version';
 
 @Component({
     selector: 'app-home',
@@ -22,6 +23,7 @@ export class HomeComponent {
   title = 'Keyman Status';
 
   activeTab = 'overview';
+  clientBuildVersion = buildVersion;
 
   TIMER_INTERVAL = 60000; //msec  //TODO: make this static for dev side?
 
@@ -68,7 +70,11 @@ export class HomeComponent {
     this.ws = new DataSocket();
     this.ws.onMessage = (data: string) => {
       this.zone.run(() => {
-        if(data.startsWith('service-state:')) {
+        if(data.startsWith('version:')) {
+          const json = JSON.parse(data.substring('version:'.length));
+          this.data.serverBuildVersion = json.buildVersion;
+          console.log(`Server version: ${this.data.serverBuildVersion}; client version: ${this.clientBuildVersion}`);
+        } else if(data.startsWith('service-state:')) {
           const json = JSON.parse(data.substring('service-state:'.length));
           this.data.updateServiceState(json);
         } else {
@@ -81,6 +87,10 @@ export class HomeComponent {
   refreshBackend() {
     console.log('Connecting to status service for refresh');
     this.statusService.refreshBackend();
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 
   refreshStatus(source: ServiceIdentifier) {

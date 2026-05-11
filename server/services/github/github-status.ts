@@ -74,23 +74,20 @@ const queryStrings = {
     }
   `,
 
-  repository: `
+  repositoryRefsLabelsMilestones: `
     rateLimit {
       limit
       cost
       remaining
       resetAt
     }
-    repository(owner: "keymanapp", name: "keyman") {
+    repositoryRefsLabelsMilestones: repository(owner: "keymanapp", name: "keyman") {
       refs(first:100, refPrefix: "refs/heads/") {
         nodes {
           name
         }
       }
-      issuesWithNoMilestone: issues(first: 1, filterBy: {milestone: null, states: OPEN}) {
-        totalCount
-      }
-      issuesByLabelAndMilestone: labels(first: 100) {
+      issueLabels: labels(first: 100) {
         edges {
           node {
             name
@@ -100,7 +97,6 @@ const queryStrings = {
           }
         }
       }
-
       milestones(first: 10, orderBy: {direction: ASC, field: DUE_DATE}, states: OPEN) {
         edges {
           node {
@@ -121,116 +117,10 @@ const queryStrings = {
           }
         }
       }
-      pullRequests(last: 100, states: OPEN) {
-        edges {
-          node {
-            title
-            milestone {
-              title
-            }
-
-            isDraft # requires application/vnd.github.shadow-cat-preview+json
-
-            additions
-            deletions
-
-            headRefName
-            baseRefName
-
-            author {
-              avatarUrl
-              login
-              url
-            }
-
-            reviewsRequested:timelineItems(
-              itemTypes: [REVIEW_REQUESTED_EVENT]
-              first: 10
-            ) {
-              nodes {
-                ... on ReviewRequestedEvent {
-                  createdAt
-                }
-              }
-            }
-
-            timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
-              nodes {
-                ... on CrossReferencedEvent {
-                  __typename
-                  subject: source {
-                    ... on Issue {
-                      number
-                      url
-                    }
-                    ... on PullRequest {
-                      number
-                      url
-                    }
-                  }
-                }
-                ... on ConnectedEvent {
-                  __typename
-                  subject {
-                    ... on Issue {
-                      number
-                      url
-                    }
-                  }
-                }
-                ... on DisconnectedEvent {
-                  __typename
-                  subject {
-                    ... on Issue {
-                      number
-                    }
-                  }
-                }
-              }
-            }
-
-            reviews(last:100) {
-              nodes {
-                author { login }
-                updatedAt
-                state
-              }
-            }
-
-            number
-            url
-            commits(last: 1) {
-              edges {
-                node {
-                  commit {
-                    oid
-                    status {
-                      contexts {
-                        description
-                        context
-                        state
-                        targetUrl
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            labels(first: 25) {
-              edges {
-                node {
-                  color
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
     }
-   `,
+  `,
 
-   organization: `
+  organization: `
     rateLimit {
       limit
       cost
@@ -238,146 +128,286 @@ const queryStrings = {
       resetAt
     }
     organization(login: "keymanapp") {
-      repositories(isArchived:false, first: 42) {
+      repositories(isArchived:false, isFork:false, first: 100) {
         nodes {
           name
-          pullRequests(last: 20, states: OPEN) {
-            edges {
-              node {
-                title
-                number
-                isDraft # requires application/vnd.github.shadow-cat-preview+json
-                headRefName
-                baseRefName
-
-                additions
-                deletions
-
-                milestone {
-                  title
-                }
-                author {
-                  avatarUrl
-                  login
-                  url
-                }
-
-                commits(last: 1) {
-                  nodes {
-                    commit {
-                      checkSuites(last: 10) {
-                        nodes {
-                          app { name }
-                          conclusion
-                          status
-                        }
-                      }
-                    }
-                  }
-                }
-
-                reviews(last:100) {
-                  nodes {
-                    author { login }
-                    updatedAt
-                    state
-                  }
-                }
-
-                labels(first: 25) {
-                  edges {
-                    node {
-                      color
-                      name
-                    }
-                  }
-                }
-
-                url
-              }
-            }
-          }
         }
       }
     }
   `
 };
 
+export const pullRequestQuery = `
+  title
+  number
+  isDraft # requires application/vnd.github.shadow-cat-preview+json
+  headRefName
+  baseRefName
+
+  additions
+  deletions
+
+  milestone {
+    title
+  }
+  author {
+    avatarUrl
+    login
+    url
+  }
+
+  reviewsRequested:timelineItems(
+    itemTypes: [REVIEW_REQUESTED_EVENT]
+    first: 10
+  ) {
+    nodes {
+      ... on ReviewRequestedEvent {
+        createdAt
+      }
+    }
+  }
+
+  timelineItems(itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT, DISCONNECTED_EVENT], first: 10) {
+    nodes {
+      ... on CrossReferencedEvent {
+        __typename
+        subject: source {
+          ... on Issue {
+            number
+            url
+          }
+          ... on PullRequest {
+            number
+            url
+          }
+        }
+      }
+      ... on ConnectedEvent {
+        __typename
+        subject {
+          ... on Issue {
+            number
+            url
+          }
+        }
+      }
+      ... on DisconnectedEvent {
+        __typename
+        subject {
+          ... on Issue {
+            number
+          }
+        }
+      }
+    }
+  }
+
+  commits(last: 1) {
+    edges {
+      node {
+        commit {
+          oid
+          status {
+            contexts {
+              description
+              context
+              state
+              targetUrl
+            }
+          }
+        }
+      }
+    }
+    nodes {
+      commit {
+        checkSuites(last: 10) {
+          nodes {
+            app { name }
+            conclusion
+            status
+          }
+        }
+      }
+    }
+  }
+
+  reviews(last:100) {
+    nodes {
+      author { login }
+      updatedAt
+      state
+    }
+  }
+
+  labels(first: 25) {
+    edges {
+      node {
+        color
+        name
+      }
+    }
+  }
+
+  url
+`;
+
+const repoQuery = (name, after = 'null') => `
+  rateLimit {
+    limit
+    cost
+    remaining
+    resetAt
+  }
+  repository(owner: "keymanapp", name: "${name}") {
+    name
+    pullRequests(first: 10, after: ${after}, states: OPEN) {
+      edges {
+        node {
+          ${pullRequestQuery}
+        }
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
+
 // Lists all open pull requests in keyman repos
 // and all open pull requests + status for keymanapp repo
 // Gather the contributions for each recent user
 
-// Current rate limit cost is 60 points. We have 5000 points/hour.
+// Current rate limit cost is broken down into quite a few
+// requests. estimate under 50 points. We have 5000 points/hour.
 // https://developer.github.com/v4/guides/resource-limitations/
 
+/**
+ * Request wrapper for GitHub GraphQL
+ * @param query   GraphQL query string (without `query:{}` wrapper)
+ * @param key     name of request for logging
+ * @returns       JSON object
+ */
 async function httppostgh(query, key) {
-  consoleLog('services', 'github-status-' + key, '  starting refresh');
+  consoleLog('services', `github-status-${key}`, '  starting refresh');
   try {
-    const res = await httppost('api.github.com', '/graphql',  //3
-      {
-        Authorization: ` Bearer ${github_token}`,
+    const response = await fetch('https://api.github.com/graphql', {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${github_token}`,
         Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
       },
-      JSON.stringify({query: '{' + query + '}'})
-    );
-    return res;
+      body: JSON.stringify({query: '{' + query + '}'})
+    });
+
+    if(!response.ok) {
+      throw new Error(`Failed to query github graphql ${query} for ${key}: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
   } finally {
-    consoleLog('services', 'github-status-' + key, '  finishing refresh');
+    consoleLog('services', `github-status-${key}`, '  finishing refresh');
   }
 }
 
+async function runPromisesSequentially<T>(functions: (() => Promise<T>)[]): Promise<T[]> {
+  if (functions.length === 0) {
+    return [];
+  }
+  const [first, ...rest] = functions;
+
+  return [await first(), ...(await runPromisesSequentially(rest))];
+}
+
 export default {
-  get: function(sprint): Promise<{github, phase, adjustedStart}> {
+  get: async function(sprint): Promise<{github, phase, adjustedStart}> {
     const keys = Object.keys(queryStrings);
     consoleLog('services', 'github-status', 'starting refresh of 5 github services');
-    return Promise.all( keys.map(v => httppostgh(queryStrings[v], v)) ).then(values => {
+    const values = await runPromisesSequentially( keys.map(key => async () => {
+      const result = await httppostgh(queryStrings[key], key);
       try {
-        let data = keys.reduce((pv, cv, ix) => {
-          const j = JSON.parse(values[ix]);
-          if(!j || !j.data) {
-            try {
-              throw new Error(`Error parsing ${values[ix]}`);
-            } catch(e) {
-              console.log(`currentValue=${cv}`);
-              console.error(e);
-              Sentry.captureException(e);
-            }
-            return pv;
-          }
-          pv[cv] = j.data[cv];
-          pv[cv].rateLimit = j.data.rateLimit;
-          return pv;
-        }, {});
-        let githubPullsData = { data: data };
-
-        for(let item of Object.keys(data)) {
-          logGitHubRateLimit(data[item]?.rateLimit, 'github-status-'+item);
+        const j = result;
+        if(!j || !j.data) {
+          throw new Error(`Error parsing JSON for ${key}: '${result}`);
         }
-
-        const dd: any = githubPullsData.data;
-        if(!dd?.repository) {
-          return null;
-        }
-
-        const phase = getCurrentSprint(githubPullsData.data);
-
-        let d = new Date(phase.start);
-        d.setDate(d.getDate()-2);
-        let adjustedStart = d;
-
-        // TODO: is this correct now?
-        // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
-        if(adjustedStart > new Date()) adjustedStart = new Date();
-        return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
+        logGitHubRateLimit(j.data.rateLimit, 'github-status-'+key);
+        return j;//.data[key];
       } catch(e) {
-        consoleError('services', 'github-status', e);
-        Sentry.addBreadcrumb({
-          category: "JSON",
-          message: JSON.stringify(values)
-        });
+        console.error(e);
+        Sentry.captureException(e);
+      }
+      return null;
+    }));
+
+    // use list of repos --> to retrieve each org repo separately
+
+    const organization = values[keys.indexOf('organization')].data.organization;
+    for(const repo of organization.repositories.nodes) {
+      console.dir(repo);
+
+      try {
+        let after = 'null';
+        let n = 0;
+        repo.pullRequests = { edges: [] };
+        do {
+          const q = repoQuery(repo.name, after);
+          const j = await httppostgh(q, `organization-${repo.name}-${n}`);
+          if(!j || !j.data) {
+            throw new Error(`Error parsing JSON for organization-${repo.name}-${n}: '${JSON.stringify(j)}`);
+          }
+          logGitHubRateLimit(j.data.rateLimit, 'github-status-organization-'+repo.name+n);
+          repo.pullRequests.edges = repo.pullRequests.edges.concat(j.data.repository.pullRequests.edges); // = j.data.repository.pullRequests;
+          if(j.data.repository.pullRequests.pageInfo.hasNextPage) {
+            after = `"${j.data.repository.pullRequests.pageInfo.endCursor}"`;
+          } else {
+            after = null;
+          }
+          n++;
+        } while(after !== null);
+      } catch(e) {
+        console.error(e);
         Sentry.captureException(e);
         return null;
       }
-    });
+    }
+
+    try {
+      let data = keys.reduce((result, key, index) => {
+        result[key] = values[index].data[key];
+        result[key].rateLimit = values[index].data.rateLimit;
+        return result;
+      }, {});
+      let githubPullsData = { data };
+
+      // for(let item of Object.keys(data)) {
+      //   logGitHubRateLimit(data[item]?.rateLimit, 'github-status-'+item);
+      // }
+
+      const dd: any = githubPullsData.data;
+      if(!dd?.organization) {
+        return null;
+      }
+
+      const phase = getCurrentSprint(githubPullsData.data);
+
+      let d = new Date(phase.start);
+      d.setDate(d.getDate()-2);
+      let adjustedStart = d;
+
+      // TODO: is this correct now?
+      // adjust for when we are before the official start-of-sprint which causes all sorts of havoc
+      if(adjustedStart > new Date()) adjustedStart = new Date();
+      return {github: githubPullsData, phase: phase, adjustedStart: adjustedStart};
+    } catch(e) {
+      consoleError('services', 'github-status', e);
+      Sentry.addBreadcrumb({
+        category: "JSON",
+        message: JSON.stringify(values)
+      });
+      Sentry.captureException(e);
+      return null;
+    }
   },
 };

@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/node';
 import express from 'express';
 // import * as Tracing from "@sentry/tracing";
 
-import { ServiceStateCache, ServiceIdentifier } from '../shared/services.js';
+import { ServiceStateCache, ServiceIdentifier, ServiceState } from '../shared/services.js';
 import { SprintCache } from './data/sprint-cache.js';
 
 import ws from 'ws';
@@ -26,6 +26,7 @@ import gitHubMilestonesService from './services/github/github-milestones.js';
 import { testUserTestComment } from './keymanapp-test-bot/test-user-test-results-comment.js';
 import { performanceLog } from './performance-log.js';
 import { consoleLog } from './util/console-log.js';
+import { buildVersion } from '../shared/version.js';
 
 sms.install();
 
@@ -132,6 +133,21 @@ const STATUS_SOURCES: ServiceIdentifier[] = [
   ServiceIdentifier.LinuxLsdevSilOrgStable
 ];
 
+// TODO: move all other services into the STATUS_SOURCES
+
+// FOR DEBUGGING
+// statusData.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.TeamCity, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.disabled);
+// statusData.setServiceState(ServiceIdentifier.CommunitySite, ServiceState.disabled);
+// for(const id of STATUS_SOURCES) {
+//   statusData.setServiceState(id, ServiceState.disabled);
+// }
+
+///
+
 initialLoad();
 
 function initialLoad() {
@@ -196,6 +212,7 @@ wsServer.on('connection', socket => {
     if(message == 'ping')
       socket.send('pong');
   });
+  socket.send('version:' + JSON.stringify({buildVersion}));
   sendInitialRefreshMessages(socket);
 });
 
@@ -211,9 +228,16 @@ function respondKeymanDataChange() {
 }
 
 async function respondGitHubDataChange(request: express.Request) {
-  if(timingManager.isTooSoon('github', GitHubRefreshRate, () => respondGitHubDataChange(request))) {
-    return;
-  }
+  // For now, removing this so that we get all refreshes -- check_run and
+  // check_suite are busy but only do anything significant if they reference a
+  // specific PR, so majority of those events should have no real impact. The
+  // problem here is that we lose the individual refreshes as they are coalesced
+  // by timingManager, but we need them to keep issues and PRs in sync, so a
+  // redesign is needed.
+  //
+  // if(timingManager.isTooSoon('github', GitHubRefreshRate, () => respondGitHubDataChange(request))) {
+  //   return;
+  // }
 
   timingManager.start('github');
   try {
@@ -221,16 +245,18 @@ async function respondGitHubDataChange(request: express.Request) {
     const issueNumber = request?.body?.issue?.number;
     const pullNumber = request?.body?.pull_request?.number;
     const repo = request?.body?.repository?.name;
+    const action = request?.body?.action;
 
-    if((event == 'issues' || event == 'issue_comment') && !request.body.issue.pull_request) {
-      consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber}`);
+    if((event == 'issues' || event == 'issue_comment') && !request?.body?.issue?.pull_request) {
+      consoleLog('main', 'github', `POST webhook ${event}.${action} : keymanapp/${repo}#${issueNumber}`);
       try {
         if(await statusData.refreshGitHubIssueData(repo, issueNumber)) {
           sendWsAlert(true, 'github-issues');
+
+          await respondGitHubContributionsDataChange(
+            {issue:true, post:false, pull:false, review:false, test:false}
+          );
         }
-        await respondGitHubContributionsDataChange(
-          {issue:true, post:false, pull:false, review:false, test:false}
-        );
       } catch(error) {
         reportError(error);
       }
@@ -245,18 +271,30 @@ async function respondGitHubDataChange(request: express.Request) {
       const prNumber = request.body?.pull_request?.number;
   */
     } else {
-      consoleLog('main', 'github', `POST webhook ${event} : keymanapp/${repo}#${issueNumber ?? pullNumber}`);
       try {
-        const hasChanged = await statusData.refreshGitHubStatusData('current');
-        if(hasChanged) {
-          sendWsAlert(true, 'github');
+        const prNumbers: {hasBeenClosed: boolean, repo: string, pullNumber: number}[] = [];
+        if(issueNumber && repo && request?.body?.issue?.pull_request) {
+          prNumbers.push({hasBeenClosed: false, repo, pullNumber: issueNumber});
+        } else if(pullNumber && repo) {
+          prNumbers.push({hasBeenClosed: request.body.action == 'closed',  repo, pullNumber});
+        } else if(event == 'check_suite') {
+          prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
+        } else if(event == 'check_run') {
+          prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         }
-        if(event != 'check_run' && event != 'check_suite') {
-          // We'll only refresh contribution data if the event type merits it
-          const isUserTestComment =
-            event == 'issue_comment' &&
-            (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
-          await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request', test:isUserTestComment});
+
+        consoleLog('main', 'github', `POST webhook ${event}.${action} : ${prNumbers.map(p => `keymanapp/${p.repo}#${p.pullNumber}`).join(',')}`);
+
+        if(await statusData.refreshGitHubPullRequestsData(prNumbers)) {
+          sendWsAlert(true, 'github'); // TODO: later just refresh prs
+
+          if(event != 'check_run' && event != 'check_suite') {
+            // We'll only refresh contribution data if the event type merits it -- checks do not impact contributions
+            const isUserTestComment =
+              event == 'issue_comment' &&
+              (request?.body?.comment?.body ?? '').match(USER_TEST_RESULT_REGEX);
+            await respondGitHubContributionsDataChange({issue:event=='issues', post:false, pull:event=='pull_request', review:event=='pull_request' || event=='pull_request_review', test:isUserTestComment});
+          }
         }
       } catch(error) {
         reportError(error);

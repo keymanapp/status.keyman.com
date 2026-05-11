@@ -3,6 +3,7 @@ import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
 import { VisibilityService } from '../visibility/visibility.service';
+import { Status } from '../status/status.interface';
 
 @Component({
     selector: 'app-agent-detail',
@@ -12,7 +13,7 @@ import { VisibilityService } from '../visibility/visibility.service';
 })
 export class AgentDetailComponent extends PopupComponent implements OnInit {
   @Input() agent: any;
-  @Input() status: any;
+  @Input() status: Status;
 
   platform: PlatformSpec;
   buildType: string;
@@ -45,7 +46,7 @@ export class AgentDetailComponent extends PopupComponent implements OnInit {
       }
       if(this.agent.build.branchName?.match(/^\d+$/)) {
         const prNumber = parseInt(this.agent.build.branchName, 10);
-        this.pullRequest = this.status.github?.data?.repository?.pullRequests?.edges?.find(pr => pr.node?.number == prNumber)?.node;
+        this.pullRequest = this.status.keymanRepo?.pullRequests?.edges?.find(pr => pr.node?.number == prNumber)?.node;
         if(!this.pullRequest) {
           this.pullRequest = {number: prNumber, title: '<unknown pull request>'};
         }

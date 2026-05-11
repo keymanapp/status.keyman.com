@@ -2,14 +2,16 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import { isDevMode } from "@angular/core";
+
 export const environment = {
   production: false,
 
-  // When running in development with ng watch on 4200 and nodemon on 3000, otherwise
+  // When running in development with ng watch on http:8061 and nodemon on 8060, otherwise
   // assume we are on the same host as the status backend
-  statusUrl: window.location.host == 'localhost:4200' ? '//localhost:3000/status' : '/status',
-  refreshBackendUrl: window.location.host == 'localhost:4200' ? '//localhost:3000/refresh' : '/refresh',
-  webSocketUrl: window.location.host == 'localhost:4200' ? 'ws://localhost:3000' : 'ws://'+window.location.host,
+  statusUrl: isDevMode() ? '//localhost:8060/status' : '/status',
+  refreshBackendUrl: isDevMode() ? '//localhost:8060/refresh' : '/refresh',
+  webSocketUrl: isDevMode() ? 'ws://localhost:8060' : 'ws://'+window.location.host,
 };
 
 /*

@@ -25,6 +25,7 @@ Before running the node server, you need to have two API tokens set as environme
 export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
+# export KEYMANSTATUS_GITHUB_WEBHOOK_SECRET=[github webhook secret here] # optional unless testing the github webhook
 ```
 
 On Windows, you'll also need to have Git Bash installed in `C:\Program Files\git\bin\bash.exe`.
@@ -54,3 +55,19 @@ Three files needed for development:
 * `.keymanapp-test-bot.appid`: integer appid (e.g. 134443 for the normal test app)
 * `.keymanapp-test-bot.pem`: certificate for GitHub integration for app
 * `.keymanapp-test-bot.secret`: secret for GitHub integration for app
+
+### Webhooks
+
+* GitHub: 2 webhooks are configured to the same endpoint /webhook/github to POST
+  events from keymanapp organization. These are split to make log review
+  simpler, because check_run and check_suite are very noisy.
+  * check_run, check_suite
+  * issues, issue_comment, milestones, pull requests, pull request reviews
+
+* TeamCity: /webhook/teamcity - for build status
+
+* Discourse: /webhook/discourse - for community.software.sil.org topics
+
+* Sentry: /webhook/sentry - when new errors are logged
+
+* GitHub Testbot app: /webhook/keymanapp-test-bot

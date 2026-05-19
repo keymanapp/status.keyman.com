@@ -3,8 +3,13 @@ import { timingManager, sendWsAlert, respondGitHubContributionsDataChange, repor
 import { statusData } from '../data/status-data.js';
 import { USER_TEST_RESULT_REGEX } from '../services/github/github-test-contributions.js';
 import { consoleLog } from '../util/console-log.js';
+import { Webhooks } from "@octokit/webhooks";
 
-export async function processGithubWebhookEvent(request: express.Request) {
+const webhooks = new Webhooks({
+  secret: process.env.KEYMANSTATUS_GITHUB_WEBHOOK_SECRET ?? 'unset',
+});
+
+export async function processGithubWebhookEvent(request: express.Request, response: express.Response): Promise<boolean> {
   // For now, removing this so that we get all refreshes -- check_run and
   // check_suite are busy but only do anything significant if they reference a
   // specific PR, so majority of those events should have no real impact. The
@@ -17,6 +22,15 @@ export async function processGithubWebhookEvent(request: express.Request) {
   // }
   timingManager.start('github');
   try {
+
+    const signature = request.headers["x-hub-signature-256"] as string ?? '';
+    const body = JSON.stringify(request.body);
+
+    if (!(await webhooks.verify(body, signature))) {
+      response.status(401).send("Unauthorized");
+      return false;
+    }
+
     const event = request?.headers?.['x-github-event'];
     const issueNumber = request?.body?.issue?.number;
     const pullNumber = request?.body?.pull_request?.number;
@@ -78,4 +92,6 @@ export async function processGithubWebhookEvent(request: express.Request) {
   } finally {
     timingManager.finish('github');
   }
+  return true;
 }
+

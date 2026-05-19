@@ -318,10 +318,11 @@ app.use('/', express.static((environment == Environment.Development ? '' : '../'
 
 /* Web hooks */
 
-app.post('/webhook/github', (request: express.Request, response) => {
+app.post('/webhook/github', (request: express.Request, response: express.Response) => {
   (async () => {
-    processGithubWebhookEvent(request);
-    slackLGTM(request.body);
+    if(await processGithubWebhookEvent(request, response)) {
+      slackLGTM(request.body);
+    }
   })();
   response.send('ok');
 });

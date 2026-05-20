@@ -293,15 +293,20 @@ const repoQuery = (name, after = 'null') => `
 async function httppostgh(query, key) {
   consoleLog('services', `github-status-${key}`, '  starting refresh');
   try {
-    const response = await fetch('https://api.github.com/graphql', {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
-      body: JSON.stringify({query: '{' + query + '}'})
-    });
-
+    let response;
+    try {
+      response = await fetch('https://api.github.com/graphql', {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${github_token}`,
+          Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
+        },
+        body: JSON.stringify({query: '{' + query + '}'})
+      });
+    } catch(e) {
+      console.dir(e);
+      throw e;
+    }
     if(!response.ok) {
       throw new Error(`Failed to query github graphql ${query} for ${key}: ${response.status} ${response.statusText}`);
     }

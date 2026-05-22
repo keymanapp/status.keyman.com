@@ -29,6 +29,7 @@ environment variables. These should be added in script `server/localenv.sh`.
 export KEYMANSTATUS_TEAMCITY_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_GITHUB_TOKEN=[your personal auth token here]
 export KEYMANSTATUS_SENTRY_TOKEN=[your personal auth token here]
+# export KEYMANSTATUS_GITHUB_WEBHOOK_SECRET=[github webhook secret here] # optional unless testing the github webhook
 ```
 
 ### @keymanapp-test-bot
@@ -77,6 +78,22 @@ The unit tests will currently stop the back end container before running.
 ```bash
 ./build.sh test --debug
 ```
+
+## Webhooks
+
+* GitHub: 2 webhooks are configured to the same endpoint /webhook/github to POST
+  events from keymanapp organization. These are split to make log review
+  simpler, because check_run and check_suite are very noisy.
+  * check_run, check_suite
+  * issues, issue_comment, milestones, pull requests, pull request reviews
+
+* TeamCity: /webhook/teamcity - for build status
+
+* Discourse: /webhook/discourse - for community.software.sil.org topics
+
+* Sentry: /webhook/sentry - when new errors are logged
+
+* GitHub Testbot app: /webhook/keymanapp-test-bot
 
 ## Production setup
 

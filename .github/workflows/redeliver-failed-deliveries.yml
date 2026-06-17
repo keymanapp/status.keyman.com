@@ -39,7 +39,7 @@ jobs:
 
       - name: Run script
         env:
-          TOKEN: ${{ secrets.KEYMAN_SERVER_REPO_ACCESS_PAT }}
+          TOKEN: ${{ secrets.KEYMAN_SERVER_STATUS_KEYMANAPP_WEBHOOK }}
           ORGANIZATION_NAME: 'keymanapp'
           HOOK_ID: '288390178'
           LAST_REDELIVERY_VARIABLE_NAME: 'keyman_github_webhook_last_redelivery'

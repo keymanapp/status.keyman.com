@@ -1,5 +1,5 @@
 // This script uses GitHub's Octokit SDK to make API requests. For more information, see [AUTOTITLE](/rest/guides/scripting-with-the-rest-api-and-javascript).
-const { Octokit } = require("octokit");
+import { Octokit } from 'octokit';
 
 //
 async function checkAndRedeliverWebhooks(TOKEN, ORGANIZATION_NAME, HOOK_ID, LAST_REDELIVERY_VARIABLE_NAME, WORKFLOW_REPO_NAME, WORKFLOW_REPO_OWNER) {

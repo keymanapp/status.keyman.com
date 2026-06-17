@@ -28,6 +28,7 @@ import { performanceLog } from './performance-log.js';
 import { consoleLog } from './util/console-log.js';
 import { buildVersion } from '../shared/version.js';
 import { processGithubWebhookEvent } from './webhooks/github-webhook.js';
+import { triggerGitHookRedeliveryWorkflow } from './webhooks/github-webhook-redelivery.js';
 
 sms.install();
 
@@ -196,6 +197,12 @@ setInterval(() => {
     respondSentryDataChange();
   }
 }, REFRESH_INTERVAL);
+
+
+setInterval(() => {
+  // POST to workflow_dispatch --> github actions
+  triggerGitHookRedeliveryWorkflow();
+}, 1000 * 60 * 10); // every 10 minutes
 
 /******************************************
  * Web endpoints

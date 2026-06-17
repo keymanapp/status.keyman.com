@@ -3,8 +3,10 @@ name: Redeliver failed webhook deliveries
 
 # This workflow runs every 10 minutes starting at 3 minutes past the hour or when manually triggered.
 on:
-  schedule:
-    - cron: '3,13,23,33,43,53 * * * *'
+  # It appears that cron scheduling is not currently reliable on GitHub, e.g.
+  #   https://upptime.js.org/blog/2021/01/22/github-actions-schedule-not-working/
+  # schedule:
+  #   - cron: '3,13,23,33,43,53 * * * *'
   workflow_dispatch:
 
 # This workflow will use the built in `GITHUB_TOKEN` to check out the repository contents. This grants `GITHUB_TOKEN` permission to do that.

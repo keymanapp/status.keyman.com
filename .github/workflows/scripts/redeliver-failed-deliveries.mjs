@@ -16,10 +16,15 @@ async function checkAndRedeliverWebhooks(TOKEN, ORGANIZATION_NAME, HOOK_ID, LAST
       repoName: WORKFLOW_REPO_NAME,
       octokit,
     });
+
     const lastWebhookRedeliveryTime = lastStoredRedeliveryTime || (Date.now() - (24 * 60 * 60 * 1000)).toString();
 
     // Record the time that this script started redelivering webhooks.
     const newWebhookRedeliveryTime = Date.now().toString();
+
+    console.log(`DEBUG: Previous REDELIVERY TIME: ${lastStoredRedeliveryTime}`);
+    console.log(`DEBUG: Caclulated REDELIVERY TIME: ${lastWebhookRedeliveryTime}`);
+    console.log(`DEBUG: New REDELIVERY TIME : ${newWebhookRedeliveryTime}`);
 
     // Get the webhook deliveries that were delivered after `lastWebhookRedeliveryTime`.
     const deliveries = await fetchWebhookDeliveriesSince({

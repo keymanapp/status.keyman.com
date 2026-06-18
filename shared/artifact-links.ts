@@ -23,7 +23,8 @@ export const artifactLinks = {
     ]},
 
     'Keyman_KeymanMac_PullRequests': {platform: 'mac', name: 'macOS', icon: 'mac.png', downloads: [
-      {fragment: 'upload/$version/keyman-$version_with_tag.dmg', name: '**Keyman for macOS**', icon: 'keyman.png'} ,
+      {fragment: 'upload/$version/keyman-$version_with_tag.dmg', name: '**Keyman for macOS (.dmg)**', icon: 'keyman.png'} ,
+      {fragment: 'upload/$version/keyman-$version_with_tag.pkg', name: '**Keyman for macOS (.pkg)**', icon: 'keyman.png'} ,
       //TODO: remove next download when version_with_tag artifact filenames have propagated everywhere
       {fragment: 'upload/$version/keyman-$version.dmg', name: 'Keyman for macOS (old PRs)', icon: 'keyman.png'} ,
     ]},

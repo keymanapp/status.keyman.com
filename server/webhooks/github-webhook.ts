@@ -66,7 +66,7 @@ export async function processGithubWebhookEvent(request: express.Request, respon
         if (issueNumber && repo && request?.body?.issue?.pull_request) {
           prNumbers.push({ hasBeenClosed: request.body.issue.state == 'closed', repo, pullNumber: issueNumber });
         } else if (pullNumber && repo) {
-          prNumbers.push({ hasBeenClosed: request.body.action == 'closed', repo, pullNumber });
+          prNumbers.push({ hasBeenClosed: request.body.action == 'closed' || request.body.pull_request?.state == 'closed', repo, pullNumber });
         } else if (event == 'check_suite') {
           prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         } else if (event == 'check_run') {

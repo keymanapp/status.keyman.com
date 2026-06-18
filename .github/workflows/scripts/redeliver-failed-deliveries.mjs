@@ -22,9 +22,9 @@ async function checkAndRedeliverWebhooks(TOKEN, ORGANIZATION_NAME, HOOK_ID, LAST
     // Record the time that this script started redelivering webhooks.
     const newWebhookRedeliveryTime = Date.now().toString();
 
-    console.log(`DEBUG: Previous REDELIVERY TIME: ${lastStoredRedeliveryTime}`);
-    console.log(`DEBUG: Caclulated REDELIVERY TIME: ${lastWebhookRedeliveryTime}`);
-    console.log(`DEBUG: New REDELIVERY TIME : ${newWebhookRedeliveryTime}`);
+    // console.log(`DEBUG: Previous REDELIVERY TIME: ${lastStoredRedeliveryTime} ${Date(lastStoredRedeliveryTime)}`);
+    // console.log(`DEBUG: Caclulated REDELIVERY TIME: ${lastWebhookRedeliveryTime} ${Date(lastWebhookRedeliveryTime)}`);
+    // console.log(`DEBUG: New REDELIVERY TIME : ${newWebhookRedeliveryTime} ${Date(newWebhookRedeliveryTime)}`);
 
     // Get the webhook deliveries that were delivered after `lastWebhookRedeliveryTime`.
     const deliveries = await fetchWebhookDeliveriesSince({
@@ -84,7 +84,7 @@ async function checkAndRedeliverWebhooks(TOKEN, ORGANIZATION_NAME, HOOK_ID, LAST
         failedDeliveryIDs.length
       } failed webhook deliveries out of ${
         deliveries.length
-      } total deliveries since ${Date(lastWebhookRedeliveryTime)}.`
+      } total deliveries between ${Date(lastWebhookRedeliveryTime)} and ${Date(newWebhookRedeliveryTime)}.`
     );
   } catch (error) {
     // If there was an error, log the error so that it appears in the workflow run log, then throw the error so that the workflow run registers as a failure.

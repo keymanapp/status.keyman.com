@@ -4,6 +4,7 @@ import teamcityService from "../services/teamcity/teamcity.js";
 import { statusData } from '../data/status-data.js';
 import { artifactLinks } from '../../shared/artifact-links.js';
 import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams.js";
+import { inspect } from "node:util";
 
 type BuildDataCacheItem = {context:string, target_url:string, state:string};
 type BuildDataCache = {[index:string]: BuildDataCacheItem};
@@ -22,7 +23,8 @@ export async function getArtifactLinksComment(
   try {
     statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
   } catch(e) {
-    console.error(`[@keymanapp-test-bot] ${e}`);
+    console.error(`[@keymanapp-test-bot] getArtifactLinksComment: ${e}`);
+    console.error(inspect(e));
     return '';
   }
   //const statuses = await octokit.rest.repos.getCombinedStatusForRef({owner:'keymanapp',repo:'keyman',ref:'fix/web/5950-clear-timeout-on-longpress-flick'/*pull.data.head.ref*/});
@@ -63,20 +65,21 @@ export async function getArtifactLinksComment(
     // artifactLinks
     let u;
     if(!s[context].target_url) {
-      console.warn(`[@keymanapp-test-bot] skipping ${s[context].context}`);
+      console.warn(`[@keymanapp-test-bot] getArtifactLinksComment: skipping ${s[context].context}`);
       continue;
     }
     try {
       u = new URL(s[context].target_url);
     } catch(e) {
-      console.error(`[@keymanapp-test-bot] ${e}`);
+      console.error(`[@keymanapp-test-bot] getArtifactLinksComment(2): ${e}`);
+      console.error(inspect(e));
       continue;
     }
     if (context == 'Debian Packaging') {
       // https://github.com/keymanapp/keyman/actions/runs/4294449810
       const matches = s[context].target_url.match(/.+\/runs\/(\d+)/);
       if (!matches) {
-        console.error(`[@keymanapp-test-bot] Can't find workflow run in url ${s[context].target_url}`);
+        console.error(`[@keymanapp-test-bot] getArtifactLinksComment: Can't find workflow run in url ${s[context].target_url}`);
         return '';
       }
       const run_id = matches[1];
@@ -90,7 +93,7 @@ export async function getArtifactLinksComment(
           // "keyman-binarypkgs-focal_amd64"
           const distroMatches = artifact.name.match(/keyman-binarypkgs-(.+)_amd64/);
           if (!distroMatches) {
-            console.error(`[@keymanapp-test-bot] Can't find distribution in artifact name ${artifact.name}`);
+            console.error(`[@keymanapp-test-bot] getArtifactLinksComment: Can't find distribution in artifact name ${artifact.name}`);
             return '';
           }
           if (!links['Linux']) links['Linux'] = [];
@@ -102,12 +105,13 @@ export async function getArtifactLinksComment(
           });
         }
       } catch (e) {
-        console.error(`[@keymanapp-test-bot] ${e}`);
+        console.error(`[@keymanapp-test-bot] getArtifactLinksComment(3): ${e}`);
+        console.error(inspect(e));
         return '';
       }
     } else if(u.searchParams.has('buildTypeId') || u.pathname.match(/\/buildConfiguration\//)) {
       const { buildTypeId, buildId } = getTeamcityUrlParams(u);
-      console.log(`[@keymanapp-test-bot] Finding TeamCity build data for build ${buildTypeId}:${buildId}`)
+      console.log(`[@keymanapp-test-bot] getArtifactLinksComment: Finding TeamCity build data for build ${buildTypeId}:${buildId}`)
 
       version_with_tag = null;
       version = null;
@@ -116,7 +120,7 @@ export async function getArtifactLinksComment(
       if(buildData) version_with_tag = findBuildVersion(buildData);
       if(version_with_tag) version = /^(\d+\.\d+\.\d+)/.exec(version_with_tag)?.[1];
       if(!version) {
-        console.error(`[@keymanapp-test-bot] Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
+        console.error(`[@keymanapp-test-bot] getArtifactLinksComment: Failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
         if(!teamCityDataFromCache) {
           continue;
         }
@@ -130,12 +134,12 @@ export async function getArtifactLinksComment(
         if(buildData) version_with_tag = findBuildVersion(buildData);
         if(version_with_tag) version = /^(\d+\.\d+\.\d+)/.exec(version_with_tag)?.[1];
         if(!version) {
-          console.error(`[@keymanapp-test-bot] After reload, failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
+          console.error(`[@keymanapp-test-bot] getArtifactLinksComment: After reload, failed to find version information for artifact links for ${buildTypeId}:${buildId}; buildData: ${JSON.stringify(buildData)}`);
           continue;
         }
       }
 
-      console.log(`[@keymanapp-test-bot] Found version data for ${buildTypeId}:${buildId}:${version_with_tag}`)
+      console.log(`[@keymanapp-test-bot] getArtifactLinksComment: Found version data for ${buildTypeId}:${buildId}:${version_with_tag}`)
 
       const buildLevel = buildData?.properties?.property?.find(prop => prop.name == 'env.KEYMAN_BUILD_LEVEL')?.value;
       let t = artifactLinks.teamCityTargets[buildTypeId];

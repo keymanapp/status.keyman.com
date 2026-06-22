@@ -91,9 +91,9 @@ Sentry.init({
 
 const debugTestBot = false;
 
-if(debugTestBot) {
-  testUserTestComment();
-}
+// if(debugTestBot) {
+//   testUserTestComment();
+// }
 
 const port = environment == Environment.Development ? 3000 : 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;
@@ -320,6 +320,9 @@ function sendInitialRefreshMessages(socket) {
 
 /* Static Endpoints */
 
+// must be before express.json()!
+app.use(keymanAppTestBotMiddleware); // '/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
+
 app.use(express.json({ limit: '10mb' })); // for parsing application/json
 
 app.use('/', express.static((environment == Environment.Development ? '' : '../') + '../../public/dist/public'));
@@ -364,8 +367,6 @@ app.post('/webhook/discourse', (request, response) => {
   })();
   response.send('ok');
 });
-
-app.use('/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
 
 export function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {
@@ -620,7 +621,7 @@ app.all('/{*splat}', (request, response) => {
 // The error handler must be before any other error middleware and after all controllers
 // app.use(Sentry.Handlers.errorHandler());
 
-if(!debugTestBot) {
+// if(!debugTestBot) {
   consoleLog('main', null, `Starting app listening on ${port}`);
   const server = app.listen(port);
 
@@ -631,4 +632,4 @@ if(!debugTestBot) {
       wsServer.emit('connection', socket, request);
     });
   });
-}
+// }

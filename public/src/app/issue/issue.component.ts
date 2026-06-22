@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
 import emojiRegex from 'emoji-regex';
@@ -13,6 +13,7 @@ import { getAuthorAvatarUrl } from '../../../../shared/users';
     selector: 'app-issue',
     templateUrl: './issue.component.html',
     styleUrls: ['./issue.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class IssueComponent extends PopupComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { NgZone, Component } from '@angular/core';
+import { NgZone, Component, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StatusService } from '../status/status.service';
 import { ServiceIdentifier } from '../../../../shared/services';
@@ -14,6 +14,7 @@ import { buildVersion } from '../../../../shared/version';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
     providers: [StatusService],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class HomeComponent {

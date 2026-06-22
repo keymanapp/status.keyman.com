@@ -41,7 +41,7 @@
 
         @if (showAgents) {
           <span class="navbar-agents">
-            <app-build-queue [status]="status" [queue]="status?.teamCityQueue"></app-build-queue>
+            <app-build-queue [status]="status" [queue]="$safeNavigationMigration(status?.teamCityQueue)"></app-build-queue>
             @for (agent of status?.teamCityAgents; track agent) {
               <app-agent-detail [status]="status" [agent]="agent"></app-agent-detail>
             }

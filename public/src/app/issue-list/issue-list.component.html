@@ -2,17 +2,17 @@
   @if (!isNav) {
     <app-count-box
       [repo]="repo"
-      [title]="milestone?.title"
+      [title]="$safeNavigationMigration(milestone?.title)"
       [unfixedCount]="getUnfixedIssueCount()"
-      [count]="milestone?.count"
-      [label]="platform?.id ? platform?.id+'/' : null"
+      [count]="$safeNavigationMigration(milestone?.count)"
+      [label]="platform?.id ? $safeNavigationMigration(platform?.id)+'/' : null"
       [alwaysShow]="view == 'all'"
     [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' || milestone?.title == 'Tests' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
   }
 
   @if (isNav) {
     <span class="navbar-new-issues">
-      <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/+-label%3Acore/" class="label hide-if-zero {{errorClassIfNonZero(issues?.length)}}">New issues: {{issues?.length}}</a>
+      <a target='_blank' href="https://github.com/keymanapp/keyman/issues?q=is%3Aopen+is%3Aissue+-label%3Aandroid/+-label%3Aios/+-label%3Alinux/+-label%3Amac/+-label%3Adeveloper/+-label%3Aweb/+-label%3Awindows/+-label%3Acommon/+-label%3Acore/" class="label hide-if-zero {{errorClassIfNonZero($safeNavigationMigration(issues?.length))}}">New issues: {{issues?.length}}</a>
     </span>
   }
 

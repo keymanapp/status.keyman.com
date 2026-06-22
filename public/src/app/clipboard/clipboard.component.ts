@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 
 /*interface ClipboardItem {
   readonly types: string[];
@@ -19,6 +19,7 @@ declare var ClipboardItem: {
     selector: 'app-clipboard',
     templateUrl: './clipboard.component.html',
     styleUrls: ['./clipboard.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ClipboardComponent implements OnInit {

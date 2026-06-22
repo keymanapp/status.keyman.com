@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
@@ -8,6 +8,7 @@ import { VisibilityService } from '../visibility/visibility.service';
     selector: 'app-build-queue',
     templateUrl: './build-queue.component.html',
     styleUrls: ['./build-queue.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class BuildQueueComponent extends PopupComponent implements OnInit {

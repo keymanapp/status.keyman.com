@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-box-pr-project',
     templateUrl: './box-pr-project.component.html',
     styleUrls: ['./box-pr-project.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class BoxPrProjectComponent implements OnInit {

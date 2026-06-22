@@ -320,7 +320,7 @@ function sendInitialRefreshMessages(socket) {
 
 /* Static Endpoints */
 
-app.use(express.json()); // for parsing application/json
+app.use(express.json({ limit: '10mb' })); // for parsing application/json
 
 app.use('/', express.static((environment == Environment.Development ? '' : '../') + '../../public/dist/public'));
 

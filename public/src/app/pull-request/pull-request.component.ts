@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
 import emojiRegex from 'emoji-regex';
@@ -14,6 +14,7 @@ import { pullEmoji } from '../utility/pullEmoji';
     selector: 'app-pull-request',
     templateUrl: './pull-request.component.html',
     styleUrls: ['./pull-request.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PullRequestComponent extends PopupComponent implements OnInit, OnChanges {

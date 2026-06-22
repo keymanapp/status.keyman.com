@@ -1,4 +1,4 @@
-import { ElementRef, ViewChild } from '@angular/core';
+import { ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { VisibilityService } from '../visibility/visibility.service';
     selector: 'app-popup',
     template: ``,
     styleUrls: ['./popup.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PopupComponent implements OnInit {

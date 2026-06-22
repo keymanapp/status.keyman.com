@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
@@ -12,6 +12,7 @@ import { IssueView } from '../../state';
     selector: 'app-issue-list',
     templateUrl: './issue-list.component.html',
     styleUrls: ['./issue-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class IssueListComponent extends PopupComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
 import { issueLabelScopes } from "../../../../shared/issue-labels";
@@ -12,6 +12,7 @@ import { dataModel } from '../data/data.model';
     selector: 'app-assigned-issues',
     templateUrl: './assigned-issues.component.html',
     styleUrls: ['./assigned-issues.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AssignedIssuesComponent {

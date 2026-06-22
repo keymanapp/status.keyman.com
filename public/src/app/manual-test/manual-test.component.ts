@@ -4,7 +4,7 @@
  * @keymanapptestbot implementation
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
@@ -12,6 +12,7 @@ import { switchMap } from 'rxjs/operators';
     selector: 'app-manual-test',
     templateUrl: './manual-test.component.html',
     styleUrls: ['./manual-test.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ManualTestComponent implements OnInit {

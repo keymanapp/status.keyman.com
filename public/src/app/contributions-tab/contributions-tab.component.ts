@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { issueLabelScopes } from '../../../../shared/issue-labels';
 import { getUserAvatarUrl, getTz } from '../../../../shared/users';
 import { appState } from '../../state';
@@ -11,6 +11,7 @@ import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUr
     selector: 'app-contributions-tab',
     templateUrl: './contributions-tab.component.html',
     styleUrls: ['./contributions-tab.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ContributionsTabComponent implements OnInit, OnChanges, OnDestroy {

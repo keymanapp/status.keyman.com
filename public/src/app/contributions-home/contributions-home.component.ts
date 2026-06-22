@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ServiceIdentifier } from '../../../../shared/services';
 import { Status, EMPTY_STATUS } from '../status/status.interface';
@@ -10,6 +10,7 @@ import { StatusService } from '../status/status.service';
     templateUrl: './contributions-home.component.html',
     styleUrls: ['./contributions-home.component.css'],
     providers: [StatusService],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ContributionsHomeComponent implements OnInit {

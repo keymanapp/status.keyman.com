@@ -2,6 +2,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import {
   provideHttpClient,
   withInterceptorsFromDi,
+  withXhr
 } from "@angular/common/http";
 import { ErrorHandler, NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
@@ -83,7 +84,7 @@ import { ServiceStatePopupComponent } from "./service-state-popup/service-state-
   ],
   providers: [
     VisibilityService,
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
 
     // Enable Sentry error reporting
     {

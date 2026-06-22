@@ -1,7 +1,7 @@
 /*
  * Keyman is copyright (C) SIL Global. MIT License.
  */
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PopupComponent } from '../popup/popup.component';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { VisibilityService } from '../visibility/visibility.service';
@@ -11,6 +11,7 @@ import { ServiceIdentifier, ServiceState, ServiceStateRecord } from '../../../..
   selector: 'app-service-state-popup',
   templateUrl: './service-state-popup.component.html',
   styleUrl: './service-state-popup.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ServiceStatePopupComponent extends PopupComponent implements OnInit, OnDestroy {

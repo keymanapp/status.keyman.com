@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { getUserAvatarUrl, getTz } from '../../../../shared/users';
 import { appState } from '../../state';
 import { dataModel } from '../data/data.model';
@@ -7,6 +7,7 @@ import { dataModel } from '../data/data.model';
     selector: 'app-contributions',
     templateUrl: './contributions.component.html',
     styleUrls: ['./contributions.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ContributionsComponent implements OnInit, OnDestroy {

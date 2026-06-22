@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ServiceIdentifier } from '../../../../shared/services';
 import { compare as versionCompare } from "compare-versions";
 import { PopupComponent } from '../popup/popup.component';
@@ -14,6 +14,7 @@ interface DeployTarget {
     selector: 'app-deploy-box',
     templateUrl: './deploy-box.component.html',
     styleUrls: ['./deploy-box.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DeployBoxComponent extends PopupComponent implements OnInit, OnChanges {

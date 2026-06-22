@@ -204,7 +204,7 @@ function shouldProcessEvent(sender: components["schemas"]["simple-user"], state:
 }
 
 const exports = (app: Probot) => {
-  app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], (context) => {
+  app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], async (context) => {
     log('pull_request ENTER: '+context.id+', '+context.payload.pull_request.number);
     if(!shouldProcessEvent(context.payload.sender!, context.payload.pull_request.state)) {
       log('pull_request EXIT: '+context.id+' -- skipping');
@@ -223,7 +223,7 @@ const exports = (app: Probot) => {
     return 'ok';
   });
 
-  app.on(['issues.labeled'], (context) => {
+  app.on(['issues.labeled'], async (context) => {
     log('issues.labeled ENTER: '+context.id+', '+context.payload.issue.number);
     if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state!)) {
       log('issues.labeled EXIT: '+context.id+' -- skipping');
@@ -242,7 +242,7 @@ const exports = (app: Probot) => {
     return 'ok';
   });
 
-  app.on(['issues.opened', 'issues.edited'], (context) => {
+  app.on(['issues.opened', 'issues.edited'], async (context) => {
     log('issue ENTER: '+context.id+', '+context.payload.issue.number);
     if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state!)) {
       log('issue EXIT: '+context.id+' -- skipping');
@@ -281,7 +281,7 @@ const exports = (app: Probot) => {
     return 'ok';
   });
 
-  app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], (context) => {
+  app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async (context) => {
     log('issue_comment ENTER: '+context.id+', '+context.payload.comment.id);
     if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {
       log('issue_comment EXIT: '+context.id+' -- skipping');
@@ -300,7 +300,7 @@ const exports = (app: Probot) => {
     return 'ok';
   });
 
-  app.on(['status'], (context) => {
+  app.on(['status'], async (context) => {
     log('status ENTER: '+context.id+', '+context.payload.sha);
     if(context.payload.context == 'user_testing' || context.payload.state != 'success') {
       log('status EXIT: '+context.id+' -- ignoring event');

@@ -13,6 +13,7 @@ import * as keymanappTestBot from './keymanapp-test-bot.js';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { consoleError, consoleLog } from "../util/console-log.js";
+import { inspect } from "node:util";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -49,13 +50,19 @@ const probot = new Probot({
 });
 
 const middleware = await createNodeMiddleware(keymanappTestBot.default, { probot,
-  webhooksPath: "/",
+  webhooksPath: "/webhook/keymanapp-test-bot",
 });
 
 export default (req, res) => {
-  middleware(req, res, () => {
-    res.writeHead(404);
-    res.end();
-  });
+  consoleLog(`test-bot`, null, `Request received ${req}`);
+  try {
+    debugger;
+    middleware(req, res, () => {
+      consoleLog(`test-bot`, null, 'Failed to process request');
+      res.writeHead(404);
+      res.end();
+    });
+  } catch(e) {
+    consoleError('test-bot', null, inspect(e));
+  }
 };
-

@@ -16,7 +16,7 @@ import ManualTestParser from "../../shared/manual-test/manual-test-parser.js";
 import { ManualTestProtocol } from "../../shared/manual-test/manual-test-protocols.js";
 import { getArtifactLinksComment } from "./artifact-links-comment.js";
 
-const pr = 6849;
+const pr = 16099;
 const is_pull_request = true;
 const data = {owner:'keymanapp', repo:'keyman', issue_number: pr};
 

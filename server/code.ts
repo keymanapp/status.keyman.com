@@ -29,6 +29,7 @@ import { consoleLog } from './util/console-log.js';
 import { buildVersion } from '../shared/version.js';
 import { processGithubWebhookEvent } from './webhooks/github-webhook.js';
 import { triggerGitHookRedeliveryWorkflow } from './webhooks/github-webhook-redelivery.js';
+import { inspect } from 'node:util';
 
 sms.install();
 
@@ -225,7 +226,7 @@ wsServer.on('connection', socket => {
 });
 
 export function reportError(error) {
-  console.error(error);
+  console.error(inspect(error));
   Sentry.captureMessage(error);
 }
 
@@ -364,7 +365,7 @@ app.post('/webhook/discourse', (request, response) => {
   response.send('ok');
 });
 
-app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware);
+app.use('/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
 
 export function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {
@@ -459,7 +460,7 @@ app.get('/status/github-contributions', async (request, response) => {
       try {
         contributions = await githubContributionsService.get(sprintStartDateTime.toISOString());
       } catch(e) {
-        console.debug(e);
+        console.error(inspect(e));
         Sentry.addBreadcrumb({
           category: "Request",
           message: JSON.stringify(request.query)

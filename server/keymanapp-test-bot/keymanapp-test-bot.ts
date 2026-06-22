@@ -4,7 +4,7 @@
  * @keymanapp-test-bot implementation
  */
 
-import { User } from "@octokit/webhooks-types";
+import { components } from "@octokit/openapi-webhooks-types";
 import { Probot, ProbotOctokit } from "probot";
 import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
 
@@ -33,7 +33,7 @@ export interface ProcessEventData {
 };
 
 async function processEvent(
-  octokit: InstanceType<typeof ProbotOctokit>,
+  octokit:  ProbotOctokit,
   data: ProcessEventData,
   is_pull_request: boolean
 ) {
@@ -56,12 +56,12 @@ async function processEvent(
 }
 
 async function processUserTest(
-  octokit: InstanceType<typeof ProbotOctokit>,
+  octokit: ProbotOctokit,
   data: ProcessEventData,
   is_pull_request: boolean,
   issue: GetResponseTypeFromEndpointMethod<typeof octokit.rest.issues.get>,
   pull: GetResponseTypeFromEndpointMethod<typeof octokit.rest.pulls.get>,
-  issue_comments: GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.issues.listComments>) {
+  issue_comments: GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.issues.listComments>): Promise<any> {
 
   const mtp = new ManualTestParser();
   let protocol = new ManualTestProtocol(data.owner, data.repo, data.issue_number, is_pull_request, issue.data.id, pull?.data?.id);
@@ -147,9 +147,9 @@ async function processUserTest(
 
   // If this is a pull request, add a status check
   if(is_pull_request) {
-    let pr = await octokit.pulls.get({...data, pull_number: data.issue_number});
+    let pr = await octokit.rest.pulls.get({...data, pull_number: data.issue_number});
 
-    let statusCounts = {}, totalTests = 0;
+    let statusCounts: any = {}, totalTests = 0;
     statusCounts[ManualTestStatus.Open] = 0;
     statusCounts[ManualTestStatus.Passed] = 0;
     statusCounts[ManualTestStatus.Failed] = 0;
@@ -177,7 +177,7 @@ async function processUserTest(
       statusCounts[ManualTestStatus.Failed] + statusCounts[ManualTestStatus.Blocked] == 0 ? 'pending' :  // no errors, but testing unfinished
       'failure'; // at least one error
 
-    await octokit.repos.createCommitStatus({...data,
+    await octokit.rest.repos.createCommitStatus({...data,
       name: '@keymanapp-test-bot User Test Coverage',
       sha: pr.data.head.sha,
       state: state,
@@ -190,7 +190,7 @@ async function processUserTest(
   log('processEvent: EXIT');
 }
 
-function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
+function shouldProcessEvent(sender: components["schemas"]["simple-user"], state: "closed"|"open"): boolean {
   if(sender.type != "User")
     return false;
 
@@ -206,7 +206,7 @@ function shouldProcessEvent(sender: User, state: "closed"|"open"): boolean {
 const exports = (app: Probot) => {
   app.on(['pull_request.edited', 'pull_request.opened', 'pull_request.synchronize'], (context) => {
     log('pull_request ENTER: '+context.id+', '+context.payload.pull_request.number);
-    if(!shouldProcessEvent(context.payload.sender, context.payload.pull_request.state)) {
+    if(!shouldProcessEvent(context.payload.sender!, context.payload.pull_request.state)) {
       log('pull_request EXIT: '+context.id+' -- skipping');
       return null;
     }
@@ -225,7 +225,7 @@ const exports = (app: Probot) => {
 
   app.on(['issues.labeled'], (context) => {
     log('issues.labeled ENTER: '+context.id+', '+context.payload.issue.number);
-    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state!)) {
       log('issues.labeled EXIT: '+context.id+' -- skipping');
       return null;
     }
@@ -244,7 +244,7 @@ const exports = (app: Probot) => {
 
   app.on(['issues.opened', 'issues.edited'], (context) => {
     log('issue ENTER: '+context.id+', '+context.payload.issue.number);
-    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state)) {
+    if(!shouldProcessEvent(context.payload.sender, context.payload.issue.state!)) {
       log('issue EXIT: '+context.id+' -- skipping');
       return null;
     }

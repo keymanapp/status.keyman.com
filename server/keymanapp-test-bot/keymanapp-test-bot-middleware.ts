@@ -48,14 +48,6 @@ const probot = new Probot({
   secret: secret,
 });
 
-// const probot = createProbot({
-//   env: {
-//     APP_ID: appId.toString(),
-//     PRIVATE_KEY: privateKey,
-//     WEBHOOK_SECRET: secret,
-//   }
-// });
-
 const middleware = await createNodeMiddleware(keymanappTestBot.default, { probot,
   webhooksPath: "/",
 });

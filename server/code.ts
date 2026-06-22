@@ -321,7 +321,7 @@ function sendInitialRefreshMessages(socket) {
 /* Static Endpoints */
 
 // must be before express.json()!
-app.use(keymanAppTestBotMiddleware); // '/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
+app.use('/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
 
 app.use(express.json({ limit: '10mb' })); // for parsing application/json
 

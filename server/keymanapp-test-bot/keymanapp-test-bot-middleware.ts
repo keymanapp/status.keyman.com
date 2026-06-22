@@ -50,18 +50,14 @@ const probot = new Probot({
 });
 
 const middleware = await createNodeMiddleware(keymanappTestBot.default, { probot,
-  webhooksPath: "/webhook/keymanapp-test-bot",
+  webhooksPath: "/",
 });
 
 export default (req, res) => {
   consoleLog(`test-bot`, null, `Request received ${req}`);
   try {
-    debugger;
-    middleware(req, res, () => {
-      consoleLog(`test-bot`, null, 'Failed to process request');
-      res.writeHead(404);
-      res.end();
-    });
+    // debugger;
+    middleware(req, res);
   } catch(e) {
     consoleError('test-bot', null, inspect(e));
   }

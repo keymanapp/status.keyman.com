@@ -4,7 +4,7 @@
     [link]="'https://community.software.sil.org/c/keyman'"
     [title]="'Open Topics'"
     [unfixedCount]="countOfNewPosts()"
-    [count]="queue?.length"
+    [count]="$safeNavigationMigration(queue?.length)"
     [label]="'Open Topics'"
   [class]="hasNewTopics() ? 'has-error' : hasNewPosts() ? 'has-warning' : 'is-empty'"></app-count-box>
 

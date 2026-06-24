@@ -38,6 +38,6 @@
     <div class="tier-test {{tierTestClass(platform.id,tier)}}" title="{{tierTestTitle(platform.id,tier)}}">
       <a href="{{tierTestLink(platform.id,tier)}}" target="_blank">🧪</a>
     </div>
-    <app-sentry [mode]="tier == 'stable' ? '' : 'simple'" [environment]="tier" [gravityX]="'right'" [gravityY]="(platform.id == 'developer' ? 'top' : 'bottom')" [platform]="platform.id" [issues]="status?.sentryIssues[platform.id]"></app-sentry>
+    <app-sentry [mode]="tier == 'stable' ? '' : 'simple'" [environment]="tier" [gravityX]="'right'" [gravityY]="(platform.id == 'developer' ? 'top' : 'bottom')" [platform]="platform.id" [issues]="$safeNavigationMigration(status?.sentryIssues[platform.id])"></app-sentry>
   </div>
 }

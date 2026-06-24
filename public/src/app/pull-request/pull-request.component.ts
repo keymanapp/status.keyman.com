@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { labelColor } from '../utility/labelColor';
 import emojiRegex from 'emoji-regex';
@@ -14,6 +14,7 @@ import { pullEmoji } from '../utility/pullEmoji';
     selector: 'app-pull-request',
     templateUrl: './pull-request.component.html',
     styleUrls: ['./pull-request.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PullRequestComponent extends PopupComponent implements OnInit, OnChanges {
@@ -166,10 +167,6 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     'KeymanAndroid_TestPullRequests': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
       {fragment: 'release/keyman-$version.apk', name: 'Keyman for Android apk', icon: 'keyman.png'} ,
       {fragment: 'release/FirstVoices/firstvoices-$version.apk', name: 'FirstVoices Keyboards for Android apk', icon: 'firstvoices.png'} ,
-
-      // TODO: Remove 16.0 links when 17.0 released
-      {fragment: 'release/kMAPro-debug.apk', name: 'Keyman for Android 16.0 apk', icon: 'keyman.png'} ,
-      {fragment: 'release/FirstVoices/app-debug.apk', name: 'FirstVoices for Android 16.0 apk', icon: 'firstvoices.png'} ,
     ]},
     'KeymanAndroid_TestSamplesAndTestProjects': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
       {fragment: 'Samples/KMSample1/app-debug.apk', name: 'KMSample1 apk', icon: 'kmsample1.png'} ,
@@ -183,7 +180,8 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
     ]},
 
     'Keyman_KeymanMac_PullRequests': {platform: 'mac', name: 'macOS', icon: 'mac.png', downloads: [
-      {fragment: 'upload/$version/keyman-$version.dmg', name: 'Keyman for macOS', icon: 'keyman.png'} ,
+      {fragment: 'upload/$version/keyman-$version.pkg', name: 'Keyman for macOS (.pkg)', icon: 'keyman.png'} ,
+      {fragment: 'upload/$version/keyman-$version.dmg', name: 'Keyman for macOS (.dmg)', icon: 'keyman.png'} ,
     ]},
 
     'KeymanDesktop_TestPullRequests': {platform: 'windows', name: 'Windows', icon: 'windows.png', downloads: [

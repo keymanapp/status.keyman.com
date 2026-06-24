@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { getAvatarUrl, getUserAvatarUrl } from '../../../../shared/users';
 import { IssueClipboard } from '../utility/issue-clipboard';
@@ -11,6 +11,7 @@ import { appState } from '../../state';
     selector: 'app-overview-tab',
     templateUrl: './overview-tab.component.html',
     styleUrls: ['./overview-tab.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OverviewTabComponent {

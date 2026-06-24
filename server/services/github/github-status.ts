@@ -143,6 +143,7 @@ export const pullRequestQuery = `
   isDraft # requires application/vnd.github.shadow-cat-preview+json
   headRefName
   baseRefName
+  state
 
   additions
   deletions

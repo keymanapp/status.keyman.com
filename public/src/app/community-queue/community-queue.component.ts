@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
@@ -11,6 +11,7 @@ import { communityUserIds } from '../../../../shared/users';
     selector: 'app-community-queue',
     templateUrl: './community-queue.component.html',
     styleUrls: ['./community-queue.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class CommunityQueueComponent extends PopupComponent implements OnInit {

@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-count-box',
     templateUrl: './count-box.component.html',
     styleUrls: ['./count-box.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class CountBoxComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { repoShortNameFromGithubUrl } from '../utility/repoShortNameFromGithubUrl';
 import { escapeHtml } from '../utility/escapeHtml';
@@ -16,6 +16,7 @@ export enum IssueView {
     selector: 'app-pull-request-list',
     templateUrl: './pull-request-list.component.html',
     styleUrls: ['./pull-request-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PullRequestListComponent extends PopupComponent implements OnInit {

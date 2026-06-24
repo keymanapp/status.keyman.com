@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, ChangeDetectionStrategy } from '@angular/core';
 import { platformSentryIds } from '../../../../shared/platforms';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
@@ -10,6 +10,7 @@ import { VisibilityService } from '../visibility/visibility.service';
     selector: 'app-sentry',
     templateUrl: './sentry.component.html',
     styleUrls: ['./sentry.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SentryComponent extends PopupComponent implements OnInit, OnChanges {

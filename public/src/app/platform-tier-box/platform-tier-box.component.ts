@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PlatformSpec } from '../../../../shared/platforms';
 
 @Component({
     selector: 'app-platform-tier-box',
     templateUrl: './platform-tier-box.component.html',
     styleUrls: ['./platform-tier-box.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PlatformTierBoxComponent implements OnInit {

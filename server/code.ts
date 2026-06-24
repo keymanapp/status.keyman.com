@@ -28,6 +28,8 @@ import { performanceLog } from './performance-log.js';
 import { consoleLog } from './util/console-log.js';
 import { buildVersion } from '../shared/version.js';
 import { processGithubWebhookEvent } from './webhooks/github-webhook.js';
+import { triggerGitHookRedeliveryWorkflow } from './webhooks/github-webhook-redelivery.js';
+import { inspect } from 'node:util';
 
 sms.install();
 
@@ -89,9 +91,9 @@ Sentry.init({
 
 const debugTestBot = false;
 
-if(debugTestBot) {
-  testUserTestComment();
-}
+// if(debugTestBot) {
+//   testUserTestComment();
+// }
 
 const port = 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;
@@ -197,6 +199,12 @@ setInterval(() => {
   }
 }, REFRESH_INTERVAL);
 
+
+setInterval(() => {
+  // POST to workflow_dispatch --> github actions
+  triggerGitHookRedeliveryWorkflow();
+}, 1000 * 60 * 10); // every 10 minutes
+
 /******************************************
  * Web endpoints
  ******************************************/
@@ -218,7 +226,7 @@ wsServer.on('connection', socket => {
 });
 
 export function reportError(error) {
-  console.error(error);
+  console.error(inspect(error));
   Sentry.captureMessage(error);
 }
 
@@ -312,7 +320,10 @@ function sendInitialRefreshMessages(socket) {
 
 /* Static Endpoints */
 
-app.use(express.json()); // for parsing application/json
+// must be before express.json()!
+app.use('/webhook/keymanapp-test-bot', (request, response) => { keymanAppTestBotMiddleware(request, response); } );
+
+app.use(express.json({ limit: '10mb' })); // for parsing application/json
 
 app.use('/', express.static((environment == Environment.Development ? '' : '../') + '../../public/dist/public'));
 
@@ -356,8 +367,6 @@ app.post('/webhook/discourse', (request, response) => {
   })();
   response.send('ok');
 });
-
-app.use('/webhook/keymanapp-test-bot', keymanAppTestBotMiddleware);
 
 export function sendWsAlert(hasChanged: boolean, message: string): boolean {
   if(hasChanged) {
@@ -452,7 +461,7 @@ app.get('/status/github-contributions', async (request, response) => {
       try {
         contributions = await githubContributionsService.get(sprintStartDateTime.toISOString());
       } catch(e) {
-        console.debug(e);
+        console.error(inspect(e));
         Sentry.addBreadcrumb({
           category: "Request",
           message: JSON.stringify(request.query)
@@ -612,7 +621,7 @@ app.all('/{*splat}', (request, response) => {
 // The error handler must be before any other error middleware and after all controllers
 // app.use(Sentry.Handlers.errorHandler());
 
-if(!debugTestBot) {
+// if(!debugTestBot) {
   consoleLog('main', null, `Starting app listening on ${port}`);
   const server = app.listen(port);
 
@@ -623,4 +632,4 @@ if(!debugTestBot) {
       wsServer.emit('connection', socket, request);
     });
   });
-}
+// }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { platforms, PlatformSpec } from '../../../../shared/platforms';
 import { PopupCoordinatorService } from '../popup-coordinator.service';
 import { PopupComponent } from '../popup/popup.component';
@@ -9,6 +9,7 @@ import { Status } from '../status/status.interface';
     selector: 'app-agent-detail',
     templateUrl: './agent-detail.component.html',
     styleUrls: ['./agent-detail.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AgentDetailComponent extends PopupComponent implements OnInit {

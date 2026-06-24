@@ -140,7 +140,7 @@
           </th>
           @for (day of sprintDays; track day) {
             <td>
-              @for (post of status?.communitySite?.[user.login] | filterObjectByDate: day.date; track post) {
+              @for (post of $safeNavigationMigration(status?.communitySite?.[user.login]) | filterObjectByDate: day.date; track post) {
                 <span>
                   <a class='contribution-issue' href='{{post.url}}' target='_blank'>{{post.topic_id}}#{{post.post_number}}
                     <div class="contribution-detail">

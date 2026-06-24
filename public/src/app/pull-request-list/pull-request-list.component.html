@@ -1,10 +1,10 @@
 <span class="issue-box {{platform ? 'platform' : 'site'}} {{pinned ? 'pinned' : ''}} issue-box-view-{{view}} milestone-{{repo == '*' ? 'current' : milestone?.id}}">
   <app-count-box
     [repo]="repo"
-    [title]="milestone?.title"
-    [unfixedCount]="milestone?.count"
-    [count]="milestone?.count"
-    [label]="platform?.id ? platform?.id+'/' : null"
+    [title]="$safeNavigationMigration(milestone?.title)"
+    [unfixedCount]="$safeNavigationMigration(milestone?.count)"
+    [count]="$safeNavigationMigration(milestone?.count)"
+    [label]="platform?.id ? $safeNavigationMigration(platform?.id)+'/' : null"
   [class]="repo == '*' || repo == 'keyboards' || repo == 'lexical-models' ? 'milestone-all' : 'milestone-'+milestone?.id"></app-count-box>
 
   <div class="issue-list-container gravity-{{gravityX}} gravity-{{gravityY}}" #wrapper>

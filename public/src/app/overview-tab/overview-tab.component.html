@@ -78,7 +78,7 @@
           </div>
           <div class="issue-box-container">
             @for (milestone of platform.milestones; track milestone.title) {
-              <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.id == 'developer' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="milestone?.nodes"></app-issue-list>
+              <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="(platform.id == 'developer' ? 'top' : 'bottom')" [repo]="'keyman'" [milestone]="milestone" [platform]="platform" [issues]="$safeNavigationMigration(milestone?.nodes)"></app-issue-list>
             }
           </div>
         </div>
@@ -135,7 +135,7 @@
             <span class='liveliness liveliness-unknown'></span>
           }
           <a target="_blank" href='https://github.com/keymanapp/{{site.key}}'>{{site.value.id == 'keymanweb' ? 'kmw' : site.value.id}}</a>
-          <app-sentry [environment]="'production'" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="status?.sentryIssues[site.key]"></app-sentry>
+          <app-sentry [environment]="'production'" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [site]="site.key" [platform]="site.key" [issues]="$safeNavigationMigration(status?.sentryIssues[site.key])"></app-sentry>
         </th>
       }
       <th class='gap'></th>
@@ -160,7 +160,7 @@
           [gravityX]="'right'"
           [gravityY]="'top'"
           [repo]="'keyboards'"
-          [milestone]="{title:'Open PRs',count:keyboardPRs?.length}"
+          [milestone]="{title:'Open PRs',count:$safeNavigationMigration(keyboardPRs?.length)}"
         [pullRequests]="keyboardPRs"></app-pull-request-list>
       </td>
       <td class='pulls'>
@@ -170,7 +170,7 @@
           [gravityX]="'right'"
           [gravityY]="'top'"
           [repo]="'lexical-models'"
-          [milestone]="{title:'Open PRs',count:lexicalModelPRs?.length}"
+          [milestone]="{title:'Open PRs',count:$safeNavigationMigration(lexicalModelPRs?.length)}"
           [pullRequests]="lexicalModelPRs">
         </app-pull-request-list>
       </td>
@@ -215,14 +215,14 @@
             <a title="Create new issue for {{site.key}}" href="https://github.com/keymanapp/{{site.key}}/issues/new" target="_blank">➕</a>
           </span>
           @for (milestone of site.value.milestones; track milestone.title) {
-            <app-issue-list [view]="issueView" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+            <app-issue-list [view]="issueView" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [repo]="site.key" [milestone]="milestone" [issues]="$safeNavigationMigration(milestone?.nodes)"></app-issue-list>
           }
         </td>
       }
       <td class='gap'></td>
       <td class='issues'>
         @for (milestone of otherSites?.milestones; track milestone.title) {
-          <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="'top'" [repo]="'*'" [milestone]="milestone" [issues]="milestone?.nodes"></app-issue-list>
+          <app-issue-list [view]="issueView" [gravityX]="'left'" [gravityY]="'top'" [repo]="'*'" [milestone]="milestone" [issues]="$safeNavigationMigration(milestone?.nodes)"></app-issue-list>
         }
       </td>
     </tr>

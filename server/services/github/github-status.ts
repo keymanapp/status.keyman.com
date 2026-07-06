@@ -7,6 +7,7 @@ import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
 import * as Sentry from '@sentry/node';
 import { consoleError, consoleLog } from '../../util/console-log.js';
+import { reportSiteErrorToSentry } from '../../code.js';
 
 const queryStrings = {
 
@@ -305,7 +306,7 @@ async function httppostgh(query, key) {
         body: JSON.stringify({query: '{' + query + '}'})
       });
     } catch(e) {
-      console.dir(e);
+      reportSiteErrorToSentry(e);
       throw e;
     }
     if(!response.ok) {
@@ -341,8 +342,7 @@ export default {
         logGitHubRateLimit(j.data.rateLimit, 'github-status-'+key);
         return j;//.data[key];
       } catch(e) {
-        console.error(e);
-        Sentry.captureException(e);
+        reportSiteErrorToSentry(e);
       }
       return null;
     }));
@@ -373,8 +373,7 @@ export default {
           n++;
         } while(after !== null);
       } catch(e) {
-        console.error(e);
-        Sentry.captureException(e);
+        reportSiteErrorToSentry(e);
         return null;
       }
     }
@@ -412,7 +411,7 @@ export default {
         category: "JSON",
         message: JSON.stringify(values)
       });
-      Sentry.captureException(e);
+      reportSiteErrorToSentry(e);
       return null;
     }
   },

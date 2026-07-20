@@ -54,11 +54,15 @@ export class PlatformTierBoxComponent implements OnInit {
     if(!builds || !builds.builds || !builds.builds.length) return null;
     for(let build of builds.builds) {
       if(build.branchName == tier) return build;
-      if(tier == 'stable' && build.branchName.startsWith('stable-')) return build; // stable builds have stable-version.version branch names
+      if(tier == 'stable' && build.branchName?.startsWith('stable-')) return build; // stable builds have stable-version.version branch names
       if(tier == 'alpha' && !build.branchName) return build; // legacy builds do not have a branch name
       if(tier == 'alpha' && build.branchName == 'master') return build;
     }
     return null;
+  }
+
+  getDownloadForPlatformAndTier(platformId: string, tier: string) {
+    return this.status?.keyman?.[platformId]?.[tier];
   }
 
   statusClass(platformId: string, tier: string): string {
@@ -69,8 +73,16 @@ export class PlatformTierBoxComponent implements OnInit {
     }
 
     build = this.getFirstBuild(b, tier);
-    if(!build) return 'missing';
-    return build.status == 'SUCCESS' ? 'success' : 'failure';
+    if(build) {
+      return build.status == 'SUCCESS' ? 'success' : 'failure';
+    }
+
+    const download = this.getDownloadForPlatformAndTier(platformId, tier);
+    if(!download?.version) {
+      return 'missing';
+    }
+
+    return 'old';
   }
 
   statusText(platformId: string, tier: string): string {
@@ -81,22 +93,35 @@ export class PlatformTierBoxComponent implements OnInit {
     }
 
     build = this.getFirstBuild(b, tier);
-    if(!build) {
-      return 'Unreported';
+    if(build) {
+      return build.number;
     }
-    return build.number;
+
+    const download = this.getDownloadForPlatformAndTier(platformId, tier);
+    if(download?.version) {
+      return download.version;
+    }
+
+    return 'Unreported';
   }
 
   statusTip(platformId: string, tier: string): string {
+    const releaseDate = this.releaseDate(platformId, tier);
     let b = this.getStatus(platformId, tier), br = this.getRunningStatus(platformId, tier);
     let build = this.getFirstBuild(br, tier);
     if(build) {
-      return build.statusText;
+      return `Status: ${build.statusText} (running)\nRelease date: ${releaseDate}`;
     }
 
     build = this.getFirstBuild(b, tier);
-    if(!build) return '';
-    return build.statusText;
+    if(build) {
+      return `Status: ${build.statusText}\nRelease date: ${releaseDate}`;
+    }
+
+    if(releaseDate) {
+      return `Status: build log no longer available\nRelease date: ${releaseDate}`;
+    }
+    return "";
   }
 
   statusLink(platformId: string, tier: string): string {
@@ -107,9 +132,16 @@ export class PlatformTierBoxComponent implements OnInit {
     }
 
     build = this.getFirstBuild(b, tier);
-    if(!build) return '';
-    return `https://build.palaso.org/viewLog.html?buildId=${build.id}&buildTypeId=${b.id}`;
+    if(build) {
+      return `https://build.palaso.org/viewLog.html?buildId=${build.id}&buildTypeId=${b.id}`;
+    }
 
+    const download = this.getDownloadForPlatformAndTier(platformId, tier);
+    if(download?.downloadUrl) {
+      return download.downloadUrl;
+    }
+
+    return "";
   }
 
   /* Show test build result (alpha-only until 14.0 release phase) */

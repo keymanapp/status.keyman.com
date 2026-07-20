@@ -9,6 +9,7 @@ import { VisibilityService } from '../visibility/visibility.service';
 import { getAuthorAvatarUrl } from '../../../../shared/users';
 import { getTeamcityUrlParams } from '../../../../shared/getTeamcityUrlParams';
 import { pullEmoji } from '../utility/pullEmoji';
+import { artifactLinks } from '../../../../shared/artifact-links';
 
 @Component({
     selector: 'app-pull-request',
@@ -163,38 +164,6 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
 
   // Build status links
 
-  teamCityTargets = {
-    'KeymanAndroid_TestPullRequests': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
-      {fragment: 'release/keyman-$version.apk', name: 'Keyman for Android apk', icon: 'keyman.png'} ,
-      {fragment: 'release/FirstVoices/firstvoices-$version.apk', name: 'FirstVoices Keyboards for Android apk', icon: 'firstvoices.png'} ,
-    ]},
-    'KeymanAndroid_TestSamplesAndTestProjects': {platform: 'android', name: 'Android', icon: 'android.png', downloads: [
-      {fragment: 'Samples/KMSample1/app-debug.apk', name: 'KMSample1 apk', icon: 'kmsample1.png'} ,
-      {fragment: 'Samples/KMSample2/app-debug.apk', name: 'KMSample2 apk', icon: 'kmsample2.png'} ,
-      {fragment: 'Tests/KeyboardHarness/app-debug.apk', name: 'KeyboardHarness apk', icon: 'keyboardharness.png'} ,
-    ]},
-
-    'Keyman_iOS_TestPullRequests': {platform: 'ios', name: 'iOS', icon: 'ios.png', downloads: [
-      {fragment: 'upload/$version/keyman-ios-simulator-$version.app.zip', name: 'Keyman for iOS (simulator image)', icon: 'keyman.png'} ,
-      {fragment: 'upload/$version/firstvoices-ios-simulator-$version.app.zip', name: 'FirstVoices Keyboards for iOS (simulator image)', icon: 'firstvoices.png'} ,
-    ]},
-
-    'Keyman_KeymanMac_PullRequests': {platform: 'mac', name: 'macOS', icon: 'mac.png', downloads: [
-      {fragment: 'upload/$version/keyman-$version.pkg', name: 'Keyman for macOS (.pkg)', icon: 'keyman.png'} ,
-      {fragment: 'upload/$version/keyman-$version.dmg', name: 'Keyman for macOS (.dmg)', icon: 'keyman.png'} ,
-    ]},
-
-    'KeymanDesktop_TestPullRequests': {platform: 'windows', name: 'Windows', icon: 'windows.png', downloads: [
-      {fragment: 'release/$version/keyman-$version.exe', name: 'Keyman for Windows', icon: 'keyman.png'} ,
-      {fragment: 'release/$version/keymandeveloper-$version.exe', name: 'Keyman Developer', icon: 'developer.png'} ,
-      {fragment: 'release/$version/firstvoices-$version.exe', name: 'FirstVoices Keyboards for Windows', icon: 'firstvoices.png'} ,
-    ]},
-
-    'Keymanweb_TestPullRequests': {platform: 'web', name: 'Web', icon: 'web.png', downloads: [
-      {fragment: 'index.html', name: 'KeymanWeb Test Home', icon: 'keyman.png'} ,
-    ]},
-  };
-
   getDownloads(context) {
     let result = {platform: '', downloads: [], name: '', icon: ''};
 
@@ -214,7 +183,7 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
 
     if(url.hostname == 'build.palaso.org') {
       const { buildId, buildTypeId } = getTeamcityUrlParams(url);
-      let targets = this.teamCityTargets[buildTypeId];
+      let targets = artifactLinks.teamCityTargets[<keyof typeof artifactLinks.teamCityTargets>(buildTypeId)];
       if(targets) {
         result.name = targets.name;
         result.icon = targets.icon;
@@ -232,21 +201,12 @@ export class PullRequestComponent extends PopupComponent implements OnInit, OnCh
           let version = /^(\d+\.\d+\.\d+)/.exec(build.number)?.[1];
           fragment = fragment.replaceAll('$version', version);
 
+          download = {...download, name: download.name.replaceAll('**', '')}; // remove bold formatting which won't work here}
+
           result.downloads.push({url: `https://build.palaso.org/repository/download/${buildTypeId}/${buildId}:id/${fragment}`,
             ...download});
         }
       }
-    } else if(url.hostname == 'jenkins.lsdev.sil.org') {
-      result = {
-        platform: 'linux',
-        downloads: [
-          {url: context.targetUrl + 'artifact/*zip*/archive.zip', name: 'Keyman for Linux', icon: 'keyman.png'}
-        ],
-        name: 'Keyman for Linux',
-        icon: 'linux.png'
-      };
-      //https://jenkins.lsdev.sil.org/job/pipeline-keyman-packaging/job/PR-5883/9/artifact/*zip*/archive.zip
-      //https://jenkins.lsdev.sil.org/job/pipeline-keyman-packaging/job/PR-5883/9/
     } else if (context.context == 'Debian Packaging') {
       result = {
         platform: 'linux',

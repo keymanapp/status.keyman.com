@@ -5,6 +5,7 @@ import { statusData } from '../data/status-data.js';
 import { artifactLinks } from '../../shared/artifact-links.js';
 import { getTeamcityUrlParams } from "../../shared/getTeamcityUrlParams.js";
 import { inspect } from "node:util";
+import { reportSiteErrorToSentry } from "../code.js";
 
 type BuildDataCacheItem = {context:string, target_url:string, state:string};
 type BuildDataCache = {[index:string]: BuildDataCacheItem};
@@ -23,6 +24,7 @@ export async function getArtifactLinksComment(
   try {
     statuses = await octokit.rest.repos.getCombinedStatusForRef({...data, ref: pull.data.head.ref});
   } catch(e) {
+    reportSiteErrorToSentry(e);
     console.error(`[@keymanapp-test-bot] getArtifactLinksComment: ${e}`);
     console.error(inspect(e));
     return '';
@@ -71,6 +73,7 @@ export async function getArtifactLinksComment(
     try {
       u = new URL(s[context].target_url);
     } catch(e) {
+      reportSiteErrorToSentry(e);
       console.error(`[@keymanapp-test-bot] getArtifactLinksComment(2): ${e}`);
       console.error(inspect(e));
       continue;
@@ -105,6 +108,7 @@ export async function getArtifactLinksComment(
           });
         }
       } catch (e) {
+        reportSiteErrorToSentry(e);
         console.error(`[@keymanapp-test-bot] getArtifactLinksComment(3): ${e}`);
         console.error(inspect(e));
         return '';

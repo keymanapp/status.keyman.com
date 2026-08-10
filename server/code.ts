@@ -176,7 +176,7 @@ function initialLoadGitHub() {
     .then(() => respondGitHubContributionsDataChange({issue:true, post:true, pull:true, review:true, test:true}))
     .then(() => statusData.refreshGitHubIssuesData())
     .then(hasChanged => sendWsAlert(hasChanged, 'github-issues'))
-    .catch(error => reportError(error))
+    .catch(error => reportSiteErrorToSentry(error))
     .finally(() => timingManager.finish('github'));
 }
 
@@ -225,7 +225,7 @@ wsServer.on('connection', socket => {
   sendInitialRefreshMessages(socket);
 });
 
-export function reportError(error) {
+export function reportSiteErrorToSentry(error) {
   console.error(inspect(error));
   Sentry.captureMessage(error);
 }
@@ -233,36 +233,36 @@ export function reportError(error) {
 function respondKeymanDataChange() {
   return statusData.refreshKeymanVersionData()
     .then(hasChanged => sendWsAlert(hasChanged, 'keyman'))
-    .catch(error => reportError(error));
+    .catch(error => reportSiteErrorToSentry(error));
 }
 
 function respondCodeOwnersDataChange() {
   return statusData.refreshCodeOwnersData()
     .then(hasChanged => sendWsAlert(hasChanged, 'code-owners'))
-    .catch(error => reportError(error));
+    .catch(error => reportSiteErrorToSentry(error));
 }
 
 function respondSiteLivelinessDataChange() {
   return statusData.refreshSiteLivelinessData()
     .then(hasChanged => sendWsAlert(hasChanged, 'site-liveliness'))
-    .catch(error => reportError(error));
+    .catch(error => reportSiteErrorToSentry(error));
 }
 
 export function respondGitHubContributionsDataChange(contributionChanges: ContributionChanges) {
   return statusData.refreshGitHubContributionsData('current', contributionChanges)
     .then(hasChanged => sendWsAlert(hasChanged, 'github-contributions'))
-    .catch(error => reportError(error));
+    .catch(error => reportSiteErrorToSentry(error));
 }
 
 function doDiscourseDataChange(user?) {
   //if(!statusData.cache.communitySite) {
     return statusData.refreshCommunitySiteData('current')
       .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
-      .catch(error => reportError(error));
+      .catch(error => reportSiteErrorToSentry(error));
   /*} else {
     return statusData.refreshCommunitySiteData('current', user)
       .then(hasChanged => sendWsAlert(hasChanged, 'community-site'))
-      .catch(error => reportError(error));
+      .catch(error => reportSiteErrorToSentry(error));
   }*/
 }
 
@@ -274,7 +274,7 @@ function respondTeamcityDataChange() {
   timingManager.start('teamcity');
   return statusData.refreshTeamcityData()
     .then(hasChanged => sendWsAlert(hasChanged, 'teamcity'))
-    .catch(error => reportError(error))
+    .catch(error => reportSiteErrorToSentry(error))
     .finally(() => timingManager.finish('teamcity'));
 }
 
@@ -287,7 +287,7 @@ function respondSentryDataChange() {
 
   return statusData.refreshSentryIssuesData()
     .then(hasChanged => sendWsAlert(hasChanged, 'sentry-issues'))
-    .catch(error => reportError(error))
+    .catch(error => reportSiteErrorToSentry(error))
     .finally(() => timingManager.finish('sentry'));
 }
 

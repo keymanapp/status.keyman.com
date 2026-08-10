@@ -1,5 +1,6 @@
 import httpget from '../../util/httpget.js';
 import { userIds } from '../../../shared/users.js';
+import { reportSiteErrorToSentry } from '../../code.js';
 
 export default {
   get: async function(startDate) {
@@ -11,6 +12,7 @@ export default {
       try {
         result.contributions[user] = await this.getUser(startDate, userIds[user].community);
       } catch(e) {
+        reportSiteErrorToSentry(e);
         console.log(`Error retrieving discourse contributions for ${user}: ${e}`);
       }
     }

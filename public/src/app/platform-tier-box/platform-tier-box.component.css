@@ -67,6 +67,11 @@ a.label.missing {
   background: rgb(12, 24, 48);
 }
 
+a.label.old {
+  color: white;
+  background: rgb(0,128,255);
+}
+
 /* Tier Test Status */
 
 span.tier-test {

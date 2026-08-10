@@ -1,5 +1,6 @@
 import { performance } from 'node:perf_hooks';
 
+import * as Sentry from '@sentry/node';
 import deepEqual from "deep-equal";
 
 import versionService from "../services/downloads.keyman.com/version.js";
@@ -26,6 +27,7 @@ import discourseService from "../services/discourse/discourse.js";
 import { performanceLog } from "../performance-log.js";
 import siteLivelinessService from "../services/keyman/site-liveliness.js";
 import { consoleError, consoleLog } from '../util/console-log.js';
+import { reportSiteErrorToSentry } from '../code.js';
 
 export type ContributionChanges = { issue: boolean, pull: boolean, review: boolean, test: boolean, post: boolean };
 
@@ -78,10 +80,6 @@ async function logAsync(event, method: () => Promise<any>): Promise<any> {
     v = await method();
   } catch(e) {
     consoleError('refresh', event, `Error connecting to ${event}: ${e}`);
-    if(e.errors) {
-      // AggregateErrors
-      consoleError('refresh', event, e.errors);
-    }
     throw e;
   }
   performanceLog(dt, event);
@@ -126,6 +124,7 @@ export class StatusData {
     try {
       keymanVersion = await logAsync('refreshKeymanVersionData', () => versionService.get());
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.Keyman, ServiceState.error, e);
       return false;
     }
@@ -142,6 +141,7 @@ export class StatusData {
     try {
       data = await logAsync('refreshTeamcityData', () => teamcityService.get());
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.TeamCity, ServiceState.error, e);
       return false;
     }
@@ -173,6 +173,7 @@ export class StatusData {
       try {
         pull = await logAsync(`refreshGitHubPullRequestData(${repo}, ${number})`, () => githubPullRequestService.get(repo, number));
       } catch(e) {
+        reportSiteErrorToSentry(e);
         console.error(e);
         return false;
       }
@@ -228,6 +229,7 @@ export class StatusData {
     try {
       issue = await logAsync(`refreshGitHubIssueData(${repo}, ${number})`, () => githubIssueService.get(repo, number));
     } catch(e) {
+      reportSiteErrorToSentry(e);
       return false;
     }
 
@@ -269,6 +271,7 @@ export class StatusData {
     try {
       issues = await logAsync('refreshGitHubIssuesData', () => githubIssuesService.get(null, []));
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.GitHubIssues, ServiceState.error, e);
       return false;
     }
@@ -287,6 +290,7 @@ export class StatusData {
     try {
       data = await logAsync('refreshGitHubStatusData', () => githubStatusService.get(sprintName));
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.GitHub, ServiceState.error, e);
       return false;
     }
@@ -327,6 +331,7 @@ export class StatusData {
         }
       }
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.GitHubContributions, ServiceState.error, e);
       return false;
     }
@@ -344,6 +349,7 @@ export class StatusData {
     try {
       sentryIssues = await logAsync('refreshSentryIssuesData', () => sentryIssuesService.get());
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.SentryIssues, ServiceState.error, e);
       return false;
     }
@@ -360,6 +366,7 @@ export class StatusData {
     try {
       codeOwners = await logAsync('refreshCodeOwnersData', () => codeOwnersService.get());
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.CodeOwners, ServiceState.error, e);
       return false;
     }
@@ -376,6 +383,7 @@ export class StatusData {
     try {
       siteLiveliness = await logAsync('refreshSiteLivelinessData', async () => await siteLivelinessService.get());
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.SiteLiveliness, ServiceState.error, e);
       return false;
     }
@@ -395,6 +403,7 @@ export class StatusData {
     try {
       status = await logAsync(`refreshService:${id}`, () => service.get());
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(id, ServiceState.error, e);
       return false;
     }
@@ -437,6 +446,7 @@ export class StatusData {
         posts = await logAsync('refreshCommunitySiteData', () => discourseService.get(sprintStartDateTime));
       }
     } catch(e) {
+      reportSiteErrorToSentry(e);
       this.setServiceState(ServiceIdentifier.CommunitySite, ServiceState.error, e);
       return false;
     }

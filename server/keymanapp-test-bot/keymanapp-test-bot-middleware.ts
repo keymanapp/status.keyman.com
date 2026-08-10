@@ -14,6 +14,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { consoleError, consoleLog } from "../util/console-log.js";
 import { inspect } from "node:util";
+import { reportSiteErrorToSentry } from "../code.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -59,6 +60,7 @@ export default (req, res) => {
     // debugger;
     middleware(req, res);
   } catch(e) {
+    reportSiteErrorToSentry(e);
     consoleError('test-bot', null, inspect(e));
   }
 };

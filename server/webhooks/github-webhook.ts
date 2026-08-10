@@ -1,5 +1,5 @@
 import express from 'express';
-import { timingManager, sendWsAlert, respondGitHubContributionsDataChange, reportError } from '../code.js';
+import { timingManager, sendWsAlert, respondGitHubContributionsDataChange, reportSiteErrorToSentry } from '../code.js';
 import { statusData } from '../data/status-data.js';
 import { USER_TEST_RESULT_REGEX } from '../services/github/github-test-contributions.js';
 import { consoleLog } from '../util/console-log.js';
@@ -48,7 +48,7 @@ export async function processGithubWebhookEvent(request: express.Request, respon
           );
         }
       } catch (error) {
-        reportError(error);
+        reportSiteErrorToSentry(error);
       }
       /*  } else if(event == 'check_run') {
           // TODO: only refresh data related to check runs?
@@ -86,7 +86,7 @@ export async function processGithubWebhookEvent(request: express.Request, respon
           }
         }
       } catch (error) {
-        reportError(error);
+        reportSiteErrorToSentry(error);
       }
     }
   } finally {

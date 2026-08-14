@@ -1,24 +1,13 @@
 
-import httppost from '../../util/httppost.js';
-import { github_token } from '../../identity/github.js';
+import { fetchFromGitHubGraphQlWithRetry } from '../../util/httppost.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
 export default {
 
-  get: function(startDateTime) {
-    return httppost('api.github.com', '/graphql',
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview, application/vnd.github.shadow-cat-preview+json'
-      },
-      // Gather the contributions for each recent user
-
-      JSON.stringify({query: this.queryString(startDateTime)}),
-    ).then(data => {
-      const result = JSON.parse(data);
-      logGitHubRateLimit(result?.data?.rateLimit, 'github-contributions');
-      return result;
-    });
+  get: async function(startDateTime) {
+    const result = await fetchFromGitHubGraphQlWithRetry(this.queryString(startDateTime), 'contributions');
+    logGitHubRateLimit(result?.data?.rateLimit, 'github-contributions');
+    return result;
   },
 
   queryString: function(startDate) {
@@ -26,7 +15,6 @@ export default {
     d.setDate(d.getDate()+14);  // Unofficial start date is the Sat before the start of sprint (which is a Monday)
     let endDate = d.toISOString();
     return `
-    {
       rateLimit {
         limit
         cost
@@ -77,7 +65,6 @@ export default {
           }
         }
       }
-    }
     `
   }
 };

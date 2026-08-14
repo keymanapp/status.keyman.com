@@ -1,6 +1,5 @@
 
-import httppost from '../../util/httppost.js';
-import { github_token } from '../../identity/github.js';
+import { fetchFromGitHubGraphQlWithRetry } from '../../util/httppost.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
 export const USER_TEST_RESULT_REGEX = /^[\*\s-]*TEST_[A-Z0-9_]+[\*\s:\(]*(PASS|PASSED|FAIL|FAILED|BLOCKED|OPEN)/gm;
@@ -9,16 +8,7 @@ export default {
 
   get: function(cursor, issues, startDate, user): Promise<Array<any>> {
     const ghIssuesQuery = this.queryString(cursor, user);
-    return httppost('api.github.com', '/graphql',  //4
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
-
-      // Lists recent issue comments in Keyman repos, cost 1 point per page
-      JSON.stringify({query: ghIssuesQuery})
-    ).then(data => {
-      let obj = JSON.parse(data);
+    return fetchFromGitHubGraphQlWithRetry(ghIssuesQuery, 'test-contributions').then(obj => {
       if(!obj.data || !obj.data.user) return [];
 
       logGitHubRateLimit(obj?.data?.rateLimit, 'github-test-contributions');
@@ -54,7 +44,6 @@ export default {
   queryString: function(after, user) {
     after = JSON.stringify(after);
     return `
-    {
       rateLimit {
         limit
         cost
@@ -83,7 +72,6 @@ export default {
           }
         }
       }
-    }
     `
   }
 };

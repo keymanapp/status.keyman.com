@@ -1,6 +1,5 @@
 
-import httppost from '../../util/httppost.js';
-import { github_token } from '../../identity/github.js';
+import { fetchFromGitHubGraphQlWithRetry } from '../../util/httppost.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 import { KSGitHubIssue } from './github-issue.js';
 // import { getCurrentSprint } from '../../current-sprint.js';
@@ -9,17 +8,7 @@ export default {
 
   get: function(cursor, issues): Promise<Array<KSGitHubIssue[]>> {
     const ghIssuesQuery = this.queryString(cursor);
-    return httppost('api.github.com', '/graphql',  //4
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
-
-      // Lists all open issues in Keyman repos, cost 1 point per page
-      JSON.stringify({query: ghIssuesQuery})
-    ).then(data => {
-      let obj = JSON.parse(data);
-
+    return fetchFromGitHubGraphQlWithRetry(ghIssuesQuery, 'issues').then(obj => {
       logGitHubRateLimit(obj?.data?.rateLimit, 'github-issues');
       //console.log(data);
       if(!obj.data || !obj.data.search) return [];
@@ -34,7 +23,6 @@ export default {
   queryString: function(after) {
     after = JSON.stringify(after);
     return `
-    {
       search(first: 100, after:${after} type: ISSUE, query:"org:keymanapp is:open is:issue -repo:keymanapp/legacy-issues") {
         issueCount
         pageInfo {
@@ -122,7 +110,6 @@ export default {
         remaining
         resetAt
       }
-    }
     `
   }
 };

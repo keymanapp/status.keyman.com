@@ -62,15 +62,15 @@ export async function processGithubWebhookEvent(request: express.Request, respon
       */
     } else {
       try {
-        const prNumbers: { hasBeenClosed: boolean; repo: string; pullNumber: number; }[] = [];
+        const prNumbers: { repo: string; pullNumber: number; }[] = [];
         if (issueNumber && repo && request?.body?.issue?.pull_request) {
-          prNumbers.push({ hasBeenClosed: request.body.issue.state == 'closed', repo, pullNumber: issueNumber });
+          prNumbers.push({ repo, pullNumber: issueNumber });
         } else if (pullNumber && repo) {
-          prNumbers.push({ hasBeenClosed: request.body.action == 'closed' || request.body.pull_request?.state == 'closed', repo, pullNumber });
+          prNumbers.push({ repo, pullNumber });
         } else if (event == 'check_suite') {
-          prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
+          prNumbers.push(...request.body?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         } else if (event == 'check_run') {
-          prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ hasBeenClosed: false, repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
+          prNumbers.push(...request.body?.check_run?.check_suite?.pull_requests?.map(pr => ({ repo: pr.base.repo.name, pullNumber: pr.number })) ?? []);
         }
 
         consoleLog('main', 'github', `POST webhook ${event}.${action} : ${prNumbers.map(p => `keymanapp/${p.repo}#${p.pullNumber}`).join(',')}`);

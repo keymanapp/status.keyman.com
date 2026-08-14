@@ -95,7 +95,7 @@ const debugTestBot = false;
 //   testUserTestComment();
 // }
 
-const port = environment == Environment.Development ? 3000 : 80;
+const port = 80;
 const REFRESH_INTERVAL = environment == Environment.Development ? 180000 : 60000;
 
 export const timingManager = new DataChangeTimingManager();

@@ -158,25 +158,23 @@ export class StatusData {
     return result;
   };
 
-  refreshGitHubPullRequestsData = async (pulls: {hasBeenClosed: boolean, repo: string, pullNumber: number}[]) => {
+  refreshGitHubPullRequestsData = async (pulls: {repo: string, pullNumber: number}[]) => {
     let result = false;
     for(const pull of pulls) {
-      result = await this.refreshGitHubPullRequestData(pull.hasBeenClosed, pull.repo, pull.pullNumber) || result;
+      result = await this.refreshGitHubPullRequestData(pull.repo, pull.pullNumber) || result;
     }
     return result;
   }
 
-  refreshGitHubPullRequestData = async (hasBeenClosed: boolean, repo: string, number: number) => {
+  refreshGitHubPullRequestData = async (repo: string, number: number) => {
     let pull;
-      // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.loading);
-    if(!hasBeenClosed) {
-      try {
-        pull = await logAsync(`refreshGitHubPullRequestData(${repo}, ${number})`, () => githubPullRequestService.get(repo, number));
-      } catch(e) {
-        reportSiteErrorToSentry(e);
-        console.error(e);
-        return false;
-      }
+    // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.loading);
+    try {
+      pull = await logAsync(`refreshGitHubPullRequestData(${repo}, ${number})`, () => githubPullRequestService.get(repo, number));
+    } catch(e) {
+      reportSiteErrorToSentry(e);
+      console.error(e);
+      return false;
     }
 
     const repository = this.cache.sprints['current']?.github?.data.organization.repositories.nodes.find(e=>e.name == repo);
@@ -189,7 +187,7 @@ export class StatusData {
 
     // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.successful);
 
-    if(hasBeenClosed || pull.state?.toString().toUpperCase() == 'CLOSED') {
+    if(pull.state?.toString().toUpperCase() == 'CLOSED') {
       if(idx >= 0) {
         // pull has been closed, remove from cache
         console.log(`refreshGitHubPullRequestData: Removing ${repo}#${number} (index #${idx}) from cache and announcing refresh`);

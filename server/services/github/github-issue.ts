@@ -6,8 +6,7 @@
  * Returns a single issue in the same format as github-issues
  */
 
-import httppost from '../../util/httppost.js';
-import { github_token } from '../../identity/github.js';
+import { fetchFromGitHubGraphQlWithRetry } from '../../util/httppost.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 
 export interface KSGitHubIssue {
@@ -26,17 +25,7 @@ export interface KSGitHubIssue {
 export default {
   get: function(repo: string, issueNumber: number): Promise<KSGitHubIssue | null> {
     const ghIssueQuery = this.queryString(repo, issueNumber);
-    return httppost('api.github.com', '/graphql',  //4
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
-
-      // Returns single issue from a Keyman repo
-      JSON.stringify({query: ghIssueQuery})
-    ).then(data => {
-      let obj = JSON.parse(data);
-
+    return fetchFromGitHubGraphQlWithRetry(ghIssueQuery, 'issue').then(obj => {
       logGitHubRateLimit(obj?.data?.rateLimit, 'github-issue');
       const issue = obj?.data?.repository?.issue ?? null;
       if(!issue) {
@@ -50,7 +39,6 @@ export default {
   queryString: function(repo, issueNumber) {
     repo = JSON.stringify(repo);
     return `
-    {
       repository(owner: "keymanapp", name: ${repo}) {
         issue(number: ${issueNumber}) {
           repository {
@@ -127,7 +115,6 @@ export default {
         remaining
         resetAt
       }
-    }
     `;
   }
 };

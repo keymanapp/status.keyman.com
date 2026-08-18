@@ -6,8 +6,7 @@
  * Returns a single pull request in the same format as github status
  */
 
-import httppost from '../../util/httppost.js';
-import { github_token } from '../../identity/github.js';
+import { fetchFromGitHubGraphQlWithRetry } from '../../util/httppost.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
 import { pullRequestQuery } from './github-status.js';
 
@@ -28,17 +27,7 @@ export interface KSGitHubPullRequest {
 export default {
   get: function(repo: string, pullNumber: number): Promise<KSGitHubPullRequest | null> {
     const ghPullQuery = this.queryString(repo, pullNumber);
-    return httppost('api.github.com', '/graphql',  //4
-      {
-        Authorization: ` Bearer ${github_token}`,
-        Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-      },
-
-      // Returns single issue from a Keyman repo
-      JSON.stringify({query: ghPullQuery})
-    ).then(data => {
-      let obj = JSON.parse(data);
-
+    return fetchFromGitHubGraphQlWithRetry(ghPullQuery, 'pull-request').then(obj => {
       logGitHubRateLimit(obj?.data?.rateLimit, 'github-pull-request');
       const pullRequest = obj?.data?.repository?.pullRequest ?? null;
       if(!pullRequest) {
@@ -52,7 +41,6 @@ export default {
   queryString: function(repo, pullNumber) {
     repo = JSON.stringify(repo);
     return `
-    {
       repository(owner: "keymanapp", name: ${repo}) {
         pullRequest(number: ${pullNumber}) {
           ${pullRequestQuery}
@@ -64,7 +52,6 @@ export default {
         remaining
         resetAt
       }
-    }
     `;
   }
 };

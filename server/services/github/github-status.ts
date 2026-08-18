@@ -1,6 +1,5 @@
 
-import httppost from '../../util/httppost.js';
-import { github_token } from '../../identity/github.js';
+import { fetchFromGitHubGraphQlWithRetry } from '../../util/httppost.js';
 import { getCurrentSprint } from '../../current-sprint.js';
 import { issueLabelScopes } from '../../../shared/issue-labels.js';
 import { logGitHubRateLimit } from '../../util/github-rate-limit.js';
@@ -286,38 +285,6 @@ const repoQuery = (name, after = 'null') => `
 // requests. estimate under 50 points. We have 5000 points/hour.
 // https://developer.github.com/v4/guides/resource-limitations/
 
-/**
- * Request wrapper for GitHub GraphQL
- * @param query   GraphQL query string (without `query:{}` wrapper)
- * @param key     name of request for logging
- * @returns       JSON object
- */
-async function httppostgh(query, key) {
-  consoleLog('services', `github-status-${key}`, '  starting refresh');
-  try {
-    let response;
-    try {
-      response = await fetch('https://api.github.com/graphql', {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${github_token}`,
-          Accept: 'application/vnd.github.antiope-preview+json, application/vnd.github.shadow-cat-preview+json'
-        },
-        body: JSON.stringify({query: '{' + query + '}'})
-      });
-    } catch(e) {
-      reportSiteErrorToSentry(e);
-      throw e;
-    }
-    if(!response.ok) {
-      throw new Error(`Failed to query github graphql ${query} for ${key}: ${response.status} ${response.statusText}`);
-    }
-
-    return await response.json();
-  } finally {
-    consoleLog('services', `github-status-${key}`, '  finishing refresh');
-  }
-}
 
 async function runPromisesSequentially<T>(functions: (() => Promise<T>)[]): Promise<T[]> {
   if (functions.length === 0) {
@@ -333,7 +300,7 @@ export default {
     const keys = Object.keys(queryStrings);
     consoleLog('services', 'github-status', 'starting refresh of 5 github services');
     const values = await runPromisesSequentially( keys.map(key => async () => {
-      const result = await httppostgh(queryStrings[key], key);
+      const result = await fetchFromGitHubGraphQlWithRetry(queryStrings[key], 'status-'+key);
       try {
         const j = result;
         if(!j || !j.data) {
@@ -359,7 +326,7 @@ export default {
         repo.pullRequests = { edges: [] };
         do {
           const q = repoQuery(repo.name, after);
-          const j = await httppostgh(q, `organization-${repo.name}-${n}`);
+          const j = await fetchFromGitHubGraphQlWithRetry(q, `status-organization-${repo.name}-${n}`);
           if(!j || !j.data) {
             throw new Error(`Error parsing JSON for organization-${repo.name}-${n}: '${JSON.stringify(j)}`);
           }

@@ -1,4 +1,4 @@
-import httppost from '../../util/httppost.js';
+import { postToHttp } from '../../util/httppost.js';
 import httpget from '../../util/httpget.js';
 import { slack_bot_token, slack_user_token } from '../../identity/slack.js';
 
@@ -22,7 +22,7 @@ export function slackLGTM(data) {
         return Promise.all(results.messages.matches.map(message =>
           message.channel.id != SLACK_CHANNEL ? Promise.resolve() :
           // Add a reaction to each matching message
-          httppost('slack.com', '/api/reactions.add', {
+          postToHttp('slack.com', '/api/reactions.add', {
             Authorization: `Bearer ${slack_bot_token}`,
             'Content-Type': 'application/json'
           },

@@ -10,5 +10,8 @@
     "skipLibCheck": true,
     "strictNullChecks": false
   },
-  "include": ["./**/*"]
+  "include": ["./**/*"],
+  "watchOptions": {
+    "watchFile": "dynamicPriorityPolling"
+  }
 }

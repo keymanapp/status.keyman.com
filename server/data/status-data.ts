@@ -187,7 +187,7 @@ export class StatusData {
 
     // this.setServiceStatus(StatusSource.KeymanPullRequest, ServiceStatusState.successful);
 
-    if(pull.state?.toString().toUpperCase() == 'CLOSED') {
+    if(pull.state?.toString().toUpperCase() == 'CLOSED' || pull.state?.toString().toUpperCase() == 'MERGED') {
       if(idx >= 0) {
         // pull has been closed, remove from cache
         console.log(`refreshGitHubPullRequestData: Removing ${repo}#${number} (index #${idx}) from cache and announcing refresh`);

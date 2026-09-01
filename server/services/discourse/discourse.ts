@@ -2,6 +2,9 @@ import httpget from '../../util/httpget.js';
 import { userIds } from '../../../shared/users.js';
 import { reportSiteErrorToSentry } from '../../code.js';
 
+const api_key=process.env['KEYMANSTATUS_DISCOURSE_API_KEY'];
+const api_username=process.env['KEYMANSTATUS_DISCOURSE_API_USERNAME'];
+
 export default {
   get: async function(startDate) {
     let result = {
@@ -39,7 +42,12 @@ export default {
 
     const host = 'community.software.sil.org';
 
-    let discourseQuery = httpget(host, url);
+    const headers = {
+      'Api-Key': api_key,
+      'Api-Username': api_username,
+    };
+
+    let discourseQuery = httpget(host, url, headers);
 
     return discourseQuery.then((data) => {
       let json = JSON.parse(data.data);

@@ -62,6 +62,7 @@ export async function getArtifactLinksComment(
   };
 
   let links: {[key: string]: LinkInfo[]} = {};
+  let buildLevels: {[key: string]: string} = {};
 
   for(let context of Object.keys(s)) {
     // artifactLinks
@@ -156,10 +157,11 @@ export async function getArtifactLinksComment(
             download.name == 'Test Keyboards' ? 'Keyboards' :
             t.name;
           if(!links[platform]) links[platform] = [];
+          buildLevels[platform] = buildLevel;
 
           if(buildLevel == 'build') {
             links[platform].push({
-              state: s[context].state == 'success' ? ': all tests passed (no artifacts on BuildLevel "build")' : s[context].state,
+              state: s[context].state == 'success' ? ': ✅ all tests passed' : ('❌ ' + s[context].state),
               platform: platform,
               download: download.name,
               url: null
@@ -196,10 +198,11 @@ export async function getArtifactLinksComment(
   platforms.sort((a,b) => a.localeCompare(b, 'en', {sensitivity: 'base'}));
 
   let r = '\n## Test Artifacts\n\n';
+
   platforms.forEach(platform => {
     let items = links[platform];
     items.sort((a:LinkInfo,b:LinkInfo) => a.download.localeCompare(b.download));
-    r += `* **${platform}**\n` +
+    r += `* **${platform}**${buildLevels[platform] == 'build' ? ' (no artifacts on BuildLevel "build")' : ''}\n` +
       items.map<string>(link =>
         (link.state == 'success'
           ? `  * [${link.download}](${link.url})`

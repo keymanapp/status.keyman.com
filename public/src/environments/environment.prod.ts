@@ -2,5 +2,5 @@ export const environment = {
   production: true,
   statusUrl: '/status',
   refreshBackendUrl: '/refresh',
-  webSocketUrl: 'wss://'+window.location.host
+  webSocketUrl: (window.location.protocol == 'http:' ? 'ws' : 'wss') + '://'+window.location.host
 };

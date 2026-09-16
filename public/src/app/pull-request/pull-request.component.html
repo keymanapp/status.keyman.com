@@ -28,7 +28,7 @@
         <span class="branches">
           <span class="branch">{{pull.pull.node.baseRefName}}</span> &larr; <span class="branch">{{pull.pull.node.headRefName}}</span>
           <app-clipboard [text]="pull.pull.node.headRefName" title="Copy head branch name to clipboard"></app-clipboard>
-          @for (issue of pull.pull.node.timelineItems?.nodes; track issue) {
+          @for (issue of pull.pull.node.timelineItems?.nodes; track issue.subject.url) {
             <span class="related-issue">
               <a href="{{issue.subject.url}}" target="_blank">{{issue.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{issue.subject.number}}</a>
             </span>
@@ -58,11 +58,11 @@
           @if (scope == 'platform') {
             <tr>
               <td class="test-builds" colspan='2'>
-                @for (context of contexts; track context) {
+                @for (context of contexts; track context.name) {
                   @if (context.downloads.length) {
                     <span>
                       <img src="assets/{{context.icon}}" alt="{{context.name}}" title="{{context.name}}">
-                      @for (download of context.downloads; track download) {
+                      @for (download of context.downloads; track download.url) {
                         <span>
                           <a href='{{download.url}}' target='_blank'><img src="assets/artifacts/{{download.icon}}" title="{{download.name}}" alt="{{download.name}}" /></a>
                         </span>
@@ -74,7 +74,7 @@
             </tr>
           }
         </tbody></table>
-        <span class="labels">@for (label of pull.pull.node.labels.edges; track label) {
+        <span class="labels">@for (label of pull.pull.node.labels.edges; track label.node.name) {
           <span class="issue-label" [style]="labelColor(label.node)">{{labelName(label.node.name)}}</span>
         }</span>
       }

@@ -1,5 +1,5 @@
 <table><tbody>
-  @for (author of pullsByAuthor | keyvalue; track author) {
+  @for (author of pullsByAuthor | keyvalue; track author.key) {
     <tr>
       <td>
         @if (!author.value[0].pull.node.headRefName.startsWith('epic')) {
@@ -10,7 +10,7 @@
         }
       </td>
       <td>
-        @for (pull of author.value; track pull) {
+        @for (pull of author.value; track pull.pull.node.url) {
           <span>
             <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
           </span>

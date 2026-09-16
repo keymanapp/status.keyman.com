@@ -38,19 +38,19 @@
                   </span>
                 }
                 @if (issue?.assignees?.nodes) {
-                  @for (assignee of issue.assignees.nodes; track assignee) {
+                  @for (assignee of issue.assignees.nodes; track assignee.login) {
                     <a class="assignee" title="{{assignee.login}}" target="_blank" href="{{assignee.url}}" >
                       <img class="avatar-assignee-22" src="{{getAuthorAvatar(assignee, 22)}}">
                     </a>
                   }
                 }
                 <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
-                @for (pr of issue.timelineItems?.nodes; track pr) {
+                @for (pr of issue.timelineItems?.nodes; track pr.subject.url) {
                   <span class="related-pr">
                     <a href="{{pr.subject.url}}" class="{{pr.willCloseTarget ? 'will-close' : ''}}" target="_blank">{{pr.subject.url && pr.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{pr.subject.number}}</a>
                   </span>
                 }
-                @for (label of issue.labels?.nodes; track label) {
+                @for (label of issue.labels?.nodes; track label.name) {
                   <span><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
                 }
               </span>

@@ -18,7 +18,7 @@
         <div class='clear'></div>
       </div>
 
-      @for (pull of pullRequests; track pull) {
+      @for (pull of pullRequests; track pull.node.url) {
         <span>
           <app-pull-request [status]="status" [scope]="'keyboards-lexical-models'" [gravityX]="'right'" [gravityY]="'top'" [class]="" [pull]="{pull:pull}"></app-pull-request>
         </span>

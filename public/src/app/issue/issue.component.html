@@ -21,7 +21,7 @@
             <td class="user-testing-status-value"></td>
           </tr>
         </tbody></table>
-        <span class="labels">@for (label of issue.labels.nodes; track label) {
+        <span class="labels">@for (label of issue.labels.nodes; track label.name) {
           <span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span>
         }</span>
       }

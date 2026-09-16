@@ -1,9 +1,9 @@
 <table><tbody>
-  @for (base of pullsByBase | keyvalue; track base) {
+  @for (base of pullsByBase | keyvalue; track base.key) {
     <tr>
       <td class='base'>{{base.key == 'other' ? '⬜' : base.key}}</td>
       <td>
-        @for (pull of base.value; track pull) {
+        @for (pull of base.value; track pull.pull.node.url) {
           <span>
             <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
           </span>

@@ -33,7 +33,7 @@
             {{user.login}}</a>
             <app-clipboard [text]="getUserContributions" [context]="{user:user}" title="Copy HTML formatted list of all user contributions to clipboard"></app-clipboard>
           </th>
-          @for (day of sprintDays; track day) {
+          @for (day of sprintDays; track day?.ghdate) {
             <th style='width:6.5%'>
               <a href='https://github.com/{{user.login}}?tab=overview&from={{day?.ghdate}}&to={{day?.ghdate}}' target='_blank'>{{day?.dayText}}<br>{{day?.monthText}} {{day?.dateText}}</a>
             </th>
@@ -46,9 +46,9 @@
             Issues
             <app-clipboard [text]="getContributionIssueText" [context]="{user:user}" title="Copy HTML formatted list of issues to clipboard"></app-clipboard>
           </th>
-          @for (day of sprintDays; track day) {
+          @for (day of sprintDays; track day?.ghdate) {
             <td >
-              @for (issue of user.contributions.issues.nodes | filterObjectByDate: day.date; track issue) {
+              @for (issue of user.contributions.issues.nodes | filterObjectByDate: day.date; track issue.issue.url) {
                 <span>
                   <a class='contribution-issue' href='{{issue.issue.url}}' target='_blank'>{{issue.issue.number}}
                     <div class="contribution-detail">
@@ -69,9 +69,9 @@
             PRs
             <app-clipboard [text]="getContributionPRText" [context]="{user:user}" title="Copy HTML formatted list of pull requests to clipboard"></app-clipboard>
           </th>
-          @for (day of sprintDays; track day) {
+          @for (day of sprintDays; track day?.ghdate) {
             <td>
-              @for (pr of user.contributions.pullRequests.nodes | filterObjectByDate: day.date; track pr) {
+              @for (pr of user.contributions.pullRequests.nodes | filterObjectByDate: day.date; track pr.pullRequest.url) {
                 <span>
                   <a class='contribution-issue' href='{{pr.pullRequest.url}}' target='_blank'>{{pr.pullRequest.number}}
                     <div class="contribution-detail">
@@ -92,9 +92,9 @@
             Reviews
             <app-clipboard [text]="getContributionReviewText" [context]="{user:user}" title="Copy HTML formatted list of reviews to clipboard"></app-clipboard>
           </th>
-          @for (day of sprintDays; track day) {
+          @for (day of sprintDays; track day?.ghdate) {
             <td>
-              @for (review of user.contributions.reviews.nodes | filterObjectByDate: day.date; track review) {
+              @for (review of user.contributions.reviews.nodes | filterObjectByDate: day.date; track review.pullRequest.url) {
                 <span>
                   <a class='contribution-issue' href='{{review.pullRequest.url}}' target='_blank'>{{review.pullRequest.number}}
                     <div class="contribution-detail">
@@ -115,9 +115,9 @@
             Tests
             <app-clipboard [text]="getContributionTestText" [context]="{user:user}" title="Copy HTML formatted list of test references to clipboard"></app-clipboard>
           </th>
-          @for (day of sprintDays; track day) {
+          @for (day of sprintDays; track day?.ghdate) {
             <td>
-              @for (test of user.contributions.tests.nodes | filterObjectByDate: day.date; track test) {
+              @for (test of user.contributions.tests.nodes | filterObjectByDate: day.date; track test.url) {
                 <span>
                   <a class='contribution-issue' href='{{test.url}}' target='_blank'>{{test.issue.number}}
                     <div class="contribution-detail">
@@ -138,9 +138,9 @@
             Posts
             <app-clipboard [text]="getContributionPostText" [context]="{user:user}" title="Copy HTML formatted list of community site posts to clipboard"></app-clipboard>
           </th>
-          @for (day of sprintDays; track day) {
+          @for (day of sprintDays; track day?.ghdate) {
             <td>
-              @for (post of $safeNavigationMigration(status?.communitySite?.[user.login]) | filterObjectByDate: day.date; track post) {
+              @for (post of $safeNavigationMigration(status?.communitySite?.[user.login]) | filterObjectByDate: day.date; track post.url) {
                 <span>
                   <a class='contribution-issue' href='{{post.url}}' target='_blank'>{{post.topic_id}}#{{post.post_number}}
                     <div class="contribution-detail">

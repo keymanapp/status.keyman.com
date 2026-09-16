@@ -1,5 +1,5 @@
 <table><tbody>
-  @for (pullStatus of pullsByStatus | keyvalue; track pullStatus) {
+  @for (pullStatus of pullsByStatus | keyvalue; track pullStatus.key) {
     <tr>
       <td>
         @if (pullStatus.key == 'draft') {
@@ -19,14 +19,14 @@
         }
       </td>
       <td>
-        @for (pull of pullStatus.value; track pull) {
+        @for (pull of pullStatus.value; track pull.pull.node.url) {
           <span>
             <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
           </span>
         }
         @if (pullStatus.key =='readyToMerge') {
           <span>
-            @for (issue of userTestIssuesPassed; track issue) {
+            @for (issue of userTestIssuesPassed; track issue.url) {
               <span>
                 <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
               </span>
@@ -35,7 +35,7 @@
         }
         @if (pullStatus.key =='waitingTest') {
           <span>
-            @for (issue of userTestIssues | filterIssueByLabel: 'user-test-required'; track issue) {
+            @for (issue of userTestIssues | filterIssueByLabel: 'user-test-required'; track issue.url) {
               <span>
                 <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
               </span>
@@ -44,7 +44,7 @@
         }
         @if (pullStatus.key =='waitingResponse') {
           <span>
-            @for (issue of userTestIssues | filterIssueByLabel: 'user-test-failed'; track issue) {
+            @for (issue of userTestIssues | filterIssueByLabel: 'user-test-failed'; track issue.url) {
               <span>
                 <app-issue [changeCounter]="changeCounter" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [issue]="issue"></app-issue>
               </span>

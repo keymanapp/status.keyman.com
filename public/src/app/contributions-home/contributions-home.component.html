@@ -14,7 +14,7 @@
     }
   </div>
   <div class="sprints">
-    @for (milestone of milestones; track milestone) {
+    @for (milestone of milestones; track milestone.title) {
       <span>
         @if (shouldIncludeMilestone(milestone)) {
           <span>

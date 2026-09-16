@@ -1,9 +1,9 @@
 <table><tbody>
-  @for (project of pullsByProject | keyvalue; track project) {
+  @for (project of pullsByProject | keyvalue; track project.key) {
     <tr>
       <td class='emoji'>{{project.key == 'other' ? '⬜' : project.key}}</td>
       <td>
-        @for (pull of project.value; track pull) {
+        @for (pull of project.value; track pull.pull.node.url) {
           <span>
             <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="''" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
           </span>

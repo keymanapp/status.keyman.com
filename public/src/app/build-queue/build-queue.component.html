@@ -14,7 +14,7 @@
           <tr><th>Platform</th><th>Build Type</th><th>Branch / PR</th></tr>
         </thead>
         <tbody>
-          @for (build of queue; track build) {
+          @for (build of queue; track build.webUrl) {
             <tr>
               <td>{{getPlatform(build)}}</td>
               <td><a href="{{build.webUrl}}" target="_blank">{{getBuildType(build)}}</a></td>

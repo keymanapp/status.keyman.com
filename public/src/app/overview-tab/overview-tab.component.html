@@ -181,7 +181,7 @@
       <td class='gap'></td>
       @for (site of sites | keyvalue; track site.key) {
         <td class='pulls'>
-          @for (pull of site.value.pulls; track pull) {
+          @for (pull of site.value.pulls; track pull.pull.node.url) {
             <span>
               <app-pull-request [status]="status" [scope]="'site'" [gravityX]="site.key.toString() &lt; 'help' ? 'right' : 'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
             </span>
@@ -190,7 +190,7 @@
       }
       <td class='gap'></td>
       <td class='pulls'>
-        @for (pull of otherSites?.pulls; track pull) {
+        @for (pull of otherSites?.pulls; track pull.pull.node.url) {
           <span>
             <app-pull-request [status]="status" [scope]="'site'" [gravityX]="'left'" [gravityY]="'top'" [class]="" [pull]="pull"></app-pull-request>
           </span>

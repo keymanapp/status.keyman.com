@@ -14,7 +14,7 @@
       <div class='clear'></div>
     </div>
     <ul >
-      @for (issue of issues; track issue) {
+      @for (issue of issues; track issue.url) {
         <li>
           @if (issueIsDifferentRepo(issue)) {
             <div class="repo {{issueIsFirst(issue) ? 'repo-first' : ''}}">{{issue.repository.name}}</div>
@@ -22,12 +22,12 @@
           <span class="label">
             <a class="author" title="{{issue.author.login}}" target="_blank" href="{{issue.author.url}}"><img class="avatar-22" src="{{getAuthorAvatar(issue.author, 22)}}"></a>
             <a class="issue" title="{{issue.title}}" target="_blank" href="{{issue.url}}">{{issueHasLinkedPR(issue) ? '✔ ': ''}}<b>{{issue.number}}</b> {{issue.title}}</a>
-            @for (pr of issue.timelineItems?.nodes; track pr) {
+            @for (pr of issue.timelineItems?.nodes; track pr.subject.url) {
               <span class="related-pr">
                 <a href="{{pr.subject.url}}" class="{{pr.willCloseTarget ? 'will-close' : ''}}" target="_blank">{{pr.subject.url && pr.subject.url.includes('/pull/') ? '🔗' : '🔵'}}#{{pr.subject.number}}</a>
               </span>
             }
-            @for (label of issue.labels?.nodes; track label) {
+            @for (label of issue.labels?.nodes; track label.name) {
               <span><span class="issue-label" [style]="labelColor(label)">{{labelName(label.name)}}</span></span>
             }
           </span>

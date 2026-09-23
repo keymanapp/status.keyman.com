@@ -21,8 +21,8 @@ export const artifactLinks = {
     ]},
 
     'Keyman_KeymanMac_PullRequests': {platform: 'mac', name: 'macOS', icon: 'mac.png', downloads: [
-      {fragment: 'upload/$version/keyman-$version_with_tag.dmg', name: '**Keyman for macOS (.dmg)**', icon: 'keyman.png'} ,
-      {fragment: 'upload/$version/keyman-$version_with_tag.pkg', name: '**Keyman for macOS (.pkg)**', icon: 'keyman.png'} ,
+      {fragment: 'upload/$version/keyman-$version_with_tag.pkg', name: '**Keyman for macOS (.pkg)**', icon: 'keyman.png'},
+      {fragment: 'upload/$version/keyman-$version_with_tag.dmg', name: '**Keyman for macOS (.dmg)**', icon: 'keyman.png'},
     ]},
 
     'KeymanDesktop_TestPullRequests': {platform: 'windows', name: 'Windows', icon: 'windows.png', downloads: [

@@ -15,11 +15,12 @@ export default {
           const version = data[platform][tier].version;
           const prefix = `https://downloads.keyman.com/${platform}/${tier}/${version}`;
           const winapp = parseInt(version,10) >= 14 ? 'keyman' : 'keymandesktop';
+          const macext = parseInt(version,10) >= 19 ? '.pkg' : '.dmg'; // imprecise, ~19.0.290 is where .pkg support landed
           switch(platform) {
             case 'android':   data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.apk`; break;
             case 'ios':       data[platform][tier].downloadUrl = `${prefix}/keyman-ios-${version}.ipa`; break;
             case 'linux':     data[platform][tier].downloadUrl = `${prefix}/`; break;
-            case 'mac':       data[platform][tier].downloadUrl = `${prefix}/keyman-${version}.dmg`; break;
+            case 'mac':       data[platform][tier].downloadUrl = `${prefix}/keyman-${version}${macext}`; break;
             case 'web':       data[platform][tier].downloadUrl = `https://keymanweb.com?version=${version}`; break;
             case 'windows':   data[platform][tier].downloadUrl = `${prefix}/${winapp}-${version}.exe`; break;
             case 'developer': data[platform][tier].downloadUrl = `${prefix}/keymandeveloper-${version}.exe`; break;

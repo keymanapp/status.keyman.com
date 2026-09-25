@@ -3,7 +3,7 @@
     @if (emoji.key != '') {
       <span class="emoji">{{emoji.key}}</span>
     }
-    @for (pull of emoji.value; track pull) {
+    @for (pull of emoji.value; track pull.pull.node.url) {
       <span>
         <app-pull-request [status]="status" [changeCounter]="changeCounter" [teamCity]="status.teamCity" [scope]="'platform'" [scopeValue]="platform.id" [gravityX]="'left'" [gravityY]="'bottom'" [pull]="pull"></app-pull-request>
       </span>

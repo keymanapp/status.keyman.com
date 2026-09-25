@@ -1,6 +1,6 @@
 // github ids / community ids / avatars currently unused
 export const userIds: {[index:string]: {community:string, avatar?: string, tz?: string}} = {
-  "darcywong00": { community: "darcy", avatar: 'bg+DW.png', tz: 'Asia/Bangkok'},
+  "darcywong00": { community: "darcy", avatar: 'bg+DW.png', tz: 'America/Chicago'},
   "ermshiperete": { community: "EberhardBeilharz", tz: 'Europe/Berlin' },
   "jahorton": { community: "joshua_horton", avatar: 'bg+JH.png', tz: 'America/Chicago'},
   "MakaraSok": { community: "makara", avatar: 'bg+MS.png', tz: 'Asia/Phnom_Penh'},

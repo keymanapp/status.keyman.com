@@ -9,7 +9,10 @@ import { enableDebugTools } from '@angular/platform-browser';
 
 Sentry.init({
   dsn: "https://4ed13a2db1294bb695765ebe2f98171d@o1005580.ingest.sentry.io/5983526",
-  environment: environment.production ? 'production' : 'development'
+  environment:
+    window.location.hostname == 'status.keyman-staging.com' ? 'staging' :
+    environment.production ? 'production' :
+    'development'
 });
 
 if (environment.production) {

@@ -20,7 +20,7 @@
       </div>
 
       <ul>
-        @for (topic of queue; track topic) {
+        @for (topic of queue; track topic.id) {
           <li>
             <span class="label">
               <a class="author" target="_blank" title="{{topic.last_post?.username}}"

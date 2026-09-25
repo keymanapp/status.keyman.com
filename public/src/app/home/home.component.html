@@ -17,7 +17,7 @@
         <app-issue-list [repo]="'keyman'" [isNav]="true" [issues]="status?.github?.data.unlabeledIssues.nodes"></app-issue-list>
 
         <span class="navbar-new-pulls">
-          @for (pull of unlabeledPulls; track pull) {
+          @for (pull of unlabeledPulls; track pull.pull.node.url) {
             <span>
               <app-pull-request [status]="status" [class]="'failure'" [pull]="pull"></app-pull-request>
             </span>
@@ -26,7 +26,7 @@
 
         @if (showContributions) {
           <span class="navbar-contributions">
-            @for (user of contributionUsers; track user) {
+            @for (user of contributionUsers; track user.login) {
               <span class="navbar-contribution {{activeTab === user.login ? 'fixed' : ''}}">
                 <app-contributions (onSelectTab)="selectTab($event)" [user]="user"></app-contributions>
               </span>
@@ -42,7 +42,7 @@
         @if (showAgents) {
           <span class="navbar-agents">
             <app-build-queue [status]="status" [queue]="$safeNavigationMigration(status?.teamCityQueue)"></app-build-queue>
-            @for (agent of status?.teamCityAgents; track agent) {
+            @for (agent of status?.teamCityAgents; track agent.name) {
               <app-agent-detail [status]="status" [agent]="agent"></app-agent-detail>
             }
           </span>
@@ -65,7 +65,7 @@
   <div id="tabs">
 
     @if (showContributions) {
-      @for (user of contributionUsers; track user) {
+      @for (user of contributionUsers; track user.login) {
         <div id="tab-{{user.login ?? 'unassigned-contributions'}}" class="{{activeTab == user.login ? 'tab-active' : ''}}">
           <app-contributions-tab [user]="user"></app-contributions-tab>
         </div>

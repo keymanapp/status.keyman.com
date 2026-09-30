@@ -26,6 +26,7 @@
 .navbar-sub-item-block {
   display: block;
   overflow-y: auto;
+  height: 100%;
 }
 
 .navbar-contribution:hover .navbar-contribution-data,

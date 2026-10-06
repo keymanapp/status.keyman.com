@@ -322,3 +322,7 @@ table#sites-and-relatives {
 #tabs > div.tab-active {
   display: block;
 }
+
+#tab-overview {
+  overflow-y: auto;
+}

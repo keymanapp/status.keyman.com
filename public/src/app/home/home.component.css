@@ -324,5 +324,5 @@ table#sites-and-relatives {
 }
 
 #tab-overview {
-  overflow-y: auto;
+  overflow-y: auto !important;
 }

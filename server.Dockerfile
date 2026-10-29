@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
-FROM node:24@sha256:934240a162082fd8b8a2f90cd5114446443f1eba1c5378f6687167ca405e6584 AS node-builder
+# debian bookworm / node 24.22.1
+FROM node:24@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a AS node-builder
 
 WORKDIR /var/www/html
 
